@@ -6,30 +6,27 @@
 
 <p align="center">
   <strong>You forget. It remembers.</strong><br/>
-  <em>TORIMON</em>
+  <em>TORIMON</em> · Godot 4.7
 </p>
 
----
+Kısa psikolojik bellek / bulmaca oyunu. Her ölümde unutursun; oda hatırlar. Bekçi izler.
 
-**Kapalı kaynak / proprietary.** Kaynak kod ve proje dosyaları herkese açık değildir; yalnızca studio içinde tutulur.
+## Godot’ta aç
 
-Bu depo **private** tutulur. Dışarıya yalnızca **derlenmiş release (APK)** paylaşılır.
+1. [Godot 4.7.2](https://godotengine.org/download) (veya 4.7.x) kur.
+2. **Import** → bu repo klasöründeki `project.godot`.
+3. Ana sahne: `scenes/main/main.tscn` → **F5**.
 
-## Hikâye (kısa)
+Türkçe oynanış notları: [`PLAY_TR.md`](PLAY_TR.md)
 
-Uyanıyorsun. Oda seni tanıyor — sen onu unutmuş olsan bile. Yan görünüşlü bellek / lanet oyunu; Bekçi izler, dünya unutmaz.
+## Android APK
 
-## Release (APK)
+Son derlenmiş paket: **[Releases](https://github.com/jagwey/THE-ROOM-REMEMBERS/releases)**  
+Güncel: [v0.10.1](https://github.com/jagwey/THE-ROOM-REMEMBERS/releases/tag/v0.10.1) — `TheRoomRemembers-0.10.1-android-arm64.apk`  
+Paket: `com.torimon.theroomremembers` · arm64 · debug imzalı (sideload).
 
-Private release: [v0.8.0-debug](https://github.com/jagwey/THE-ROOM-REMEMBERS/releases/tag/v0.8.0-debug)  
-Dosya: `TheRoomRemembers-debug.apk` · `com.torimon.theroomremembers` · arm64 · Godot 4.7.2
+## Kaynak
 
-Herkese açık indirme için APK’yı ayrıca (Drive / itch / site) dağıtın. Kaynak bu repoda ve yerel klasörde kalır; açık kaynak yapılmaz.
+Oyun kaynakları bu depoda (`scenes/`, `scripts/`, `assets/`, `project.godot`). Branch önerisi: `main` veya `cursor/playable-story-flow-8e4e`.
 
-## Studio içi çalıştırma
-
-Godot **4.7.2** → bu klasör → `scenes/main/main.tscn` → F5.
-
-Türkçe notlar: [`PLAY_TR.md`](PLAY_TR.md)
-
-© TORIMON — All rights reserved.
+© TORIMON
