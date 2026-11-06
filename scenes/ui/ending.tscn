@@ -1,0 +1,60 @@
+[gd_scene load_steps=2 format=3 uid="uid://torimon_ending"]
+
+[ext_resource type="Script" path="res://scripts/ui/ending_ui.gd" id="1"]
+
+[node name="EndingUI" type="CanvasLayer"]
+layer = 30
+visible = false
+script = ExtResource("1")
+
+[node name="Dim" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 0
+color = Color(0.09, 0.07, 0.11, 0.92)
+
+[node name="Panel" type="Control" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -80.0
+offset_right = 200.0
+offset_bottom = 80.0
+
+[node name="Title" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 400.0
+offset_bottom = 28.0
+theme_override_colors/font_color = Color(0.882, 0.827, 0.82, 1)
+theme_override_font_sizes/font_size = 16
+horizontal_alignment = 1
+text = "Son"
+
+[node name="Body" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 40.0
+offset_right = 390.0
+offset_bottom = 110.0
+theme_override_colors/font_color = Color(0.671, 0.596, 0.663, 1)
+theme_override_font_sizes/font_size = 12
+horizontal_alignment = 1
+autowrap_mode = 3
+text = "…"
+
+[node name="Hint" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 120.0
+offset_right = 400.0
+offset_bottom = 140.0
+theme_override_colors/font_color = Color(0.49, 0.35, 0.4, 1)
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 1
+text = "Etkileş: devam"

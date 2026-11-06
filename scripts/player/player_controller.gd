@@ -18,25 +18,55 @@ var _facing: float = 1.0
 var _dash_dir: float = 1.0
 
 
+var _stagger_timer: float = 0.0
+
+
 func _ready() -> void:
 	add_to_group("player")
 	sprite.sprite_frames = load("res://assets/characters/shiren.tres")
 	sprite.play("idle")
 	sprite.offset = Vector2(0, -44)
 	attack_area.monitoring = false
+	attack_area.collision_mask = 4 | 8
 	MobileInputManager.attack_pressed.connect(_on_attack)
 	MobileInputManager.dash_pressed.connect(_on_dash)
 	MobileInputManager.interact_pressed.connect(_on_interact)
 	GameState.mark_room_visited(&"awakening")
 	GameState.set_checkpoint(global_position, &"awakening")
 	GameState.player_progress_knowledge["seen_keeper"] = true
+	var vfx := get_tree().get_first_node_in_group("curse_vfx")
+	if vfx and vfx.has_signal("stagger_pulse"):
+		vfx.stagger_pulse.connect(_on_curse_stagger)
+	# Geç bağlan (VFX sonra yüklenebilir)
+	call_deferred("_bind_curse_vfx")
+
+
+func _bind_curse_vfx() -> void:
+	var vfx := get_tree().get_first_node_in_group("curse_vfx")
+	if vfx and vfx.has_signal("stagger_pulse") and not vfx.stagger_pulse.is_connected(_on_curse_stagger):
+		vfx.stagger_pulse.connect(_on_curse_stagger)
+
+
+func _on_curse_stagger() -> void:
+	_stagger_timer = 0.35
+	if sprite.sprite_frames and sprite.sprite_frames.has_animation("hurt"):
+		sprite.play("hurt")
 
 
 func _physics_process(delta: float) -> void:
+	if EndingManager.current != EndingManager.Ending.NONE:
+		velocity = Vector2.ZERO
+		return
 	if not is_on_floor():
 		velocity.y += GRAVITY * delta
 	else:
 		velocity.y = 0.0
+
+	if _stagger_timer > 0.0:
+		_stagger_timer -= delta
+		velocity.x *= 0.2
+		move_and_slide()
+		return
 
 	match _state:
 		&"dash":
@@ -47,6 +77,7 @@ func _physics_process(delta: float) -> void:
 		&"attack":
 			_attack_timer -= delta
 			velocity.x = 0.0
+			_hit_keeper_if_any()
 			if _attack_timer <= 0.0:
 				attack_area.monitoring = false
 				_state = &"idle"
@@ -66,6 +97,22 @@ func _physics_process(delta: float) -> void:
 	_update_anim()
 	attack_area.position.x = 28.0 * _facing
 	interact_area.position.x = 20.0 * _facing
+
+
+func _hit_keeper_if_any() -> void:
+	if not attack_area.monitoring:
+		return
+	for body in attack_area.get_overlapping_bodies():
+		if body.is_in_group("keeper") and body.has_method("receive_player_strike"):
+			body.receive_player_strike()
+			attack_area.monitoring = false
+			return
+	for area in attack_area.get_overlapping_areas():
+		var p: Node = area.get_parent()
+		if p and p.is_in_group("keeper") and p.has_method("receive_player_strike"):
+			p.receive_player_strike()
+			attack_area.monitoring = false
+			return
 
 
 func _update_anim() -> void:

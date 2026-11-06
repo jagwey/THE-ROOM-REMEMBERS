@@ -22,6 +22,8 @@ var _approach_target: Vector2 = Vector2.ZERO
 var _intervening: bool = false
 var _mystery_done: bool = false
 var _warn_counts: Dictionary = {}
+var _strikes: int = 0
+const STRIKES_TO_BAD := 3
 var _zone_lines: Dictionary = {
 	&"forbidden": {
 		"warn": ["Yaklaşma.", "O mühür… senin değil."],
@@ -168,6 +170,7 @@ func on_trigger_zone(zone_id: StringName, _body: Node) -> void:
 func _do_warn(zone_id: StringName) -> void:
 	_busy = true
 	set_mode(Mode.WARN)
+	CurseManager.add_curse(6.0, zone_id)
 	var lines: Array = _zone_lines.get(zone_id, {}).get("warn", ["Yaklaşma."])
 	for line in lines:
 		DialogueManager.whisper("Bekçi", String(line))
@@ -292,8 +295,24 @@ func _show_hint(text: String) -> void:
 
 
 func on_interact(_by: Node) -> void:
+	if EndingManager.current != EndingManager.Ending.NONE:
+		return
 	if _busy or DialogueManager.is_open:
 		DialogueManager.advance()
+		return
+	# İyi yol: hazırlık varsa güven teklifi
+	var st: Dictionary = EndingManager.prep_status()
+	if st["weight"] and st["code"] and st["echo"] and not st["trusted"]:
+		DialogueManager.say("Bekçi", "Bana… güvenebilir misin?")
+		DialogueManager.say("Sen", "…Güveniyorum.")
+		DialogueManager.say("Bekçi", "O zaman Çekirdek'e git. Birlikte mühürleyelim.")
+		await DialogueManager.dialogue_closed
+		GameState.player_progress_knowledge["trusted_keeper"] = true
+		set_mode(Mode.INTIMACY)
+		SaveManager.save_game()
+		return
+	if st["trusted"]:
+		DialogueManager.say("Bekçi", "Çekirdek seni bekliyor.")
 		return
 	match mode:
 		Mode.WARN:
@@ -302,6 +321,34 @@ func on_interact(_by: Node) -> void:
 			DialogueManager.say("Bekçi", "Geri dön.")
 		Mode.MOURNING:
 			DialogueManager.say("Bekçi", "…")
+		Mode.INTIMACY:
+			DialogueManager.say("Bekçi", "Yanındayım.")
 		_:
 			DialogueManager.say("Bekçi", "…Seni izliyorum.")
 			DialogueManager.say("Bekçi", "Henüz hatırlama.")
+
+
+func receive_player_strike() -> void:
+	## Kötü yol — klasik düşman gibi davranma; yine de saldırıya tepki.
+	if EndingManager.current != EndingManager.Ending.NONE:
+		return
+	if not bool(GameState.player_progress_knowledge.get("awakening_mystery_seen", false)):
+		# Erken: öldürme / son yok
+		DialogueManager.whisper("Bekçi", "…Henüz değil.")
+		return
+	_strikes += 1
+	CurseManager.add_curse(10.0, &"strike_keeper")
+	if sprite.sprite_frames and sprite.sprite_frames.has_animation("grieve"):
+		sprite.play("grieve")
+	_show_hint("!")
+	if _strikes == 1:
+		DialogueManager.say("Bekçi", "Bunu… yapma.")
+		await DialogueManager.dialogue_closed
+	elif _strikes == 2:
+		DialogueManager.say("Bekçi", "Lütfen.")
+		await DialogueManager.dialogue_closed
+	if _strikes >= STRIKES_TO_BAD:
+		DialogueManager.say("Bekçi", "…Öyle olsun.")
+		await DialogueManager.dialogue_closed
+		modulate = Color(0.4, 0.35, 0.4, 0.6)
+		await EndingManager.trigger(EndingManager.Ending.BAD_KILL_KEEPER)
