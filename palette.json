@@ -1,0 +1,58 @@
+[
+  {
+    "name": "void",
+    "hex": "#221B27",
+    "source_pixel": [
+      815,
+      809
+    ]
+  },
+  {
+    "name": "deep_stone",
+    "hex": "#322A39",
+    "source_pixel": [
+      861,
+      809
+    ]
+  },
+  {
+    "name": "stone",
+    "hex": "#493F51",
+    "source_pixel": [
+      905,
+      809
+    ]
+  },
+  {
+    "name": "pale_lilac",
+    "hex": "#AB98A9",
+    "source_pixel": [
+      951,
+      809
+    ]
+  },
+  {
+    "name": "ivory",
+    "hex": "#E1D3D1",
+    "source_pixel": [
+      995,
+      809
+    ]
+  },
+  {
+    "name": "crimson",
+    "hex": "#7E2D3A",
+    "source_pixel": [
+      1040,
+      809
+    ]
+  },
+  {
+    "name": "dark_red",
+    "hex": "#521D29",
+    "source_pixel": [
+      1085,
+      809
+    ]
+  }
+]

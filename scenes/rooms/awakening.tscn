@@ -1,0 +1,71 @@
+[gd_scene load_steps=6 format=3 uid="uid://torimon_awakening"]
+
+[ext_resource type="Texture2D" path="res://assets/backgrounds/awakening/far.png" id="1"]
+[ext_resource type="Texture2D" path="res://assets/backgrounds/awakening/mid.png" id="2"]
+[ext_resource type="Texture2D" path="res://assets/backgrounds/awakening/front.png" id="3"]
+
+[sub_resource type="RectangleShape2D" id="Floor"]
+size = Vector2(720, 48)
+
+[sub_resource type="RectangleShape2D" id="Wall"]
+size = Vector2(40, 400)
+
+[node name="Awakening" type="Node2D"]
+
+[node name="ParallaxFar" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.15, 0.15)
+
+[node name="Far" type="Sprite2D" parent="ParallaxFar"]
+texture_filter = 0
+texture = ExtResource("1")
+centered = false
+
+[node name="ParallaxMid" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.45, 0.45)
+
+[node name="Mid" type="Sprite2D" parent="ParallaxMid"]
+texture_filter = 0
+texture = ExtResource("2")
+centered = false
+
+[node name="ParallaxFront" type="Parallax2D" parent="."]
+scroll_scale = Vector2(1, 1)
+
+[node name="Front" type="Sprite2D" parent="ParallaxFront"]
+texture_filter = 0
+texture = ExtResource("3")
+centered = false
+
+[node name="Interactive" type="Node2D" parent="."]
+
+[node name="Hazards" type="Node2D" parent="."]
+
+[node name="Echo" type="Node2D" parent="."]
+
+[node name="Corpse" type="Node2D" parent="."]
+
+[node name="Core" type="Node2D" parent="."]
+
+[node name="Floor" type="StaticBody2D" parent="."]
+position = Vector2(320, 312)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
+shape = SubResource("Floor")
+
+[node name="LeftWall" type="StaticBody2D" parent="."]
+position = Vector2(-16, 180)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LeftWall"]
+shape = SubResource("Wall")
+
+[node name="RightWall" type="StaticBody2D" parent="."]
+position = Vector2(656, 180)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RightWall"]
+shape = SubResource("Wall")
