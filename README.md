@@ -1,55 +1,110 @@
 # THE ROOM REMEMBERS
 
-**Slogan:** You forget. It remembers.  
-**Studio:** TORIMON  
-**Engine:** Godot **4.7.2** · GDScript · Android-first · Turkish UI  
-**Repo:** [jagwey/THE-ROOM-REMEMBERS](https://github.com/jagwey/THE-ROOM-REMEMBERS)  
-**Version:** 0.8.0 (vertical slice)
+<p align="center">
+  <img src="assets/props/seal.png" alt="Seal" width="96" />
+</p>
 
-## Run (desktop)
+<p align="center">
+  <strong>You forget. It remembers.</strong><br/>
+  <em>TORIMON</em> · Godot 4.7 · Android-first · Turkish UI
+</p>
 
-1. Open this folder in **Godot 4.7.2**.
-2. Main scene: `scenes/main/main.tscn`.
-3. Press **F5**.
+<p align="center">
+  <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS/releases"><img alt="Download APK" src="https://img.shields.io/badge/Download-Debug%20APK-7E2D3A?style=for-the-badge" /></a>
+  <img alt="Godot 4.7" src="https://img.shields.io/badge/Godot-4.7.2-478CBF?style=for-the-badge&logo=godotengine&logoColor=white" />
+  <img alt="Platform" src="https://img.shields.io/badge/Platform-Android%20%7C%20Desktop-322A39?style=for-the-badge" />
+</p>
 
-Controls: arrows/WASD · **Z/J** attack · **X/K** dash · **E/F** interact · **I/Tab** journal · on-screen mobile HUD.
+---
 
-Turkish play notes: [`PLAY_TR.md`](PLAY_TR.md).
+## Hikâye
+
+Uyanıyorsun. Oda seni tanıyor — sen onu unutmuş olsan bile.
+
+**THE ROOM REMEMBERS**, yan görünüşlü bir bellek / lanet oyunudur. Shiren’i yönetirsin; Bekçi seni izler, uyarır, engeller. Ölünce dünya unutmaz: cesetler, yankılar ve izler kalır. Lanet erken bir HUD barı olarak değil; kırmızı perde, fısıltı ve sarsıntı olarak gelir.
+
+İki yol:
+
+- **Kötü** — Bekçi’ye saldırıların döngüyü sürdürür  
+- **İyi** — ağırlık, bellek kodu, yankı ve güvenle Çekirdek’i mühürlersin
+
+---
+
+## Görseller
+
+<p align="center">
+  <img src="assets/backgrounds/awakening/far.png" alt="Awakening — far layer" width="720" />
+</p>
+
+<p align="center"><em>Awakening — oda seni hatırlıyor</em></p>
+
+<p align="center">
+  <img src="assets/backgrounds/core/far.png" alt="Core — far layer" width="720" />
+</p>
+
+<p align="center"><em>Core — mühür ve lanetin kalbi</em></p>
+
+| Karakter / Prop | |
+|:--:|:--:|
+| ![Shiren](assets/characters/shiren_sheet.png) | ![Bekçi](assets/characters/keeper_sheet.png) |
+| *Shiren* | *Bekçi (Keeper)* |
+| ![Crystal](assets/props/crystal.png) | ![Curse](assets/props/curse.png) |
+| *Kristal* | *Lanet işareti* |
+| ![Journal](assets/panels/journal.png) | ![Halo](assets/props/halo.png) |
+| *Günlük* | *Halo / VFX* |
+
+---
+
+## Özellikler (dikey dilim v0.8)
+
+- Mobil joystick + saldırı / dash / etkileşim / günlük
+- Scripted Bekçi: gözlem → uyarı → müdahale (erken öldürme yok)
+- Ölüm / yeniden doğuş + dünya hafızası (ceset ≤ 3)
+- Yankı → oyuncu günlüğü (Günlük / Notlar / İzler)
+- Ağırlık plakası + bellek kodu **314**
+- Lanet VFX (veil / halo / fısıltı); %100 → hayat biter, dünya kalır
+- İyi / kötü son; Awakening + Core parallax; moodboard paleti
+
+Türkçe oynanış notları: [`PLAY_TR.md`](PLAY_TR.md)
+
+---
+
+## Çalıştır (masaüstü)
+
+1. Bu klasörü **Godot 4.7.2** ile aç  
+2. Ana sahne: `scenes/main/main.tscn`  
+3. **F5**
+
+| Klavye | Aksiyon |
+|--------|---------|
+| WASD / oklar | Yürü |
+| **Z** / **J** | Saldır |
+| **X** / **K** | Dash |
+| **E** / **F** | Etkileş |
+| **I** / **Tab** | Günlük |
+
+---
 
 ## Android debug APK
 
-Preset: `export_presets.cfg` → **Android**  
-Output: `build/android/TheRoomRemembers-debug.apk`  
-Package: `com.torimon.theroomremembers`
+**Hazır indirme:** [Releases](https://github.com/jagwey/THE-ROOM-REMEMBERS/releases) → `TheRoomRemembers-debug.apk`  
+Paket: `com.torimon.theroomremembers` · arm64-v8a · v0.8.0
 
-Needs:
-
-- JDK 17+ (tested: 21)
-- Android SDK with `platform-tools`, `build-tools;34.0.0`, `platforms;android-34`
-- Godot export templates **4.7.2.stable** (`android_debug.apk` / `android_release.apk`)
-- Editor paths: `Editor → Editor Settings → Export → Android` (SDK + Java + debug keystore)
+Kendin derlemek için: preset `export_presets.cfg` → **Android**.
 
 ```powershell
-# If the project path contains non-ASCII characters, export to an ASCII path first
-# (apksigner fails on Japanese/Unicode paths on Windows).
+# Windows: repo yolu ASCII değilse (örn. プロジェクト) imza için ASCII çıktı yolu kullan
 New-Item -ItemType Directory -Force -Path $env:TEMP\torimon-build, build\android | Out-Null
 godot --headless --path . --export-debug "Android" "$env:TEMP\torimon-build\TheRoomRemembers-debug.apk"
 Copy-Item "$env:TEMP\torimon-build\TheRoomRemembers-debug.apk" build\android\ -Force
 ```
 
-## Asset source
+Gereksinimler: JDK 17+, Android SDK (`platforms;android-34`, `build-tools;34.0.0`), Godot export templates **4.7.2.stable**.
 
-Moodboard / zip art originally lives in the local pack folder:
+---
 
-`C:\Users\Osman\OneDrive\Desktop\Projects プロジェクト\bekci`
+## Studio
 
-Playable PNGs + SpriteFrames used by the game are in `assets/`. Source sheets / full zips stay in the bekci pack.
+**TORIMON** — *You forget. It remembers.*
 
-## Vertical slice status (FAZ 1–8)
-
-- Side-view walk / attack / dash / interact + mobile HUD
-- Scripted Keeper (observe / warn / intervene — no early kill)
-- Death / rebirth + world memory + corpses (max 3)
-- Echo → player journal; weight + memory-code puzzles
-- Curse VFX (no early HUD bar) + good/bad endings
-- Moodboard palette, Awakening/Core parallax, Android export preset
+Sanat kaynağı (yerel moodboard pack): `bekci` klasörü. Oyunda kullanılan PNG / SpriteFrames bu repoda `assets/` altında.
