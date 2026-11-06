@@ -1,36 +1,32 @@
-# The Room Remembers — Çalıştırma (Godot 4.7 · FAZ 4)
+# The Room Remembers — Çalıştırma (Godot 4.7 · FAZ 5)
 
 ## Proje
 
 - Repo: `jagwey/THE-ROOM-REMEMBERS`
 - Yerel: `C:\Users\Osman\OneDrive\Desktop\Projects プロジェクト\THE-ROOM-REMEMBERS`
-- Motor: **Godot 4.7** (4.7.2)
+- Motor: **Godot 4.7**
 
 ## Açılış
 
-1. Godot **4.7** → bu klasörü aç → **F5** (`scenes/main/main.tscn`).
+Godot 4.7 → klasörü aç → **F5**.
 
 ## Kontroller
 
 | Eylem | Klavye | Mobil |
 |-------|--------|-------|
-| Yürü | Ok / WASD | Joystick |
-| Saldır / Dash / Etkileş | Z / X / E | Sağ düğmeler |
+| Yürü / Saldır / Dash / Etkileş | Ok · Z · X · E | Joystick + sağ düğmeler |
+| Günlük | **I** / Tab | Sağ üst kitap ikonu |
 | Diyalog devam | E / Etkileş | |
 
-## FAZ 3 — Bekçi
+## FAZ 5 — Yankı / bulmaca / günlük
 
-Silüet fısıltısı; kristal/kapı → uyar → yumuşak engel. **Bekçi öldürmez.**
+1. Gizem + yarık ölümü sonrası cesede **Etkileş** → rüya yankısı (TR); notlar **oyuncu** günlüğüne yazılır (karakter bilmez).
+2. Cesede tekrar Etkileş → baktığın yöne **it**. Basınç plakasına (x≈520) koy → kapı/engel açılır.
+3. Soldaki mühür: yankıdaki **3-1-4** kodunu sen hatırlıyorsan açılır; karakter “hatırlamıyorum” der.
+4. Günlük sekmeleri: **Günlük / Notlar / İzler** (yıpranmış panel).
 
-## FAZ 4 — Ölüm / hafıza / ceset
-
-1. Gizemden sonra ortadaki **hafıza yarığı** (kırmızı halo, ~x=450) görünür.
-2. İlk temas → uyarı (“Zemin… yanlış.”). İçinde kalır veya tekrar girersen → **öğretici ölüm** (tuzak, Bekçi değil).
-3. Yeniden doğuş: Awakening checkpoint `(120,280)`; karakter unutur (“Neredeyim?”); **dünya / cesetler kalır**.
-4. Ceset max **3**; fazlası çiçek/leke/silüet. Bekçi yas modunda çiçek bırakır.
-5. Cesede Etkileş → Echo / ağırlık stub satırları.
-6. `world_memory_state.flags` + SaveManager kaydı (`user://torimon_save.json`).
+Önceki sistemler (Bekçi uyarı/engel, ölüm/rebirth, ceset max 3) duruyor.
 
 ## Sonraki (henüz yok)
 
-FAZ 5 — Echo / bulmaca / günlük.
+FAZ 6 — lanet VFX.

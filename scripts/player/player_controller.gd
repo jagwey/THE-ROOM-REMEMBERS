@@ -106,6 +106,9 @@ func _on_interact() -> void:
 	if DialogueManager.is_open:
 		DialogueManager.advance()
 		return
+	var journal := get_tree().get_first_node_in_group("journal_ui")
+	if journal and journal.visible:
+		return
 	for body in interact_area.get_overlapping_bodies():
 		if body.has_method("on_interact"):
 			body.on_interact(self)
@@ -114,7 +117,15 @@ func _on_interact() -> void:
 		if area.has_method("on_interact"):
 			area.on_interact(self)
 			return
+		var p: Node = area.get_parent()
+		if p and p.has_method("on_interact"):
+			p.on_interact(self)
+			return
 	DialogueManager.say("Sen", "…Burada bir şey var gibi.")
+
+
+func get_facing() -> float:
+	return _facing
 
 
 func play_death() -> void:

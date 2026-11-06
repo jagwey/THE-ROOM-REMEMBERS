@@ -11,11 +11,13 @@ extends CanvasLayer
 @onready var dialogue_speaker: Label = $SafeArea/Dialogue/Speaker
 @onready var dialogue_text: Label = $SafeArea/Dialogue/Text
 @onready var hint_label: Label = $SafeArea/Hint
+@onready var btn_journal: TextureButton = $SafeArea/JournalBtn
 
 var _joy_active: bool = false
 var _joy_touch_index: int = -1
 var _joy_center: Vector2 = Vector2.ZERO
 const JOY_RADIUS := 36.0
+var _journal: CanvasLayer
 
 
 func _ready() -> void:
@@ -25,14 +27,16 @@ func _ready() -> void:
 	DialogueManager.line_shown.connect(_on_dialogue_line)
 	DialogueManager.dialogue_closed.connect(_on_dialogue_closed)
 	dialogue_panel.visible = false
-	hint_label.text = "Yürü · Saldır · Dash · Etkileş"
+	hint_label.text = "Yürü · Saldır · Dash · Etkileş · J Günlük"
 	btn_attack.button_down.connect(MobileInputManager.press_attack)
 	btn_attack.button_up.connect(MobileInputManager.release_attack)
 	btn_dash.button_down.connect(MobileInputManager.press_dash)
 	btn_dash.button_up.connect(MobileInputManager.release_dash)
 	btn_interact.button_down.connect(MobileInputManager.press_interact)
 	btn_interact.button_up.connect(MobileInputManager.release_interact)
+	btn_journal.pressed.connect(_toggle_journal)
 	_joy_center = joystick_base.position + joystick_base.size * 0.5
+	_journal = get_tree().get_first_node_in_group("journal_ui") as CanvasLayer
 
 
 func _setup_textures() -> void:
@@ -41,6 +45,16 @@ func _setup_textures() -> void:
 	btn_attack.texture_normal = load("res://assets/hud/attack.png")
 	btn_dash.texture_normal = load("res://assets/hud/dash.png")
 	btn_interact.texture_normal = load("res://assets/hud/interact.png")
+	btn_journal.texture_normal = load("res://assets/hud/journal.png")
+	if dialogue_panel:
+		dialogue_panel.texture = load("res://assets/panels/dialogue.png")
+
+
+func _toggle_journal() -> void:
+	if _journal == null:
+		_journal = get_tree().get_first_node_in_group("journal_ui") as CanvasLayer
+	if _journal and _journal.has_method("toggle_journal"):
+		_journal.toggle_journal()
 
 
 func _refresh_hearts(current: int, maximum: int) -> void:
@@ -66,7 +80,7 @@ func _on_dialogue_line(speaker: String, text: String) -> void:
 
 func _on_dialogue_closed() -> void:
 	dialogue_panel.visible = false
-	hint_label.text = "Yürü · Saldır · Dash · Etkileş"
+	hint_label.text = "Yürü · Saldır · Dash · Etkileş · J Günlük"
 
 
 func _input(event: InputEvent) -> void:

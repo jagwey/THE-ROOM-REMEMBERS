@@ -17,6 +17,9 @@ var player_progress_knowledge: Dictionary = {
 	"first_death_seen": false,
 	"rooms_visited": [],
 	"journal_unlocked": false,
+	"journal_notes": [],
+	"echoes_seen": [],
+	"memory_codes": {},
 	"endings_seen": [],
 }
 

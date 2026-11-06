@@ -110,27 +110,15 @@ func rebuild_world_corpses() -> void:
 
 
 func _spawn_traces(root: Node, room: String) -> void:
+	var script: Script = load("res://scripts/world/trace_marker.gd")
 	for t in GameState.world_memory_state["traces"]:
 		if not (t is Dictionary):
 			continue
 		if String(t.get("room", "")) != room:
 			continue
-		var spr := Sprite2D.new()
-		spr.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-		spr.centered = true
-		var pos: Dictionary = t.get("position", {"x": 0, "y": 0})
-		spr.position = Vector2(float(pos.get("x", 0)), float(pos.get("y", 0)))
-		var kind := String(t.get("kind", "stain"))
-		match kind:
-			"flower":
-				spr.texture = load("res://assets/props/red_flower.png")
-				spr.modulate = Color(1, 1, 1, 0.95)
-			"silhouette":
-				spr.texture = load("res://assets/props/body_echo.png")
-				spr.modulate = Color(0.4, 0.35, 0.45, 0.45)
-			_:
-				spr.texture = load("res://assets/props/curse.png")
-				spr.modulate = Color(0.5, 0.2, 0.25, 0.35)
-				spr.scale = Vector2(0.5, 0.5)
-		root.add_child(spr)
-		_spawned.append(spr)
+		var marker := Area2D.new()
+		marker.set_script(script)
+		root.add_child(marker)
+		if marker.has_method("setup"):
+			marker.setup(t)
+		_spawned.append(marker)
