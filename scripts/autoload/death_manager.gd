@@ -8,7 +8,7 @@ var is_dying: bool = false
 
 
 func request_death(reason: StringName = &"unknown", full_reset: bool = false) -> void:
-	if is_dying:
+	if is_dying or EndingManager.current != EndingManager.Ending.NONE:
 		return
 	is_dying = true
 	death_started.emit(reason)
@@ -41,10 +41,10 @@ func request_death(reason: StringName = &"unknown", full_reset: bool = false) ->
 
 	# Bekçi yas: çiçek bırakabilir (öldürmez).
 	var keeper := get_tree().get_first_node_in_group("keeper")
-	if keeper and keeper.has_method("mourn_corpse"):
+	if keeper and keeper.is_visible_in_tree() and keeper.has_method("mourn_corpse"):
 		await keeper.mourn_corpse(death_pos, corpse_id)
 
-	_respawn()
+	await _respawn()
 
 
 func knowledge_note_after_death(reason: StringName) -> void:
@@ -58,12 +58,19 @@ func knowledge_note_after_death(reason: StringName) -> void:
 func _respawn() -> void:
 	var player := get_tree().get_first_node_in_group("player")
 	var cp: Vector2 = GameState.get_checkpoint()
+	var cp_room: StringName = GameState.character_current_life_knowledge.get("checkpoint_room", &"awakening")
+	if RoomManager.has_room(cp_room):
+		RoomManager.enter_room(cp_room, &"checkpoint", false)
 	if player and player.has_method("respawn_at"):
 		player.respawn_at(cp)
 	# Karakter unutkanlığı — kısa TR satır.
 	DialogueManager.clear()
-	DialogueManager.say("Sen", "…Neredeyim?")
-	DialogueManager.say("Sen", "Bir şey… unuttum.")
+	DialogueManager.say("Shiren", "…Neredeyim?")
+	DialogueManager.say("Shiren", "Bir şey… unuttum.")
+	if OS.get_environment("TORIMON_SMOKE") == "1" or DisplayServer.get_name() == "headless":
+		await get_tree().create_timer(0.05).timeout
+		if DialogueManager.is_open:
+			DialogueManager.clear()
 	CorpseManager.rebuild_world_corpses()
 	SaveManager.save_game()
 	is_dying = false

@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://torimon_main"]
+[gd_scene load_steps=28 format=3 uid="uid://torimon_main"]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/rooms/awakening.tscn" id="2"]
@@ -10,6 +10,24 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/curse_vfx.tscn" id="8"]
 [ext_resource type="PackedScene" path="res://scenes/ui/ending.tscn" id="9"]
 [ext_resource type="PackedScene" path="res://scenes/rooms/core.tscn" id="10"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/awakening_passage.tscn" id="11"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/awakening_seal.tscn" id="12"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/decay_vines.tscn" id="13"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/decay_weight.tscn" id="14"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/decay_garden.tscn" id="15"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/library_hall.tscn" id="16"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/library_witness.tscn" id="17"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/library_page.tscn" id="18"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/experiment_cells.tscn" id="19"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/experiment_circuit.tscn" id="20"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/experiment_authority.tscn" id="21"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/mirrors_reverse.tscn" id="22"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/mirrors_dual.tscn" id="23"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/mirrors_unbroken.tscn" id="24"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/core_threshold.tscn" id="25"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/core_seal_chamber.tscn" id="26"]
+
+[ext_resource type="Script" path="res://scripts/ui/session_menu.gd" id="27"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1")
@@ -18,8 +36,73 @@ script = ExtResource("1")
 
 [node name="Awakening" parent="World" instance=ExtResource("2")]
 
+[node name="AwakeningPassage" parent="World" instance=ExtResource("11")]
+visible = false
+process_mode = 4
+
+[node name="AwakeningSeal" parent="World" instance=ExtResource("12")]
+visible = false
+process_mode = 4
+
+[node name="DecayVines" parent="World" instance=ExtResource("13")]
+visible = false
+process_mode = 4
+
+[node name="DecayWeight" parent="World" instance=ExtResource("14")]
+visible = false
+process_mode = 4
+
+[node name="DecayGarden" parent="World" instance=ExtResource("15")]
+visible = false
+process_mode = 4
+
+[node name="LibraryHall" parent="World" instance=ExtResource("16")]
+visible = false
+process_mode = 4
+
+[node name="LibraryWitness" parent="World" instance=ExtResource("17")]
+visible = false
+process_mode = 4
+
+[node name="LibraryPage" parent="World" instance=ExtResource("18")]
+visible = false
+process_mode = 4
+
+[node name="ExperimentCells" parent="World" instance=ExtResource("19")]
+visible = false
+process_mode = 4
+
+[node name="ExperimentCircuit" parent="World" instance=ExtResource("20")]
+visible = false
+process_mode = 4
+
+[node name="ExperimentAuthority" parent="World" instance=ExtResource("21")]
+visible = false
+process_mode = 4
+
+[node name="MirrorsReverse" parent="World" instance=ExtResource("22")]
+visible = false
+process_mode = 4
+
+[node name="MirrorsDual" parent="World" instance=ExtResource("23")]
+visible = false
+process_mode = 4
+
+[node name="MirrorsUnbroken" parent="World" instance=ExtResource("24")]
+visible = false
+process_mode = 4
+
+[node name="CoreThreshold" parent="World" instance=ExtResource("25")]
+visible = false
+process_mode = 4
+
+[node name="CoreSealChamber" parent="World" instance=ExtResource("26")]
+visible = false
+process_mode = 4
+
 [node name="Core" parent="World" instance=ExtResource("10")]
 visible = false
+process_mode = 4
 
 [node name="Player" parent="." instance=ExtResource("3")]
 position = Vector2(120, 280)
@@ -44,3 +127,7 @@ script = ExtResource("6")
 [node name="BGM" type="AudioStreamPlayer" parent="Audio"]
 
 [node name="SFX" type="AudioStreamPlayer" parent="Audio"]
+
+
+[node name="SessionMenu" type="CanvasLayer" parent="."]
+script = ExtResource("27")

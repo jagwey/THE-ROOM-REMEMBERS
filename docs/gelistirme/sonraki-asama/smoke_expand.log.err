@@ -1,0 +1,2 @@
+ERROR: Error opening file 'C:/Users/Osman/Downloads/PRISMBOUND_Godot4_Project/icon.svg'.
+   at: load_image (core/io/image_loader.cpp:91)

@@ -21,7 +21,7 @@ func on_interact(_by: Node) -> void:
 	var cg := EndingManager.can_attempt_good_seal()
 	var cs := EndingManager.can_attempt_sever()
 	if not cg and not cs:
-		DialogueManager.say("Sen", "Çekirdek uğultulu… eksikler var.")
+		DialogueManager.say("Shiren", "Çekirdek uğultulu… eksikler var.")
 		if not st["weight"]:
 			DialogueManager.say("???", "Ağırlık yolu kapalı.")
 		if not st["code"]:
@@ -32,9 +32,9 @@ func on_interact(_by: Node) -> void:
 			DialogueManager.say("???", "Bekçi'ye güvenmedin.")
 		if not st["truth"]:
 			DialogueManager.say("???", "Gerçeği henüz görmedin.")
-		DialogueManager.say("Sen", "Sadece konuşmak yetmez.")
+		DialogueManager.say("Shiren", "Sadece konuşmak yetmez.")
 		await DialogueManager.dialogue_finished
 		return
-	DialogueManager.say("Şilda", "Sağda birlikte mühürleme, solda bağı koparma.")
-	DialogueManager.say("Sen", "Yanlış zemine dokunursam geri dönemem.")
+	DialogueManager.say("Shilda", "Sağda birlikte mühürleme, solda bağı koparma.")
+	DialogueManager.say("Shiren", "Yanlış zemine dokunursam geri dönemem.")
 	await DialogueManager.dialogue_finished

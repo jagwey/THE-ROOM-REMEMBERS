@@ -1,0 +1,3 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+FAZ67_SMOKE ok curse_fail=true world=true bad=true good=true indicator=true

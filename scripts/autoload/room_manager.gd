@@ -26,7 +26,8 @@ const EXTRA_ROOM_SCENE_PATHS: PackedStringArray = [
 
 
 func _ready() -> void:
-	call_deferred("_bootstrap_extra_rooms")
+	## main.tscn odaları zaten instance eder; çift yükleme yok.
+	pass
 
 
 func _bootstrap_extra_rooms() -> void:
@@ -108,6 +109,8 @@ func enter_room(room_id: StringName, spawn_id: StringName = &"default", apply_ro
 	if root:
 		root.visible = true
 		root.process_mode = Node.PROCESS_MODE_INHERIT
+		_set_room_physics(root, true)
+		_set_room_canvas_layers(root, true)
 
 	var bounds: Rect2 = entry["bounds"]
 	var spawns: Dictionary = entry["spawns"]
@@ -124,6 +127,8 @@ func enter_room(room_id: StringName, spawn_id: StringName = &"default", apply_ro
 	var player := get_tree().get_first_node_in_group("player") as Node2D
 	if player:
 		player.global_position = spawn_pos
+		if player is CharacterBody2D:
+			(player as CharacterBody2D).velocity = Vector2.ZERO
 
 	GameState.character_current_life_knowledge["spawn_id"] = spawn_id
 	GameState.mark_room_visited(room_id)
@@ -139,6 +144,7 @@ func enter_room(room_id: StringName, spawn_id: StringName = &"default", apply_ro
 	CorpseManager.rebuild_world_corpses()
 	if from_id != &"" and from_id != room_id:
 		room_changed.emit(from_id, room_id)
+	SaveManager.call_deferred("save_game")
 
 
 func _deactivate_all_rooms() -> void:
@@ -149,6 +155,8 @@ func _deactivate_all_rooms() -> void:
 			continue
 		root.visible = false
 		root.process_mode = Node.PROCESS_MODE_DISABLED
+		_set_room_physics(root, false)
+		_set_room_canvas_layers(root, false)
 
 
 func apply_initial_room(room_id: StringName, spawn_id: StringName = &"default", teleport_to_spawn: bool = true) -> void:
@@ -163,6 +171,8 @@ func apply_initial_room(room_id: StringName, spawn_id: StringName = &"default", 
 	if root:
 		root.visible = true
 		root.process_mode = Node.PROCESS_MODE_INHERIT
+		_set_room_physics(root, true)
+		_set_room_canvas_layers(root, true)
 
 	var bounds: Rect2 = entry["bounds"]
 	if teleport_to_spawn:
@@ -179,6 +189,8 @@ func apply_initial_room(room_id: StringName, spawn_id: StringName = &"default", 
 		var player := get_tree().get_first_node_in_group("player") as Node2D
 		if player:
 			player.global_position = spawn_pos
+			if player is CharacterBody2D:
+				(player as CharacterBody2D).velocity = Vector2.ZERO
 
 	_apply_camera(bounds)
 
@@ -193,3 +205,45 @@ func _apply_camera(bounds: Rect2) -> void:
 		cam.set_room_bounds(bounds)
 	if cam.has_method("snap_to_target"):
 		cam.snap_to_target()
+
+
+func _set_room_physics(node: Node, active: bool) -> void:
+	# Process mode does not remove static bodies from the physics world.
+	# Every room shares coordinates; explicitly isolate inactive geometry/areas.
+	if node is CollisionObject2D:
+		var object := node as CollisionObject2D
+		if not active:
+			if not object.has_meta("room_physics_suspended"):
+				object.set_meta("room_saved_layer", object.collision_layer)
+				object.set_meta("room_saved_mask", object.collision_mask)
+				object.set_meta("room_physics_suspended", true)
+			object.collision_layer = 0
+			object.collision_mask = 0
+		elif object.has_meta("room_physics_suspended"):
+			object.collision_layer = int(object.get_meta("room_saved_layer"))
+			object.collision_mask = int(object.get_meta("room_saved_mask"))
+			object.remove_meta("room_physics_suspended")
+	for child in node.get_children():
+		_set_room_physics(child, active)
+
+
+func _set_room_canvas_layers(node: Node, active: bool) -> void:
+	# CanvasLayer is independent of its Node2D parent's visibility/process mode.
+	if node is CanvasLayer:
+		var canvas := node as CanvasLayer
+		if not active:
+			if not canvas.has_meta("room_canvas_suspended"):
+				canvas.set_meta("room_saved_visible", canvas.visible)
+				canvas.set_meta("room_canvas_suspended", true)
+			canvas.visible = false
+		elif canvas.has_meta("room_canvas_suspended"):
+			canvas.visible = bool(canvas.get_meta("room_saved_visible"))
+			canvas.remove_meta("room_canvas_suspended")
+	for child in node.get_children():
+		_set_room_canvas_layers(child, active)
+
+
+func reset_registry() -> void:
+	_rooms.clear()
+	_current = &""
+	_extra_bootstrapped = false

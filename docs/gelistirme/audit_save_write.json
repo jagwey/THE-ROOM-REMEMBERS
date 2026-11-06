@@ -1,0 +1,14 @@
+{
+	"case": "save_write",
+	"engine": "4.7.2-stable (official)",
+	"headless": true,
+	"results": [
+		{
+			"evidence": {
+				"path": "C:/Users/Osman/AppData/Roaming/Godot/app_userdata/TorimonReview_20261106_Isolated/torimon_save.json"
+			},
+			"id": "save_written",
+			"passed": true
+		}
+	]
+}

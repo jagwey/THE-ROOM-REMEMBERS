@@ -86,13 +86,43 @@ func mark_flower_on_corpse(corpse_id: String) -> void:
 	rebuild_world_corpses()
 
 
+func _find_active_corpses_root() -> Node:
+	## Aktif odanın corpses_root'unu seç — gruptaki ilk (çoğunlukla Uyanış) değil.
+	var room := String(GameState.character_current_life_knowledge.get("room", &"awakening"))
+	var fallback: Node = null
+	for n in get_tree().get_nodes_in_group("corpses_root"):
+		if fallback == null:
+			fallback = n
+		var room_node := _find_room_ancestor(n)
+		if room_node == null:
+			continue
+		var rid: StringName = room_node.get("room_id") if "room_id" in room_node else &""
+		if String(rid) == room:
+			# Görünmez/disabled odaya ekleme
+			if room_node is CanvasItem and not (room_node as CanvasItem).visible:
+				continue
+			if room_node.process_mode == Node.PROCESS_MODE_DISABLED:
+				continue
+			return n
+	return fallback
+
+
+func _find_room_ancestor(n: Node) -> Node:
+	var p: Node = n
+	while p:
+		if p.get_script() != null and p.get("room_id") != null:
+			return p
+		p = p.get_parent()
+	return null
+
+
 func rebuild_world_corpses() -> void:
 	for n in _spawned:
 		if is_instance_valid(n):
 			n.queue_free()
 	_spawned.clear()
 
-	var root := get_tree().get_first_node_in_group("corpses_root")
+	var root := _find_active_corpses_root()
 	if root == null:
 		return
 	var room := String(GameState.character_current_life_knowledge.get("room", &"awakening"))

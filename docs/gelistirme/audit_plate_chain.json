@@ -1,0 +1,40 @@
+{
+	"case": "plate_chain",
+	"engine": "4.7.2-stable (official)",
+	"headless": true,
+	"results": [
+		{
+			"evidence": {
+				"corpse_position": "(520.0, 287.9922)",
+				"door_open": false,
+				"overlap_count": 1,
+				"plate_position": "(520.0, 300.0)",
+				"player_feet_y": 287.9921875
+			},
+			"id": "ground_corpse_activates_plate",
+			"passed": false
+		},
+		{
+			"evidence": {
+				"adjustment_px": 4,
+				"door_open": true
+			},
+			"id": "plate_diagnostic_four_px_down",
+			"passed": true
+		},
+		{
+			"evidence": {
+				"ending": 2,
+				"fixture": "corpse spawn, direct interactions, corpse +4px diagnostic, room transition",
+				"prep": {
+					"code": true,
+					"echo": true,
+					"trusted": true,
+					"weight": true
+				}
+			},
+			"id": "fixture_assisted_good_chain",
+			"passed": true
+		}
+	]
+}

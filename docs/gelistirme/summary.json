@@ -1,0 +1,256 @@
+{
+  "date": "2026-11-06",
+  "cases": 10,
+  "checks": 19,
+  "passed": 11,
+  "failed": 8,
+  "source_files_hashed": 40,
+  "changed_source_files": [],
+  "scripts": 29,
+  "room_scenes": [
+    "scenes\\rooms\\awakening.tscn",
+    "scenes\\rooms\\core.tscn"
+  ],
+  "apk_bytes": 32117782,
+  "results": [
+    {
+      "case": "bad_attacks",
+      "engine": "4.7.2-stable (official)",
+      "headless": true,
+      "results": [
+        {
+          "evidence": {
+            "attack_presses": 3,
+            "ending": 1,
+            "fixture": "position + hazard monitoring disabled",
+            "keeper_strikes": 3,
+            "rooms_visited": [
+              "awakening"
+            ]
+          },
+          "id": "three_attacks_reach_bad_ending",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "case": "baseline",
+      "engine": "4.7.2-stable (official)",
+      "headless": true,
+      "results": [
+        {
+          "evidence": {
+            "rooms": 2,
+            "user_data": "C:/Users/Osman/AppData/Roaming/Godot/app_userdata/TorimonReview_20261106_Isolated"
+          },
+          "id": "boot_two_rooms",
+          "passed": true
+        },
+        {
+          "evidence": {
+            "distance_px": 45.8332366943359,
+            "seconds": 0.4
+          },
+          "id": "horizontal_movement",
+          "passed": true
+        },
+        {
+          "evidence": {
+            "A_bound_to_left": false
+          },
+          "id": "documented_wasd_binding",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "case": "core_corpse",
+      "engine": "4.7.2-stable (official)",
+      "headless": true,
+      "results": [
+        {
+          "evidence": {
+            "can_process": false,
+            "parent": "/root/Main/World/Awakening/Corpse",
+            "room": "core",
+            "visible": false
+          },
+          "id": "core_corpse_in_active_room",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "case": "death",
+      "engine": "4.7.2-stable (official)",
+      "headless": true,
+      "results": [
+        {
+          "evidence": {
+            "animation": "run",
+            "is_dying": true,
+            "movement_px": 21.9999694824219
+          },
+          "id": "death_locks_movement",
+          "passed": false
+        },
+        {
+          "evidence": {
+            "corpses": 1,
+            "deaths": 1,
+            "is_dying": false
+          },
+          "id": "death_respawns_and_retains_corpse",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "case": "ending_touch",
+      "engine": "4.7.2-stable (official)",
+      "headless": true,
+      "results": [
+        {
+          "evidence": {
+            "headless_auto_advance": false,
+            "index_after_touch_and_mobile_signal": 0
+          },
+          "id": "touch_or_mobile_interact_advances_epilogue",
+          "passed": false
+        },
+        {
+          "evidence": {
+            "index_after_keyboard_handler": 1
+          },
+          "id": "keyboard_advances_epilogue",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "case": "plate_chain",
+      "engine": "4.7.2-stable (official)",
+      "headless": true,
+      "results": [
+        {
+          "evidence": {
+            "corpse_position": "(520.0, 287.9922)",
+            "door_open": false,
+            "overlap_count": 1,
+            "plate_position": "(520.0, 300.0)",
+            "player_feet_y": 287.9921875
+          },
+          "id": "ground_corpse_activates_plate",
+          "passed": false
+        },
+        {
+          "evidence": {
+            "adjustment_px": 4,
+            "door_open": true
+          },
+          "id": "plate_diagnostic_four_px_down",
+          "passed": true
+        },
+        {
+          "evidence": {
+            "ending": 2,
+            "fixture": "corpse spawn, direct interactions, corpse +4px diagnostic, room transition",
+            "prep": {
+              "code": true,
+              "echo": true,
+              "trusted": true,
+              "weight": true
+            }
+          },
+          "id": "fixture_assisted_good_chain",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "case": "save_read",
+      "engine": "4.7.2-stable (official)",
+      "headless": true,
+      "results": [
+        {
+          "evidence": {
+            "door_open": false,
+            "marker_after_fresh_boot": "MISSING",
+            "save_exists": true
+          },
+          "id": "startup_restores_save",
+          "passed": false
+        },
+        {
+          "evidence": {
+            "loaded": true,
+            "marker": "persist_20261106"
+          },
+          "id": "explicit_load_reads_save",
+          "passed": true
+        },
+        {
+          "evidence": {
+            "puzzle_solved": false,
+            "world_door_open": true
+          },
+          "id": "load_resyncs_puzzle",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "case": "save_write",
+      "engine": "4.7.2-stable (official)",
+      "headless": true,
+      "results": [
+        {
+          "evidence": {
+            "path": "C:/Users/Osman/AppData/Roaming/Godot/app_userdata/TorimonReview_20261106_Isolated/torimon_save.json"
+          },
+          "id": "save_written",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "case": "seal",
+      "engine": "4.7.2-stable (official)",
+      "headless": true,
+      "results": [
+        {
+          "evidence": {
+            "expected_story_code": "314",
+            "fixture_code": "999",
+            "solved": true
+          },
+          "id": "wrong_code_rejected",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "case": "trim",
+      "engine": "4.7.2-stable (official)",
+      "headless": true,
+      "results": [
+        {
+          "evidence": {
+            "corpses": 3,
+            "traces": 1
+          },
+          "id": "three_corpses_plus_trace",
+          "passed": true
+        },
+        {
+          "evidence": {
+            "life_interacted": [],
+            "world_flag": true
+          },
+          "id": "memory_layers_survive_life_reset",
+          "passed": true
+        }
+      ]
+    }
+  ]
+}

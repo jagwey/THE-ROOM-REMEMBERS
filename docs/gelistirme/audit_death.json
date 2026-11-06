@@ -1,0 +1,25 @@
+{
+	"case": "death",
+	"engine": "4.7.2-stable (official)",
+	"headless": true,
+	"results": [
+		{
+			"evidence": {
+				"animation": "run",
+				"is_dying": true,
+				"movement_px": 21.9999694824219
+			},
+			"id": "death_locks_movement",
+			"passed": false
+		},
+		{
+			"evidence": {
+				"corpses": 1,
+				"deaths": 1,
+				"is_dying": false
+			},
+			"id": "death_respawns_and_retains_corpse",
+			"passed": true
+		}
+	]
+}

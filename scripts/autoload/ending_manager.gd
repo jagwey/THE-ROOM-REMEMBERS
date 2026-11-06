@@ -8,6 +8,8 @@ signal epilogue_finished
 enum Ending { NONE, BAD_KILL_KEEPER, GOOD_TRUST_SEAL, SEVER_BOND }
 
 var current: Ending = Ending.NONE
+## Son tetiklenen final — epilog sonrası current sıfırlansa da smoke/UI doğrulayabilsin.
+var last_ending: Ending = Ending.NONE
 var _locked: bool = false
 
 const EPILOGUES := {
@@ -25,7 +27,7 @@ const EPILOGUES := {
 		"lines": [
 			"Çekirdek mühürlendi. Kırmızı ışık söndü.",
 			"Şiren: Buradayım.",
-			"Şilda: Birlikte… hatırlıyoruz.",
+			"Shilda: Birlikte… hatırlıyoruz.",
 			"Bekçi… artık yalnız değil.",
 			"Sen hâlâ bazı şeyleri unutuyorsun.",
 			"Ama bu kez, oda da biraz unutuyor.",
@@ -44,12 +46,12 @@ const EPILOGUES := {
 
 
 func can_attempt_good_seal() -> bool:
-	var weight := PuzzleManager.is_solved(&"awakening_weight")
 	var code := PuzzleManager.is_solved(&"awakening_memory_code")
 	var echo := bool(GameState.player_progress_knowledge.get("echoes_seen", []).size() > 0)
-	var trusted := bool(GameState.player_progress_knowledge.get("trusted_keeper", false))
 	var truth := bool(GameState.player_progress_knowledge.get("truth_seen", false))
-	return weight and code and echo and trusted and (truth or PuzzleManager.is_solved(&"mirrors_unbroken"))
+	# Trust can be repaired in the final conversation; a missed optional garden
+	# conversation must never make the last room impossible to finish.
+	return code and echo and truth and PuzzleManager.is_solved(&"core_seal")
 
 
 func can_attempt_sever() -> bool:
@@ -71,7 +73,11 @@ func prep_status() -> Dictionary:
 func reset_for_smoke() -> void:
 	_locked = false
 	current = Ending.NONE
+	last_ending = Ending.NONE
 	UiGate.set_ending(false)
+	var ui := get_tree().get_first_node_in_group("ending_ui")
+	if ui and ui.has_method("force_finish"):
+		ui.force_finish()
 
 
 func trigger(ending: Ending) -> void:
@@ -79,6 +85,7 @@ func trigger(ending: Ending) -> void:
 		return
 	_locked = true
 	current = ending
+	last_ending = ending
 	var id: StringName
 	match ending:
 		Ending.BAD_KILL_KEEPER:
@@ -99,6 +106,7 @@ func trigger(ending: Ending) -> void:
 	await _show_epilogue(String(id))
 	## Epilog bitti — kilidi aç; menü/yeni oyun mümkün
 	_locked = false
+	current = Ending.NONE
 	UiGate.set_ending(false)
 	epilogue_finished.emit()
 

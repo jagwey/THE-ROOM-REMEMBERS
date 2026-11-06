@@ -1,0 +1,22 @@
+{
+	"case": "ending_touch",
+	"engine": "4.7.2-stable (official)",
+	"headless": true,
+	"results": [
+		{
+			"evidence": {
+				"headless_auto_advance": false,
+				"index_after_touch_and_mobile_signal": 0
+			},
+			"id": "touch_or_mobile_interact_advances_epilogue",
+			"passed": false
+		},
+		{
+			"evidence": {
+				"index_after_keyboard_handler": 1
+			},
+			"id": "keyboard_advances_epilogue",
+			"passed": true
+		}
+	]
+}

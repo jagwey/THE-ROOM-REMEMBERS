@@ -1,0 +1,16 @@
+{
+	"case": "seal",
+	"engine": "4.7.2-stable (official)",
+	"headless": true,
+	"results": [
+		{
+			"evidence": {
+				"expected_story_code": "314",
+				"fixture_code": "999",
+				"solved": true
+			},
+			"id": "wrong_code_rejected",
+			"passed": false
+		}
+	]
+}

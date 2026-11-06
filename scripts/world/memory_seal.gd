@@ -1,8 +1,13 @@
 extends Area2D
 ## Bellek kodu — oyuncu yankıdan hatırlar; karakter bilmez.
+## Konuşma iptali kod paneli açmaz; doğru kod sonrası iptal çözmez.
 
 @export var code_key: String = "awakening"
 @export var puzzle_id: StringName = &"awakening_memory_code"
+@export var story_code: String = "314"
+
+var _busy: bool = false
+var _session: int = 0
 
 
 func _ready() -> void:
@@ -19,24 +24,68 @@ func _ready() -> void:
 
 
 func on_interact(_by: Node) -> void:
+	if _busy:
+		return
 	if PuzzleManager.is_solved(puzzle_id):
-		DialogueManager.say("Sen", "Mühür zaten açık.")
+		DialogueManager.say("Shiren", "Mühür zaten açık.")
 		return
+	_busy = true
+	_session += 1
+	var session := _session
+	var expected := story_code
 	var codes: Dictionary = GameState.player_progress_knowledge.get("memory_codes", {})
-	var code := String(codes.get(code_key, ""))
-	if code == "":
-		# Karakter bilmiyor.
-		DialogueManager.say("Sen", "…Üzerinde çizikler. Bir kod mu?")
-		DialogueManager.say("Sen", "Hatırlamıyorum.")
+	var known := String(codes.get(code_key, ""))
+	if known == "":
+		DialogueManager.say("Shiren", "…Üzerinde çizikler. Bir kod mu?")
+		DialogueManager.say("Shiren", "Hatırlamıyorum.")
+		var done_empty: bool = await DialogueManager.dialogue_finished
+		if session != _session or not done_empty:
+			_busy = false
+			return
+		_busy = false
 		return
-	# Oyuncu meta bilgisi — karakter diyaloğu gibi görünse de bilgi player katmanından.
-	DialogueManager.say("Sen", "(İçimden: %s… evet.)" % _spaced(code))
-	DialogueManager.say("Sen", "Mühür… gevşedi.")
-	await DialogueManager.dialogue_closed
-	PuzzleManager.mark_solved(puzzle_id)
-	GameState.set_world_flag(&"awakening_crystal_cracked", true)
-	modulate = Color(0.6, 0.9, 0.7, 1)
-	SaveManager.save_game()
+
+	DialogueManager.say("Shiren", "…Bir sayı geliyor aklıma. Denemeliyim.")
+	var intro_ok: bool = await DialogueManager.dialogue_finished
+	if session != _session or not intro_ok:
+		_busy = false
+		return
+
+	var hud := get_tree().get_first_node_in_group("hud")
+	if hud == null:
+		hud = get_tree().root.find_child("HUD", true, false)
+	var entered := ""
+	if hud and hud.has_method("prompt_seal_code"):
+		entered = await hud.prompt_seal_code()
+	else:
+		entered = ""
+
+	if session != _session:
+		_busy = false
+		return
+
+	if entered == "":
+		DialogueManager.say("Shiren", "…Vazgeçtim.")
+		await DialogueManager.dialogue_finished
+		_busy = false
+		return
+
+	if entered == expected:
+		DialogueManager.say("Shiren", "(İçimden: %s… evet.)" % _spaced(entered))
+		DialogueManager.say("Shiren", "Mühür… gevşedi.")
+		var confirm_ok: bool = await DialogueManager.dialogue_finished
+		if session != _session or not confirm_ok:
+			_busy = false
+			return
+		PuzzleManager.mark_solved(puzzle_id)
+		GameState.set_world_flag(&"awakening_crystal_cracked", true)
+		modulate = Color(0.6, 0.9, 0.7, 1)
+		SaveManager.save_game()
+	else:
+		DialogueManager.say("Shiren", "…Yanlış. Mühür kımıldamadı.")
+		DialogueManager.say("Shiren", "Yankıyı… bir daha düşünmeliyim.")
+		await DialogueManager.dialogue_finished
+	_busy = false
 
 
 func _spaced(code: String) -> String:

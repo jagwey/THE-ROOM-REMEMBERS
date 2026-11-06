@@ -2,17 +2,12 @@ extends Area2D
 
 ## Bölge hikâye etkileşimi — kanıt, bulmaca, diyalog. İptal ödül vermez.
 
-
-
 @export var beat_id: StringName = &"library_hall"
 
-
-
 var _busy: bool = false
-
-
-
-
+var _relay_seconds := 0.0
+var _relay_label: Label
+var _choice_layer: CanvasLayer
 
 func _ready() -> void:
 
@@ -27,10 +22,11 @@ func _ready() -> void:
 	if has_node("Sprite2D"):
 
 		$Sprite2D.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-
-
-
-
+		if $Sprite2D.texture == null:
+			$Sprite2D.texture = load("res://assets/props/cassette.png")
+			$Sprite2D.scale = Vector2(0.5, 0.5)
+	if beat_id == &"mirrors_dual":
+		_build_relay()
 
 func on_interact(_by: Node) -> void:
 
@@ -88,25 +84,21 @@ func on_interact(_by: Node) -> void:
 
 		_:
 
-			DialogueManager.say("Sen", "Bir şey hatırlamaya çalışıyor.")
+			DialogueManager.say("Shiren", "Bir şey hatırlamaya çalışıyor.")
 
 			await DialogueManager.dialogue_finished
 
 	_busy = false
 
-
-
-
-
 func _library_hall() -> void:
 
-	DialogueManager.say("Arşivci", "Katalog… ölümde kopan hatıraları sıralar.")
+	DialogueManager.say("Arşivci", "Hoş geldin Shiren. Her dönüşünde kendin için başka bir raf arıyorsun.")
 
-	DialogueManager.say("Arşivci", "İki kayıt aynı anı anlatmıyor. Çelişiyorlar.")
+	DialogueManager.say("Arşivci", "Bir kayıtta kurtarıcısın, diğerinde kapıyı kilitleyen kişi. İkisi de aynı imzayı taşıyor.")
 
-	DialogueManager.say("Sen", "Hangisi doğru?")
+	DialogueManager.say("Shiren", "Hangisi doğru?")
 
-	DialogueManager.say("Arşivci", "İkisi de bir bakıma. Soruyu açık bırak.")
+	DialogueManager.say("Arşivci", "Sağdaki odada saat, çiçek ve mühür var. Üçünü de dinle; ortadaki kayıtta tanıkları karşılaştır. Sıra, kayıp sayfayı açacak.")
 
 	var ok: bool = await DialogueManager.dialogue_finished
 
@@ -120,19 +112,15 @@ func _library_hall() -> void:
 
 	SaveManager.save_game()
 
-
-
-
-
 func _library_witness() -> void:
 
 	if PuzzleManager.is_solved(&"library_witnesses"):
 
-		DialogueManager.say("Sen", "Üç tanık sustu.")
+		DialogueManager.say("Shiren", "Üç tanık sustu.")
 
 		return
 
-	DialogueManager.say("Sen", "Saat, çiçek, mühür. Hepsi birbirini düzeltiyor.")
+	DialogueManager.say("Shiren", "Saat, çiçek, mühür. Kayıtlarını karşılaştırıyorum.")
 
 	var ok: bool = await DialogueManager.dialogue_finished
 
@@ -144,17 +132,17 @@ func _library_witness() -> void:
 
 	if ev.has("ev_witness_clock") and ev.has("ev_witness_flower") and ev.has("ev_witness_seal"):
 
+		DialogueManager.say("Shiren", "Deney önce başladı. Kapı sonra kapandı. Koruma mührü en son çalıştı. Mühür felaketi başlatmamış, içeride tutmuş.")
+		var understood: bool = await DialogueManager.dialogue_finished
+		if not understood:
+			return
 		PuzzleManager.mark_solved(&"library_witnesses")
 
 		SaveManager.save_game()
 
 	else:
 
-		DialogueManager.say("Sen", "Önce her tanığı tek tek dinlemeliyim.")
-
-
-
-
+		DialogueManager.say("Shiren", "Önce her tanığı tek tek dinlemeliyim.")
 
 func _library_page() -> void:
 
@@ -168,15 +156,13 @@ func _library_page() -> void:
 
 		push_warning("story_beat: library_page_puzzle eksik")
 
-
-
-
-
 func _experiment_cells() -> void:
 
-	DialogueManager.say("Sen", "Hücreler… güvenli örnekler.")
+	DialogueManager.say("Kayıt", "Hatıra koruma deneyi. Amaç: kaybedilen kişilerin seslerini muhafaza etmek.")
 
-	DialogueManager.say("???", "Düzenek böyle çalışıyor. Canlı denek yok.")
+	DialogueManager.say("Shiren", "Birini unutmak istememişim. Bu yüzden mi burayı kurdum?")
+	DialogueManager.say("Shilda", "Önce tek bir sesi saklamak istedin. Sonra hiçbir kaybın son olmamasını. Hatıralar bedenlerden ayrılıp odada birikti.")
+	DialogueManager.say("Shilda", "Şimdi kimseyi feda etmeyeceğiz. Sağdaki devrede eski yankı bir anahtarı tutacak. Shiren diğerini açacak.")
 
 	var ok: bool = await DialogueManager.dialogue_finished
 
@@ -190,19 +176,15 @@ func _experiment_cells() -> void:
 
 	SaveManager.save_game()
 
-
-
-
-
 func _experiment_circuit() -> void:
 
 	if PuzzleManager.is_solved(&"experiment_circuit"):
 
-		DialogueManager.say("Sen", "Devre hazır.")
+		DialogueManager.say("Shiren", "Devre hazır.")
 
 		return
 
-	DialogueManager.say("Sen", "Kayıtlı rota — oyuncu kaydı değil. Üstteki düğmelerle akış.")
+	DialogueManager.say("Shilda", "Üstte Yankıyı başlat düğmesine bas. Silüet anahtara ulaşınca sekiz saniyen var: Devremi aç düğmesine bas. Başaramazsan ceza yok; yeniden dene.")
 
 	var ok: bool = await DialogueManager.dialogue_finished
 
@@ -210,17 +192,14 @@ func _experiment_circuit() -> void:
 
 		return
 
-
-
-
-
 func _experiment_authority() -> void:
 
-	DialogueManager.say("Kayıt", "Yetki: Şiren. Katkı: mühür protokolü.")
+	DialogueManager.say("Kayıt", "Protokol yetkilisi: Shiren. Güvenlik görevlisi: Shilda. Acil kapatma talebi reddedildi.")
 
-	DialogueManager.say("Sen", "Ben mi… buna yardım ettim?")
+	DialogueManager.say("Shiren", "Dışarı çıkmasın diye kapıyı ben kilitledim. İçeridekilerin sesleri burada kaldı.")
 
-	DialogueManager.say("Şilda", "Gerçeğin bir bölümünü sakladım. Hepsi değil.")
+	DialogueManager.say("Shilda", "Bunu taşıyamadığında benden seni unutturmamı istedin. Her dönüşünde aynı karar seni bekledi.")
+	DialogueManager.say("Shiren", "Bu kez kendimden kaçmayacağım. Aynalar salonuna gidelim.")
 
 	var ok: bool = await DialogueManager.dialogue_finished
 
@@ -236,57 +215,35 @@ func _experiment_authority() -> void:
 
 	SaveManager.save_game()
 
-
-
-
-
 func _mirrors_reverse() -> void:
-
-	DialogueManager.say("Sen", "Aynada bir kapı solda çıkıyor.")
-
-	DialogueManager.say("Sen", "Gerçekte sağdaki işaret aynı.")
-
-	var ok: bool = await DialogueManager.dialogue_finished
-
-	if not ok:
-
+	if PuzzleManager.is_solved(&"mirrors_reverse"):
+		DialogueManager.say("Shiren", "Aynadaki sol, gerçekte sağ. Geçit açık.")
 		return
-
-	PuzzleManager.mark_solved(&"mirrors_reverse")
-
-	SaveManager.save_game()
-
-
-
-
+	DialogueManager.say("Shiren", "Aynada çiçek soldaki kapıda. Karşımdaki yansıma yönleri ters gösteriyor. Gerçek kapı hangisi?")
+	var ok: bool = await DialogueManager.dialogue_finished
+	if not ok:
+		return
+	_open_mirror_choice()
 
 func _mirrors_dual() -> void:
-
-	DialogueManager.say("Sen", "Yankı bir hatta, ben diğerinde.")
-
-	DialogueManager.say("Sen", "İkisi birden… tamam.")
-
-	var ok: bool = await DialogueManager.dialogue_finished
-
-	if not ok:
-
+	if PuzzleManager.is_solved(&"mirrors_dual"):
+		DialogueManager.say("Shiren", "İki iz birleşti. Yol açık.")
 		return
-
-	PuzzleManager.mark_solved(&"mirrors_dual")
-
-	SaveManager.save_game()
-
-
-
-
+	DialogueManager.say("Shilda", "Yankın bu anahtarı altı saniye tutabilir. Konuşma bitince sağdaki kristale yürü ve etkileş. Süre biterse burada yeniden başlat; ceza yok.")
+	var ok: bool = await DialogueManager.dialogue_finished
+	if not ok:
+		return
+	_relay_seconds = 6.0
 
 func _mirrors_unbroken() -> void:
 
-	DialogueManager.say("Sen", "Beni korumuyordun. Kararımı koruyordun.")
+	DialogueManager.say("Shiren", "Beni korumuyordun. Kararımı koruyordun.")
 
-	DialogueManager.say("Şilda", "İkisini ayırmayı unuttum.")
+	DialogueManager.say("Shilda", "İkisini ayırmayı unuttum.")
 
-	DialogueManager.say("Sen", "O zaman çekirdek'te seçeriz.")
+	DialogueManager.say("Shiren", "Döngüyü sürdürmemi de, seni affetmemi de isteyemezsin. Ama gerçeği saklamadan yanımda durabilirsin.")
+	DialogueManager.say("Shilda", "Çekirdekte iki yol var. Sesleri birlikte mühürler, bekçiliği paylaşırız. Ya da bağı koparır, hatıraları serbest bırakırız.")
+	DialogueManager.say("Shiren", "İkisini de anlayarak seçeceğim. Sağdaki geçidi aç.")
 
 	var ok: bool = await DialogueManager.dialogue_finished
 
@@ -304,13 +261,10 @@ func _mirrors_unbroken() -> void:
 
 	SaveManager.save_game()
 
-
-
-
-
 func _core_threshold() -> void:
 
-	DialogueManager.say("Sen", "Önceki yollar… burada birleşiyor.")
+	DialogueManager.say("Shilda", "Saat sıralamayı, çiçek kaybı, anahtar izni, mühür sorumluluğu gösterdi. Artık kapı senden bir can istemiyor.")
+	DialogueManager.say("Shiren", "Öğrendiklerimi yanıma aldım. Son mühür odasında kayıtları birleştireceğim.")
 
 	var ok: bool = await DialogueManager.dialogue_finished
 
@@ -322,15 +276,12 @@ func _core_threshold() -> void:
 
 	SaveManager.save_game()
 
-
-
-
-
 func _core_seal_chamber() -> void:
 
-	DialogueManager.say("Sen", "Tanıklıklar devrede.")
+	DialogueManager.say("Shiren", "Deney başladı. Kapıyı kapattım. Koruma mührü devreye girdi. Sonra unutmak istedim. Artık hiçbiri kayıp değil.")
 
-	DialogueManager.say("Şilda", "Hazırsan çekirdek seni bekliyor.")
+	DialogueManager.say("Shilda", "Senin adına seçim yapmayacağım. Birlikte mühürlemek sesleri burada korur; bağı koparmak onları serbest bırakır.")
+	DialogueManager.say("Shiren", "Son kapının ardında solda bağı koparma, sağda birlikte mühürleme var. Önce sonucu okuyacağım, sonra onaylayacağım.")
 
 	var ok: bool = await DialogueManager.dialogue_finished
 
@@ -339,12 +290,9 @@ func _core_seal_chamber() -> void:
 		return
 
 	PuzzleManager.mark_solved(&"core_seal")
+	GameState.player_progress_knowledge["trusted_keeper"] = true
 
 	SaveManager.save_game()
-
-
-
-
 
 func _evidence(eid: String, title: String, body: String, kind: String, section: String) -> void:
 
@@ -377,6 +325,90 @@ func _evidence(eid: String, title: String, body: String, kind: String, section: 
 	})
 
 	GameState.player_progress_knowledge["journal_notes"] = notes
+	GameState.player_progress_knowledge["journal_unlocked"] = true
 
 	EchoManager.journal_updated.emit()
+
+func _open_mirror_choice() -> void:
+	_choice_layer = CanvasLayer.new()
+	_choice_layer.layer = 26
+	get_tree().current_scene.add_child(_choice_layer)
+	var panel := PanelContainer.new()
+	panel.position = Vector2(100, 125)
+	panel.size = Vector2(440, 110)
+	_choice_layer.add_child(panel)
+	var box := VBoxContainer.new()
+	panel.add_child(box)
+	var label := Label.new()
+	label.text = "Aynada çiçek solda. Gerçek kapı hangisi?"
+	box.add_child(label)
+	var row := HBoxContainer.new()
+	box.add_child(row)
+	for option in ["Soldaki kapı", "Sağdaki kapı", "Geri dön"]:
+		var button := Button.new()
+		button.text = option
+		button.custom_minimum_size = Vector2(130, 36)
+		row.add_child(button)
+		button.pressed.connect(_answer_mirror.bind(option))
+	UiGate.set_story(true)
+
+func _answer_mirror(option: String) -> void:
+	if not is_instance_valid(_choice_layer):
+		return
+	_choice_layer.queue_free()
+	_choice_layer = null
+	UiGate.set_story(false)
+	if option == "Sağdaki kapı":
+		PuzzleManager.mark_solved(&"mirrors_reverse")
+		SaveManager.save_game()
+		DialogueManager.say("Shiren", "Yansımanın değil, gerçeğin yolunu seçtim. Sağdaki geçit açıldı.")
+	elif option == "Soldaki kapı":
+		DialogueManager.say("Shilda", "Aynada sol, gerçekte sağ olur. Canın yanmadı. Yeniden inceleyebilirsin.")
+
+func _build_relay() -> void:
+	var relay := Area2D.new()
+	relay.name = "SecondRelay"
+	relay.set_script(load("res://scripts/world/mirror_relay.gd"))
+	relay.set("source", self)
+	relay.position = Vector2(190, 0)
+	add_child(relay)
+	var collider := CollisionShape2D.new()
+	var rect := RectangleShape2D.new()
+	rect.size = Vector2(38, 48)
+	collider.shape = rect
+	relay.add_child(collider)
+	var sprite := Sprite2D.new()
+	sprite.texture = load("res://assets/props/crystal.png")
+	sprite.scale = Vector2(0.6, 0.6)
+	relay.add_child(sprite)
+	_relay_label = Label.new()
+	_relay_label.position = Vector2(-70, -66)
+	_relay_label.text = "İkinci anahtar"
+	_relay_label.add_theme_font_size_override("font_size", 10)
+	relay.add_child(_relay_label)
+
+func _process(delta: float) -> void:
+	if beat_id != &"mirrors_dual" or _relay_seconds <= 0:
+		return
+	if RoomManager.get_active_room_id() != &"mirrors_dual":
+		_relay_seconds = 0
+		return
+	if UiGate.pauses_world_threats():
+		return
+	_relay_seconds = maxf(0, _relay_seconds - delta)
+	_relay_label.text = "E: birleştir · %.1f" % _relay_seconds
+	if _relay_seconds == 0:
+		_relay_label.text = "Süre doldu. Sola dön."
+
+func finish_relay() -> void:
+	if PuzzleManager.is_solved(&"mirrors_dual"):
+		return
+	if _relay_seconds <= 0:
+		DialogueManager.say("Shiren", "Önce soldaki mühürde yankıyı başlatmalıyım.")
+		return
+	_relay_seconds = 0
+	_relay_label.text = "İki iz birleşti"
+	PuzzleManager.mark_solved(&"mirrors_dual")
+	SaveManager.save_game()
+	DialogueManager.say("Shiren", "Yankım geçmişi tuttu; ben yeni bir adım attım. Sağdaki geçit açıldı.")
 

@@ -1,0 +1,88 @@
+{
+  "dialogue": {
+    "source": "assets/panels/dialogue.png",
+    "dimensions": [
+      320,
+      180
+    ],
+    "alpha_threshold": 8,
+    "all_alpha_bounds_exclusive": [
+      62,
+      3,
+      257,
+      177
+    ],
+    "components": [
+      {
+        "pixels": 16964,
+        "bounds_exclusive": [
+          62,
+          3,
+          257,
+          115
+        ]
+      },
+      {
+        "pixels": 1860,
+        "bounds_exclusive": [
+          86,
+          149,
+          234,
+          177
+        ]
+      }
+    ]
+  },
+  "journal": {
+    "source": "assets/panels/journal.png",
+    "dimensions": [
+      320,
+      180
+    ],
+    "alpha_threshold": 8,
+    "all_alpha_bounds_exclusive": [
+      64,
+      3,
+      255,
+      177
+    ],
+    "components": [
+      {
+        "pixels": 22159,
+        "bounds_exclusive": [
+          64,
+          3,
+          255,
+          129
+        ]
+      },
+      {
+        "pixels": 1139,
+        "bounds_exclusive": [
+          108,
+          151,
+          206,
+          177
+        ]
+      },
+      {
+        "pixels": 54,
+        "bounds_exclusive": [
+          83,
+          173,
+          98,
+          177
+        ]
+      },
+      {
+        "pixels": 53,
+        "bounds_exclusive": [
+          216,
+          173,
+          230,
+          177
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,30 @@
+{
+	"case": "baseline",
+	"engine": "4.7.2-stable (official)",
+	"headless": true,
+	"results": [
+		{
+			"evidence": {
+				"rooms": 2,
+				"user_data": "C:/Users/Osman/AppData/Roaming/Godot/app_userdata/TorimonReview_20261106_Isolated"
+			},
+			"id": "boot_two_rooms",
+			"passed": true
+		},
+		{
+			"evidence": {
+				"distance_px": 45.8332366943359,
+				"seconds": 0.4
+			},
+			"id": "horizontal_movement",
+			"passed": true
+		},
+		{
+			"evidence": {
+				"A_bound_to_left": false
+			},
+			"id": "documented_wasd_binding",
+			"passed": false
+		}
+	]
+}

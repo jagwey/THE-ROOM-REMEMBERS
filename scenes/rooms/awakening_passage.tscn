@@ -1,0 +1,585 @@
+[gd_scene load_steps=19 format=3 uid="uid://torimon_awakening_passage"]
+
+[ext_resource type="Texture2D" path="res://assets/backgrounds/decay/far.png" id="1"]
+[ext_resource type="Texture2D" path="res://assets/backgrounds/decay/mid.png" id="2"]
+[ext_resource type="Texture2D" path="res://assets/backgrounds/decay/front.png" id="3"]
+[ext_resource type="Script" path="res://scripts/world/room_root.gd" id="4"]
+[ext_resource type="Script" path="res://scripts/world/room_transition.gd" id="5"]
+[ext_resource type="Script" path="res://scripts/world/memory_hazard.gd" id="6"]
+[ext_resource type="Script" path="res://scripts/world/echo_interactable.gd" id="7"]
+[ext_resource type="Texture2D" path="res://assets/layers/column.png" id="8"]
+[ext_resource type="Texture2D" path="res://assets/layers/rubble.png" id="9"]
+[ext_resource type="Texture2D" path="res://assets/layers/vines.png" id="10"]
+[ext_resource type="Texture2D" path="res://assets/layers/candlestick.png" id="11"]
+[ext_resource type="Texture2D" path="res://assets/layers/books.png" id="12"]
+[ext_resource type="Texture2D" path="res://assets/layers/flowers.png" id="13"]
+
+[ext_resource type="Texture2D" path="res://assets/tiles/tile_00.png" id="walk_tile"]
+
+[sub_resource type="RectangleShape2D" id="Floor"]
+size = Vector2(1960, 48)
+
+[sub_resource type="RectangleShape2D" id="Wall"]
+size = Vector2(40, 400)
+
+[sub_resource type="RectangleShape2D" id="TransitionHit"]
+size = Vector2(40, 96)
+
+[sub_resource type="RectangleShape2D" id="HazardShape"]
+size = Vector2(18, 28)
+
+[node name="AwakeningPassage" type="Node2D"]
+script = ExtResource("4")
+room_id = &"awakening_passage"
+region_id = &"awakening"
+bounds = Rect2(0, 0, 1920, 360)
+checkpoint = Vector2(700, 288)
+checkpoint_room = &"awakening_passage"
+atmosphere_bg = "res://assets/backgrounds/decay"
+
+[node name="Spawns" type="Node2D" parent="."]
+
+[node name="default" type="Marker2D" parent="Spawns"]
+position = Vector2(80, 288)
+
+[node name="from_awakening" type="Marker2D" parent="Spawns"]
+position = Vector2(80, 288)
+
+[node name="from_seal" type="Marker2D" parent="Spawns"]
+position = Vector2(1840, 288)
+
+[node name="ParallaxFar" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.15, 0.15)
+repeat_size = Vector2(1920, 360)
+
+[node name="FarA" type="Sprite2D" parent="ParallaxFar"]
+texture_filter = 0
+texture = ExtResource("1")
+centered = false
+position = Vector2(0, 0)
+
+[node name="FarB" type="Sprite2D" parent="ParallaxFar"]
+texture_filter = 0
+texture = ExtResource("1")
+centered = false
+position = Vector2(640, 0)
+
+[node name="FarC" type="Sprite2D" parent="ParallaxFar"]
+texture_filter = 0
+texture = ExtResource("1")
+centered = false
+position = Vector2(1280, 0)
+
+[node name="ParallaxMid" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.45, 0.45)
+repeat_size = Vector2(1920, 360)
+
+[node name="MidA" type="Sprite2D" parent="ParallaxMid"]
+texture_filter = 0
+texture = ExtResource("2")
+centered = false
+position = Vector2(0, 0)
+
+[node name="MidB" type="Sprite2D" parent="ParallaxMid"]
+texture_filter = 0
+texture = ExtResource("2")
+centered = false
+position = Vector2(640, 0)
+
+[node name="MidC" type="Sprite2D" parent="ParallaxMid"]
+texture_filter = 0
+texture = ExtResource("2")
+centered = false
+position = Vector2(1280, 0)
+
+[node name="ParallaxFront" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.85, 0.85)
+repeat_size = Vector2(1920, 360)
+
+[node name="FrontA" type="Sprite2D" parent="ParallaxFront"]
+texture_filter = 0
+texture = ExtResource("3")
+centered = false
+position = Vector2(0, 0)
+
+[node name="FrontB" type="Sprite2D" parent="ParallaxFront"]
+texture_filter = 0
+texture = ExtResource("3")
+centered = false
+position = Vector2(640, 0)
+
+[node name="FrontC" type="Sprite2D" parent="ParallaxFront"]
+texture_filter = 0
+texture = ExtResource("3")
+centered = false
+position = Vector2(1280, 0)
+
+[node name="Decor" type="Node2D" parent="."]
+z_index = 1
+
+[node name="Column1" type="Sprite2D" parent="Decor"]
+texture_filter = 0
+position = Vector2(220, 240)
+texture = ExtResource("8")
+centered = true
+modulate = Color(0.78, 0.72, 0.8, 0.88)
+
+[node name="Column2" type="Sprite2D" parent="Decor"]
+texture_filter = 0
+position = Vector2(960, 232)
+texture = ExtResource("8")
+centered = true
+modulate = Color(0.75, 0.7, 0.78, 0.85)
+
+[node name="Column3" type="Sprite2D" parent="Decor"]
+texture_filter = 0
+position = Vector2(1700, 238)
+texture = ExtResource("8")
+centered = true
+modulate = Color(0.8, 0.74, 0.82, 0.82)
+
+[node name="VinesL" type="Sprite2D" parent="Decor"]
+texture_filter = 0
+position = Vector2(140, 190)
+texture = ExtResource("10")
+centered = true
+modulate = Color(0.65, 0.58, 0.7, 0.72)
+
+[node name="VinesR" type="Sprite2D" parent="Decor"]
+texture_filter = 0
+position = Vector2(1780, 188)
+texture = ExtResource("10")
+centered = true
+flip_h = true
+modulate = Color(0.65, 0.58, 0.7, 0.68)
+
+[node name="Candlestick" type="Sprite2D" parent="Decor"]
+texture_filter = 0
+position = Vector2(520, 268)
+texture = ExtResource("11")
+centered = true
+
+[node name="Books" type="Sprite2D" parent="Decor"]
+texture_filter = 0
+position = Vector2(1180, 288)
+texture = ExtResource("12")
+centered = true
+modulate = Color(0.88, 0.82, 0.86, 0.9)
+
+[node name="Rubble" type="Sprite2D" parent="Decor"]
+texture_filter = 0
+position = Vector2(1460, 298)
+texture = ExtResource("9")
+centered = true
+modulate = Color(0.78, 0.72, 0.76, 0.88)
+
+[node name="Flowers" type="Sprite2D" parent="Decor"]
+texture_filter = 0
+position = Vector2(760, 284)
+texture = ExtResource("13")
+centered = true
+modulate = Color(0.92, 0.78, 0.82, 0.75)
+
+[node name="Interactive" type="Node2D" parent="."]
+
+[node name="ExitToAwakening" type="Area2D" parent="Interactive"]
+position = Vector2(36, 270)
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+monitorable = true
+script = ExtResource("5")
+target_room_id = &"awakening"
+target_spawn_id = &"from_passage"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ExitToAwakening"]
+shape = SubResource("TransitionHit")
+
+[node name="ExitToSeal" type="Area2D" parent="Interactive"]
+position = Vector2(1896, 270)
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+monitorable = true
+script = ExtResource("5")
+target_room_id = &"awakening_seal"
+target_spawn_id = &"from_passage"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ExitToSeal"]
+shape = SubResource("TransitionHit")
+
+[node name="RiftEchoStone" type="Area2D" parent="Interactive"]
+position = Vector2(420, 272)
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+monitorable = true
+script = ExtResource("7")
+echo_id = &"awakening_rift_echo"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/RiftEchoStone"]
+shape = SubResource("TransitionHit")
+
+[node name="Hazards" type="Node2D" parent="."]
+
+[node name="MemoryStrip" type="Area2D" parent="Hazards"]
+position = Vector2(1200, 198)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("6")
+hazard_id = &"passage_rift_strip"
+arm_requires_mystery = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hazards/MemoryStrip"]
+shape = SubResource("HazardShape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Hazards/MemoryStrip"]
+texture_filter = 0
+modulate = Color(0.7, 0.2, 0.28, 0.45)
+centered = true
+
+[node name="SidePathLabel" type="Label" parent="Hazards/MemoryStrip"]
+offset_left = -86.0
+offset_top = 68.0
+offset_right = 86.0
+offset_bottom = 92.0
+theme_override_font_sizes/font_size = 9
+theme_override_colors/font_color = Color(0.92, 0.78, 0.72, 0.75)
+theme_override_colors/font_outline_color = Color(0.08, 0.05, 0.1, 1)
+theme_override_constants/outline_size = 2
+horizontal_alignment = 1
+text = "Yan geçit · zeminden yürü"
+mouse_filter = 2
+
+[node name="Corpse" type="Node2D" parent="." groups=["corpses_root"]]
+
+[node name="Floor" type="StaticBody2D" parent="."]
+position = Vector2(960, 312)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
+shape = SubResource("Floor")
+
+[node name="LeftWall" type="StaticBody2D" parent="."]
+position = Vector2(-16, 180)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LeftWall"]
+shape = SubResource("Wall")
+
+[node name="RightWall" type="StaticBody2D" parent="."]
+position = Vector2(1936, 180)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RightWall"]
+shape = SubResource("Wall")
+
+[node name="WalkableTerrain" type="Node2D" parent="."]
+z_index = 2
+
+[node name="Stone0" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(0, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone32" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(32, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone64" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(64, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone96" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(96, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone128" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(128, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone160" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(160, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone192" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(192, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone224" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(224, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone256" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(256, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone288" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(288, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone320" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(320, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone352" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(352, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone384" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(384, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone416" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(416, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone448" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(448, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone480" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(480, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone512" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(512, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone544" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(544, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone576" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(576, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone608" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(608, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone640" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(640, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone672" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(672, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone704" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(704, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone736" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(736, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone768" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(768, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone800" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(800, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone832" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(832, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone864" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(864, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone896" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(896, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone928" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(928, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone960" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(960, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone992" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(992, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone1024" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(1024, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone1056" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(1056, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone1088" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(1088, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone1120" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(1120, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone1152" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(1152, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone1184" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(1184, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone1216" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(1216, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone1248" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(1248, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone1280" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(1280, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone1312" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(1312, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone1344" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(1344, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone1376" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(1376, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone1408" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(1408, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone1440" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(1440, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone1472" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(1472, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone1504" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(1504, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone1536" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(1536, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone1568" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(1568, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone1600" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(1600, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone1632" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(1632, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone1664" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(1664, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone1696" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(1696, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone1728" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(1728, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone1760" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(1760, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone1792" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(1792, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone1824" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(1824, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone1856" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(1856, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Stone1888" type="Sprite2D" parent="WalkableTerrain"]
+position = Vector2(1888, 288)
+texture = ExtResource("walk_tile")
+centered = false
+
+[node name="Foundation" type="Polygon2D" parent="WalkableTerrain"]
+polygon = PackedVector2Array(0, 320, 1920, 320, 1920, 360, 0, 360)
+color = Color(0.08, 0.06, 0.1, 1)

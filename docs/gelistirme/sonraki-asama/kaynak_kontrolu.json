@@ -1,0 +1,5 @@
+{
+  "checked": 44,
+  "changed": [],
+  "scope": "project.godot + scripts/*.gd + scenes/*.tscn; documentation excluded"
+}

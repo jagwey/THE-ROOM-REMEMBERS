@@ -1,0 +1,173 @@
+{
+	"checks": 20,
+	"engine": "4.7.2-stable (official)",
+	"failed": 4,
+	"headless": true,
+	"notes": {
+		"implemented_rooms": [
+			"awakening",
+			"core"
+		],
+		"same_size_room_camera": {
+			"after": "(320.0, 180.0)",
+			"before": "(320.0, 180.0)",
+			"bounds": "[P: (0.0, 0.0), S: (640.0, 360.0)]",
+			"explanation": "room equals viewport; clamped center stays fixed"
+		}
+	},
+	"passed": 16,
+	"results": [
+		{
+			"evidence": {
+				"engine": "4.7.2-stable (official)",
+				"viewport": "[P: (0.0, 0.0), S: (640.0, 360.0)]"
+			},
+			"id": "startup_scene_loaded",
+			"passed": true
+		},
+		{
+			"evidence": {
+				"auto_disabled": true
+			},
+			"id": "manual_dialogue_stays_open",
+			"passed": true
+		},
+		{
+			"evidence": {
+				"layer": 1
+			},
+			"id": "story_blocks_input",
+			"passed": true
+		},
+		{
+			"evidence": {
+				"pauses_world_threats": false
+			},
+			"id": "story_pauses_threats",
+			"passed": false
+		},
+		{
+			"evidence": {
+				"delta": "(0.0, 0.0)",
+				"state": "idle"
+			},
+			"id": "story_player_locked",
+			"passed": true
+		},
+		{
+			"evidence": {
+				"can_process": true,
+				"is_playing": true
+			},
+			"id": "story_sprite_processes",
+			"passed": true
+		},
+		{
+			"evidence": {
+				"visible": false
+			},
+			"id": "cancel_closes_hud",
+			"passed": true
+		},
+		{
+			"evidence": {
+				"chars": 2450,
+				"pages": 15,
+				"panel": "[P: (100.0, 48.0), S: (440.0, 148.0)]",
+				"text": "[P: (122.0, 82.0), S: (396.0, 79.0)]"
+			},
+			"id": "long_page_fits_panel",
+			"passed": true
+		},
+		{
+			"evidence": {
+				"note": "existing helper ignores whitespace; not exact source equality"
+			},
+			"id": "pagination_retains_nonwhitespace",
+			"passed": true
+		},
+		{
+			"evidence": {
+				"tree_paused": true
+			},
+			"id": "journal_blocks_gameplay",
+			"passed": true
+		},
+		{
+			"evidence": {
+				"can_process": false,
+				"tree_paused": true
+			},
+			"id": "journal_visual_animation_processes",
+			"passed": false
+		},
+		{
+			"evidence": {
+				"close": "[P: (382.0, 240.0), S: (76.0, 28.0)]",
+				"scroll": "[P: (182.0, 136.0), S: (130.0, 132.0)]"
+			},
+			"id": "journal_body_close_separate",
+			"passed": true
+		},
+		{
+			"evidence": {
+				"layer": 1
+			},
+			"id": "nested_journal_preserves_story_lock",
+			"passed": true
+		},
+		{
+			"evidence": {
+				"camera": "(975.2975, 180.0)",
+				"fixture_bounds": "1920x360; player teleported; not natural room"
+			},
+			"id": "camera_follows_in_wide_fixture",
+			"passed": true
+		},
+		{
+			"evidence": {
+				"loaded": true,
+				"note": "same-process roundtrip in isolated user data; not startup continuation"
+			},
+			"id": "save_roundtrip_and_puzzle_sync",
+			"passed": true
+		},
+		{
+			"evidence": {
+				"fixture": "corpse spawned near plate; proximity detection fixture; natural pushing not tested"
+			},
+			"id": "plate_accepts_nearby_corpse_fixture",
+			"passed": true
+		},
+		{
+			"evidence": {
+				"parent": "/root/Main/World/Core/Corpse"
+			},
+			"id": "corpse_in_active_core",
+			"passed": true
+		},
+		{
+			"evidence": {
+				"note": "intro dialogue cancelled through manager",
+				"pad_visible": true
+			},
+			"id": "cancel_intro_does_not_open_seal_pad",
+			"passed": false
+		},
+		{
+			"evidence": {
+				"solved_after_cancel": true
+			},
+			"id": "cancel_success_line_does_not_solve",
+			"passed": false
+		},
+		{
+			"evidence": {
+				"fixture": "direct callback, not OS touch dispatch",
+				"index": 1
+			},
+			"id": "ending_touch_callback_advances",
+			"passed": true
+		}
+	]
+}

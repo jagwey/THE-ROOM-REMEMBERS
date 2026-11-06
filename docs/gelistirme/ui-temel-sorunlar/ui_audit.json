@@ -1,0 +1,317 @@
+{
+	"engine": "4.7.2-stable (official)",
+	"headless": true,
+	"results": [
+		{
+			"evidence": {
+				"body": {
+					"clip": true,
+					"h": 134.0,
+					"minimum": "(1.0, 0.0)",
+					"w": 336.0,
+					"x": 144.0,
+					"y": 116.0
+				},
+				"book_rect": "[P: (200.0, 51.25), S: (238.75, 157.5)]",
+				"close": {
+					"clip": false,
+					"h": 28.0,
+					"minimum": "(39.0, 24.0)",
+					"w": 80.0,
+					"x": 400.0,
+					"y": 240.0
+				},
+				"title": {
+					"clip": false,
+					"h": 20.0,
+					"minimum": "(49.0, 20.0)",
+					"w": 256.0,
+					"x": 144.0,
+					"y": 56.0
+				}
+			},
+			"id": "journal_widgets_within_book_art",
+			"passed": false
+		},
+		{
+			"evidence": {
+				"intersection": "[P: (400.0, 240.0), S: (80.0, 10.0)]"
+			},
+			"id": "journal_body_close_no_overlap",
+			"passed": false
+		},
+		{
+			"evidence": {
+				"dash": {
+					"clip": false,
+					"h": 76.0,
+					"minimum": "(0.0, 0.0)",
+					"w": 76.0,
+					"x": 452.0,
+					"y": 240.0
+				},
+				"dialogue": {
+					"clip": false,
+					"h": 104.0,
+					"minimum": "(32.0, 32.0)",
+					"w": 512.0,
+					"x": 64.0,
+					"y": 236.0
+				},
+				"interact": {
+					"clip": false,
+					"h": 76.0,
+					"minimum": "(0.0, 0.0)",
+					"w": 76.0,
+					"x": 536.0,
+					"y": 276.0
+				},
+				"joystick": {
+					"clip": false,
+					"h": 80.0,
+					"minimum": "(0.0, 0.0)",
+					"w": 80.0,
+					"x": 12.0,
+					"y": 232.0
+				}
+			},
+			"id": "dialogue_avoids_controls",
+			"passed": false
+		},
+		{
+			"evidence": {
+				"characters": 1248,
+				"line_count": 15,
+				"max_lines_visible": -1,
+				"panel": {
+					"clip": false,
+					"h": 104.0,
+					"minimum": "(32.0, 32.0)",
+					"w": 512.0,
+					"x": 64.0,
+					"y": 236.0
+				},
+				"text": {
+					"clip": false,
+					"h": 297.0,
+					"minimum": "(1.0, 297.0)",
+					"w": 472.0,
+					"x": 82.0,
+					"y": 270.0
+				}
+			},
+			"id": "long_dialogue_stays_in_panel",
+			"passed": false
+		},
+		{
+			"evidence": {
+				"panel": {
+					"clip": false,
+					"h": 104.0,
+					"minimum": "(32.0, 32.0)",
+					"w": 512.0,
+					"x": 64.0,
+					"y": 236.0
+				},
+				"speaker": {
+					"clip": false,
+					"h": 22.0,
+					"minimum": "(257.0, 18.0)",
+					"w": 257.0,
+					"x": 82.0,
+					"y": 246.0
+				}
+			},
+			"id": "speaker_stays_in_panel",
+			"passed": true
+		},
+		{
+			"evidence": {
+				"delta_x": 21.9999694824219,
+				"journal_visible": true
+			},
+			"id": "journal_blocks_movement",
+			"passed": false
+		},
+		{
+			"evidence": {
+				"attack_monitoring": true,
+				"state": "attack"
+			},
+			"id": "journal_blocks_attack",
+			"passed": false
+		},
+		{
+			"evidence": {
+				"joy_active": false,
+				"move_vector": "(0.0, 0.0)",
+				"touch_id": -1
+			},
+			"id": "journal_blocks_global_joystick_input",
+			"passed": true
+		},
+		{
+			"evidence": {
+				"fixture": "HUD._input called directly while journal visible",
+				"joy_active": true,
+				"move_vector": "(0.47619, 0.0)"
+			},
+			"id": "joystick_callback_respects_modal",
+			"passed": false
+		},
+		{
+			"evidence": {
+				"journal_visible": true,
+				"queued_after": 0,
+				"queued_before": 1
+			},
+			"id": "journal_prevents_background_dialogue_advance",
+			"passed": false
+		},
+		{
+			"evidence": {
+				"manager_is_open": false,
+				"panel_visible": true
+			},
+			"id": "dialogue_clear_hides_panel",
+			"passed": false
+		},
+		{
+			"evidence": {
+				"body": {
+					"clip": true,
+					"h": 134.0,
+					"minimum": "(1.0, 0.0)",
+					"w": 336.0,
+					"x": 144.0,
+					"y": 116.0
+				},
+				"fit_content": false,
+				"scroll_active": true
+			},
+			"id": "journal_scroll_enabled",
+			"passed": true
+		},
+		{
+			"evidence": {
+				"dialogue_text": {
+					"clip": false,
+					"h": 58.0,
+					"minimum": "(1.0, 17.0)",
+					"w": 472.0,
+					"x": 82.0,
+					"y": 270.0
+				},
+				"note": "geometry only; concurrence depends on gameplay events",
+				"whisper": {
+					"clip": false,
+					"h": 28.0,
+					"minimum": "(1.0, 16.0)",
+					"w": 320.0,
+					"x": 160.0,
+					"y": 280.0
+				}
+			},
+			"id": "curse_whisper_has_separate_text_region",
+			"passed": false
+		},
+		{
+			"evidence": {
+				"fixture": "synthetic insets L16 T8 R48 B12",
+				"interact": {
+					"clip": false,
+					"h": 76.0,
+					"minimum": "(0.0, 0.0)",
+					"w": 76.0,
+					"x": 552.0,
+					"y": 284.0
+				},
+				"journal_button": {
+					"clip": false,
+					"h": 68.0,
+					"minimum": "(0.0, 0.0)",
+					"w": 68.0,
+					"x": 576.0,
+					"y": 16.0
+				},
+				"safe_area": {
+					"clip": false,
+					"h": 340.0,
+					"minimum": "(0.0, 0.0)",
+					"w": 576.0,
+					"x": 16.0,
+					"y": 8.0
+				}
+			},
+			"id": "buttons_follow_safe_area_insets",
+			"passed": false
+		}
+	],
+	"snapshots": {
+		"dialogue": {
+			"clip": false,
+			"h": 104.0,
+			"minimum": "(32.0, 32.0)",
+			"w": 512.0,
+			"x": 64.0,
+			"y": 236.0
+		},
+		"journal_body": {
+			"clip": true,
+			"h": 134.0,
+			"minimum": "(1.0, 0.0)",
+			"w": 336.0,
+			"x": 144.0,
+			"y": 116.0
+		},
+		"journal_close": {
+			"clip": false,
+			"h": 28.0,
+			"minimum": "(39.0, 24.0)",
+			"w": 80.0,
+			"x": 400.0,
+			"y": 240.0
+		},
+		"journal_panel": {
+			"clip": false,
+			"h": 240.0,
+			"minimum": "(0.0, 0.0)",
+			"w": 400.0,
+			"x": 120.0,
+			"y": 40.0
+		},
+		"journal_title": {
+			"clip": false,
+			"h": 20.0,
+			"minimum": "(49.0, 20.0)",
+			"w": 256.0,
+			"x": 144.0,
+			"y": 56.0
+		},
+		"safe_area": {
+			"clip": false,
+			"h": 360.0,
+			"minimum": "(0.0, 0.0)",
+			"w": 640.0,
+			"x": 0.0,
+			"y": 0.0
+		},
+		"speaker": {
+			"clip": false,
+			"h": 22.0,
+			"minimum": "(18.0, 18.0)",
+			"w": 222.0,
+			"x": 82.0,
+			"y": 246.0
+		},
+		"text": {
+			"clip": false,
+			"h": 58.0,
+			"minimum": "(1.0, 17.0)",
+			"w": 472.0,
+			"x": 82.0,
+			"y": 270.0
+		},
+		"viewport": "[P: (0.0, 0.0), S: (640.0, 360.0)]"
+	}
+}

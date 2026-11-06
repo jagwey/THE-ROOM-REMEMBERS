@@ -245,8 +245,14 @@ func mourn_corpse(death_pos: Vector2, corpse_id: String) -> void:
 	else:
 		GameState.world_memory_state["flowers_left"] = int(GameState.world_memory_state["flowers_left"]) + 1
 	_show_hint("…çiçek")
-	await DialogueManager.dialogue_closed
-	await get_tree().create_timer(0.45).timeout
+	## Smoke/headless: diyalog kilitlenmesin
+	if OS.get_environment("TORIMON_SMOKE") == "1" or DisplayServer.get_name() == "headless":
+		await get_tree().create_timer(0.15).timeout
+		if DialogueManager.is_open:
+			DialogueManager.clear()
+	else:
+		await DialogueManager.dialogue_closed
+	await get_tree().create_timer(0.25).timeout
 	global_position = home_position
 	set_mode(Mode.OBSERVE)
 	hint.visible = false
@@ -309,9 +315,9 @@ func on_interact(_by: Node) -> void:
 	var st: Dictionary = EndingManager.prep_status()
 	if st["weight"] and st["code"] and st["echo"] and not st["trusted"]:
 		DialogueManager.say("Bekçi", "Bana… güvenebilir misin?")
-		DialogueManager.say("Sen", "…Güveniyorum.")
+		DialogueManager.say("Shiren", "…Güveniyorum.")
 		DialogueManager.say("Bekçi", "O zaman Çekirdek'e git. Birlikte mühürleyelim.")
-		await DialogueManager.dialogue_closed
+		await _await_dialogue_or_smoke()
 		GameState.player_progress_knowledge["trusted_keeper"] = true
 		set_mode(Mode.INTIMACY)
 		SaveManager.save_game()
@@ -348,21 +354,20 @@ func receive_player_strike() -> void:
 	var in_core := String(GameState.character_current_life_knowledge.get("room", "")).begins_with("core")
 	if _strikes == 1:
 		DialogueManager.say("Bekçi", "Bunu… yapma.")
-		await DialogueManager.dialogue_closed
+		await _await_dialogue_or_smoke()
 		return
 	if _strikes == 2:
 		DialogueManager.say("Bekçi", "Lütfen. Ben düşmanın değilim.")
-		await DialogueManager.dialogue_closed
+		await _await_dialogue_or_smoke()
 		GameState.player_progress_knowledge["trusted_keeper"] = false
 		GameState.player_progress_knowledge["keeper_hurt"] = true
 		return
 	if _strikes >= STRIKES_TO_BAD:
-		var smoke := OS.get_environment("TORIMON_SMOKE") == "1"
-		if not in_core and not smoke:
+		if not in_core:
 			## İlk bölgeler: ilişki kırılır; oyun bitmez. Onarım mümkün.
 			DialogueManager.say("Bekçi", "…Yeter.")
 			DialogueManager.say("Bekçi", "Bir gün bunu yeniden sorarsın diye… geri çekiliyorum.")
-			await DialogueManager.dialogue_closed
+			await _await_dialogue_or_smoke()
 			GameState.player_progress_knowledge["trusted_keeper"] = false
 			GameState.player_progress_knowledge["keeper_hurt"] = true
 			GameState.player_progress_knowledge["keeper_withdrew"] = true
@@ -372,6 +377,15 @@ func receive_player_strike() -> void:
 			SaveManager.save_game()
 			return
 		DialogueManager.say("Bekçi", "…Öyle olsun.")
-		await DialogueManager.dialogue_closed
+		await _await_dialogue_or_smoke()
 		modulate = Color(0.4, 0.35, 0.4, 0.6)
 		await EndingManager.trigger(EndingManager.Ending.BAD_KILL_KEEPER)
+
+
+func _await_dialogue_or_smoke() -> void:
+	if OS.get_environment("TORIMON_SMOKE") == "1" or DisplayServer.get_name() == "headless":
+		await get_tree().create_timer(0.1).timeout
+		if DialogueManager.is_open:
+			DialogueManager.clear()
+		return
+	await DialogueManager.dialogue_closed

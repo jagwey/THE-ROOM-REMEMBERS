@@ -1,6 +1,8 @@
 extends Node
 ## Üç hafıza katmanı — karakter ölünce sıfırlanır; dünya/oyuncu kalır.
 
+const CampaignObjectives := preload("res://scripts/story/campaign_objectives.gd")
+
 signal knowledge_changed(layer: StringName)
 signal room_changed(room_id: StringName)
 signal hearts_changed(current: int, maximum: int)
@@ -14,6 +16,8 @@ var player_progress_knowledge: Dictionary = {
 	"deaths": 0,
 	"seen_keeper": false,
 	"awakening_mystery_seen": false,
+	"pocket_watch_seen": false,
+	"shilda_named_partial": false,
 	"first_death_seen": false,
 	"rooms_visited": [],
 	"journal_unlocked": false,
@@ -28,6 +32,7 @@ var character_current_life_knowledge: Dictionary = {
 	"room": &"awakening",
 	"checkpoint": DEFAULT_CHECKPOINT,
 	"checkpoint_room": &"awakening",
+	"spawn_id": &"default",
 	"interacted": [],
 	"dialogue_flags": {},
 	"warned_hazard": false,
@@ -48,10 +53,15 @@ var world_memory_state: Dictionary = {
 		"awakening_crystal_cracked": false,
 		"hazard_rift_seen": false,
 	},
+	## Bulmaca çözümleri — string id -> bool (kalıcı).
+	"puzzles": {},
 }
 
 var hearts: int = MAX_HEARTS
 var max_hearts: int = MAX_HEARTS
+
+## Bu oturumda kayıt yüklendiyse Player._ready varsayılan checkpoint yazmasın.
+var session_loaded_from_save: bool = false
 
 
 func _ready() -> void:
@@ -65,6 +75,7 @@ func reset_character_life() -> void:
 		"room": room,
 		"checkpoint": cp,
 		"checkpoint_room": room,
+		"spawn_id": &"checkpoint",
 		"interacted": [],
 		"dialogue_flags": {},
 		"warned_hazard": false,
@@ -116,3 +127,15 @@ func damage(amount: int = 1) -> void:
 	hearts_changed.emit(hearts, max_hearts)
 	if hearts <= 0:
 		DeathManager.request_death(&"hearts")
+
+
+func get_current_objective() -> String:
+	var rid: String = String(character_current_life_knowledge.get("room", &""))
+	## Uyanış: kısa adım adım; diğer odalar: CampaignObjectives (HUD tek kaynak).
+	if rid == "awakening":
+		if not bool(player_progress_knowledge.get("pocket_watch_seen", false)):
+			return "Saata bak · plakaya bas · sağdaki geçide git"
+		if not PuzzleManager.is_solved(&"awakening_weight"):
+			return "Plakaya bas · kapı açılsın · Kırık Geçit'e git"
+		return "Kırık Geçit'ten ilerle; yarıklara dikkat et."
+	return CampaignObjectives.get_objective(rid)

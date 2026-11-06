@@ -2,7 +2,7 @@
 ## Hafiza devresi — kayitli echo rotasi (script) + oyuncu anahtari. UiGate modalda zaman durur.
 
 const ECHO_SECONDS := 2.2
-const PLAYER_WINDOW := 3.5
+const PLAYER_WINDOW := 8.0
 
 var _running: bool = false
 var _echo_phase: bool = false
@@ -18,7 +18,7 @@ var _silhouette: ColorRect
 
 func _ready() -> void:
 	layer = 24
-	visible = true
+	visible = false
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_build_ui()
 
@@ -32,24 +32,24 @@ func _build_ui() -> void:
 	var v := VBoxContainer.new()
 	panel.add_child(v)
 	_status = Label.new()
-	_status.text = "Kayitli rota: baslat"
+	_status.text = "Yankıyı başlat. Işık yanınca kendi devreni aç."
 	v.add_child(_status)
 	var row := HBoxContainer.new()
 	v.add_child(row)
 	_b_start = Button.new()
-	_b_start.text = "Baslat"
+	_b_start.text = "Yankıyı başlat"
 	_b_start.pressed.connect(_on_start)
 	row.add_child(_b_start)
 	_b_stop = Button.new()
-	_b_stop.text = "Dur"
+	_b_stop.text = "Durdur"
 	_b_stop.pressed.connect(_on_stop)
 	row.add_child(_b_stop)
 	_b_reset = Button.new()
-	_b_reset.text = "Sifirla"
+	_b_reset.text = "Sıfırla"
 	_b_reset.pressed.connect(_on_reset)
 	row.add_child(_b_reset)
 	_b_player = Button.new()
-	_b_player.text = "Oyuncu devresi"
+	_b_player.text = "Devremi aç"
 	_b_player.disabled = true
 	_b_player.pressed.connect(_on_player_circuit)
 	row.add_child(_b_player)
@@ -62,6 +62,11 @@ func _build_ui() -> void:
 
 
 func _process(delta: float) -> void:
+	visible = RoomManager.get_active_room_id() == &"experiment_circuit"
+	if not visible:
+		if _running:
+			_on_stop()
+		return
 	if PuzzleManager.is_solved(&"experiment_circuit"):
 		return
 	if not _running:
@@ -77,15 +82,17 @@ func _process(delta: float) -> void:
 			_echo_phase = false
 			_player_open = true
 			_elapsed = 0.0
-			_status.text = "Simdi oyuncu devresini ac"
+			_status.text = "Yankı plakayı tutuyor! Devremi aç düğmesine bas."
 			_b_player.disabled = false
 	else:
 		if _player_open and _elapsed >= PLAYER_WINDOW:
-			_status.text = "Zaman asimi — sifirla"
 			_on_stop()
+			_status.text = "Pencere kapandı. Ceza yok; yankıyı yeniden başlat."
 
 
 func _on_start() -> void:
+	if RoomManager.get_active_room_id() != &"experiment_circuit" or UiGate.pauses_world_threats():
+		return
 	if PuzzleManager.is_solved(&"experiment_circuit"):
 		return
 	_running = true
@@ -93,7 +100,7 @@ func _on_start() -> void:
 	_player_open = false
 	_elapsed = 0.0
 	_b_player.disabled = true
-	_status.text = "Kayitli rota oynatiliyor..."
+	_status.text = "Hatıra ilk anahtara ilerliyor…"
 	_silhouette.visible = true
 
 
@@ -108,7 +115,7 @@ func _on_stop() -> void:
 
 func _on_reset() -> void:
 	_on_stop()
-	_status.text = "Sifirlandi"
+	_status.text = "Sıfırlandı. Yeniden deneyebilirsin."
 
 
 func _on_player_circuit() -> void:
@@ -118,7 +125,7 @@ func _on_player_circuit() -> void:
 		return
 	PuzzleManager.mark_solved(&"experiment_circuit")
 	_running = false
-	_status.text = "Devre tamam"
+	_status.text = "İki devre birleşti. Sağdaki yetki odası açıldı."
 	_b_player.disabled = true
 	_silhouette.visible = false
 	SaveManager.save_game()

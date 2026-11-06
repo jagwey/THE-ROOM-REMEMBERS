@@ -6,6 +6,8 @@ signal pressed_changed(is_pressed: bool)
 @export var puzzle_id: StringName = &"awakening_weight"
 @export var required_weight: int = 1
 @export var accept_player: bool = false
+## Doğal oturuşta ~1 px kaçırmayı tolere et (ışınlama ile test etme).
+@export var overlap_slack: float = 8.0
 
 var _pressed: bool = false
 
@@ -22,19 +24,50 @@ func _ready() -> void:
 	if has_node("Sprite2D"):
 		$Sprite2D.texture = load("res://assets/props/pressure_plate.png")
 		$Sprite2D.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	# Dünya bayrağı zaten açıksa basılı göster
-	if PuzzleManager.is_solved(puzzle_id) or bool(GameState.get_world_flag(&"awakening_door_opened", false)):
+	# Algı alanını biraz büyüt — doğal itişte tetiklensin
+	var cs := get_node_or_null("CollisionShape2D") as CollisionShape2D
+	if cs and cs.shape is RectangleShape2D:
+		var rect := (cs.shape as RectangleShape2D).duplicate() as RectangleShape2D
+		rect.size = Vector2(maxf(rect.size.x, 48.0), maxf(rect.size.y, 28.0))
+		cs.shape = rect
+	var legacy_awakening := puzzle_id == &"awakening_weight" and bool(GameState.get_world_flag(&"awakening_door_opened", false))
+	if PuzzleManager.is_solved(puzzle_id) or legacy_awakening:
 		_set_pressed(true, false)
 
 
+func _physics_process(_delta: float) -> void:
+	if UiGate.pauses_world_threats():
+		return
+	# Area kaçırırsa mesafe toleransı ile yedek kontrol
+	_recompute()
+
+
 func _recompute() -> void:
+	var seen: Dictionary = {}
 	var total := 0
 	for b in get_overlapping_bodies():
-		if b.is_in_group("corpse") and b.has_method("get_weight"):
-			total += int(b.get_weight())
-		elif accept_player and b.is_in_group("player"):
-			total += 1
+		seen[b] = true
+		total += _weight_of(b)
+	if total < required_weight:
+		# Slack: Area2D ~1 px kaçırırsa yakındaki cesedi de say
+		for c in get_tree().get_nodes_in_group("corpse"):
+			if seen.has(c) or not (c is Node2D):
+				continue
+			var n2 := c as Node2D
+			if absf(global_position.x - n2.global_position.x) <= 30.0 + overlap_slack \
+					and absf(global_position.y - n2.global_position.y) <= 24.0 + overlap_slack:
+				total += _weight_of(c)
 	_set_pressed(total >= required_weight, true)
+
+
+func _weight_of(b: Node) -> int:
+	if b.is_in_group("corpse") and b.has_method("get_weight"):
+		return int(b.get_weight())
+	if b.is_in_group("weight_stone") and b.has_method("get_weight"):
+		return int(b.get_weight())
+	if accept_player and b.is_in_group("player"):
+		return 1
+	return 0
 
 
 func _set_pressed(value: bool, emit_solve: bool) -> void:
@@ -45,6 +78,10 @@ func _set_pressed(value: bool, emit_solve: bool) -> void:
 	pressed_changed.emit(_pressed)
 	if _pressed and emit_solve:
 		PuzzleManager.mark_solved(puzzle_id)
-		GameState.set_world_flag(&"awakening_door_opened", true)
-		DialogueManager.say("???", "Bir şey… açıldı.")
+		if puzzle_id == &"awakening_weight":
+			GameState.set_world_flag(&"awakening_door_opened", true)
+			DialogueManager.say("???", "Bir şey… açıldı.")
+		elif puzzle_id == &"decay_weight_latch":
+			GameState.set_world_flag(&"decay_weight_latched", true)
+			DialogueManager.say("???", "Mekanizmaya oturdu.")
 		SaveManager.save_game()

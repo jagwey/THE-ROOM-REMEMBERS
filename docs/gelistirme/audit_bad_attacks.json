@@ -1,0 +1,20 @@
+{
+	"case": "bad_attacks",
+	"engine": "4.7.2-stable (official)",
+	"headless": true,
+	"results": [
+		{
+			"evidence": {
+				"attack_presses": 3,
+				"ending": 1,
+				"fixture": "position + hazard monitoring disabled",
+				"keeper_strikes": 3,
+				"rooms_visited": [
+					"awakening"
+				]
+			},
+			"id": "three_attacks_reach_bad_ending",
+			"passed": true
+		}
+	]
+}

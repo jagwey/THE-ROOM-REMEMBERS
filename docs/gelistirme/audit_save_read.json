@@ -1,0 +1,32 @@
+{
+	"case": "save_read",
+	"engine": "4.7.2-stable (official)",
+	"headless": true,
+	"results": [
+		{
+			"evidence": {
+				"door_open": false,
+				"marker_after_fresh_boot": "MISSING",
+				"save_exists": true
+			},
+			"id": "startup_restores_save",
+			"passed": false
+		},
+		{
+			"evidence": {
+				"loaded": true,
+				"marker": "persist_20261106"
+			},
+			"id": "explicit_load_reads_save",
+			"passed": true
+		},
+		{
+			"evidence": {
+				"puzzle_solved": false,
+				"world_door_open": true
+			},
+			"id": "load_resyncs_puzzle",
+			"passed": false
+		}
+	]
+}

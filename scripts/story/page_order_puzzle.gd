@@ -4,8 +4,9 @@
 const ORDER: Array[String] = ["experiment_started", "door_closed", "seal_engaged"]
 
 var _labels: Array[Label] = []
-var _slots: Array[String] = ["experiment_started", "door_closed", "seal_engaged"]
+var _slots: Array[String] = ["seal_engaged", "experiment_started", "door_closed"]
 var _selected: int = 0
+var _verifying: bool = false
 
 
 func _ready() -> void:
@@ -31,6 +32,11 @@ func _build_ui() -> void:
 	title.text = "Unutulmuş sayfa — sırayı kur"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	v.add_child(title)
+	var clue := Label.new()
+	clue.text = "Saat: deney önce. Çiçek: kapı sonra. Mühür: koruma en son."
+	clue.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	clue.custom_minimum_size.x = 380
+	v.add_child(clue)
 	for i in 3:
 		var lab := Label.new()
 		lab.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -71,10 +77,13 @@ func _build_ui() -> void:
 
 func open_puzzle() -> void:
 	if PuzzleManager.is_solved(&"library_page_order"):
-		DialogueManager.say("Sen", "Sayfa yerinde.")
+		DialogueManager.say("Shiren", "Sayfa yerinde.")
 		return
 	if not has_node("Panel"):
 		_build_ui()
+	if not PuzzleManager.is_solved(&"library_witnesses"):
+		DialogueManager.say("Shiren", "Sayfayı kurmadan önce saat, çiçek ve mührü dinlemeliyim. Sonra ortadaki kaydı karşılaştırmalıyım.")
+		return
 	visible = true
 	UiGate.set_story(true)
 	_sync_labels()
@@ -88,11 +97,11 @@ func _hide_puzzle() -> void:
 func _label_for(id: String) -> String:
 	match id:
 		"experiment_started":
-			return "1) Deney başlatıldı"
+			return "Deney başlatıldı"
 		"door_closed":
-			return "2) Kapı kapatıldı"
+			return "Kapı kapatıldı"
 		"seal_engaged":
-			return "3) Mühür devreye girdi"
+			return "Mühür devreye girdi"
 		_:
 			return id
 
@@ -134,26 +143,37 @@ func _swap_down() -> void:
 
 
 func _on_verify() -> void:
+	if _verifying:
+		return
+	_verifying = true
 	var ok := true
 	for i in ORDER.size():
 		if _slots[i] != ORDER[i]:
 			ok = false
 			break
 	if not ok:
+		visible = false
 		DialogueManager.say("???", "Sıra tutmuyor.")
 		await DialogueManager.dialogue_finished
+		_verifying = false
+		visible = true
+		UiGate.set_story(true)
 		return
 	await _success_flow()
+	_verifying = false
 
 
 func _success_flow() -> void:
-	PuzzleManager.mark_solved(&"library_page_order")
-	GameState.set_world_flag(&"experiment_unlocked", true)
-	DialogueManager.say("Kayıt", "Kaydı sen mi sildin?")
-	DialogueManager.say("Sen", "Hayır. Silmemi sen istedin.")
-	DialogueManager.say("Shilda", "Deney alanı… açıldı.")
+	visible = false
+	UiGate.set_story(false)
+	DialogueManager.say("Shiren", "Kaydı sen mi sildin?")
+	DialogueManager.say("Shilda", "Hayır. Silmemi sen istedin.")
+	DialogueManager.say("Shiren", "O zaman neden sakladın?")
+	DialogueManager.say("Shilda", "Bir gün bunu yeniden sorarsın diye. Deneyin yetki kaydı sağdaki kapının ardında.")
 	var heard: bool = await DialogueManager.dialogue_finished
 	if heard:
+		PuzzleManager.mark_solved(&"library_page_order")
+		GameState.set_world_flag(&"experiment_unlocked", true)
 		_evidence_own_seal()
 		SaveManager.save_game()
 	_hide_puzzle()

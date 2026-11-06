@@ -1,0 +1,17 @@
+{
+	"case": "core_corpse",
+	"engine": "4.7.2-stable (official)",
+	"headless": true,
+	"results": [
+		{
+			"evidence": {
+				"can_process": false,
+				"parent": "/root/Main/World/Awakening/Corpse",
+				"room": "core",
+				"visible": false
+			},
+			"id": "core_corpse_in_active_room",
+			"passed": false
+		}
+	]
+}
