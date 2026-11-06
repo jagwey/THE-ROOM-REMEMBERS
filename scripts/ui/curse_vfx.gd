@@ -15,10 +15,13 @@ var _stagger_cd: float = 0.0
 func _ready() -> void:
 	add_to_group("curse_vfx")
 	layer = 15
-	veil.color = Color(0.32, 0.08, 0.12, 0.0)
+	veil.color = Color(Palette.CRIMSON.r, Palette.CRIMSON.g, Palette.CRIMSON.b, 0.0)
 	halo.texture = load("res://assets/props/halo.png")
 	halo.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	halo.modulate = Color(0.85, 0.2, 0.28, 0.0)
+	halo.modulate = Color(Palette.CRIMSON.r, Palette.CRIMSON.g, Palette.CRIMSON.b, 0.0)
+	whisper_label.add_theme_color_override("font_color", Palette.IVORY)
+	whisper_label.add_theme_color_override("font_outline_color", Palette.VOID)
+	whisper_label.add_theme_constant_override("outline_size", 2)
 	seal.texture = load("res://assets/hud/diamond_selected.png")
 	seal.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	seal.visible = false

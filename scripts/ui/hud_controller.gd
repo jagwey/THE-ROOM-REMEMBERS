@@ -16,18 +16,20 @@ extends CanvasLayer
 var _joy_active: bool = false
 var _joy_touch_index: int = -1
 var _joy_center: Vector2 = Vector2.ZERO
-const JOY_RADIUS := 36.0
+const JOY_RADIUS := 42.0
 var _journal: CanvasLayer
+@onready var safe_area: Control = $SafeArea
 
 
 func _ready() -> void:
+	_apply_safe_area()
 	_setup_textures()
 	_refresh_hearts(GameState.hearts, GameState.max_hearts)
 	GameState.hearts_changed.connect(_refresh_hearts)
 	DialogueManager.line_shown.connect(_on_dialogue_line)
 	DialogueManager.dialogue_closed.connect(_on_dialogue_closed)
 	dialogue_panel.visible = false
-	hint_label.text = "Yürü · Saldır · Dash · Etkileş · J Günlük"
+	hint_label.text = "Yürü · Saldır · Dash · Etkileş · I Günlük"
 	btn_attack.button_down.connect(MobileInputManager.press_attack)
 	btn_attack.button_up.connect(MobileInputManager.release_attack)
 	btn_dash.button_down.connect(MobileInputManager.press_dash)
@@ -37,6 +39,25 @@ func _ready() -> void:
 	btn_journal.pressed.connect(_toggle_journal)
 	_joy_center = joystick_base.position + joystick_base.size * 0.5
 	_journal = get_tree().get_first_node_in_group("journal_ui") as CanvasLayer
+	get_tree().root.size_changed.connect(_apply_safe_area)
+
+
+func _apply_safe_area() -> void:
+	## Notch / gesture çubuğu için kenar boşluğu (viewport uzayı).
+	if safe_area == null:
+		return
+	var safe: Rect2 = DisplayServer.get_display_safe_area()
+	var win: Vector2i = DisplayServer.window_get_size()
+	if win.x <= 0 or win.y <= 0:
+		return
+	var ml := float(safe.position.x) / float(win.x) * 640.0
+	var mt := float(safe.position.y) / float(win.y) * 360.0
+	var mr := (1.0 - float(safe.end.x) / float(win.x)) * 640.0
+	var mb := (1.0 - float(safe.end.y) / float(win.y)) * 360.0
+	safe_area.offset_left = clampf(ml, 0.0, 48.0)
+	safe_area.offset_top = clampf(mt, 0.0, 36.0)
+	safe_area.offset_right = -clampf(mr, 0.0, 48.0)
+	safe_area.offset_bottom = -clampf(mb, 0.0, 36.0)
 
 
 func _setup_textures() -> void:
@@ -65,7 +86,7 @@ func _refresh_hearts(current: int, maximum: int) -> void:
 	for i in range(maximum):
 		var tr := TextureRect.new()
 		tr.texture = full_tex if i < current else empty_tex
-		tr.custom_minimum_size = Vector2(24, 24)
+		tr.custom_minimum_size = Vector2(28, 28)
 		tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		tr.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		hearts_row.add_child(tr)
@@ -80,7 +101,7 @@ func _on_dialogue_line(speaker: String, text: String) -> void:
 
 func _on_dialogue_closed() -> void:
 	dialogue_panel.visible = false
-	hint_label.text = "Yürü · Saldır · Dash · Etkileş · J Günlük"
+	hint_label.text = "Yürü · Saldır · Dash · Etkileş · I Günlük"
 
 
 func _input(event: InputEvent) -> void:

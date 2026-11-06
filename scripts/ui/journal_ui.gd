@@ -20,6 +20,8 @@ func _ready() -> void:
 	layer = 20
 	panel.texture = load("res://assets/panels/journal.png")
 	panel.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	title.add_theme_color_override("font_color", Palette.IVORY)
+	body.add_theme_color_override("default_color", Palette.PALE_LILAC)
 	tab_gunluk.pressed.connect(func(): _show_section("gunluk"))
 	tab_notlar.pressed.connect(func(): _show_section("notlar"))
 	tab_izler.pressed.connect(func(): _show_section("izler"))

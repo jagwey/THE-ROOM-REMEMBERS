@@ -17,91 +17,93 @@ mouse_filter = 2
 
 [node name="Hearts" type="HBoxContainer" parent="SafeArea"]
 layout_mode = 0
-offset_left = 8.0
-offset_top = 8.0
-offset_right = 120.0
-offset_bottom = 36.0
-theme_override_constants/separation = 4
+offset_left = 12.0
+offset_top = 10.0
+offset_right = 140.0
+offset_bottom = 42.0
+theme_override_constants/separation = 6
 
 [node name="Hint" type="Label" parent="SafeArea"]
 layout_mode = 0
-offset_left = 8.0
-offset_top = 40.0
-offset_right = 320.0
-offset_bottom = 58.0
+offset_left = 12.0
+offset_top = 44.0
+offset_right = 400.0
+offset_bottom = 64.0
 theme_override_colors/font_color = Color(0.671, 0.596, 0.663, 1)
-theme_override_font_sizes/font_size = 10
-text = "Yürü · Saldır · Dash · Etkileş · J Günlük"
+theme_override_colors/font_outline_color = Color(0.133, 0.106, 0.153, 1)
+theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 11
+text = "Yürü · Saldır · Dash · Etkileş · I Günlük"
 
 [node name="JournalBtn" type="TextureButton" parent="SafeArea"]
 layout_mode = 0
-offset_left = 576.0
+offset_left = 560.0
 offset_top = 8.0
-offset_right = 624.0
-offset_bottom = 56.0
+offset_right = 628.0
+offset_bottom = 76.0
 ignore_texture_size = true
 stretch_mode = 5
 texture_filter = 0
 
 [node name="Joystick" type="Control" parent="SafeArea"]
 layout_mode = 0
-offset_left = 16.0
-offset_top = 250.0
-offset_right = 112.0
-offset_bottom = 346.0
+offset_left = 12.0
+offset_top = 232.0
+offset_right = 116.0
+offset_bottom = 336.0
 mouse_filter = 0
 
 [node name="Base" type="TextureRect" parent="SafeArea/Joystick"]
 layout_mode = 0
-offset_right = 64.0
-offset_bottom = 64.0
+offset_right = 80.0
+offset_bottom = 80.0
 expand_mode = 1
 stretch_mode = 5
 texture_filter = 0
 
 [node name="Thumb" type="TextureRect" parent="SafeArea/Joystick"]
 layout_mode = 0
-offset_left = 16.0
-offset_top = 16.0
-offset_right = 48.0
-offset_bottom = 48.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 60.0
+offset_bottom = 60.0
 expand_mode = 1
 stretch_mode = 5
 texture_filter = 0
 
 [node name="Buttons" type="Control" parent="SafeArea"]
 layout_mode = 0
-offset_left = 480.0
-offset_top = 220.0
-offset_right = 630.0
-offset_bottom = 350.0
+offset_left = 448.0
+offset_top = 200.0
+offset_right = 628.0
+offset_bottom = 348.0
 
 [node name="Attack" type="TextureButton" parent="SafeArea/Buttons"]
 layout_mode = 0
-offset_left = 70.0
+offset_left = 88.0
 offset_top = 0.0
-offset_right = 134.0
-offset_bottom = 64.0
+offset_right = 164.0
+offset_bottom = 76.0
 ignore_texture_size = true
 stretch_mode = 5
 texture_filter = 0
 
 [node name="Dash" type="TextureButton" parent="SafeArea/Buttons"]
 layout_mode = 0
-offset_left = 0.0
+offset_left = 4.0
 offset_top = 40.0
-offset_right = 64.0
-offset_bottom = 104.0
+offset_right = 80.0
+offset_bottom = 116.0
 ignore_texture_size = true
 stretch_mode = 5
 texture_filter = 0
 
 [node name="Interact" type="TextureButton" parent="SafeArea/Buttons"]
 layout_mode = 0
-offset_left = 70.0
-offset_top = 70.0
-offset_right = 134.0
-offset_bottom = 134.0
+offset_left = 88.0
+offset_top = 76.0
+offset_right = 164.0
+offset_bottom = 152.0
 ignore_texture_size = true
 stretch_mode = 5
 texture_filter = 0
@@ -109,28 +111,36 @@ texture_filter = 0
 [node name="Dialogue" type="NinePatchRect" parent="SafeArea"]
 visible = false
 layout_mode = 0
-offset_left = 80.0
-offset_top = 250.0
-offset_right = 560.0
+offset_left = 64.0
+offset_top = 236.0
+offset_right = 576.0
 offset_bottom = 340.0
+patch_margin_left = 16
+patch_margin_top = 16
+patch_margin_right = 16
+patch_margin_bottom = 16
 
 [node name="Speaker" type="Label" parent="SafeArea/Dialogue"]
 layout_mode = 0
-offset_left = 12.0
-offset_top = 8.0
-offset_right = 200.0
-offset_bottom = 28.0
+offset_left = 18.0
+offset_top = 10.0
+offset_right = 240.0
+offset_bottom = 32.0
 theme_override_colors/font_color = Color(0.882, 0.827, 0.82, 1)
-theme_override_font_sizes/font_size = 12
+theme_override_colors/font_outline_color = Color(0.133, 0.106, 0.153, 1)
+theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 13
 text = "Bekçi"
 
 [node name="Text" type="Label" parent="SafeArea/Dialogue"]
 layout_mode = 0
-offset_left = 12.0
-offset_top = 30.0
-offset_right = 460.0
-offset_bottom = 80.0
-theme_override_colors/font_color = Color(0.671, 0.596, 0.663, 1)
-theme_override_font_sizes/font_size = 11
+offset_left = 18.0
+offset_top = 34.0
+offset_right = 490.0
+offset_bottom = 92.0
+theme_override_colors/font_color = Color(0.882, 0.827, 0.82, 0.92)
+theme_override_colors/font_outline_color = Color(0.133, 0.106, 0.153, 1)
+theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 12
 autowrap_mode = 3
 text = "…"

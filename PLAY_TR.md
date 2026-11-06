@@ -1,29 +1,44 @@
-# The Room Remembers — Çalıştırma (Godot 4.7 · FAZ 6–7)
+# The Room Remembers — Çalıştırma (Godot 4.7 · FAZ 8)
 
 ## Proje
 
-- `jagwey/THE-ROOM-REMEMBERS` · Godot **4.7** · F5
+- `jagwey/THE-ROOM-REMEMBERS` · Godot **4.7.2** · F5
+- Ana sahne: `scenes/main/main.tscn`
 
 ## Kontroller
 
-Yürü / Z saldır / X dash / E etkileş / **I** günlük · mobil HUD aynı.
+Yürü (WASD/oklar) · **Z/J** saldır · **X/K** dash · **E/F** etkileş · **I/Tab** günlük · mobil HUD aynı (büyük dokunmatik alan + safe-area).
 
-## FAZ 6 — Lanet
+## Dikey dilim (FAZ 1–8)
 
-- Erken **HUD bar yok**; kırmızı veil/halo, fısıltı, stagger.
-- Yasak bölge / çekirdek / Bekçi’ye vuruş laneti yükseltir.
-- ~%55 sonrası küçük mühür göstergesi (sağ üst).
-- **%100** → bu hayat biter, checkpoint; dünya hafızası kalır (full reset yok).
+- Mobil joystick + düğmeler, kalpler (TR)
+- Bekçi: gözlem → uyarı → müdahale (erken öldürme yok)
+- Ölüm / yeniden doğuş + dünya hafızası (ceset ≤3)
+- Yankı + ağırlık / bellek kodu 314 + günlük
+- Lanet: erken HUD bar yok; veil/halo; %100 → hayat biter, dünya kalır
+- Kötü son (Bekçi’ye 3 saldırı) · İyi son (güven + mühür)
+- Parallax Awakening/Core, moodboard paleti, Android debug APK yolu
 
-## FAZ 7 — Sonlar
+## Android debug APK
 
-**Kötü:** Gizem sonrası Bekçi’ye 3 saldırı → epilog (“döngü devam”).  
-**İyi:** Ağırlık + bellek kodu + yankı + Bekçi’ye güven → kapıdan Çekirdek → mühürle (sadece konuşmak yetmez).
+```text
+Godot 4.7.2 → Proje → Dışa Aktar → preset "Android"
+çıktı: build/android/TheRoomRemembers-debug.apk
+```
 
-## Önceki
+Gereksinimler: JDK 17+, Android SDK (`platforms;android-34`, `build-tools;34.0.0`, `platform-tools`), export templates `4.7.2.stable`, debug keystore.
 
-Bekçi uyarı/engel, yarık ölümü, ceset/plaka, günlük duruyor.
+CLI (Windows’ta repo yolu ASCII değilse imza için ASCII çıktı yolu kullan):
 
-## Sonraki
+```powershell
+New-Item -ItemType Directory -Force -Path $env:TEMP\torimon-build | Out-Null
+godot --headless --path . --export-debug "Android" "$env:TEMP\torimon-build\TheRoomRemembers-debug.apk"
+Copy-Item "$env:TEMP\torimon-build\TheRoomRemembers-debug.apk" build\android\ -Force
+```
 
-FAZ 8 — polish / Android APK.
+## Smoke (opsiyonel)
+
+```powershell
+$env:TORIMON_SMOKE="1"
+godot --headless --path . --quit-after 600
+```

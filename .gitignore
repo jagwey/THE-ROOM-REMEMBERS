@@ -1,8 +1,8 @@
 ﻿.godot/
 .import/
 *.translation
-export_presets.cfg
 *.apk
 *.aab
+build/
 .mono/
 data_*/

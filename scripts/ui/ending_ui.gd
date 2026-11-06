@@ -16,6 +16,10 @@ func _ready() -> void:
 	visible = false
 	layer = 30
 	hint.text = "Etkileş: devam"
+	dim.color = Color(Palette.VOID.r, Palette.VOID.g, Palette.VOID.b, 0.82)
+	title.add_theme_color_override("font_color", Palette.IVORY)
+	body.add_theme_color_override("font_color", Palette.PALE_LILAC)
+	hint.add_theme_color_override("font_color", Palette.STONE)
 
 
 func play_epilogue(ep_title: String, lines: Array) -> void:

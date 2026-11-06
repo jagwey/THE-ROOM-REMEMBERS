@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://torimon_awakening"]
+[gd_scene load_steps=21 format=3 uid="uid://torimon_awakening"]
 
 [ext_resource type="Texture2D" path="res://assets/backgrounds/awakening/far.png" id="1"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/awakening/mid.png" id="2"]
@@ -12,6 +12,7 @@
 [ext_resource type="Script" path="res://scripts/world/gate_blocker.gd" id="10"]
 [ext_resource type="Script" path="res://scripts/world/memory_seal.gd" id="11"]
 [ext_resource type="Script" path="res://scripts/world/core_portal.gd" id="12"]
+[ext_resource type="Script" path="res://scripts/world/room_atmosphere.gd" id="13"]
 
 [sub_resource type="RectangleShape2D" id="Floor"]
 size = Vector2(720, 48)
@@ -38,6 +39,8 @@ size = Vector2(24, 80)
 size = Vector2(36, 36)
 
 [node name="Awakening" type="Node2D"]
+script = ExtResource("13")
+room_id = &"awakening"
 
 [node name="ParallaxFar" type="Parallax2D" parent="."]
 scroll_scale = Vector2(0.15, 0.15)

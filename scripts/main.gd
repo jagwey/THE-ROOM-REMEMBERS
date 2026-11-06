@@ -8,14 +8,19 @@ extends Node2D
 
 
 func _ready() -> void:
+	RenderingServer.set_default_clear_color(Palette.VOID)
 	GameState.mark_room_visited(&"awakening")
 	GameState.set_checkpoint(Vector2(120, 280), &"awakening")
 	if room_core:
 		room_core.visible = false
 		room_core.process_mode = Node.PROCESS_MODE_DISABLED
+	var cam := $Camera2D
+	if cam and cam.has_method("set_room_bounds"):
+		cam.set_room_bounds(Rect2(0, 0, 640, 360))
 	DialogueManager.say("???", "Gözlerin açılıyor.")
 	DialogueManager.say("???", "Oda seni hatırlıyor.")
-	if DisplayServer.get_name() == "headless":
+	# Smoke sadece TORIMON_SMOKE=1 ve headless
+	if DisplayServer.get_name() == "headless" and OS.get_environment("TORIMON_SMOKE") == "1":
 		call_deferred("_headless_faz67_smoke")
 
 
@@ -33,6 +38,9 @@ func enter_core() -> void:
 	if keeper:
 		keeper.visible = true
 		keeper.global_position = Vector2(400, 280)
+	var cam := $Camera2D
+	if cam and cam.has_method("set_room_bounds"):
+		cam.set_room_bounds(Rect2(0, 0, 640, 360))
 	CurseManager.add_curse(8.0, &"core_enter")
 	CorpseManager.rebuild_world_corpses()
 
@@ -45,6 +53,9 @@ func enter_awakening() -> void:
 		room_awakening.visible = true
 		room_awakening.process_mode = Node.PROCESS_MODE_INHERIT
 	GameState.mark_room_visited(&"awakening")
+	var cam := $Camera2D
+	if cam and cam.has_method("set_room_bounds"):
+		cam.set_room_bounds(Rect2(0, 0, 640, 360))
 	if player:
 		player.global_position = GameState.get_checkpoint()
 
