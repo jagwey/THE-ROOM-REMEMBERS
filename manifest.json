@@ -1,0 +1,1711 @@
+[
+  {
+    "file": "assets/characters/shiren/frame_00.png",
+    "width": 96,
+    "height": 96,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 0,
+    "pivot": [
+      48,
+      92
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/shiren/frame_01.png",
+    "width": 96,
+    "height": 96,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 1,
+    "pivot": [
+      48,
+      92
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/shiren/frame_02.png",
+    "width": 96,
+    "height": 96,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 2,
+    "pivot": [
+      48,
+      92
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/shiren/frame_03.png",
+    "width": 96,
+    "height": 96,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 3,
+    "pivot": [
+      48,
+      92
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/shiren/frame_04.png",
+    "width": 96,
+    "height": 96,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 4,
+    "pivot": [
+      48,
+      92
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/shiren/frame_05.png",
+    "width": 96,
+    "height": 96,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 5,
+    "pivot": [
+      48,
+      92
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/shiren/frame_06.png",
+    "width": 96,
+    "height": 96,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 6,
+    "pivot": [
+      48,
+      92
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/shiren/frame_07.png",
+    "width": 96,
+    "height": 96,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 7,
+    "pivot": [
+      48,
+      92
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/shiren/frame_08.png",
+    "width": 96,
+    "height": 96,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 8,
+    "pivot": [
+      48,
+      92
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/shiren/frame_09.png",
+    "width": 96,
+    "height": 96,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 9,
+    "pivot": [
+      48,
+      92
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/shiren/frame_10.png",
+    "width": 96,
+    "height": 96,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 10,
+    "pivot": [
+      48,
+      92
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/shiren/frame_11.png",
+    "width": 96,
+    "height": 96,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 11,
+    "pivot": [
+      48,
+      92
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/shiren/frame_12.png",
+    "width": 96,
+    "height": 96,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 12,
+    "pivot": [
+      48,
+      92
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/shiren/frame_13.png",
+    "width": 96,
+    "height": 96,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 13,
+    "pivot": [
+      48,
+      92
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/shiren/frame_14.png",
+    "width": 96,
+    "height": 96,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 14,
+    "pivot": [
+      48,
+      92
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/shiren/frame_15.png",
+    "width": 96,
+    "height": 96,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 15,
+    "pivot": [
+      48,
+      92
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/shiren_sheet.png",
+    "width": 384,
+    "height": 384,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "spritesheet",
+    "grid": [
+      4,
+      4
+    ],
+    "cell": [
+      96,
+      96
+    ],
+    "pivot": [
+      48,
+      92
+    ]
+  },
+  {
+    "file": "assets/characters/keeper/frame_00.png",
+    "width": 128,
+    "height": 128,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 0,
+    "pivot": [
+      64,
+      124
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/keeper/frame_01.png",
+    "width": 128,
+    "height": 128,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 1,
+    "pivot": [
+      64,
+      124
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/keeper/frame_02.png",
+    "width": 128,
+    "height": 128,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 2,
+    "pivot": [
+      64,
+      124
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/keeper/frame_03.png",
+    "width": 128,
+    "height": 128,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 3,
+    "pivot": [
+      64,
+      124
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/keeper/frame_04.png",
+    "width": 128,
+    "height": 128,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 4,
+    "pivot": [
+      64,
+      124
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/keeper/frame_05.png",
+    "width": 128,
+    "height": 128,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 5,
+    "pivot": [
+      64,
+      124
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/keeper/frame_06.png",
+    "width": 128,
+    "height": 128,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 6,
+    "pivot": [
+      64,
+      124
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/keeper/frame_07.png",
+    "width": 128,
+    "height": 128,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 7,
+    "pivot": [
+      64,
+      124
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/keeper/frame_08.png",
+    "width": 128,
+    "height": 128,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 8,
+    "pivot": [
+      64,
+      124
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/keeper/frame_09.png",
+    "width": 128,
+    "height": 128,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 9,
+    "pivot": [
+      64,
+      124
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/keeper/frame_10.png",
+    "width": 128,
+    "height": 128,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 10,
+    "pivot": [
+      64,
+      124
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/keeper/frame_11.png",
+    "width": 128,
+    "height": 128,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 11,
+    "pivot": [
+      64,
+      124
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/keeper/frame_12.png",
+    "width": 128,
+    "height": 128,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 12,
+    "pivot": [
+      64,
+      124
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/keeper/frame_13.png",
+    "width": 128,
+    "height": 128,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 13,
+    "pivot": [
+      64,
+      124
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/keeper/frame_14.png",
+    "width": 128,
+    "height": 128,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 14,
+    "pivot": [
+      64,
+      124
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/keeper/frame_15.png",
+    "width": 128,
+    "height": 128,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 15,
+    "pivot": [
+      64,
+      124
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/keeper_sheet.png",
+    "width": 512,
+    "height": 512,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "spritesheet",
+    "grid": [
+      4,
+      4
+    ],
+    "cell": [
+      128,
+      128
+    ],
+    "pivot": [
+      64,
+      124
+    ]
+  },
+  {
+    "file": "assets/characters/npc/frame_00.png",
+    "width": 80,
+    "height": 80,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 0,
+    "pivot": [
+      40,
+      76
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/npc/frame_01.png",
+    "width": 80,
+    "height": 80,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 1,
+    "pivot": [
+      40,
+      76
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/npc/frame_02.png",
+    "width": 80,
+    "height": 80,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 2,
+    "pivot": [
+      40,
+      76
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/npc/frame_03.png",
+    "width": 80,
+    "height": 80,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 3,
+    "pivot": [
+      40,
+      76
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/npc/frame_04.png",
+    "width": 80,
+    "height": 80,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 4,
+    "pivot": [
+      40,
+      76
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/npc/frame_05.png",
+    "width": 80,
+    "height": 80,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 5,
+    "pivot": [
+      40,
+      76
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/npc/frame_06.png",
+    "width": 80,
+    "height": 80,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 6,
+    "pivot": [
+      40,
+      76
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/npc/frame_07.png",
+    "width": 80,
+    "height": 80,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 7,
+    "pivot": [
+      40,
+      76
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/npc/frame_08.png",
+    "width": 80,
+    "height": 80,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 8,
+    "pivot": [
+      40,
+      76
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/npc/frame_09.png",
+    "width": 80,
+    "height": 80,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 9,
+    "pivot": [
+      40,
+      76
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/npc/frame_10.png",
+    "width": 80,
+    "height": 80,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 10,
+    "pivot": [
+      40,
+      76
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/npc/frame_11.png",
+    "width": 80,
+    "height": 80,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 11,
+    "pivot": [
+      40,
+      76
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/npc/frame_12.png",
+    "width": 80,
+    "height": 80,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 12,
+    "pivot": [
+      40,
+      76
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/npc/frame_13.png",
+    "width": 80,
+    "height": 80,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 13,
+    "pivot": [
+      40,
+      76
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/npc/frame_14.png",
+    "width": 80,
+    "height": 80,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 14,
+    "pivot": [
+      40,
+      76
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/npc/frame_15.png",
+    "width": 80,
+    "height": 80,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "animation_frame",
+    "frame": 15,
+    "pivot": [
+      40,
+      76
+    ],
+    "layer": "character"
+  },
+  {
+    "file": "assets/characters/npc_sheet.png",
+    "width": 320,
+    "height": 320,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "spritesheet",
+    "grid": [
+      4,
+      4
+    ],
+    "cell": [
+      80,
+      80
+    ],
+    "pivot": [
+      40,
+      76
+    ]
+  },
+  {
+    "file": "assets/props/red_flower.png",
+    "width": 64,
+    "height": 64,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "props",
+    "source_cell": 0,
+    "layer": "props"
+  },
+  {
+    "file": "assets/props/halo.png",
+    "width": 64,
+    "height": 64,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "props",
+    "source_cell": 1,
+    "layer": "props"
+  },
+  {
+    "file": "assets/props/pocket_watch.png",
+    "width": 64,
+    "height": 64,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "props",
+    "source_cell": 2,
+    "layer": "props"
+  },
+  {
+    "file": "assets/props/key.png",
+    "width": 64,
+    "height": 64,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "props",
+    "source_cell": 3,
+    "layer": "props"
+  },
+  {
+    "file": "assets/props/crystal.png",
+    "width": 64,
+    "height": 64,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "props",
+    "source_cell": 4,
+    "layer": "props"
+  },
+  {
+    "file": "assets/props/seal.png",
+    "width": 64,
+    "height": 64,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "props",
+    "source_cell": 5,
+    "layer": "props"
+  },
+  {
+    "file": "assets/props/cassette.png",
+    "width": 64,
+    "height": 64,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "props",
+    "source_cell": 6,
+    "layer": "props"
+  },
+  {
+    "file": "assets/props/photograph.png",
+    "width": 64,
+    "height": 64,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "props",
+    "source_cell": 7,
+    "layer": "props"
+  },
+  {
+    "file": "assets/props/door_closed.png",
+    "width": 64,
+    "height": 64,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "props",
+    "source_cell": 8,
+    "layer": "props"
+  },
+  {
+    "file": "assets/props/door_open.png",
+    "width": 64,
+    "height": 64,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "props",
+    "source_cell": 9,
+    "layer": "props"
+  },
+  {
+    "file": "assets/props/candles.png",
+    "width": 64,
+    "height": 64,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "props",
+    "source_cell": 10,
+    "layer": "props"
+  },
+  {
+    "file": "assets/props/pressure_plate.png",
+    "width": 64,
+    "height": 64,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "props",
+    "source_cell": 11,
+    "layer": "props"
+  },
+  {
+    "file": "assets/props/slash.png",
+    "width": 64,
+    "height": 64,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "props",
+    "source_cell": 12,
+    "layer": "props"
+  },
+  {
+    "file": "assets/props/curse.png",
+    "width": 64,
+    "height": 64,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "props",
+    "source_cell": 13,
+    "layer": "props"
+  },
+  {
+    "file": "assets/props/body_echo.png",
+    "width": 64,
+    "height": 64,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "props",
+    "source_cell": 14,
+    "layer": "props"
+  },
+  {
+    "file": "assets/props/memory_mote.png",
+    "width": 64,
+    "height": 64,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "props",
+    "source_cell": 15,
+    "layer": "props"
+  },
+  {
+    "file": "assets/hud/joystick_base.png",
+    "width": 64,
+    "height": 64,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "hud",
+    "source_cell": 0,
+    "layer": "hud"
+  },
+  {
+    "file": "assets/hud/joystick_thumb.png",
+    "width": 64,
+    "height": 64,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "hud",
+    "source_cell": 1,
+    "layer": "hud"
+  },
+  {
+    "file": "assets/hud/heart_full.png",
+    "width": 24,
+    "height": 24,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "hud",
+    "source_cell": 2,
+    "layer": "hud"
+  },
+  {
+    "file": "assets/hud/heart_empty.png",
+    "width": 24,
+    "height": 24,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "hud",
+    "source_cell": 3,
+    "layer": "hud"
+  },
+  {
+    "file": "assets/hud/attack.png",
+    "width": 64,
+    "height": 64,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "hud",
+    "source_cell": 4,
+    "layer": "hud"
+  },
+  {
+    "file": "assets/hud/dash.png",
+    "width": 64,
+    "height": 64,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "hud",
+    "source_cell": 5,
+    "layer": "hud"
+  },
+  {
+    "file": "assets/hud/interact.png",
+    "width": 64,
+    "height": 64,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "hud",
+    "source_cell": 6,
+    "layer": "hud"
+  },
+  {
+    "file": "assets/hud/pause.png",
+    "width": 64,
+    "height": 64,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "hud",
+    "source_cell": 7,
+    "layer": "hud"
+  },
+  {
+    "file": "assets/hud/journal.png",
+    "width": 64,
+    "height": 64,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "hud",
+    "source_cell": 8,
+    "layer": "hud"
+  },
+  {
+    "file": "assets/hud/settings.png",
+    "width": 64,
+    "height": 64,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "hud",
+    "source_cell": 9,
+    "layer": "hud"
+  },
+  {
+    "file": "assets/hud/health_bar.png",
+    "width": 128,
+    "height": 48,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "hud",
+    "source_cell": 10,
+    "layer": "hud"
+  },
+  {
+    "file": "assets/hud/speech.png",
+    "width": 64,
+    "height": 64,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "hud",
+    "source_cell": 11,
+    "layer": "hud"
+  },
+  {
+    "file": "assets/hud/tab_left.png",
+    "width": 128,
+    "height": 48,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "hud",
+    "source_cell": 12,
+    "layer": "hud"
+  },
+  {
+    "file": "assets/hud/tab_right.png",
+    "width": 128,
+    "height": 48,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "hud",
+    "source_cell": 13,
+    "layer": "hud"
+  },
+  {
+    "file": "assets/hud/diamond_selected.png",
+    "width": 24,
+    "height": 24,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "hud",
+    "source_cell": 14,
+    "layer": "hud"
+  },
+  {
+    "file": "assets/hud/diamond_empty.png",
+    "width": 24,
+    "height": 24,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "hud",
+    "source_cell": 15,
+    "layer": "hud"
+  },
+  {
+    "file": "assets/layers/column.png",
+    "width": 128,
+    "height": 128,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "layers",
+    "source_cell": 0,
+    "layer": "overlay"
+  },
+  {
+    "file": "assets/layers/arch.png",
+    "width": 128,
+    "height": 128,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "layers",
+    "source_cell": 1,
+    "layer": "overlay"
+  },
+  {
+    "file": "assets/layers/vines.png",
+    "width": 128,
+    "height": 128,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "layers",
+    "source_cell": 2,
+    "layer": "overlay"
+  },
+  {
+    "file": "assets/layers/flowers.png",
+    "width": 128,
+    "height": 128,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "layers",
+    "source_cell": 3,
+    "layer": "overlay"
+  },
+  {
+    "file": "assets/layers/bookshelf.png",
+    "width": 128,
+    "height": 128,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "layers",
+    "source_cell": 4,
+    "layer": "overlay"
+  },
+  {
+    "file": "assets/layers/books.png",
+    "width": 128,
+    "height": 128,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "layers",
+    "source_cell": 5,
+    "layer": "overlay"
+  },
+  {
+    "file": "assets/layers/chains.png",
+    "width": 128,
+    "height": 128,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "layers",
+    "source_cell": 6,
+    "layer": "overlay"
+  },
+  {
+    "file": "assets/layers/tank.png",
+    "width": 128,
+    "height": 128,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "layers",
+    "source_cell": 7,
+    "layer": "overlay"
+  },
+  {
+    "file": "assets/layers/mirror.png",
+    "width": 128,
+    "height": 128,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "layers",
+    "source_cell": 8,
+    "layer": "overlay"
+  },
+  {
+    "file": "assets/layers/mirror_shards.png",
+    "width": 128,
+    "height": 128,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "layers",
+    "source_cell": 9,
+    "layer": "overlay"
+  },
+  {
+    "file": "assets/layers/core_crystal.png",
+    "width": 128,
+    "height": 128,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "layers",
+    "source_cell": 10,
+    "layer": "overlay"
+  },
+  {
+    "file": "assets/layers/altar.png",
+    "width": 128,
+    "height": 128,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "layers",
+    "source_cell": 11,
+    "layer": "overlay"
+  },
+  {
+    "file": "assets/layers/candlestick.png",
+    "width": 128,
+    "height": 128,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "layers",
+    "source_cell": 12,
+    "layer": "overlay"
+  },
+  {
+    "file": "assets/layers/rubble.png",
+    "width": 128,
+    "height": 128,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "layers",
+    "source_cell": 13,
+    "layer": "overlay"
+  },
+  {
+    "file": "assets/layers/light_beam.png",
+    "width": 128,
+    "height": 128,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "layers",
+    "source_cell": 14,
+    "layer": "overlay"
+  },
+  {
+    "file": "assets/layers/embers.png",
+    "width": 128,
+    "height": 128,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "layers",
+    "source_cell": 15,
+    "layer": "overlay"
+  },
+  {
+    "file": "assets/panels/dialogue.png",
+    "width": 320,
+    "height": 180,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "panels",
+    "source_cell": 0,
+    "layer": "panels"
+  },
+  {
+    "file": "assets/panels/journal.png",
+    "width": 320,
+    "height": 180,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "panels",
+    "source_cell": 1,
+    "layer": "panels"
+  },
+  {
+    "file": "assets/panels/menu.png",
+    "width": 320,
+    "height": 180,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "panels",
+    "source_cell": 2,
+    "layer": "panels"
+  },
+  {
+    "file": "assets/panels/inventory.png",
+    "width": 320,
+    "height": 180,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "panels",
+    "source_cell": 3,
+    "layer": "panels"
+  },
+  {
+    "file": "assets/tiles/tile_00.png",
+    "width": 32,
+    "height": 32,
+    "mode": "RGBA",
+    "transparent": false,
+    "role": "tile",
+    "tile_id": 0,
+    "layer": "solid_ground",
+    "collision": "manual full square; top tiles may use one-way collision"
+  },
+  {
+    "file": "assets/tiles/tile_01.png",
+    "width": 32,
+    "height": 32,
+    "mode": "RGBA",
+    "transparent": false,
+    "role": "tile",
+    "tile_id": 1,
+    "layer": "solid_ground",
+    "collision": "manual full square; top tiles may use one-way collision"
+  },
+  {
+    "file": "assets/tiles/tile_02.png",
+    "width": 32,
+    "height": 32,
+    "mode": "RGBA",
+    "transparent": false,
+    "role": "tile",
+    "tile_id": 2,
+    "layer": "solid_ground",
+    "collision": "manual full square; top tiles may use one-way collision"
+  },
+  {
+    "file": "assets/tiles/tile_03.png",
+    "width": 32,
+    "height": 32,
+    "mode": "RGBA",
+    "transparent": false,
+    "role": "tile",
+    "tile_id": 3,
+    "layer": "solid_ground",
+    "collision": "manual full square; top tiles may use one-way collision"
+  },
+  {
+    "file": "assets/tiles/tile_04.png",
+    "width": 32,
+    "height": 32,
+    "mode": "RGBA",
+    "transparent": false,
+    "role": "tile",
+    "tile_id": 4,
+    "layer": "solid_ground",
+    "collision": "manual full square; top tiles may use one-way collision"
+  },
+  {
+    "file": "assets/tiles/tile_05.png",
+    "width": 32,
+    "height": 32,
+    "mode": "RGBA",
+    "transparent": false,
+    "role": "tile",
+    "tile_id": 5,
+    "layer": "solid_ground",
+    "collision": "manual full square; top tiles may use one-way collision"
+  },
+  {
+    "file": "assets/tiles/tile_06.png",
+    "width": 32,
+    "height": 32,
+    "mode": "RGBA",
+    "transparent": false,
+    "role": "tile",
+    "tile_id": 6,
+    "layer": "solid_ground",
+    "collision": "manual full square; top tiles may use one-way collision"
+  },
+  {
+    "file": "assets/tiles/tile_07.png",
+    "width": 32,
+    "height": 32,
+    "mode": "RGBA",
+    "transparent": false,
+    "role": "tile",
+    "tile_id": 7,
+    "layer": "solid_ground",
+    "collision": "manual full square; top tiles may use one-way collision"
+  },
+  {
+    "file": "assets/tiles/tile_08.png",
+    "width": 32,
+    "height": 32,
+    "mode": "RGBA",
+    "transparent": false,
+    "role": "tile",
+    "tile_id": 8,
+    "layer": "solid_ground",
+    "collision": "manual full square; top tiles may use one-way collision"
+  },
+  {
+    "file": "assets/tiles/tile_09.png",
+    "width": 32,
+    "height": 32,
+    "mode": "RGBA",
+    "transparent": false,
+    "role": "tile",
+    "tile_id": 9,
+    "layer": "solid_ground",
+    "collision": "manual full square; top tiles may use one-way collision"
+  },
+  {
+    "file": "assets/tiles/tile_10.png",
+    "width": 32,
+    "height": 32,
+    "mode": "RGBA",
+    "transparent": false,
+    "role": "tile",
+    "tile_id": 10,
+    "layer": "solid_ground",
+    "collision": "manual full square; top tiles may use one-way collision"
+  },
+  {
+    "file": "assets/tiles/tile_11.png",
+    "width": 32,
+    "height": 32,
+    "mode": "RGBA",
+    "transparent": false,
+    "role": "tile",
+    "tile_id": 11,
+    "layer": "solid_ground",
+    "collision": "manual full square; top tiles may use one-way collision"
+  },
+  {
+    "file": "assets/tiles/tile_12.png",
+    "width": 32,
+    "height": 32,
+    "mode": "RGBA",
+    "transparent": false,
+    "role": "tile",
+    "tile_id": 12,
+    "layer": "solid_ground",
+    "collision": "manual full square; top tiles may use one-way collision"
+  },
+  {
+    "file": "assets/tiles/tile_13.png",
+    "width": 32,
+    "height": 32,
+    "mode": "RGBA",
+    "transparent": false,
+    "role": "tile",
+    "tile_id": 13,
+    "layer": "solid_ground",
+    "collision": "manual full square; top tiles may use one-way collision"
+  },
+  {
+    "file": "assets/tiles/tile_14.png",
+    "width": 32,
+    "height": 32,
+    "mode": "RGBA",
+    "transparent": false,
+    "role": "tile",
+    "tile_id": 14,
+    "layer": "solid_ground",
+    "collision": "manual full square; top tiles may use one-way collision"
+  },
+  {
+    "file": "assets/tiles/tile_15.png",
+    "width": 32,
+    "height": 32,
+    "mode": "RGBA",
+    "transparent": false,
+    "role": "tile",
+    "tile_id": 15,
+    "layer": "solid_ground",
+    "collision": "manual full square; top tiles may use one-way collision"
+  },
+  {
+    "file": "assets/tiles/terrain_atlas.png",
+    "width": 128,
+    "height": 128,
+    "mode": "RGBA",
+    "transparent": false,
+    "role": "tile_atlas",
+    "grid": [
+      4,
+      4
+    ],
+    "cell": [
+      32,
+      32
+    ],
+    "terrain_autoconnect": false
+  },
+  {
+    "file": "assets/backgrounds/awakening/far.png",
+    "width": 640,
+    "height": 360,
+    "mode": "RGBA",
+    "transparent": false,
+    "role": "background",
+    "layer": "far",
+    "scroll_scale": [
+      0.15,
+      0.15
+    ],
+    "seamless": false
+  },
+  {
+    "file": "assets/backgrounds/awakening/mid.png",
+    "width": 640,
+    "height": 360,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "parallax_overlay",
+    "layer": "mid",
+    "scroll_scale": [
+      0.45,
+      0.45
+    ],
+    "origin": "assembled from newly generated isolated architecture; not segmented from far",
+    "seamless": false
+  },
+  {
+    "file": "assets/backgrounds/awakening/front.png",
+    "width": 640,
+    "height": 360,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "parallax_overlay",
+    "layer": "front",
+    "scroll_scale": [
+      1.1,
+      1.1
+    ],
+    "origin": "assembled from newly generated isolated architecture; not segmented from far",
+    "seamless": false
+  },
+  {
+    "file": "assets/backgrounds/decay/far.png",
+    "width": 640,
+    "height": 360,
+    "mode": "RGBA",
+    "transparent": false,
+    "role": "background",
+    "layer": "far",
+    "scroll_scale": [
+      0.15,
+      0.15
+    ],
+    "seamless": false
+  },
+  {
+    "file": "assets/backgrounds/decay/mid.png",
+    "width": 640,
+    "height": 360,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "parallax_overlay",
+    "layer": "mid",
+    "scroll_scale": [
+      0.45,
+      0.45
+    ],
+    "origin": "assembled from newly generated isolated architecture; not segmented from far",
+    "seamless": false
+  },
+  {
+    "file": "assets/backgrounds/decay/front.png",
+    "width": 640,
+    "height": 360,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "parallax_overlay",
+    "layer": "front",
+    "scroll_scale": [
+      1.1,
+      1.1
+    ],
+    "origin": "assembled from newly generated isolated architecture; not segmented from far",
+    "seamless": false
+  },
+  {
+    "file": "assets/backgrounds/library/far.png",
+    "width": 640,
+    "height": 360,
+    "mode": "RGBA",
+    "transparent": false,
+    "role": "background",
+    "layer": "far",
+    "scroll_scale": [
+      0.15,
+      0.15
+    ],
+    "seamless": false
+  },
+  {
+    "file": "assets/backgrounds/library/mid.png",
+    "width": 640,
+    "height": 360,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "parallax_overlay",
+    "layer": "mid",
+    "scroll_scale": [
+      0.45,
+      0.45
+    ],
+    "origin": "assembled from newly generated isolated architecture; not segmented from far",
+    "seamless": false
+  },
+  {
+    "file": "assets/backgrounds/library/front.png",
+    "width": 640,
+    "height": 360,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "parallax_overlay",
+    "layer": "front",
+    "scroll_scale": [
+      1.1,
+      1.1
+    ],
+    "origin": "assembled from newly generated isolated architecture; not segmented from far",
+    "seamless": false
+  },
+  {
+    "file": "assets/backgrounds/experiment/far.png",
+    "width": 640,
+    "height": 360,
+    "mode": "RGBA",
+    "transparent": false,
+    "role": "background",
+    "layer": "far",
+    "scroll_scale": [
+      0.15,
+      0.15
+    ],
+    "seamless": false
+  },
+  {
+    "file": "assets/backgrounds/experiment/mid.png",
+    "width": 640,
+    "height": 360,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "parallax_overlay",
+    "layer": "mid",
+    "scroll_scale": [
+      0.45,
+      0.45
+    ],
+    "origin": "assembled from newly generated isolated architecture; not segmented from far",
+    "seamless": false
+  },
+  {
+    "file": "assets/backgrounds/experiment/front.png",
+    "width": 640,
+    "height": 360,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "parallax_overlay",
+    "layer": "front",
+    "scroll_scale": [
+      1.1,
+      1.1
+    ],
+    "origin": "assembled from newly generated isolated architecture; not segmented from far",
+    "seamless": false
+  },
+  {
+    "file": "assets/backgrounds/mirrors/far.png",
+    "width": 640,
+    "height": 360,
+    "mode": "RGBA",
+    "transparent": false,
+    "role": "background",
+    "layer": "far",
+    "scroll_scale": [
+      0.15,
+      0.15
+    ],
+    "seamless": false
+  },
+  {
+    "file": "assets/backgrounds/mirrors/mid.png",
+    "width": 640,
+    "height": 360,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "parallax_overlay",
+    "layer": "mid",
+    "scroll_scale": [
+      0.45,
+      0.45
+    ],
+    "origin": "assembled from newly generated isolated architecture; not segmented from far",
+    "seamless": false
+  },
+  {
+    "file": "assets/backgrounds/mirrors/front.png",
+    "width": 640,
+    "height": 360,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "parallax_overlay",
+    "layer": "front",
+    "scroll_scale": [
+      1.1,
+      1.1
+    ],
+    "origin": "assembled from newly generated isolated architecture; not segmented from far",
+    "seamless": false
+  },
+  {
+    "file": "assets/backgrounds/core/far.png",
+    "width": 640,
+    "height": 360,
+    "mode": "RGBA",
+    "transparent": false,
+    "role": "background",
+    "layer": "far",
+    "scroll_scale": [
+      0.15,
+      0.15
+    ],
+    "seamless": false
+  },
+  {
+    "file": "assets/backgrounds/core/mid.png",
+    "width": 640,
+    "height": 360,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "parallax_overlay",
+    "layer": "mid",
+    "scroll_scale": [
+      0.45,
+      0.45
+    ],
+    "origin": "assembled from newly generated isolated architecture; not segmented from far",
+    "seamless": false
+  },
+  {
+    "file": "assets/backgrounds/core/front.png",
+    "width": 640,
+    "height": 360,
+    "mode": "RGBA",
+    "transparent": true,
+    "role": "parallax_overlay",
+    "layer": "front",
+    "scroll_scale": [
+      1.1,
+      1.1
+    ],
+    "origin": "assembled from newly generated isolated architecture; not segmented from far",
+    "seamless": false
+  }
+]

@@ -1,0 +1,8 @@
+﻿.godot/
+.import/
+*.translation
+*.apk
+*.aab
+build/
+.mono/
+data_*/
