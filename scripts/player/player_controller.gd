@@ -117,8 +117,16 @@ func _on_interact() -> void:
 	DialogueManager.say("Sen", "…Burada bir şey var gibi.")
 
 
+func play_death() -> void:
+	_state = &"idle"
+	velocity = Vector2.ZERO
+	if sprite.sprite_frames and sprite.sprite_frames.has_animation("death"):
+		sprite.play("death")
+
+
 func respawn_at(pos: Vector2) -> void:
 	global_position = pos
 	velocity = Vector2.ZERO
 	_state = &"idle"
+	modulate = Color.WHITE
 	sprite.play("idle")

@@ -217,18 +217,31 @@ func _do_intervene(zone_id: StringName) -> void:
 
 
 func enter_mourning() -> void:
-	## Stub — FAZ 4+ ölüm sonrası çiçek bırakma için hazır.
+	await mourn_corpse(home_position, "")
+
+
+func mourn_corpse(death_pos: Vector2, corpse_id: String) -> void:
+	## Yas — çiçek bırakır. Oyuncuyu öldürmez.
 	_busy = true
 	_set_blocker(false)
 	_intervening = false
 	set_mode(Mode.MOURNING)
-	DialogueManager.whisper("Bekçi", "…")
-	DialogueManager.whisper("Bekçi", "Yine unuttun.")
+	if death_pos != Vector2.ZERO:
+		global_position = Vector2(death_pos.x, home_position.y)
 	if sprite.sprite_frames and sprite.sprite_frames.has_animation("grieve"):
 		sprite.play("grieve")
+	DialogueManager.whisper("Bekçi", "…")
+	DialogueManager.whisper("Bekçi", "Yine unuttun.")
+	if corpse_id != "":
+		CorpseManager.mark_flower_on_corpse(corpse_id)
+	else:
+		GameState.world_memory_state["flowers_left"] = int(GameState.world_memory_state["flowers_left"]) + 1
+	_show_hint("…çiçek")
 	await DialogueManager.dialogue_closed
-	await get_tree().create_timer(0.6).timeout
+	await get_tree().create_timer(0.45).timeout
+	global_position = home_position
 	set_mode(Mode.OBSERVE)
+	hint.visible = false
 	_busy = false
 
 

@@ -1,33 +1,36 @@
-# The Room Remembers — Çalıştırma (Godot 4.7 · FAZ 3)
+# The Room Remembers — Çalıştırma (Godot 4.7 · FAZ 4)
 
 ## Proje
 
 - Repo: `jagwey/THE-ROOM-REMEMBERS`
 - Yerel: `C:\Users\Osman\OneDrive\Desktop\Projects プロジェクト\THE-ROOM-REMEMBERS`
-- Motor: **Godot 4.7** (bu makinede 4.7.2)
+- Motor: **Godot 4.7** (4.7.2)
 
 ## Açılış
 
-1. Godot **4.7** ile bu klasörü Import/Open edin.
-2. Ana sahne: `scenes/main/main.tscn`.
-3. **F5**.
+1. Godot **4.7** → bu klasörü aç → **F5** (`scenes/main/main.tscn`).
 
 ## Kontroller
 
-| Eylem | Klavye | Mobil HUD |
-|-------|--------|-----------|
-| Yürü | Ok / WASD | Sol joystick |
-| Saldır | Z / J | Sağ üst |
-| Dash | X / K | Sol alt |
-| Etkileş / diyalog devam | E / F | Sağ alt |
+| Eylem | Klavye | Mobil |
+|-------|--------|-------|
+| Yürü | Ok / WASD | Joystick |
+| Saldır / Dash / Etkileş | Z / X / E | Sağ düğmeler |
+| Diyalog devam | E / Etkileş | |
 
-## FAZ 3 — Bekçi (öldürmez)
+## FAZ 3 — Bekçi
 
-1. Giriş diyaloğu → sağda silüet belirir, fısıltı: **“Oraya gitme.” / “Yaklaşma.”**
-2. Ortadaki kristal / lanet izine yaklaş → **uyarı**; tekrar → **yumuşak engel** (yol kesme, ölüm yok).
-3. Sağ kapıya yaklaş → aynı warn → intervene akışı.
-4. Bekçi’ye Etkileş → gözlem satırları.
+Silüet fısıltısı; kristal/kapı → uyar → yumuşak engel. **Bekçi öldürmez.**
+
+## FAZ 4 — Ölüm / hafıza / ceset
+
+1. Gizemden sonra ortadaki **hafıza yarığı** (kırmızı halo, ~x=450) görünür.
+2. İlk temas → uyarı (“Zemin… yanlış.”). İçinde kalır veya tekrar girersen → **öğretici ölüm** (tuzak, Bekçi değil).
+3. Yeniden doğuş: Awakening checkpoint `(120,280)`; karakter unutur (“Neredeyim?”); **dünya / cesetler kalır**.
+4. Ceset max **3**; fazlası çiçek/leke/silüet. Bekçi yas modunda çiçek bırakır.
+5. Cesede Etkileş → Echo / ağırlık stub satırları.
+6. `world_memory_state.flags` + SaveManager kaydı (`user://torimon_save.json`).
 
 ## Sonraki (henüz yok)
 
-FAZ 4 — ölüm / dünya hafızası / cesetler.
+FAZ 5 — Echo / bulmaca / günlük.
