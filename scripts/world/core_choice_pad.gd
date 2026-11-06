@@ -1,4 +1,4 @@
-extends Area2D
+﻿extends Area2D
 ## Çekirdek seçim zemini — tek etkileşimde bir son.
 
 @export var ending_kind: StringName = &"together"
@@ -34,6 +34,7 @@ func _do_together() -> void:
 	var ok: bool = await DialogueManager.dialogue_finished
 	if not ok:
 		return
+	PuzzleManager.mark_solved(&"core_choice")
 	await EndingManager.trigger(EndingManager.Ending.GOOD_TRUST_SEAL)
 
 
@@ -48,4 +49,5 @@ func _do_sever() -> void:
 	if not ok:
 		return
 	GameState.set_world_flag(&"world_lights_changed", true)
+	PuzzleManager.mark_solved(&"core_choice")
 	await EndingManager.trigger(EndingManager.Ending.SEVER_BOND)
