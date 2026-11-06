@@ -1,4 +1,4 @@
-# The Room Remembers — Çalıştırma (Godot 4.7)
+# The Room Remembers — Çalıştırma (Godot 4.7 · FAZ 3)
 
 ## Proje
 
@@ -12,8 +12,6 @@
 2. Ana sahne: `scenes/main/main.tscn`.
 3. **F5**.
 
-Asset kaynağı (zip / moodboard): `...\Projects プロジェクト\bekci` — oyun PNG’leri bu repoda `assets/` altında.
-
 ## Kontroller
 
 | Eylem | Klavye | Mobil HUD |
@@ -21,10 +19,15 @@ Asset kaynağı (zip / moodboard): `...\Projects プロジェクト\bekci` — o
 | Yürü | Ok / WASD | Sol joystick |
 | Saldır | Z / J | Sağ üst |
 | Dash | X / K | Sol alt |
-| Etkileş | E / F | Sağ alt |
+| Etkileş / diyalog devam | E / F | Sağ alt |
 
-Bekçi erken oyunda öldürmez; etkileşim = gözlem diyaloğu.
+## FAZ 3 — Bekçi (öldürmez)
 
-## Sonraki
+1. Giriş diyaloğu → sağda silüet belirir, fısıltı: **“Oraya gitme.” / “Yaklaşma.”**
+2. Ortadaki kristal / lanet izine yaklaş → **uyarı**; tekrar → **yumuşak engel** (yol kesme, ölüm yok).
+3. Sağ kapıya yaklaş → aynı warn → intervene akışı.
+4. Bekçi’ye Etkileş → gözlem satırları.
 
-FAZ 3 — scripted Bekçi (uyarı / müdahale).
+## Sonraki (henüz yok)
+
+FAZ 4 — ölüm / dünya hafızası / cesetler.
