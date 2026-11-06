@@ -1,0 +1,184 @@
+﻿[gd_scene load_steps=11 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/backgrounds/library/far.png" id="1"]
+[ext_resource type="Texture2D" path="res://assets/backgrounds/library/mid.png" id="2"]
+[ext_resource type="Texture2D" path="res://assets/backgrounds/library/front.png" id="3"]
+[ext_resource type="Script" path="res://scripts/world/room_root.gd" id="4"]
+[ext_resource type="Script" path="res://scripts/world/room_transition.gd" id="5"]
+[ext_resource type="Script" path="res://scripts/story/story_beat.gd" id="6"]
+[ext_resource type="Script" path="res://scripts/world/evidence_card.gd" id="7"]
+
+[sub_resource type="RectangleShape2D" id="Floor"]
+size = Vector2(1000, 48)
+
+[sub_resource type="RectangleShape2D" id="Wall"]
+size = Vector2(40, 400)
+
+[sub_resource type="RectangleShape2D" id="Hit"]
+size = Vector2(44, 96)
+
+[sub_resource type="RectangleShape2D" id="Interact"]
+size = Vector2(40, 48)
+
+[node name="LibraryHall" type="Node2D"]
+script = ExtResource("4")
+room_id = &"library_hall"
+region_id = &"archive"
+bounds = Rect2(0, 0, 960, 360)
+checkpoint = Vector2(200, 288)
+checkpoint_room = &"library_hall"
+atmosphere_bg = "res://assets/backgrounds/library"
+
+[node name="Spawns" type="Node2D" parent="."]
+
+[node name="default" type="Marker2D" parent="Spawns"]
+position = Vector2(120, 288)
+
+[node name="from_garden" type="Marker2D" parent="Spawns"]
+position = Vector2(80, 288)
+
+[node name="from_witness" type="Marker2D" parent="Spawns"]
+position = Vector2(880, 288)
+
+[node name="from_hall" type="Marker2D" parent="Spawns"]
+position = Vector2(120, 288)
+
+[node name="ParallaxFar" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.15, 0.15)
+
+[node name="Far" type="Sprite2D" parent="ParallaxFar"]
+texture_filter = 0
+texture = ExtResource("1")
+centered = false
+
+[node name="ParallaxMid" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.45, 0.45)
+
+[node name="Mid" type="Sprite2D" parent="ParallaxMid"]
+texture_filter = 0
+texture = ExtResource("2")
+centered = false
+
+[node name="ParallaxFront" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.85, 0.85)
+
+[node name="Front" type="Sprite2D" parent="ParallaxFront"]
+texture_filter = 0
+texture = ExtResource("3")
+centered = false
+
+[node name="Decor" type="Node2D" parent="."]
+z_index = 1
+
+[node name="ArchivistLabel" type="Label" parent="Decor"]
+offset_left = 400.0
+offset_top = 100.0
+offset_right = 560.0
+offset_bottom = 124.0
+text = "Arsivci"
+horizontal_alignment = 1
+
+[node name="ArchivistSprite" type="Sprite2D" parent="Decor"]
+texture_filter = 0
+position = Vector2(480, 258)
+texture = ExtResource("2")
+scale = Vector2(0.35, 0.35)
+modulate = Color(0.22, 0.2, 0.28, 0.82)
+centered = true
+
+[node name="Interactive" type="Node2D" parent="."]
+
+[node name="BackGarden" type="Area2D" parent="Interactive"]
+position = Vector2(40, 268)
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+monitorable = true
+script = ExtResource("5")
+target_room_id = &"decay_garden"
+target_spawn_id = &"from_library"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BackGarden"]
+shape = SubResource("Hit")
+
+[node name="ForwardWitness" type="Area2D" parent="Interactive"]
+position = Vector2(920, 268)
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+monitorable = true
+script = ExtResource("5")
+target_room_id = &"library_witness"
+target_spawn_id = &"from_hall"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ForwardWitness"]
+shape = SubResource("Hit")
+
+[node name="HallBeat" type="Area2D" parent="Interactive"]
+position = Vector2(480, 268)
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+monitorable = true
+script = ExtResource("6")
+beat_id = &"library_hall"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HallBeat"]
+shape = SubResource("Interact")
+
+[node name="Sprite2D" type="Sprite2D" parent="HallBeat"]
+texture_filter = 0
+centered = true
+
+[node name="CardLeft" type="Area2D" parent="Interactive"]
+position = Vector2(300, 272)
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+monitorable = true
+script = ExtResource("7")
+evidence_id = &"ev_catalog_left"
+title = "Kayit A"
+body = "Once kapÄ±, sonra deney."
+section = "notlar"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CardLeft"]
+shape = SubResource("Interact")
+
+[node name="CardRight" type="Area2D" parent="Interactive"]
+position = Vector2(660, 272)
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+monitorable = true
+script = ExtResource("7")
+evidence_id = &"ev_catalog_right"
+title = "Kayit B"
+body = "Once deney, sonra kapi."
+section = "notlar"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CardRight"]
+shape = SubResource("Interact")
+
+[node name="Corpse" type="Node2D" parent="." groups=["corpses_root"]]
+
+[node name="Floor" type="StaticBody2D" parent="."]
+position = Vector2(480, 312)
+collision_layer = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
+shape = SubResource("Floor")
+
+[node name="LeftWall" type="StaticBody2D" parent="."]
+position = Vector2(-16, 180)
+collision_layer = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LeftWall"]
+shape = SubResource("Wall")
+
+[node name="RightWall" type="StaticBody2D" parent="."]
+position = Vector2(976, 180)
+collision_layer = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RightWall"]
+shape = SubResource("Wall")

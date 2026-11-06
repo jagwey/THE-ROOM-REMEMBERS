@@ -1,0 +1,138 @@
+[gd_scene load_steps=12 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/backgrounds/library/far.png" id="1"]
+[ext_resource type="Texture2D" path="res://assets/backgrounds/library/mid.png" id="2"]
+[ext_resource type="Texture2D" path="res://assets/backgrounds/library/front.png" id="3"]
+[ext_resource type="Script" path="res://scripts/world/room_root.gd" id="4"]
+[ext_resource type="Script" path="res://scripts/world/room_transition.gd" id="5"]
+[ext_resource type="Script" path="res://scripts/story/story_beat.gd" id="6"]
+[ext_resource type="Script" path="res://scripts/story/page_order_puzzle.gd" id="7"]
+
+[sub_resource type="RectangleShape2D" id="Floor"]
+size = Vector2(1000, 48)
+
+[sub_resource type="RectangleShape2D" id="Wall"]
+size = Vector2(40, 400)
+
+[sub_resource type="RectangleShape2D" id="Hit"]
+size = Vector2(44, 96)
+
+[sub_resource type="RectangleShape2D" id="Interact"]
+size = Vector2(40, 48)
+
+[node name="LibraryPage" type="Node2D"]
+script = ExtResource("4")
+room_id = &"library_page"
+region_id = &"archive"
+bounds = Rect2(0, 0, 960, 360)
+checkpoint = Vector2(200, 288)
+checkpoint_room = &"library_page"
+atmosphere_bg = "res://assets/backgrounds/library"
+
+[node name="Spawns" type="Node2D" parent="."]
+
+[node name="default" type="Marker2D" parent="Spawns"]
+position = Vector2(120, 288)
+
+[node name="from_witness" type="Marker2D" parent="Spawns"]
+position = Vector2(80, 288)
+
+[node name="from_cells" type="Marker2D" parent="Spawns"]
+position = Vector2(880, 288)
+
+[node name="from_page" type="Marker2D" parent="Spawns"]
+position = Vector2(120, 288)
+
+[node name="PagePuzzle" type="CanvasLayer" parent="." groups=["library_page_puzzle"]]
+script = ExtResource("7")
+
+[node name="ParallaxFar" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.15, 0.15)
+
+[node name="Far" type="Sprite2D" parent="ParallaxFar"]
+texture_filter = 0
+texture = ExtResource("1")
+centered = false
+
+[node name="ParallaxMid" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.45, 0.45)
+
+[node name="Mid" type="Sprite2D" parent="ParallaxMid"]
+texture_filter = 0
+texture = ExtResource("2")
+centered = false
+
+[node name="ParallaxFront" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.85, 0.85)
+
+[node name="Front" type="Sprite2D" parent="ParallaxFront"]
+texture_filter = 0
+texture = ExtResource("3")
+centered = false
+
+[node name="Interactive" type="Node2D" parent="."]
+
+[node name="BackWitness" type="Area2D" parent="Interactive"]
+position = Vector2(40, 268)
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+monitorable = true
+script = ExtResource("5")
+target_room_id = &"library_witness"
+target_spawn_id = &"from_page"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BackWitness"]
+shape = SubResource("Hit")
+
+[node name="ForwardCells" type="Area2D" parent="Interactive"]
+position = Vector2(920, 268)
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+monitorable = true
+script = ExtResource("5")
+target_room_id = &"experiment_cells"
+target_spawn_id = &"from_page"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ForwardCells"]
+shape = SubResource("Hit")
+
+[node name="PageBeat" type="Area2D" parent="Interactive"]
+position = Vector2(480, 268)
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+monitorable = true
+script = ExtResource("6")
+beat_id = &"library_page"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PageBeat"]
+shape = SubResource("Interact")
+
+[node name="Sprite2D" type="Sprite2D" parent="PageBeat"]
+texture_filter = 0
+centered = true
+
+[node name="Corpse" type="Node2D" parent="." groups=["corpses_root"]]
+
+[node name="Floor" type="StaticBody2D" parent="."]
+position = Vector2(480, 312)
+collision_layer = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
+shape = SubResource("Floor")
+
+[node name="LeftWall" type="StaticBody2D" parent="."]
+position = Vector2(-16, 180)
+collision_layer = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LeftWall"]
+shape = SubResource("Wall")
+
+[node name="RightWall" type="StaticBody2D" parent="."]
+position = Vector2(976, 180)
+collision_layer = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RightWall"]
+shape = SubResource("Wall")

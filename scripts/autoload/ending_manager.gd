@@ -1,10 +1,11 @@
 extends Node
-## Sonlar — kötü: Bekçi'ye saldırmak; iyi: güven + hazırlık + Çekirdek mühür.
+## Finaller — birlikte mühürleme / bağı koparma. Erken 3 vuruş son değil.
+## Epilog sonrası giriş kilidi kalmasın.
 
 signal ending_reached(ending_id: StringName)
 signal epilogue_finished
 
-enum Ending { NONE, BAD_KILL_KEEPER, GOOD_TRUST_SEAL }
+enum Ending { NONE, BAD_KILL_KEEPER, GOOD_TRUST_SEAL, SEVER_BOND }
 
 var current: Ending = Ending.NONE
 var _locked: bool = false
@@ -20,24 +21,41 @@ const EPILOGUES := {
 		],
 	},
 	"good_trust_seal": {
-		"title": "İyi Son",
+		"title": "Birlikte Mühürleme",
 		"lines": [
 			"Çekirdek mühürlendi. Kırmızı ışık söndü.",
+			"Şiren: Buradayım.",
+			"Şilda: Birlikte… hatırlıyoruz.",
 			"Bekçi… artık yalnız değil.",
 			"Sen hâlâ bazı şeyleri unutuyorsun.",
 			"Ama bu kez, oda da biraz unutuyor.",
+		],
+	},
+	"sever_bond": {
+		"title": "Bağı Koparma",
+		"lines": [
+			"Saklanan hatıra serbest kaldı.",
+			"Devre söndü. Işıklar… başka bir düzene geçti.",
+			"Çıkış dünyada değişti.",
+			"Shilda geride kaldı. Sen hatırlayarak yürüdün.",
 		],
 	},
 }
 
 
 func can_attempt_good_seal() -> bool:
-	## Hazırlık şart — sadece konuşmak yetmez.
 	var weight := PuzzleManager.is_solved(&"awakening_weight")
 	var code := PuzzleManager.is_solved(&"awakening_memory_code")
 	var echo := bool(GameState.player_progress_knowledge.get("echoes_seen", []).size() > 0)
 	var trusted := bool(GameState.player_progress_knowledge.get("trusted_keeper", false))
-	return weight and code and echo and trusted
+	var truth := bool(GameState.player_progress_knowledge.get("truth_seen", false))
+	return weight and code and echo and trusted and (truth or PuzzleManager.is_solved(&"mirrors_unbroken"))
+
+
+func can_attempt_sever() -> bool:
+	## Bilinçli seçim — gerçeği görmüş olmalı; yanlış dokunuşla değil.
+	return bool(GameState.player_progress_knowledge.get("truth_seen", false)) \
+		and PuzzleManager.is_solved(&"core_seal")
 
 
 func prep_status() -> Dictionary:
@@ -46,13 +64,14 @@ func prep_status() -> Dictionary:
 		"code": PuzzleManager.is_solved(&"awakening_memory_code"),
 		"echo": bool(GameState.player_progress_knowledge.get("echoes_seen", []).size() > 0),
 		"trusted": bool(GameState.player_progress_knowledge.get("trusted_keeper", false)),
+		"truth": bool(GameState.player_progress_knowledge.get("truth_seen", false)),
 	}
 
 
 func reset_for_smoke() -> void:
-	## Headless: iki yolu ardışık doğrulamak için.
 	_locked = false
 	current = Ending.NONE
+	UiGate.set_ending(false)
 
 
 func trigger(ending: Ending) -> void:
@@ -66,7 +85,10 @@ func trigger(ending: Ending) -> void:
 			id = &"bad_kill_keeper"
 		Ending.GOOD_TRUST_SEAL:
 			id = &"good_trust_seal"
+		Ending.SEVER_BOND:
+			id = &"sever_bond"
 		_:
+			push_error("EndingManager.trigger: unhandled " + str(ending))
 			id = &"unknown"
 	var seen: Array = GameState.player_progress_knowledge["endings_seen"]
 	if not seen.has(String(id)):
@@ -75,6 +97,9 @@ func trigger(ending: Ending) -> void:
 	SaveManager.save_game()
 	ending_reached.emit(id)
 	await _show_epilogue(String(id))
+	## Epilog bitti — kilidi aç; menü/yeni oyun mümkün
+	_locked = false
+	UiGate.set_ending(false)
 	epilogue_finished.emit()
 
 

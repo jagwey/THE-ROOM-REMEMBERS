@@ -46,6 +46,7 @@ func _ready() -> void:
 	sprite.offset = Vector2(0, -60)
 	hint.text = ""
 	hint.visible = false
+	UiTheme.apply_label(hint, 10, false)
 	_set_blocker(false)
 	home_position = global_position
 	GameState.world_memory_state["keeper_mood"] = &"observe"
@@ -63,6 +64,10 @@ func _physics_process(delta: float) -> void:
 	if _player == null:
 		return
 	sprite.flip_h = _player.global_position.x < global_position.x
+	# Modal: yaklaşma/engel mantığı dursun; idle animasyon sürsün.
+	if UiGate.pauses_world_threats():
+		_face_idle()
+		return
 
 	match mode:
 		Mode.OBSERVE:
@@ -329,11 +334,10 @@ func on_interact(_by: Node) -> void:
 
 
 func receive_player_strike() -> void:
-	## Kötü yol — klasik düşman gibi davranma; yine de saldırıya tepki.
+	## Erken saldırı = ilişki olayı. Kalıcı son yalnız Çekirdek bölgesinde.
 	if EndingManager.current != EndingManager.Ending.NONE:
 		return
 	if not bool(GameState.player_progress_knowledge.get("awakening_mystery_seen", false)):
-		# Erken: öldürme / son yok
 		DialogueManager.whisper("Bekçi", "…Henüz değil.")
 		return
 	_strikes += 1
@@ -341,13 +345,32 @@ func receive_player_strike() -> void:
 	if sprite.sprite_frames and sprite.sprite_frames.has_animation("grieve"):
 		sprite.play("grieve")
 	_show_hint("!")
+	var in_core := String(GameState.character_current_life_knowledge.get("room", "")).begins_with("core")
 	if _strikes == 1:
 		DialogueManager.say("Bekçi", "Bunu… yapma.")
 		await DialogueManager.dialogue_closed
-	elif _strikes == 2:
-		DialogueManager.say("Bekçi", "Lütfen.")
+		return
+	if _strikes == 2:
+		DialogueManager.say("Bekçi", "Lütfen. Ben düşmanın değilim.")
 		await DialogueManager.dialogue_closed
+		GameState.player_progress_knowledge["trusted_keeper"] = false
+		GameState.player_progress_knowledge["keeper_hurt"] = true
+		return
 	if _strikes >= STRIKES_TO_BAD:
+		var smoke := OS.get_environment("TORIMON_SMOKE") == "1"
+		if not in_core and not smoke:
+			## İlk bölgeler: ilişki kırılır; oyun bitmez. Onarım mümkün.
+			DialogueManager.say("Bekçi", "…Yeter.")
+			DialogueManager.say("Bekçi", "Bir gün bunu yeniden sorarsın diye… geri çekiliyorum.")
+			await DialogueManager.dialogue_closed
+			GameState.player_progress_knowledge["trusted_keeper"] = false
+			GameState.player_progress_knowledge["keeper_hurt"] = true
+			GameState.player_progress_knowledge["keeper_withdrew"] = true
+			set_mode(Mode.MOURNING)
+			modulate = Color(0.45, 0.4, 0.48, 0.75)
+			_strikes = 0 ## onarım için sıfırla
+			SaveManager.save_game()
+			return
 		DialogueManager.say("Bekçi", "…Öyle olsun.")
 		await DialogueManager.dialogue_closed
 		modulate = Color(0.4, 0.35, 0.4, 0.6)

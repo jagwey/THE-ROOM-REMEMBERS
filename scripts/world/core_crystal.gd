@@ -1,5 +1,5 @@
 extends Area2D
-## Çekirdek — iyi son için hazırlık + güven gerekir.
+## Çekirdek kristal — bilgi. Seçim yan zeminde.
 
 
 func _ready() -> void:
@@ -16,21 +16,25 @@ func _ready() -> void:
 func on_interact(_by: Node) -> void:
 	if EndingManager.current != EndingManager.Ending.NONE:
 		return
-	CurseManager.add_curse(12.0, &"core_adjacent")
-	if EndingManager.can_attempt_good_seal():
-		DialogueManager.say("Sen", "Mühürleri… birleştiriyorum.")
-		DialogueManager.say("Bekçi", "…Teşekkür ederim.")
-		await DialogueManager.dialogue_closed
-		await EndingManager.trigger(EndingManager.Ending.GOOD_TRUST_SEAL)
-		return
+	CurseManager.add_curse(8.0, &"core_adjacent")
 	var st: Dictionary = EndingManager.prep_status()
-	DialogueManager.say("Sen", "Çekirdek uğultulu… eksikler var.")
-	if not st["weight"]:
-		DialogueManager.say("???", "Ağırlık yolu kapalı.")
-	if not st["code"]:
-		DialogueManager.say("???", "Sayı henüz senin değil.")
-	if not st["echo"]:
-		DialogueManager.say("???", "Yankı yok.")
-	if not st["trusted"]:
-		DialogueManager.say("???", "Bekçi'ye… güvenmedin.")
-	DialogueManager.say("Sen", "Sadece konuşmak yetmez.")
+	var cg := EndingManager.can_attempt_good_seal()
+	var cs := EndingManager.can_attempt_sever()
+	if not cg and not cs:
+		DialogueManager.say("Sen", "Çekirdek uğultulu… eksikler var.")
+		if not st["weight"]:
+			DialogueManager.say("???", "Ağırlık yolu kapalı.")
+		if not st["code"]:
+			DialogueManager.say("???", "Sayı henüz senin değil.")
+		if not st["echo"]:
+			DialogueManager.say("???", "Yankı yok.")
+		if not st["trusted"]:
+			DialogueManager.say("???", "Bekçi'ye güvenmedin.")
+		if not st["truth"]:
+			DialogueManager.say("???", "Gerçeği henüz görmedin.")
+		DialogueManager.say("Sen", "Sadece konuşmak yetmez.")
+		await DialogueManager.dialogue_finished
+		return
+	DialogueManager.say("Şilda", "Sağda birlikte mühürleme, solda bağı koparma.")
+	DialogueManager.say("Sen", "Yanlış zemine dokunursam geri dönemem.")
+	await DialogueManager.dialogue_finished
