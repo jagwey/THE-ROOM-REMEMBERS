@@ -1,4 +1,4 @@
-﻿extends Area2D
+extends Area2D
 ## Çekirdek seçim zemini — tek etkileşimde bir son.
 
 @export var ending_kind: StringName = &"together"
@@ -9,6 +9,20 @@ func _ready() -> void:
 	collision_mask = 0
 	monitoring = false
 	monitorable = true
+	queue_redraw()
+
+
+func _draw() -> void:
+	var rune_col := Color(0.4, 0.9, 1.0, 0.85) if ending_kind == &"together" else Color(1.0, 0.35, 0.35, 0.85)
+	draw_rect(Rect2(-24, -4, 48, 8), rune_col * 0.4, true)
+	draw_arc(Vector2.ZERO, 16.0, 0, TAU, 16, rune_col, 2.0)
+	if ending_kind == &"together":
+		draw_line(Vector2(-8, 6), Vector2(0, -10), rune_col, 2.0)
+		draw_line(Vector2(0, -10), Vector2(8, 6), rune_col, 2.0)
+		draw_line(Vector2(-6, -2), Vector2(6, -2), rune_col, 2.0)
+	else:
+		draw_line(Vector2(-8, -8), Vector2(8, 8), rune_col, 2.0)
+		draw_line(Vector2(8, -8), Vector2(-8, 8), rune_col, 2.0)
 
 
 func on_interact(_by: Node) -> void:

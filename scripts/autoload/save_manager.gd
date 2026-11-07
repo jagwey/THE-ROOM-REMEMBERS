@@ -11,6 +11,7 @@ var _new_world: Dictionary
 var _new_life: Dictionary
 
 func _ready() -> void:
+	Engine.time_scale = 1.0
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(SAVE_PATH.get_base_dir()))
 	_new_progress = GameState.player_progress_knowledge.duplicate(true)
 	_new_world = GameState.world_memory_state.duplicate(true)
@@ -18,10 +19,14 @@ func _ready() -> void:
 
 
 func start_new_game() -> void:
+	Engine.time_scale = 1.0
 	# Explicit menu confirmation precedes this action; keep a backup.
 	if has_save():
 		DirAccess.copy_absolute(ProjectSettings.globalize_path(SAVE_PATH), ProjectSettings.globalize_path(SAVE_PATH + ".bak"))
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(SAVE_PATH))
+	var prev_path := ProjectSettings.globalize_path(SAVE_PATH + ".prev")
+	if FileAccess.file_exists(SAVE_PATH + ".prev"):
+		DirAccess.remove_absolute(prev_path)
 	DialogueManager.clear()
 	UiGate.set_story(false)
 	UiGate.set_journal(false)
@@ -76,6 +81,7 @@ func save_game() -> bool:
 		"world_memory_state": _serialize_world(GameState.world_memory_state),
 		"character_current_life_knowledge": _serialize_life(GameState.character_current_life_knowledge),
 		"hearts": GameState.hearts,
+		"curse": CurseManager.curse if CurseManager else 0.0,
 	}
 	var temp_path := SAVE_PATH + ".tmp"
 	var f := FileAccess.open(temp_path, FileAccess.WRITE)
@@ -84,15 +90,50 @@ func save_game() -> bool:
 		return false
 	f.store_string(JSON.stringify(data))
 	f.close()
+
+	var g_target := ProjectSettings.globalize_path(SAVE_PATH)
+	var g_temp := ProjectSettings.globalize_path(temp_path)
+	var g_bak := ProjectSettings.globalize_path(SAVE_PATH + ".bak")
+	var g_prev := ProjectSettings.globalize_path(SAVE_PATH + ".prev")
+
 	## Son sağlam kaydı yedekle: yazma yarıda kalırsa (pil/çökme) bir önceki yüklenir.
 	if FileAccess.file_exists(SAVE_PATH) and _read_save(SAVE_PATH) != null:
-		DirAccess.copy_absolute(ProjectSettings.globalize_path(SAVE_PATH), ProjectSettings.globalize_path(SAVE_PATH + ".prev"))
-	var error := DirAccess.rename_absolute(ProjectSettings.globalize_path(temp_path), ProjectSettings.globalize_path(SAVE_PATH))
+		DirAccess.copy_absolute(g_target, g_prev)
+
+	## Windows'ta hedef dosya varsa rename ERR_ALREADY_EXISTS (32) verir.
+	## Bu yüzden mevcut dosyayı geçici olarak .bak'a taşıyoruz.
+	if FileAccess.file_exists(SAVE_PATH):
+		if FileAccess.file_exists(SAVE_PATH + ".bak"):
+			DirAccess.remove_absolute(g_bak)
+		var bak_err := DirAccess.rename_absolute(g_target, g_bak)
+		if bak_err != OK:
+			DirAccess.copy_absolute(g_target, g_bak)
+			DirAccess.remove_absolute(g_target)
+
+	var error := DirAccess.rename_absolute(g_temp, g_target)
 	if error != OK:
 		push_warning("Kayıt tamamlanamadı: " + str(error))
+		## Geri alma: geçici dosya taşınamadıysa .bak'ı geri yükle
+		if FileAccess.file_exists(SAVE_PATH + ".bak"):
+			DirAccess.rename_absolute(g_bak, g_target)
+		if FileAccess.file_exists(temp_path):
+			DirAccess.remove_absolute(g_temp)
 		return false
-	## Doğrula: yazılan dosya geri okunabiliyor mu.
-	return _read_save(SAVE_PATH) != null
+
+	## Doğrula: yazılan dosya geri okunabiliyor mu
+	var verify: Variant = _read_save(SAVE_PATH)
+	if verify == null:
+		push_warning("Kayıt doğrulanamadı — geri alınıyor")
+		if FileAccess.file_exists(SAVE_PATH + ".bak"):
+			DirAccess.remove_absolute(g_target)
+			DirAccess.rename_absolute(g_bak, g_target)
+		return false
+
+	## Başarılı doğrulama sonrası geçici .bak yedeğini temizle
+	if FileAccess.file_exists(SAVE_PATH + ".bak"):
+		DirAccess.remove_absolute(g_bak)
+
+	return true
 
 
 ## Okunamayan/bozuk dosyada null döner.
@@ -111,10 +152,13 @@ func _read_save(path: String) -> Variant:
 func load_game(apply_room: bool = true) -> bool:
 	var parsed: Variant = _read_save(SAVE_PATH)
 	if parsed == null:
-		## Ana kayıt bozuksa son sağlam yedek.
-		parsed = _read_save(SAVE_PATH + ".prev")
+		## Ana kayıt bozuksa veya rotasyon sırasında kesildiyse .bak ya da .prev dene.
+		if FileAccess.file_exists(SAVE_PATH + ".bak"):
+			parsed = _read_save(SAVE_PATH + ".bak")
 		if parsed == null:
-			return false
+			parsed = _read_save(SAVE_PATH + ".prev")
+			if parsed == null:
+				return false
 		push_warning("Kayıt bozuk — önceki yedek yüklendi")
 	var data: Dictionary = parsed
 	GameState.player_progress_knowledge = data.get("player_progress_knowledge", GameState.player_progress_knowledge)
@@ -129,6 +173,9 @@ func load_game(apply_room: bool = true) -> bool:
 		push_warning("Save version newer than game (%d > %d) — loading best-effort" % [ver, SAVE_VERSION])
 	GameState.hearts = clampi(int(data.get("hearts", GameState.max_hearts)), 1, GameState.max_hearts)
 	GameState.hearts_changed.emit(GameState.hearts, GameState.max_hearts)
+	if data.has("curse") and CurseManager:
+		CurseManager.curse = float(data.get("curse", 0.0))
+		CurseManager.curse_changed.emit(CurseManager.curse)
 	PuzzleManager.sync_from_world()
 	if apply_room:
 		CorpseManager.rebuild_world_corpses()
@@ -173,6 +220,8 @@ func _serialize_life(life: Dictionary) -> Dictionary:
 	var cp: Variant = out.get("checkpoint", GameState.DEFAULT_CHECKPOINT)
 	if cp is Vector2:
 		out["checkpoint"] = {"x": cp.x, "y": cp.y}
+	out["curse"] = CurseManager.curse
+	out["curse_visible"] = CurseManager.visible_meter
 	return out
 
 
@@ -196,6 +245,10 @@ func _deserialize_life(raw: Variant) -> Dictionary:
 		base["checkpoint"] = Vector2(float(cp.get("x", 120)), float(cp.get("y", 280)))
 	elif not (cp is Vector2):
 		base["checkpoint"] = GameState.DEFAULT_CHECKPOINT
+	if life.has("curse"):
+		CurseManager.curse = float(life["curse"])
+	if life.has("curse_visible"):
+		CurseManager.visible_meter = bool(life["curse_visible"])
 	return base
 
 

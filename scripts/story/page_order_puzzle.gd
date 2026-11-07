@@ -1,4 +1,4 @@
-﻿extends CanvasLayer
+extends CanvasLayer
 ## Unutulmuş sayfa — sıra: experiment_started → door_closed → seal_engaged
 
 const ORDER: Array[String] = ["experiment_started", "door_closed", "seal_engaged"]
@@ -22,7 +22,7 @@ func _build_ui() -> void:
 	panel.name = "Panel"
 	panel.setup("Unutulmuş sayfa — sırayı kur", Vector2(470, 330))
 	add_child(panel)
-	panel.add_label("Saat: deney önce. Çiçek: kapı sonra. Mühür: koruma en son.", UiTheme.HINT)
+	panel.add_label("Tanıkların seslerini hatırla: çiçek, saat, mühür.", UiTheme.HINT)
 	for i in 3:
 		var lab := Label.new()
 		lab.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER

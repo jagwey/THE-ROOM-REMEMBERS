@@ -118,6 +118,22 @@ func set_region(region: StringName) -> void:
 			_prioritize(key, kind, region)
 
 
+func play_region_ambient(region: StringName) -> void:
+	set_region(region)
+
+
+func play_ambient(region: StringName) -> void:
+	play_region_ambient(region)
+
+
+func start_ambient(region: StringName = &"awakening") -> void:
+	play_region_ambient(region)
+
+
+func play_title_ambience() -> void:
+	start_ambient(&"awakening")
+
+
 func set_master_volume(linear: float) -> void:
 	_master_linear = clampf(linear, 0.0, 1.0)
 	if not _enabled:
@@ -183,12 +199,14 @@ func _setup_buses() -> void:
 			var idx := AudioServer.bus_count - 1
 			AudioServer.set_bus_name(idx, bname)
 			AudioServer.set_bus_send(idx, "Master")
-			var rv := AudioEffectReverb.new()
-			rv.room_size = 0.75 if bname != "SFX" else 0.55
-			rv.damping = 0.6
-			rv.wet = 0.28 if bname == "Music" else 0.2
-			rv.dry = 1.0
-			AudioServer.add_bus_effect(idx, rv)
+			# Consolidate reverb: attach reverb only to Ambience bus to reduce processing overhead
+			if bname == "Ambience":
+				var rv := AudioEffectReverb.new()
+				rv.room_size = 0.75
+				rv.damping = 0.6
+				rv.wet = 0.25
+				rv.dry = 1.0
+				AudioServer.add_bus_effect(idx, rv)
 	set_music_enabled(_music_on)
 	set_master_volume(_master_linear)
 
@@ -246,6 +264,7 @@ func _enqueue_boot() -> void:
 		if r != &"awakening":
 			_queue.append(["music:%s" % r, &"music", r])
 			_queue.append(["amb:%s" % r, &"amb", r])
+	_sem.post()
 
 
 # --- synthesis scheduling ------------------------------------------------

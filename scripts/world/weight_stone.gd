@@ -11,9 +11,14 @@ const FRICTION := 420.0
 var _start_global: Vector2 = Vector2.ZERO
 
 
+func _init() -> void:
+	collision_layer = 1 | 8
+	collision_mask = 1
+
+
 func _ready() -> void:
 	add_to_group("weight_stone")
-	collision_layer = 1
+	collision_layer = 1 | 8  ## Layer 1 (World) + Layer 4 (Interact bit 3)
 	collision_mask = 1
 	_start_global = global_position
 
@@ -25,6 +30,10 @@ func reset_to_start() -> void:
 
 func apply_push(dir: float) -> void:
 	velocity.x = signf(dir) * PUSH_SPEED
+
+
+func on_interact(by: Node = null) -> void:
+	apply_push(by.get_facing() if by and by.has_method("get_facing") else 1.0)
 
 
 func _physics_process(delta: float) -> void:

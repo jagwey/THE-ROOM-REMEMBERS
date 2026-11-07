@@ -434,6 +434,12 @@ func _run_mystery_beat() -> void:
 		_mystery_done = true
 		return
 	_busy = true
+	var menu := get_tree().get_first_node_in_group("session_menu")
+	if menu and menu.has_method("is_title_open") and menu.is_title_open():
+		await menu.title_closed
+	elif UiGate.blocks_movement():
+		while UiGate.blocks_movement():
+			await get_tree().process_frame
 	await get_tree().create_timer(0.85).timeout
 	# Oda girişi diyaloğu bitsin.
 	if DialogueManager.is_open:
@@ -483,6 +489,24 @@ func on_interact(_by: Node) -> void:
 	if _busy or DialogueManager.is_open:
 		DialogueManager.advance()
 		return
+	var active_room := String(RoomManager.get_active_room_id())
+	if active_room == "awakening":
+		var done_partial: bool = bool(GameState.player_progress_knowledge.get("shilda_named_partial", false))
+		if not done_partial:
+			DialogueManager.say("Shilda", "Shiren… yine mi?")
+			DialogueManager.say("Shiren", "Beni… nasıl ismimle çağırdın?")
+			DialogueManager.say("Shilda", "Bu oda seni tanıyor. Ben sadece hatırlatıyorum.")
+			await _await_dialogue_or_smoke()
+			GameState.player_progress_knowledge["awakening_mystery_seen"] = true
+			GameState.player_progress_knowledge["shilda_named_partial"] = true
+			GameState.player_progress_knowledge["seen_keeper"] = true
+			GameState.knowledge_changed.emit(&"player")
+			SaveManager.save_game()
+			return
+		else:
+			DialogueManager.say("Shilda", "İlk uyandığını sanıyorsun. Devam et.")
+			await _await_dialogue_or_smoke()
+			return
 	# İyi yol: hazırlık varsa güven teklifi
 	var st: Dictionary = EndingManager.prep_status()
 	if st["weight"] and st["code"] and st["echo"] and not st["trusted"]:

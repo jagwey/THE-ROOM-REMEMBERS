@@ -188,7 +188,7 @@ shape = SubResource("TransitionHit")
 
 [node name="WeightStone" type="CharacterBody2D" parent="."]
 position = Vector2(240, 288)
-collision_layer = 1
+collision_layer = 9
 collision_mask = 1
 floor_stop_on_slope = true
 script = ExtResource("9")

@@ -104,7 +104,7 @@ func _setup_textures() -> void:
 	btn_attack.texture_normal = load("res://assets/hud/attack.png")
 	btn_dash.texture_normal = load("res://assets/hud/dash.png")
 	btn_interact.texture_normal = load("res://assets/hud/interact.png")
-	btn_skill.texture_normal = load("res://assets/hud/speech.png")
+	btn_skill.texture_normal = load("res://assets/props/slash.png")
 	btn_jump.texture_normal = load("res://assets/hud/joystick_thumb.png")
 	btn_journal.texture_normal = load("res://assets/hud/journal.png")
 	if dialogue_panel:
@@ -152,16 +152,16 @@ func _build_dialogue_frame() -> void:
 func _setup_seal_pad() -> void:
 	for c in seal_row.get_children():
 		c.queue_free()
-	# HBox yerine 4 sütunluk ızgara
+	# Standard 3x4 KEYPAD layout (columns = 3)
 	var pad := VBoxContainer.new()
 	pad.add_theme_constant_override("separation", 4)
 	seal_row.add_child(pad)
 	var grid := GridContainer.new()
-	grid.columns = 4
+	grid.columns = 3
 	grid.add_theme_constant_override("h_separation", 4)
 	grid.add_theme_constant_override("v_separation", 4)
 	pad.add_child(grid)
-	var keys: PackedStringArray = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "⌫", "OK"]
+	var keys: PackedStringArray = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "⌫", "0", "OK"]
 	for d in keys:
 		var b := Button.new()
 		b.text = d
@@ -253,6 +253,16 @@ func _apply_safe_area() -> void:
 	safe_area.offset_top = clampf(mt, 0.0, 48.0)
 	safe_area.offset_right = -clampf(mr, 0.0, 64.0)
 	safe_area.offset_bottom = -clampf(mb, 0.0, 48.0)
+	if seal_root and seal_root.has_node("Dim"):
+		var sdim := seal_root.get_node("Dim") as ColorRect
+		sdim.anchor_left = 0.0
+		sdim.anchor_top = 0.0
+		sdim.anchor_right = 1.0
+		sdim.anchor_bottom = 1.0
+		sdim.offset_left = -safe_area.offset_left
+		sdim.offset_top = -safe_area.offset_top
+		sdim.offset_right = -safe_area.offset_right
+		sdim.offset_bottom = -safe_area.offset_bottom
 	call_deferred("_sync_dialogue_metrics")
 
 
@@ -686,7 +696,8 @@ func _process(delta: float) -> void:
 			var target_name := InteractGlowLib.label_for(target)
 			if target_name == "İncele" or target.has_method("apply_push"):
 				target_name = _friendly_target(String(target.name))
-			_context_hint.text = "E / el · " + target_name
+			var prefix := "El · " if MobileInputManager.is_touch_ui() else "E / El · "
+			_context_hint.text = prefix + target_name
 			btn_interact.modulate = Color(1.3, 1.12, 1.12)
 		else:
 			btn_interact.modulate = Color.WHITE

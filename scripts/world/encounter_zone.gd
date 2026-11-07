@@ -26,6 +26,15 @@ func _ready() -> void:
 	if wall and wall.has_signal("broken"):
 		wall.broken.connect(_on_wall_broken)
 	DeathManager.death_started.connect(func(_r): _running = false)
+	RoomManager.room_changed.connect(_on_room_changed)
+
+
+func _on_room_changed(new_room: StringName) -> void:
+	if new_room != &"decay_shilda_wall" and _running:
+		_running = false
+		var keeper := get_tree().get_first_node_in_group("keeper")
+		if keeper and keeper.has_method("end_encounter"):
+			keeper.end_encounter(false)
 
 
 func _on_enter(body: Node) -> void:

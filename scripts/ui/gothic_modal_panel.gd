@@ -139,3 +139,17 @@ static func _box(fill: Color, border: Color) -> StyleBoxFlat:
 	sb.content_margin_top = 4
 	sb.content_margin_bottom = 4
 	return sb
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not visible:
+		return
+	if event.is_action_pressed("ui_cancel") or (event is InputEventKey and event.pressed and event.keycode == KEY_BACK):
+		if has_method("dismiss"):
+			call("dismiss")
+		elif has_method("close"):
+			call("close")
+		else:
+			visible = false
+		get_viewport().set_input_as_handled()
+

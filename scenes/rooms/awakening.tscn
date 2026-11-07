@@ -198,17 +198,6 @@ script = ExtResource("24")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/PocketWatchInspect"]
 shape = SubResource("PocketWatchShape")
 
-[node name="ShildaNameBeat" type="Area2D" parent="Interactive"]
-position = Vector2(400, 280)
-collision_layer = 8
-collision_mask = 0
-monitoring = false
-monitorable = true
-script = ExtResource("25")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ShildaNameBeat"]
-shape = SubResource("ShildaBeatShape")
-
 [node name="PressurePlate" type="Area2D" parent="Interactive"]
 position = Vector2(940, 300)
 script = ExtResource("9")

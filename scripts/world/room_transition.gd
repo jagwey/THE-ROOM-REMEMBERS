@@ -58,21 +58,20 @@ func _ready() -> void:
 	_build_visuals()
 	var label := Label.new()
 	label.name = "DoorLabel"
-	## Mobilde sağ alt buton kümesinin üstünde kalsın; sağ kenardaki kapılarda etiket içeri kayar.
-	var touch := MobileInputManager.is_touch_ui()
-	var right_edge := position.x > 700
-	label.position = Vector2((-240.0 if touch else -140.0) if right_edge else -75.0, FOOT_Y - 160.0 - 38.0)
-	label.size = Vector2(150, 36)
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT if (right_edge and touch) else HORIZONTAL_ALIGNMENT_CENTER
+	label.position = Vector2(-110.0, FOOT_Y - 198.0)
+	label.size = Vector2(220, 36)
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.add_theme_font_size_override("font_size", 14)
 	label.add_theme_color_override("font_shadow_color", Color.BLACK)
 	label.add_theme_constant_override("shadow_offset_x", 1)
 	label.add_theme_constant_override("shadow_offset_y", 1)
-	var hint := "El: Geç" if touch else "[E] Geç"
+	var touch := MobileInputManager.is_touch_ui()
+	var hint := "El · Geç" if touch else "[E] Geç"
 	label.text = "%s\n%s" % [get_display_name(), hint]
 	label.z_index = 4
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(label)
+	call_deferred("_clamp_door_label", label)
 	## Etkileşim alanını da genişlet (paylaşılan şekli kopyalayarak).
 	var cs := get_node_or_null("CollisionShape2D") as CollisionShape2D
 	if cs and cs.shape is RectangleShape2D:
@@ -80,6 +79,19 @@ func _ready() -> void:
 		rect.size = Vector2(maxf(rect.size.x, 52.0), maxf(rect.size.y, 72.0))
 		cs.shape = rect
 	call_deferred("_hide_legacy_door_sprites")
+
+
+func _clamp_door_label(label: Label) -> void:
+	if not is_inside_tree() or label == null:
+		return
+	var room_w := 960.0
+	var room: Node = get_parent()
+	while room and not ("bounds" in room or "room_id" in room):
+		room = room.get_parent()
+	if room and "bounds" in room:
+		room_w = (room.bounds as Rect2).size.x
+	var target_x := clampf(global_position.x - 110.0, 16.0, room_w - 236.0)
+	label.global_position.x = target_x
 
 
 func get_display_name() -> String:
@@ -106,7 +118,7 @@ func _build_visuals() -> void:
 	back.texture = load("res://assets/props/gothic_door_back.png")
 	back.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	back.position = Vector2(0, base_y)
-	back.z_index = -3
+	back.z_index = 1
 	add_child(back)
 	## Karanlığın içinden yükselen soluk kırmızı/mor ışık (ucuz: tek additive sprite).
 	_glow = Sprite2D.new()
@@ -127,21 +139,21 @@ func _build_visuals() -> void:
 	_glow.material = mat
 	_glow.position = Vector2(0, FOOT_Y - 26.0)
 	_glow.scale = Vector2(0.8, 1.2)
-	_glow.z_index = -3
+	_glow.z_index = 1
 	add_child(_glow)
 	var frame := Sprite2D.new()
 	frame.name = "DoorFrame"
 	frame.texture = load("res://assets/props/gothic_door_frame.png")
 	frame.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	frame.position = Vector2(0, base_y)
-	frame.z_index = -2
+	frame.z_index = 1
 	add_child(frame)
 	_seal = Sprite2D.new()
 	_seal.name = "DoorSeal"
 	_seal.texture = load("res://assets/props/gothic_door_seal.png")
 	_seal.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	_seal.position = Vector2(0, base_y + 10.0)
-	_seal.z_index = -2
+	_seal.z_index = 1
 	add_child(_seal)
 	_refresh_seal()
 
@@ -194,6 +206,11 @@ func on_interact(by: Node) -> void:
 	if not RoomManager.has_room(target_room_id):
 		push_warning("room_transition: unknown room %s" % String(target_room_id))
 		return
+	if target_room_id == &"core" and not EndingManager.has_both_shards():
+		if not bool(GameState.character_current_life_knowledge.get("warned_core_shards", false)):
+			GameState.character_current_life_knowledge["warned_core_shards"] = true
+			DialogueManager.say("Shilda", "Çekirdek açılacak… ama mühür parçaların eksik. İçeri girersen geri dönmen gerekecek.")
+			return
 	_travel(by)
 
 

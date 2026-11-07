@@ -75,7 +75,7 @@ func _run() -> void:
 	check(door.get_node_or_null("DoorBack") != null and frame != null and door.get_node_or_null("DoorInnerLight") != null, "door layers back/light/frame exist")
 	var ratio := float(frame.texture.get_height()) / player_h if frame else 0.0
 	check(ratio >= 1.8 and ratio <= 2.5, "door height %.2fx player (%.0f px)" % [ratio, player_h])
-	check(door.get_node("DoorBack").z_index < player.z_index or door.get_node("DoorBack").z_index < 0, "door drawn behind player")
+	check(door.get_node("DoorBack").z_index >= 1 and door.get_node("DoorFrame").z_index >= 1, "door drawn above parallax (z_index >= 1)")
 	check(not door.is_locked() and not (door.get_node("DoorSeal") as Sprite2D).visible, "open door has no seal")
 	check(door.get_glow_kind() == &"normal", "open door glow = normal")
 	var legacy_visible := 0

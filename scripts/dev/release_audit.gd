@@ -152,6 +152,32 @@ func run() -> void:
 	gs.player_progress_knowledge.erase("qa_roundtrip")
 	check_it("Save roundtrip", saves.load_game(false) and gs.player_progress_knowledge.get("qa_roundtrip", false) and gs.character_current_life_knowledge.room == expected_room)
 	check_it("Test save isolated", "qa/" in saves.SAVE_PATH, saves.SAVE_PATH)
+
+	# v1.3.0 Feature 29 Audits:
+	# 1) WeightStone collision layer bit 3 / layer 8 (interactable)
+	var stone_res := load("res://scripts/world/weight_stone.gd")
+	if stone_res:
+		var stone_node: CharacterBody2D = stone_res.new()
+		check_it("WeightStone collision layer has layer 8", (stone_node.collision_layer & 8) != 0, stone_node.collision_layer)
+		stone_node.free()
+	else:
+		check_it("WeightStone collision layer has layer 8", false, "weight_stone.gd not found")
+
+	# 2) core.tscn contains exit door leading back to core_seal_chamber
+	var core_room: Node = rm._rooms[&"core"].root
+	var core_exit: Node = null
+	for n in core_room.find_children("*", "Area2D", true, false):
+		if n.is_in_group("room_door") and String(n.get("target_room_id")) == "core_seal_chamber":
+			core_exit = n
+			break
+	check_it("Core room contains exit door to core_seal_chamber", core_exit != null, core_exit != null)
+
+	# 3) Consecutive Windows saves succeed without ERR_ALREADY_EXISTS
+	var s1: bool = bool(saves.save_game())
+	var s2: bool = bool(saves.save_game())
+	var s3: bool = bool(saves.save_game())
+	check_it("Consecutive Windows saves without ERR_ALREADY_EXISTS", s1 and s2 and s3, "3 saves in succession")
+
 	# Restart must clear registries and stale puzzle progress, not leave old room nodes.
 	saves.start_new_game()
 	await create_timer(0.3).timeout

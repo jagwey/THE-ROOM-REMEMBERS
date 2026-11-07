@@ -25,6 +25,7 @@ var _rooms_by_region: Dictionary = {}
 
 
 func _ready() -> void:
+	anchor_right = 1.0
 	_collect_rooms()
 
 

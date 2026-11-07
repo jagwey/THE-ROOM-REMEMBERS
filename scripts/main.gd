@@ -44,7 +44,7 @@ const ROOM_DEFS := {
 	"core_threshold": {"node": "CoreThreshold", "bounds": Rect2(0, 0, 960, 360), "checkpoint": Vector2(200, 288), "bg": "res://assets/backgrounds/core",
 		"spawns": {"default": Vector2(120, 288), "from_mirrors": Vector2(120, 288), "from_seal_chamber": Vector2(880, 288), "from_threshold": Vector2(120, 288)}},
 	"core_seal_chamber": {"node": "CoreSealChamber", "bounds": Rect2(0, 0, 960, 360), "checkpoint": Vector2(200, 288), "bg": "res://assets/backgrounds/core",
-		"spawns": {"default": Vector2(120, 288), "from_threshold": Vector2(120, 288), "from_chamber": Vector2(120, 288)}},
+		"spawns": {"default": Vector2(120, 288), "from_threshold": Vector2(120, 288), "from_chamber": Vector2(880, 288)}},
 	"core": {"node": "Core", "bounds": Rect2(0, 0, 960, 360), "checkpoint": Vector2(160, 280), "bg": "res://assets/backgrounds/core",
 		"spawns": {"default": Vector2(160, 280), "from_chamber": Vector2(160, 280)}},
 }
@@ -103,6 +103,7 @@ func _add_side_doors() -> void:
 
 
 func _ready() -> void:
+	Engine.time_scale = 1.0
 	RenderingServer.set_default_clear_color(Palette.VOID)
 	_continued = false
 	GameState.session_loaded_from_save = false
@@ -124,15 +125,22 @@ func _ready() -> void:
 		start_spawn = &"default"
 	if _continued:
 		RoomManager.apply_initial_room(start_room, &"checkpoint", true)
-		if String(start_room).begins_with("core") and keeper:
-			keeper.visible = true
-			keeper.global_position = Vector2(560, 280)
+		var s := String(start_room)
+		var cut := s.find("_")
+		var reg := StringName(s if cut < 0 else s.substr(0, cut))
+		AudioManager.play_region_ambient(reg)
+		if keeper:
+			if bool(GameState.get_world_flag(&"keeper_defeated", false)):
+				keeper.visible = false
+			else:
+				keeper.place_for_room(start_room)
 	else:
 		RoomManager.apply_initial_room(start_room, start_spawn, true)
 
 	# Başlık ekranı açıksa açılış repliği oyuncu "Başla/Devam et" deyince gelir.
 	var menu := get_node_or_null("SessionMenu")
 	if menu and menu.has_method("is_title_open") and menu.is_title_open():
+		AudioManager.play_title_ambience()
 		menu.title_closed.connect(_play_intro, CONNECT_ONE_SHOT)
 	else:
 		_play_intro()
@@ -255,6 +263,8 @@ func _headless_faz67_smoke() -> void:
 	GameState.player_progress_knowledge["trusted_keeper"] = true
 	GameState.player_progress_knowledge["truth_seen"] = true
 	GameState.set_world_flag(&"awakening_door_opened", true)
+	GameState.set_world_flag(&"seal_shard_1", true)
+	GameState.set_world_flag(&"seal_shard_2", true)
 	print("SMOKE_GOOD")
 	enter_core()
 	await get_tree().create_timer(0.2).timeout

@@ -46,8 +46,8 @@ texture_filter = 0
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
-offset_top = -26.0
-offset_bottom = -2.0
+offset_top = 4.0
+offset_bottom = 28.0
 grow_horizontal = 2
 theme_override_constants/separation = 4
 
@@ -111,13 +111,13 @@ anchor_bottom = 0.86
 
 [node name="DetailTitle" type="Label" parent="BookRoot/RightPage"]
 layout_mode = 1
+anchor_right = 1.0
 anchor_bottom = 0.0
-offset_right = 84.0
+offset_right = -8.0
 offset_bottom = 82.0
 theme_override_colors/font_color = Color(0.239, 0.071, 0.125, 1)
 theme_override_font_sizes/font_size = 18
 autowrap_mode = 3
-clip_text = true
 text = ""
 
 [node name="Scroll" type="ScrollContainer" parent="BookRoot/RightPage"]

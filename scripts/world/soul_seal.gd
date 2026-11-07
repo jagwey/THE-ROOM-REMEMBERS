@@ -46,6 +46,7 @@ func receive_soul_slash(_from: Node) -> void:
 	if PuzzleManager.is_solved(puzzle_id):
 		return
 	PuzzleManager.mark_solved(puzzle_id)
+	MobileInputManager.vibrate(35)
 	var am := get_node_or_null("/root/AudioManager")
 	if am:
 		am.play_sfx(&"seal_open")

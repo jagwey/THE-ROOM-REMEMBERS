@@ -39,6 +39,9 @@ func _on_puzzle(puzzle_id: StringName) -> void:
 
 
 func _apply(open: bool) -> void:
+	collision_layer = 0 if open else 1
+	if has_meta("room_saved_layer"):
+		set_meta("room_saved_layer", 0 if open else 1)
 	if shape:
 		shape.set_deferred("disabled", open)
 	visible = not open

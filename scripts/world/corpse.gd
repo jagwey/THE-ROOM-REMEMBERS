@@ -25,6 +25,7 @@ func _ready() -> void:
 	var cs := get_node_or_null("CollisionShape2D") as CollisionShape2D
 	if cs:
 		cs.one_way_collision = true
+		cs.one_way_collision_margin = 8.0
 	if interact:
 		interact.collision_layer = 8
 		interact.collision_mask = 0
@@ -87,10 +88,45 @@ func _push(dir: float) -> void:
 	var bounds := RoomManager.get_room_bounds(RoomManager.get_active_room_id())
 	if bounds.size.x <= 0.0:
 		bounds = Rect2(0, 0, 640, 360)
-	var target_x := clampf(global_position.x + dir * push_step, bounds.position.x + 40.0, bounds.end.x - 40.0)
+	var raw_target_x := clampf(global_position.x + dir * push_step, bounds.position.x + 40.0, bounds.end.x - 40.0)
+	if absf(raw_target_x - global_position.x) < 0.5:
+		DialogueManager.say("Sen", "…Daha ileri gitmiyor.")
+		return
+
+	var space := get_world_2d().direct_space_state
+	var target_x: float = raw_target_x
+
+	# 1. Yatay Engel Kontrolü (raycast: Duvarlar, Kapılar, Lanet Bariyerleri, Kırılabilir Duvarlar)
+	if space != null:
+		var ray_start := global_position + Vector2(0, -10.0)
+		var ray_end := ray_start + Vector2(dir * (push_step + 14.0), 0.0)
+		var q_wall := PhysicsRayQueryParameters2D.create(ray_start, ray_end, 1 | 16 | 32)
+		q_wall.exclude = [get_rid()]
+		var wall_hit: Dictionary = space.intersect_ray(q_wall)
+		if not wall_hit.is_empty():
+			var hit_pos: Vector2 = wall_hit["position"]
+			var stop_x: float = hit_pos.x - dir * 14.0
+			if (dir > 0.0 and stop_x <= global_position.x + 2.0) or (dir < 0.0 and stop_x >= global_position.x - 2.0):
+				DialogueManager.say("Sen", "…Engelle karşılaştı.")
+				return
+			target_x = minf(target_x, stop_x) if dir > 0.0 else maxf(target_x, stop_x)
+
+		# 2. Zemin / Çukur Kontrolü (Hedef noktanın altında zemin var mı?)
+		var q_floor := PhysicsRayQueryParameters2D.create(
+			Vector2(target_x, global_position.y - 4.0),
+			Vector2(target_x, global_position.y + 24.0),
+			1
+		)
+		q_floor.exclude = [get_rid()]
+		var floor_hit: Dictionary = space.intersect_ray(q_floor)
+		if floor_hit.is_empty():
+			DialogueManager.say("Sen", "…Uçurumun kenarında durdu.")
+			return
+
 	if absf(target_x - global_position.x) < 0.5:
 		DialogueManager.say("Sen", "…Daha ileri gitmiyor.")
 		return
+
 	_pushing = true
 	_spawn_dust(dir)
 	var am := get_node_or_null("/root/AudioManager")

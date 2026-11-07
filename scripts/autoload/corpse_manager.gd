@@ -138,7 +138,7 @@ func mark_flower_on_corpse(corpse_id: String) -> void:
 
 func _find_active_corpses_root() -> Node:
 	## Aktif odanın corpses_root'unu seç — gruptaki ilk (çoğunlukla Uyanış) değil.
-	var room := String(GameState.character_current_life_knowledge.get("room", &"awakening"))
+	var room := String(RoomManager.get_active_room_id())
 	var fallback: Node = null
 	for n in get_tree().get_nodes_in_group("corpses_root"):
 		if fallback == null:
@@ -175,7 +175,7 @@ func rebuild_world_corpses() -> void:
 	var root := _find_active_corpses_root()
 	if root == null:
 		return
-	var room := String(GameState.character_current_life_knowledge.get("room", &"awakening"))
+	var room := String(RoomManager.get_active_room_id())
 	for c in GameState.world_memory_state["corpses"]:
 		if not (c is Dictionary):
 			continue

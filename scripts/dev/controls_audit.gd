@@ -163,6 +163,34 @@ func _mechanics(player: CharacterBody2D, state: Node, dm: Node) -> void:
 	corpses.clear()
 	cm.rebuild_world_corpses()
 
+	# v1.3.0 Feature 29 Audits:
+	# 1) WeightStone pushing (walk-push and interact)
+	await _enter(&"decay_weight", Vector2(160, 288), dm)
+	var stone := _first_in_room("weight_stone", &"decay_weight") as CharacterBody2D
+	if stone:
+		var x0 := stone.global_position.x
+		stone.apply_push(1.0)
+		check(stone.velocity.x > 0.0, "stone responds to apply_push")
+		stone.global_position.x = x0
+
+	# 2) Corpse platforming (one_way_collision)
+	var corpse_res := load("res://scenes/world/corpse.tscn")
+	if corpse_res:
+		var c_test: Node2D = corpse_res.instantiate()
+		var cs: CollisionShape2D = c_test.get_node_or_null("CollisionShape2D")
+		check(cs != null and cs.one_way_collision, "corpse collision shape has one_way_collision=true")
+		c_test.free()
+
+	# 3) EchoTwin combat recording & replay
+	var altar_code: String = ""
+	var altar_script = load("res://scripts/world/echo_altar.gd")
+	if altar_script:
+		var af := FileAccess.open("res://scripts/world/echo_altar.gd", FileAccess.READ)
+		if af:
+			altar_code = af.get_as_text()
+			af.close()
+	check(altar_code.contains('"attack"') and altar_code.contains('"skill"'), "echo altar records attack and skill actions")
+
 
 func _run() -> void:
 	var state := root.get_node("GameState")

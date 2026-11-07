@@ -37,11 +37,15 @@ func request_death(reason: StringName = &"unknown", full_reset: bool = false) ->
 	## Lanet ele geçirmesi ölümden ayrıdır: ceset, yas ve ruh yok.
 	var possession := reason == &"curse"
 	death_started.emit(reason)
+	MobileInputManager.vibrate(45)
 
 	var death_pos := Vector2.ZERO
 	var player := get_tree().get_first_node_in_group("player") as Node2D
 	if player:
-		death_pos = player.global_position
+		if (reason == &"hazard" or reason == &"thorn") and player.has_method("get_last_safe_floor_pos"):
+			death_pos = player.get_last_safe_floor_pos()
+		else:
+			death_pos = player.global_position
 		if player.has_method("play_death"):
 			player.play_death()
 

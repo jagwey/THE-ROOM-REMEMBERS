@@ -1,2 +1,5 @@
-extends Node2D
-## Uyanış odası — yer tutucu; etkileşimler PocketWatchInspect ve ShildaNameBeat üzerinden.
+extends "res://scripts/world/room_atmosphere.gd"
+## Uyanış odası — gotik oda atmosferi (motes, vignetting, ışıklandırma).
+
+func _ready() -> void:
+	super._ready()

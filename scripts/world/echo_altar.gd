@@ -48,6 +48,7 @@ func _ready() -> void:
 	else:
 		UiTheme.apply_label(_label, 14)
 	add_child(_label)
+	RoomManager.room_changed.connect(_on_room_changed)
 	call_deferred("_build_switches")
 	_refresh_label()
 
@@ -62,6 +63,13 @@ func _build_switches() -> void:
 		get_parent().add_child(sw)
 		sw.connect("state_changed", _on_switch_changed)
 		_switches.append(sw)
+		if RoomManager.get_active_room_id() != _room_id():
+			if not sw.has_meta("room_physics_suspended"):
+				sw.set_meta("room_saved_layer", sw.collision_layer)
+				sw.set_meta("room_saved_mask", sw.collision_mask)
+				sw.set_meta("room_physics_suspended", true)
+			sw.collision_layer = 0
+			sw.collision_mask = 0
 	if PuzzleManager.is_solved(puzzle_id):
 		for sw in _switches:
 			sw.call("set_locked_on")
@@ -97,6 +105,10 @@ func _start_recording(player: Node2D) -> void:
 	_start_pos = player.global_position
 	if not MobileInputManager.interact_pressed.is_connected(_on_rec_interact):
 		MobileInputManager.interact_pressed.connect(_on_rec_interact)
+	if not MobileInputManager.attack_pressed.is_connected(_on_rec_attack):
+		MobileInputManager.attack_pressed.connect(_on_rec_attack)
+	if not MobileInputManager.skill_pressed.is_connected(_on_rec_skill):
+		MobileInputManager.skill_pressed.connect(_on_rec_skill)
 	_sfx(&"echo_record")
 	var cam := get_tree().get_first_node_in_group("follow_camera")
 	if cam and cam.has_method("add_trauma"):
@@ -108,11 +120,49 @@ func _on_rec_interact() -> void:
 		_events.append([_elapsed, "interact"])
 
 
+func _on_rec_attack() -> void:
+	if _recording and _elapsed > 0.05:
+		_events.append([_elapsed, "attack"])
+
+
+func _on_rec_skill() -> void:
+	if _recording and _elapsed > 0.05:
+		_events.append([_elapsed, "skill"])
+
+
+func _cleanup_recording_signals() -> void:
+	if MobileInputManager.interact_pressed.is_connected(_on_rec_interact):
+		MobileInputManager.interact_pressed.disconnect(_on_rec_interact)
+	if MobileInputManager.attack_pressed.is_connected(_on_rec_attack):
+		MobileInputManager.attack_pressed.disconnect(_on_rec_attack)
+	if MobileInputManager.skill_pressed.is_connected(_on_rec_skill):
+		MobileInputManager.skill_pressed.disconnect(_on_rec_skill)
+
+
+func _cancel_recording() -> void:
+	_recording = false
+	_cleanup_recording_signals()
+	_frames.clear()
+	_events.clear()
+	_refresh_label()
+
+
+func _on_room_changed(from_room: StringName, to_room: StringName) -> void:
+	if _recording and (from_room == _room_id() or to_room != _room_id()):
+		_cancel_recording()
+
+
+func _exit_tree() -> void:
+	_cancel_recording()
+	if RoomManager.room_changed.is_connected(_on_room_changed):
+		RoomManager.room_changed.disconnect(_on_room_changed)
+
+
 func _physics_process(delta: float) -> void:
 	if not _recording:
 		return
 	if RoomManager.get_active_room_id() != _room_id():
-		_recording = false
+		_cancel_recording()
 		return
 	if UiGate.pauses_world_threats():
 		return
@@ -129,8 +179,7 @@ func _physics_process(delta: float) -> void:
 
 func _finish_recording() -> void:
 	_recording = false
-	if MobileInputManager.interact_pressed.is_connected(_on_rec_interact):
-		MobileInputManager.interact_pressed.disconnect(_on_rec_interact)
+	_cleanup_recording_signals()
 	if _frames.size() < 4:
 		_refresh_label()
 		return

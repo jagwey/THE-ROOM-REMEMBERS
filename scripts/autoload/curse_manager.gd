@@ -32,6 +32,15 @@ func add_curse(amount: float, reason: StringName = &"") -> void:
 		_fail_life()
 
 
+func clear_curse(amount: float) -> void:
+	if amount <= 0.0 or _failing:
+		return
+	var prev := curse
+	curse = clampf(curse - amount, 0.0, CURSE_MAX)
+	curse_changed.emit(curse)
+	_update_stage(prev)
+
+
 func _update_stage(prev: float) -> void:
 	var new_stage := 0
 	if curse >= 75.0:

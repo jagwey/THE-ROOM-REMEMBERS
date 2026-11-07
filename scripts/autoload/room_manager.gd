@@ -127,6 +127,7 @@ func enter_room(room_id: StringName, spawn_id: StringName = &"default", apply_ro
 		root.process_mode = Node.PROCESS_MODE_INHERIT
 		_set_room_physics(root, true)
 		_set_room_canvas_layers(root, true)
+		_setup_m3_mechanics(room_id, root, entry["spawns"])
 
 	var bounds: Rect2 = entry["bounds"]
 	var spawns: Dictionary = entry["spawns"]
@@ -148,6 +149,24 @@ func enter_room(room_id: StringName, spawn_id: StringName = &"default", apply_ro
 
 	GameState.character_current_life_knowledge["spawn_id"] = spawn_id
 	GameState.mark_room_visited(room_id)
+
+	# F27: Gothic Region Title Cards & regions_visited
+	var region := String(room_id).get_slice("_", 0)
+	var visited_regions: Array = GameState.world_memory_state.get("regions_visited", [])
+	if not visited_regions.has(region):
+		visited_regions.append(region)
+		GameState.world_memory_state["regions_visited"] = visited_regions
+		var disc_reg: Array = GameState.player_progress_knowledge.get("discovered_regions", [])
+		if not disc_reg.has(region):
+			disc_reg.append(region)
+			GameState.player_progress_knowledge["discovered_regions"] = disc_reg
+		var card = get_tree().get_first_node_in_group("region_title_card")
+		if card and card.has_method("show_region_title"):
+			card.show_region_title(region)
+		elif ResourceLoader.exists("res://scripts/ui/region_title_card.gd"):
+			var card_cls = load("res://scripts/ui/region_title_card.gd")
+			if card_cls and card_cls.has_method("show_region_title"):
+				card_cls.show_region_title(region)
 
 	if apply_room_checkpoint:
 		var cp: Vector2 = entry["checkpoint"] as Vector2
@@ -262,8 +281,19 @@ func _set_room_physics(node: Node, active: bool) -> void:
 			object.collision_layer = 0
 			object.collision_mask = 0
 		elif object.has_meta("room_physics_suspended"):
-			object.collision_layer = int(object.get_meta("room_saved_layer"))
-			object.collision_mask = int(object.get_meta("room_saved_mask"))
+			var saved_layer: int = int(object.get_meta("room_saved_layer"))
+			var saved_mask: int = int(object.get_meta("room_saved_mask"))
+			# Açılmış engellerin katman 1 olarak yeniden canlanmasını engelle
+			if object.has_method("_is_open") and bool(object.call("_is_open")):
+				saved_layer = 0
+			elif object.has_method("is_broken") and bool(object.call("is_broken")):
+				saved_layer = 0
+			elif "puzzle_id" in object and PuzzleManager.is_solved(object.get("puzzle_id")):
+				saved_layer = 0
+			elif "open_flag" in object and object.get("open_flag") != &"" and bool(GameState.get_world_flag(object.get("open_flag"), false)):
+				saved_layer = 0
+			object.collision_layer = saved_layer
+			object.collision_mask = saved_mask
 			object.remove_meta("room_physics_suspended")
 	for child in node.get_children():
 		_set_room_physics(child, active)
@@ -289,3 +319,58 @@ func reset_registry() -> void:
 	_rooms.clear()
 	_current = &""
 	_extra_bootstrapped = false
+
+
+func _setup_m3_mechanics(room_id: StringName, root: Node2D, spawns: Dictionary) -> void:
+	if root == null or root.has_meta("m3_mechanics_ready"):
+		return
+	root.set_meta("m3_mechanics_ready", true)
+
+	var rid := String(room_id)
+
+	# 1. Cracked Mirror setup (F28)
+	const MIRROR_POSITIONS := {
+		"awakening_balcony": Vector2(240, 288),
+		"decay_garden": Vector2(480, 288),
+		"library_hall": Vector2(520, 288),
+		"experiment_cells": Vector2(480, 288),
+		"mirrors_reverse": Vector2(480, 288),
+	}
+	if MIRROR_POSITIONS.has(rid):
+		var pos: Vector2 = MIRROR_POSITIONS[rid]
+		spawns["from_mirror"] = pos + Vector2(24, 0)
+		var mirror_scene := load("res://scenes/props/cracked_mirror.tscn") as PackedScene
+		if mirror_scene:
+			var mirror := mirror_scene.instantiate() as Area2D
+			mirror.mirror_id = room_id
+			mirror.position = pos
+			root.add_child(mirror)
+
+	# 2. Walking Shades setup (F22)
+	const WALKING_SHADES := {
+		"decay_garden": [Vector2(420, 288)],
+		"decay_catacombs": [Vector2(450, 288), Vector2(750, 288)],
+		"experiment_cells": [Vector2(350, 288)],
+	}
+	if WALKING_SHADES.has(rid):
+		var walk_scene := load("res://scenes/world/memory_shade_walking.tscn") as PackedScene
+		if walk_scene:
+			for p in WALKING_SHADES[rid]:
+				var shade := walk_scene.instantiate() as CharacterBody2D
+				shade.position = p
+				root.add_child(shade)
+
+	# 3. Shielded Shades setup (F23)
+	const SHIELDED_SHADES := {
+		"experiment_cells": [Vector2(650, 288)],
+		"experiment_circuit": [Vector2(480, 288)],
+		"mirrors_reverse": [Vector2(480, 288)],
+		"mirrors_labyrinth": [Vector2(520, 288)],
+	}
+	if SHIELDED_SHADES.has(rid):
+		var shield_scene := load("res://scenes/world/memory_shade_shielded.tscn") as PackedScene
+		if shield_scene:
+			for p in SHIELDED_SHADES[rid]:
+				var shade := shield_scene.instantiate() as CharacterBody2D
+				shade.position = p
+				root.add_child(shade)

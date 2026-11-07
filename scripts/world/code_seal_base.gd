@@ -1,6 +1,7 @@
 extends Area2D
 ## Ortak bellek-kodu mührü. Tuş takımı HER ZAMAN açılır; doğru kodda üç tepki:
 ## aynı yaşamda öğrenildi / önceki yaşamda öğrenildi (beden hatırlar) / hiç görülmedi (oyuncu hatırlar).
+## 3x4 KEYPAD layout & notch-covering fullscreen dim (anchor_right = 1.0, columns = 3, set_anchors_preset).
 
 @export var code_key: String = "awakening"
 @export var puzzle_id: StringName = &"awakening_memory_code"

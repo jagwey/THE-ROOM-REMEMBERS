@@ -79,8 +79,16 @@ func _physics_process(delta: float) -> void:
 
 
 func _fire(kind: String) -> void:
-	if kind != "interact":
-		return
+	match kind:
+		"interact":
+			_fire_interact()
+		"attack":
+			_fire_attack()
+		"skill":
+			_fire_skill()
+
+
+func _fire_interact() -> void:
 	var best: Node2D = null
 	var best_d := 48.0
 	for lever in get_tree().get_nodes_in_group("echo_lever"):
@@ -92,6 +100,42 @@ func _fire(kind: String) -> void:
 			best = lever
 	if best and best.has_method("pull_by_echo"):
 		best.pull_by_echo()
+
+
+func _fire_attack() -> void:
+	if _sprite and _sprite.sprite_frames and _sprite.sprite_frames.has_animation("attack"):
+		_sprite.play("attack")
+	var am := get_node_or_null("/root/AudioManager")
+	if am:
+		am.play_sfx(&"sword_swing")
+	var dir := -1.0 if (_sprite and _sprite.flip_h) else 1.0
+	var strike_pos := global_position + Vector2(24.0 * dir, -18.0)
+	var space := get_world_2d().direct_space_state
+	if space != null:
+		var q := PhysicsPointQueryParameters2D.new()
+		q.position = strike_pos
+		q.collision_mask = 4 | 8 | 32
+		q.collide_with_areas = true
+		q.collide_with_bodies = true
+		for hit in space.intersect_point(q, 8):
+			var target: Node = hit.get("collider")
+			if target and target.has_method("receive_sword_hit"):
+				target.receive_sword_hit(self, dir, 0)
+
+
+func _fire_skill() -> void:
+	var am := get_node_or_null("/root/AudioManager")
+	if am:
+		am.play_sfx(&"soul_slash")
+	var dir := -1.0 if (_sprite and _sprite.flip_h) else 1.0
+	var wave_script = load("res://scripts/player/soul_slash_wave.gd")
+	if wave_script:
+		var wave: Area2D = Area2D.new()
+		wave.set_script(wave_script)
+		wave.global_position = global_position + Vector2(24.0 * dir, -20.0)
+		wave.set("direction", dir)
+		if get_parent():
+			get_parent().add_child(wave)
 
 
 func _vanish() -> void:

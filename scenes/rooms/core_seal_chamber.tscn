@@ -39,7 +39,7 @@ position = Vector2(120, 288)
 position = Vector2(80, 288)
 
 [node name="from_chamber" type="Marker2D" parent="Spawns"]
-position = Vector2(120, 288)
+position = Vector2(880, 288)
 
 [node name="ParallaxFar" type="Parallax2D" parent="."]
 repeat_size = Vector2(640, 0)

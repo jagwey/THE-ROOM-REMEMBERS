@@ -1,4 +1,4 @@
-﻿.godot/
+.godot/
 .import/
 *.translation
 *.apk
@@ -6,3 +6,5 @@
 build/
 .mono/
 data_*/
+.agents/
+

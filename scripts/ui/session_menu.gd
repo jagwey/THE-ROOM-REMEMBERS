@@ -21,6 +21,7 @@ var _continue_button: Button
 var _quit_button: Button
 var _joy_button: Button
 var _fs_button: Button
+var _haptics_button: Button
 var _vol_button: Button
 var _music_button: Button
 var _help_label: Label
@@ -52,7 +53,12 @@ func _ready() -> void:
 	_menu_button.grow_horizontal = Control.GROW_DIRECTION_BEGIN
 	GothicModalPanel.style_button(_menu_button)
 	_menu_button.pressed.connect(toggle_menu)
-	add_child(_menu_button)
+	var safe_area := MarginContainer.new()
+	safe_area.name = "SafeArea"
+	safe_area.set_anchors_preset(Control.PRESET_FULL_RECT)
+	safe_area.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(safe_area)
+	safe_area.add_child(_menu_button)
 	UiGate.gate_changed.connect(_on_gate_changed)
 	_panel = GothicModalPanel.new()
 	## Dokunmatikte yardım metni ve tam ekran düğmesi yok — panel kısalır.
@@ -78,6 +84,8 @@ func _ready() -> void:
 	_fs_button.visible = not OS.has_feature("mobile")
 	_joy_button = _panel.add_button("", _toggle_joystick_mode, row)
 	_joy_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_haptics_button = _panel.add_button("", _toggle_haptics, row)
+	_haptics_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_quit_button = _panel.add_button("Kaydet ve Çık", _on_quit_button)
 	_refresh_settings_buttons()
 	_panel.hide()
@@ -114,7 +122,7 @@ func _open_title() -> void:
 	_title_shown = true
 	_title_mode = true
 	_menu_button.visible = false
-	UiGate.set_journal(true)
+	UiGate.set_title(true)
 	MobileInputManager.clear_held_inputs()
 	## Kayıt main._ready içinde yüklenir (bu düğümden sonra) — kartı bir kare sonra doldur.
 	_title_screen.call_deferred("open", _had_save)
@@ -232,6 +240,12 @@ func _toggle_joystick_mode() -> void:
 	_refresh_settings_buttons()
 
 
+func _toggle_haptics() -> void:
+	MobileInputManager.haptics_enabled = not MobileInputManager.haptics_enabled
+	_save_settings()
+	_refresh_settings_buttons()
+
+
 func _cycle_volume() -> void:
 	var i := 0
 	for k in VOLUME_STEPS.size():
@@ -252,12 +266,18 @@ func _toggle_music() -> void:
 
 func _refresh_settings_buttons() -> void:
 	_joy_button.text = _joy_text()
+	if _haptics_button:
+		_haptics_button.text = _haptics_text()
 	_vol_button.text = _vol_text()
 	_music_button.text = _music_text()
 
 
 func _joy_text() -> String:
 	return "Joystick: Yüzen" if MobileInputManager.floating_joystick else "Joystick: Sabit"
+
+
+func _haptics_text() -> String:
+	return "Titreşim: Açık" if MobileInputManager.haptics_enabled else "Titreşim: Kapalı"
 
 
 func _vol_text() -> String:
@@ -274,6 +294,7 @@ func _load_settings() -> void:
 		_volume = clampf(float(cfg.get_value("audio", "volume", 1.0)), 0.0, 1.0)
 		_music_on = bool(cfg.get_value("audio", "music", true))
 		MobileInputManager.floating_joystick = bool(cfg.get_value("input", "floating_joystick", true))
+		MobileInputManager.haptics_enabled = bool(cfg.get_value("input", "haptics", true))
 	AudioManager.set_master_volume(_volume)
 	AudioManager.set_music_enabled(_music_on)
 
@@ -283,6 +304,7 @@ func _save_settings() -> void:
 	cfg.set_value("audio", "volume", _volume)
 	cfg.set_value("audio", "music", _music_on)
 	cfg.set_value("input", "floating_joystick", MobileInputManager.floating_joystick)
+	cfg.set_value("input", "haptics", MobileInputManager.haptics_enabled)
 	cfg.save(SETTINGS_PATH)
 
 
@@ -317,12 +339,9 @@ func toggle_menu() -> void:
 	elif UiGate.current_layer() == UiGate.Layer.NONE:
 		open_menu()
 
-## Göz açma vb. sinematikte Menü düğmesi görünmez; bitince geri gelir.
+## Göz açma vb. sinematikte veya modallarda Menü düğmesi gizlenir.
 func _on_gate_changed(layer: int) -> void:
-	if layer == UiGate.Layer.CUTSCENE:
-		_menu_button.visible = false
-	elif not _title_mode and not _panel.visible and not is_title_open():
-		_menu_button.visible = true
+	_menu_button.visible = (layer == UiGate.Layer.NONE)
 
 
 func open_menu() -> void:
@@ -331,7 +350,7 @@ func open_menu() -> void:
 	_title_mode = false
 	_panel.dim.color.a = 0.78
 	_panel.show()
-	UiGate.set_journal(true)
+	UiGate.set_pause_menu(true)
 	MobileInputManager.clear_held_inputs()
 	_refresh_mode()
 
@@ -340,7 +359,8 @@ func close_menu() -> void:
 	_title_mode = false
 	_menu_button.visible = true
 	_panel.hide()
-	UiGate.set_journal(false)
+	UiGate.set_pause_menu(false)
+	UiGate.set_title(false)
 	MobileInputManager.clear_held_inputs()
 	if was_title:
 		title_closed.emit()

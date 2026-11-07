@@ -15,9 +15,19 @@ var interact_held: bool = false
 var jump_held: bool = false
 ## HUD dinamik joystick tercihi (ayar menüsünden değiştirilebilir).
 var floating_joystick: bool = true
+## Mobil haptik titreşim tercihi (ayar menüsünden değiştirilebilir).
+var haptics_enabled: bool = true
 ## Kontrol yeniden verilince (diyalog/ölüm/menü sonrası) basılı kalan yön girişi
 ## karakteri kendi kendine koşturmasın: önce nötre dönülmeli (taze basış şartı).
 var _need_neutral: bool = true
+
+
+## Dokunmatik veya Android haptik titreşimi.
+func vibrate(duration_ms: int = 20) -> void:
+	if not haptics_enabled:
+		return
+	if OS.has_feature("mobile") or OS.has_feature("android") or OS.get_environment("TORIMON_TEST_HAPTICS") == "1":
+		Input.vibrate_handheld(duration_ms)
 
 
 ## Dokunmatik arayüz mü (Android/iOS)? Metinler klavye tuşu yerine HUD buton adı söyler.
@@ -154,8 +164,14 @@ func _on_go_back() -> void:
 	if frame - _last_back_frame < 3:
 		return
 	_last_back_frame = frame
-	print("[TRR] go_back")
-	# Önce günlüğü kapat, yoksa duraklatma menüsünü aç/kapat.
+	var hud := get_tree().get_first_node_in_group("hud")
+	if hud and hud.has_method("cancel_seal_code") and hud.has_method("is_seal_code_open") and hud.is_seal_code_open():
+		hud.cancel_seal_code()
+		return
+	var page_puzzle := get_tree().get_first_node_in_group("page_puzzle")
+	if page_puzzle and page_puzzle.visible and page_puzzle.has_method("close_puzzle"):
+		page_puzzle.close_puzzle()
+		return
 	var journal := get_tree().get_first_node_in_group("journal_ui")
 	if journal and journal.visible and journal.has_method("close_journal"):
 		journal.close_journal()
@@ -165,14 +181,22 @@ func _on_go_back() -> void:
 		menu.handle_back()
 
 
+var _last_autosave_frame: int = -100
+
 ## Uygulama arka plana geçince ilerlemeyi yaz ve oyunu duraklat (telefon araması, ana ekran).
 func _autosave_and_pause() -> void:
+	var frame := Engine.get_process_frames()
+	if frame == _last_autosave_frame:
+		return
+	_last_autosave_frame = frame
 	if not OS.has_feature("mobile") or get_tree() == null or get_tree().current_scene == null:
+		return
+	var menu := get_tree().get_first_node_in_group("session_menu")
+	if menu and menu.has_method("is_title_open") and menu.is_title_open():
 		return
 	if DeathManager.is_dying or UiGate.current_layer() == UiGate.Layer.ENDING:
 		return
 	SaveManager.save_resume_point()
-	var menu := get_tree().get_first_node_in_group("session_menu")
 	if menu and menu.has_method("open_menu") and UiGate.current_layer() == UiGate.Layer.NONE:
 		menu.open_menu()
 

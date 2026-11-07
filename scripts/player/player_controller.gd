@@ -62,6 +62,8 @@ var _squash: Vector2 = Vector2.ONE
 var scripted_walk: bool = false
 var _last_interact_target: Node = null
 var _last_interact_ms: int = -10000
+var _last_safe_floor_pos: Vector2 = Vector2.ZERO
+var _safe_floor_pos: Vector2 = Vector2.ZERO
 
 
 func _ready() -> void:
@@ -71,6 +73,7 @@ func _ready() -> void:
 	sprite.offset = Vector2(0, -44)
 	sprite.frame_changed.connect(_on_sprite_frame)
 	attack_area.monitoring = false
+	attack_area.position.y = -20.0
 	interact_area.position.y = -18.0
 	var interact_shape := interact_area.get_node("CollisionShape2D") as CollisionShape2D
 	var reach := RectangleShape2D.new()
@@ -84,6 +87,8 @@ func _ready() -> void:
 	MobileInputManager.attack_pressed.connect(_on_attack)
 	MobileInputManager.dash_pressed.connect(_on_dash)
 	MobileInputManager.interact_pressed.connect(_on_interact)
+	_last_safe_floor_pos = global_position
+	_safe_floor_pos = global_position
 	call_deferred("_apply_initial_checkpoint_if_new_game")
 	GameState.player_progress_knowledge["seen_keeper"] = true
 	var vfx := get_tree().get_first_node_in_group("curse_vfx")
@@ -110,6 +115,8 @@ func _bind_curse_vfx() -> void:
 func _on_curse_stagger() -> void:
 	if UiGate.pauses_world_threats():
 		return
+	if _state == &"dash":
+		_exit_shadow_dash()
 	_stagger_timer = 0.35
 	if sprite.sprite_frames and sprite.sprite_frames.has_animation("hurt"):
 		sprite.play("hurt")
@@ -119,7 +126,7 @@ func _on_death_started(_reason: StringName) -> void:
 	_input_locked = true
 	MobileInputManager.clear_held_inputs()
 	velocity = Vector2.ZERO
-	_state = &"idle"
+	_exit_shadow_dash()
 	attack_area.monitoring = false
 
 
@@ -145,9 +152,11 @@ func _physics_process(delta: float) -> void:
 			var col := move_and_collide(Vector2(0, 24), true)
 			if col:
 				global_position += col.get_travel()
-		if _state == &"attack" or _state == &"dash":
-			_state = &"idle"
+		if _state == &"dash":
+			_exit_shadow_dash()
+		if _state == &"attack":
 			attack_area.monitoring = false
+			_state = &"idle"
 		_state = &"run" if scripted_walk else (&"idle" if _state == &"run" else _state)
 		if not _input_locked:
 			_update_anim()
@@ -222,6 +231,16 @@ func _physics_process(delta: float) -> void:
 	var was_air := not on_floor
 	var fall_speed := velocity.y
 	move_and_slide()
+	for i in range(get_slide_collision_count()):
+		var col := get_slide_collision(i)
+		var collider := col.get_collider()
+		if collider and collider.has_method("apply_push"):
+			var normal := col.get_normal()
+			if absf(normal.x) > 0.5 and signf(-normal.x) == _facing:
+				collider.apply_push(_facing)
+	if is_on_floor() and not is_dashing() and global_position.y < 320.0:
+		_last_safe_floor_pos = global_position
+		_safe_floor_pos = global_position
 	if was_air and is_on_floor() and fall_speed > 90.0:
 		var k := clampf(fall_speed / 520.0, 0.0, 1.0)
 		_squash = Vector2(1.0 + 0.22 * k, 1.0 - 0.2 * k)
@@ -236,7 +255,7 @@ func _physics_process(delta: float) -> void:
 		_phase_timer = 0.12
 	_update_air_phase(delta)
 	_update_anim()
-	attack_area.position.x = 28.0 * _facing
+	attack_area.position = Vector2(28.0 * _facing, -20.0)
 	interact_area.position.x = 20.0 * _facing
 
 
@@ -293,10 +312,16 @@ func has_shadow_dash() -> bool:
 	return bool(GameState.player_progress_knowledge.get("ability_shadow_dash", false))
 
 
-func _end_dash() -> void:
-	_state = &"idle"
-	_dash_cd = DASH_COOLDOWN
+## Gölge atılması durumundan güvenli çıkış: çarpışma maskesini daima 1 | LAYER_CURSE_BARRIER (17) yapar.
+func _exit_shadow_dash() -> void:
 	collision_mask = 1 | LAYER_CURSE_BARRIER
+	if _state == &"dash":
+		_state = &"idle"
+
+
+func _end_dash() -> void:
+	_dash_cd = DASH_COOLDOWN
+	_exit_shadow_dash()
 	velocity.x = _dash_dir * SPEED * 0.6
 
 
@@ -359,6 +384,7 @@ func _hit_keeper_if_any() -> void:
 func _on_hit_confirm(target: Node, trauma: float) -> void:
 	_camera_trauma(trauma)
 	_play_sfx(&"sword_hit")
+	MobileInputManager.vibrate(18)
 	var at := global_position + Vector2(26.0 * _facing, -22.0)
 	if target is Node2D:
 		at = ((target as Node2D).global_position + at) * 0.5
@@ -617,7 +643,7 @@ func get_facing() -> float:
 
 
 func play_death() -> void:
-	_state = &"idle"
+	_exit_shadow_dash()
 	velocity = Vector2.ZERO
 	_input_locked = true
 	if sprite.sprite_frames and sprite.sprite_frames.has_animation("death"):
@@ -648,6 +674,8 @@ func get_trail() -> Array:
 
 
 func respawn_at(pos: Vector2) -> void:
+	_exit_shadow_dash()
+	_last_safe_floor_pos = pos
 	_trail.clear()
 	_hurt_cooldown = 3.0
 	_dash_timer = 0.0
@@ -667,3 +695,11 @@ func respawn_at(pos: Vector2) -> void:
 	visible = true
 	sprite.play("idle")
 	# Kilit rebirth_completed ile kalkar; erken açılma olmasın.
+
+
+func get_last_safe_floor_pos() -> Vector2:
+	if _safe_floor_pos != Vector2.ZERO:
+		return _safe_floor_pos
+	if _last_safe_floor_pos != Vector2.ZERO:
+		return _last_safe_floor_pos
+	return global_position

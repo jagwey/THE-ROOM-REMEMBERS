@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://region_title_card"]
+
+[ext_resource type="Script" path="res://scripts/ui/region_title_card.gd" id="1"]
+
+[node name="RegionTitleCard" type="CanvasLayer"]
+layer = 28
+script = ExtResource("1")

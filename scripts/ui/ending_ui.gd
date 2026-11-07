@@ -75,12 +75,14 @@ func _on_dim_gui(event: InputEvent) -> void:
 		_touch_armed = true
 		dim.accept_event()
 	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		if OS.has_feature("mobile") or event.device == InputEvent.DEVICE_ID_EMULATION or event.is_echo():
+			return
 		_advance()
 		dim.accept_event()
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if not _playing:
+	if not _playing or event.device == InputEvent.DEVICE_ID_EMULATION:
 		return
 	if event.is_action_pressed("interact") or event.is_action_pressed("ui_accept"):
 		_advance()
