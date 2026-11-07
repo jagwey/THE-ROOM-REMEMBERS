@@ -6,7 +6,7 @@ config_version=5
 
 config/name="The Room Remembers"
 config/description="You forget. It remembers. — TORIMON"
-config/version="1.4.1"
+config/version="1.4.2"
 run/main_scene="res://scenes/main/main.tscn"
 config/quit_on_go_back=false
 config/features=PackedStringArray("4.7", "GL Compatibility")
@@ -29,6 +29,7 @@ EndingManager="*res://scripts/autoload/ending_manager.gd"
 Palette="*res://scripts/autoload/palette.gd"
 UiTheme="*res://scripts/autoload/ui_theme.gd"
 AudioManager="*res://scripts/autoload/audio_manager.gd"
+UpdateChecker="*res://scripts/autoload/update_checker.gd"
 
 [display]
 

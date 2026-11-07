@@ -238,6 +238,22 @@ func _build_main_page(parent: Control) -> void:
 	_button(p, "Ayarlar", func(): _show_page(&"settings"))
 	_button(p, "Nasıl oynanır", func(): _show_page(&"help"))
 	_button(p, "Oyundan Çık", func(): _show_page(&"quit_confirm"))
+	## Yeni sürüm varsa (UpdateChecker, public release repo) görünür.
+	_update_button = _button(p, "Güncelleme var", func(): UpdateChecker.open_download())
+	_update_button.add_theme_color_override("font_color", Color("#E05A6A"))
+	_update_button.visible = false
+	UpdateChecker.update_available.connect(_on_update_available)
+	if UpdateChecker.has_update:
+		_on_update_available(UpdateChecker.latest_version, UpdateChecker.download_url)
+
+
+var _update_button: Button
+
+
+func _on_update_available(version: String, _url: String) -> void:
+	if _update_button:
+		_update_button.text = "Güncelle → v%s" % version
+		_update_button.visible = true
 
 
 func _build_settings_page(parent: Control) -> void:

@@ -73,3 +73,7 @@ Dal: cursor/playable-story-flow-8e4e · Sürüm: v1.2.0 (versionCode 16)
 - [x] "Sürekli menüye atıyor" (Android): `mobile_input_manager.gd` — FOCUS_OUT (bildirim perdesi/jest çubuğu/overlay) artık menü açmıyor, sadece kaydediyor; menü yalnız PAUSED'da. Oynanışta geri jesti (sol joystick kenar kaydırma) için 1.5 sn içinde ikinci geri gerekir, ilkinde "Menü için tekrar geri" ipucu. `session_menu.gd`: `is_menu_open()`, test kancası `TORIMON_FORCE_TITLE`. Yeni audit `scripts/dev/start_flow_audit.gd` (0 fail). Cihazda doğrulanmadı.
 - [x] Konuşma portreleri: Noroi ve Shilda yeni görsellerden 384px (`assets/portraits/portrait_noroi*.png`, `portrait_shilda.png`)
 - [x] Sürüm 1.4.1 / versionCode 19; tüm audit'ler 0 fail
+
+## v1.4.2
+- [x] Oyun içi güncelleme kontrolü: `scripts/autoload/update_checker.gd` (autoload `UpdateChecker`), public repo `jagwey/THE-ROOM-REMEMBERS-release` latest release; başlık ekranında "Güncelle → vX" (`title_screen.gd`). Android internet izni açıldı. Release akışı `CLAUDE.md` → "Release" bölümünde.
+- [x] Sürüm 1.4.2 / versionCode 20
