@@ -3,6 +3,8 @@ extends Node
 
 signal room_changed(from_room: StringName, to_room: StringName)
 
+const InteractGlowScript := preload("res://scripts/world/interact_glow.gd")
+
 ## Oda meta: bounds, isimli spawn, checkpoint (spawn yoksa), atmosfer klasörü, sahne kökü.
 var _rooms: Dictionary = {} ## StringName -> { root, bounds, spawns, checkpoint, checkpoint_room, atmosphere_bg }
 
@@ -27,7 +29,19 @@ const EXTRA_ROOM_SCENE_PATHS: PackedStringArray = [
 
 func _ready() -> void:
 	## main.tscn odaları zaten instance eder; çift yükleme yok.
-	pass
+	## Etkileşilebilir her nesneye (sonradan eklenenler dahil) parlayan hale tak.
+	get_tree().node_added.connect(_on_node_added)
+
+
+func _on_node_added(n: Node) -> void:
+	if n is Node2D and n.has_method("on_interact"):
+		call_deferred("_attach_glow", n)
+
+
+## Tipsiz parametre: ertelenmiş çağrıdan önce silinen düğümde motor hatası vermesin.
+func _attach_glow(n) -> void:
+	if is_instance_valid(n) and n is Node2D:
+		InteractGlowScript.attach_to(n as Node2D)
 
 
 func _bootstrap_extra_rooms() -> void:

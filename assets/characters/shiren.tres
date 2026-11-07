@@ -83,9 +83,9 @@ region = Rect2(288, 288, 96, 96)
 filter_clip = true
 
 [resource]
-animations = [{"frames": [{"duration": 1.0, "texture": SubResource("Atlas_0")}, {"duration": 1.0, "texture": SubResource("Atlas_1")}, {"duration": 1.0, "texture": SubResource("Atlas_2")}, {"duration": 1.0, "texture": SubResource("Atlas_3")}], "loop": true, "name": &"idle", "speed": 5.0},
-{"frames": [{"duration": 1.0, "texture": SubResource("Atlas_4")}, {"duration": 1.0, "texture": SubResource("Atlas_5")}, {"duration": 1.0, "texture": SubResource("Atlas_6")}, {"duration": 1.0, "texture": SubResource("Atlas_7")}], "loop": true, "name": &"run", "speed": 10.0},
-{"frames": [{"duration": 1.0, "texture": SubResource("Atlas_8")}, {"duration": 1.0, "texture": SubResource("Atlas_9")}, {"duration": 1.0, "texture": SubResource("Atlas_10")}, {"duration": 1.0, "texture": SubResource("Atlas_11")}], "loop": false, "name": &"attack", "speed": 10.0},
-{"frames": [{"duration": 1.0, "texture": SubResource("Atlas_12")}, {"duration": 1.0, "texture": SubResource("Atlas_13")}], "loop": false, "name": &"dash", "speed": 12.0},
+animations = [{"frames": [{"duration": 1.0, "texture": SubResource("Atlas_0")}, {"duration": 1.0, "texture": SubResource("Atlas_1")}, {"duration": 1.0, "texture": SubResource("Atlas_2")}, {"duration": 1.0, "texture": SubResource("Atlas_3")}], "loop": true, "name": &"idle", "speed": 6.0},
+{"frames": [{"duration": 1.0, "texture": SubResource("Atlas_4")}, {"duration": 1.0, "texture": SubResource("Atlas_5")}, {"duration": 1.0, "texture": SubResource("Atlas_6")}, {"duration": 1.0, "texture": SubResource("Atlas_7")}], "loop": true, "name": &"run", "speed": 12.0},
+{"frames": [{"duration": 1.0, "texture": SubResource("Atlas_8")}, {"duration": 1.0, "texture": SubResource("Atlas_9")}, {"duration": 1.0, "texture": SubResource("Atlas_10")}, {"duration": 1.0, "texture": SubResource("Atlas_11")}], "loop": false, "name": &"attack", "speed": 12.0},
+{"frames": [{"duration": 1.0, "texture": SubResource("Atlas_12")}, {"duration": 1.0, "texture": SubResource("Atlas_13")}], "loop": false, "name": &"dash", "speed": 14.0},
 {"frames": [{"duration": 1.0, "texture": SubResource("Atlas_14")}], "loop": false, "name": &"hurt", "speed": 5.0},
 {"frames": [{"duration": 1.0, "texture": SubResource("Atlas_14")}, {"duration": 1.0, "texture": SubResource("Atlas_15")}], "loop": false, "name": &"death", "speed": 4.0}]

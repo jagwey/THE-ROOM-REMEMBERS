@@ -90,7 +90,8 @@ func _set_pressed(value: bool, emit_solve: bool) -> void:
 	_pressed = value
 	modulate = Color(1.2, 0.7, 0.75, 1.0) if _pressed else Color.WHITE
 	pressed_changed.emit(_pressed)
-	if _pressed and emit_solve:
+	## Çözüm etkileri (mesaj, bayrak, kayıt) yalnız ilk çözümde — odaya dönüp plakaya tekrar basınca susar.
+	if _pressed and emit_solve and not PuzzleManager.is_solved(puzzle_id):
 		PuzzleManager.mark_solved(puzzle_id)
 		if puzzle_id == &"awakening_weight":
 			GameState.set_world_flag(&"awakening_door_opened", true)

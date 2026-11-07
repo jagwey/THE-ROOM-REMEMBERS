@@ -1,16 +1,16 @@
 extends CharacterBody2D
 ## Side-view Shiren: yürü, zıpla, saldır (kombo), dash (afterimage), ruh kesimi, etkileş.
 
-const SPEED := 145.0
-const ACCELERATION := 900.0
-const FRICTION := 1100.0
-const DASH_SPEED := 300.0
+const SPEED := 175.0
+const ACCELERATION := 1150.0
+const FRICTION := 1350.0
+const DASH_SPEED := 340.0
 const DASH_TIME := 0.18
 const DASH_COOLDOWN := 0.45
 const ATTACK_TIME := 0.26
 const COMBO_WINDOW := 0.38
 const GRAVITY := 900.0
-const JUMP_VELOCITY := -290.0
+const JUMP_VELOCITY := -322.0
 const JUMP_CUT := 0.45
 const COYOTE_TIME := 0.12
 const JUMP_BUFFER := 0.1
@@ -42,6 +42,8 @@ var _combo_timer: float = 0.0
 var _hit_this_swing: Array = []
 var _trail_timer: float = 0.0
 var _curse_jitter: float = 0.0
+## Prosedürel squash/stretch — az kareli sprite'a canlılık katar.
+var _squash: Vector2 = Vector2.ONE
 
 
 func _ready() -> void:
@@ -189,9 +191,12 @@ func _physics_process(delta: float) -> void:
 	var was_air := not on_floor
 	var fall_speed := velocity.y
 	move_and_slide()
-	if was_air and is_on_floor() and fall_speed > 240.0:
-		_camera_trauma(0.18)
-		_play_sfx(&"land")
+	if was_air and is_on_floor() and fall_speed > 90.0:
+		var k := clampf(fall_speed / 520.0, 0.0, 1.0)
+		_squash = Vector2(1.0 + 0.22 * k, 1.0 - 0.2 * k)
+		if fall_speed > 240.0:
+			_camera_trauma(0.18)
+			_play_sfx(&"land")
 	_update_anim()
 	attack_area.position.x = 28.0 * _facing
 	interact_area.position.x = 20.0 * _facing
@@ -214,6 +219,7 @@ func _do_jump() -> void:
 	_jump_buffer = 0.0
 	_coyote = 0.0
 	velocity.y = JUMP_VELOCITY
+	_squash = Vector2(0.84, 1.18)
 	if _state == &"attack":
 		return
 	_play_sfx(&"jump")
@@ -406,6 +412,22 @@ func _update_anim() -> void:
 		sprite.speed_scale = 1.0 + 0.2 * float(_combo)
 	else:
 		sprite.speed_scale = 1.0
+	_apply_squash()
+
+
+func _apply_squash() -> void:
+	var dt := get_physics_process_delta_time()
+	_squash = _squash.lerp(Vector2.ONE, clampf(dt * 11.0, 0.0, 1.0))
+	var s := _squash
+	if not is_on_floor() and _state != &"dash":
+		## Havada dikey hıza göre hafif uzama; tepe noktasında yuvarlak.
+		var st := clampf(absf(velocity.y) / 520.0, 0.0, 1.0) * 0.08
+		s *= Vector2(1.0 - st, 1.0 + st)
+	elif _state == &"run":
+		## Koşu sekmesi: adım ritminde küçük dikey nefes.
+		var t := float(Time.get_ticks_msec()) * 0.001
+		s *= Vector2(1.0, 1.0 + 0.035 * sin(t * 22.0))
+	sprite.scale = s
 
 
 func _on_attack() -> void:

@@ -107,7 +107,7 @@ func _physics_process(delta: float) -> void:
 	else:
 		vx = (sp.x - _prev_target_x) / maxf(delta, 0.0001)
 	_prev_target_x = sp.x
-	var speed_ratio := clampf(absf(vx) / 145.0, 0.0, 1.6)
+	var speed_ratio := clampf(absf(vx) / 175.0, 0.0, 1.6)
 	var want_look := signf(vx) * look_ahead_pixels * speed_ratio if absf(vx) > 4.0 else _look_offset
 	_look_offset = lerpf(_look_offset, want_look, 1.0 - exp(-look_smooth_lambda * delta))
 
