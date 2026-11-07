@@ -123,12 +123,92 @@ func _setup_textures() -> void:
 	btn_journal.texture_normal = load("res://assets/hud/journal.png")
 	if dialogue_panel:
 		_build_dialogue_frame()
-		dialogue_panel.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		if _skin_key == &"~":
+			dialogue_panel.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 
 
 ## dialogue.png üst orta "sigil" süsü yatayda gerilince bozulur: sigil sütunları düz kenarla
 ## değiştirilir ve süs ayrı (gerilmeyen) bir TextureRect olarak üstte çizilir.
+## v1.5: konuşmacıya göre yüksek çözünürlüklü gotik çerçeve + isimlik (Shilda kırmızı diken,
+## Noroi beyaz çiçek, diğerleri gümüş). Bulunamazsa eski piksel çerçeveye düşer.
+const DIALOGUE_SKINS := {
+	&"default": ["res://assets/panels/dialogue_skins/dialogue_default.png", ""],
+	&"shilda": ["res://assets/panels/dialogue_skins/dialogue_warning.png", "res://assets/panels/dialogue_skins/name_shilda.png"],
+	&"noroi": ["res://assets/panels/dialogue_skins/dialogue_memory.png", "res://assets/panels/dialogue_skins/name_noroi.png"],
+}
+const NAMEPLATE_H := 30.0
+var _skin_cache: Dictionary = {}
+var _skin_key: StringName = &"~"
+var _nameplate: TextureRect
+
+
+func _smooth_tex(path: String) -> Texture2D:
+	if path == "":
+		return null
+	if _skin_cache.has(path):
+		return _skin_cache[path]
+	var base := load(path) as Texture2D
+	var out: Texture2D = base
+	if base:
+		var img := base.get_image()
+		if img != null and not img.is_empty() and not img.is_compressed():
+			img.generate_mipmaps()
+			out = ImageTexture.create_from_image(img)
+	_skin_cache[path] = out
+	return out
+
+
+func _skin_for(speaker: String) -> StringName:
+	var k: StringName = PortraitsLib.key_for(speaker)
+	if k == &"shilda":
+		return &"shilda"
+	if k == &"noroi" or k == &"noroi_sad":
+		return &"noroi"
+	return &"default"
+
+
+func _apply_dialogue_skin(speaker: String) -> void:
+	var key := _skin_for(speaker)
+	if key == _skin_key or dialogue_panel == null:
+		return
+	var paths: Array = DIALOGUE_SKINS[key]
+	var frame := _smooth_tex(paths[0])
+	if frame == null:
+		return
+	_skin_key = key
+	dialogue_panel.texture = frame
+	dialogue_panel.patch_margin_left = 0
+	dialogue_panel.patch_margin_top = 0
+	dialogue_panel.patch_margin_right = 0
+	dialogue_panel.patch_margin_bottom = 0
+	dialogue_panel.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	var sigil := dialogue_panel.get_node_or_null("Sigil")
+	if sigil:
+		sigil.queue_free()
+	if _nameplate == null:
+		_nameplate = TextureRect.new()
+		_nameplate.name = "Nameplate"
+		_nameplate.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_nameplate.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		_nameplate.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT
+		_nameplate.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+		dialogue_panel.add_child(_nameplate)
+	var plate := _smooth_tex(paths[1])
+	_nameplate.texture = plate
+	_nameplate.visible = plate != null
+	if plate:
+		var w := NAMEPLATE_H * float(plate.get_width()) / maxf(1.0, float(plate.get_height()))
+		# Çerçevenin üst kenarına, madalyonun sağına otur.
+		_nameplate.position = Vector2(100.0, 14.0)
+		_nameplate.size = Vector2(w, NAMEPLATE_H)
+	# İsimlik adı zaten yazıyor: etiket yerini korusun ama görünmesin.
+	dialogue_speaker.modulate.a = 0.0 if plate != null else 1.0
+
+
 func _build_dialogue_frame() -> void:
+	_apply_dialogue_skin("")
+	if _skin_key != &"~":
+		return
 	var src: Texture2D = load("res://assets/panels/dialogue.png")
 	var region := Rect2i(int(DIALOGUE_ATLAS.position.x), int(DIALOGUE_ATLAS.position.y), int(DIALOGUE_ATLAS.size.x), int(DIALOGUE_ATLAS.size.y))
 	var img: Image = src.get_image() if src else null
@@ -358,6 +438,7 @@ func _on_dialogue_page(speaker: String, text: String, page_index: int, page_coun
 			shown = "…"
 	dialogue_speaker.text = shown
 	dialogue_text.text = text
+	_apply_dialogue_skin(speaker)
 	_update_portrait(speaker)
 	var more := page_index < page_count - 1 or DialogueManager.has_queued_lines() or DialogueManager.is_typing()
 	dialogue_continue.text = "…" if DialogueManager.is_typing() else (">>" if more else "•")

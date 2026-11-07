@@ -74,6 +74,14 @@ Dal: cursor/playable-story-flow-8e4e · Sürüm: v1.2.0 (versionCode 16)
 - [x] Konuşma portreleri: Noroi ve Shilda yeni görsellerden 384px (`assets/portraits/portrait_noroi*.png`, `portrait_shilda.png`)
 - [x] Sürüm 1.4.1 / versionCode 19; tüm audit'ler 0 fail
 
+## v1.4.4 — Shilda insansı (yayında)
+- [x] Kaynak: `Downloads/The_Room_Remembers_Shilda_Insansi_Godot_Assets_v3.zip` (256x320 kare; `hurt` kareleri bozuk → kullanılmadı).
+- [x] `assets/characters/keeper_sheet.png` + `keeper.tres` yeniden üretildi (104x128 hücre, ölçek 0.4, ayak y≈124, offset -60 aynı). Animler: observe/walk/attack/grieve(flower)/talk/warn/dash/flower/disappear. Shilda ≈1.25x Noroi boyu.
+- [x] `assets/portraits/portrait_shilda.png` insansı portre (384x384).
+- [x] Diyalog skinleri `assets/panels/dialogue_skins/` + `hud_controller.gd` `_apply_dialogue_skin()`: Shilda=kırmızı diken + isimlik, Noroi=beyaz çiçek + isimlik, diğer=gümüş. Mipmap'li lineer filtre, Sigil kaldırıldı.
+- [x] Tüm audit'ler 0 FAIL; görsel kontrol (Shilda/Noroi/Bekçi diyalog + sahne) OK.
+- [x] Commit + release v1.4.4 (public + private). APK debug keystore ile elle imzalandı (Godot apksigner hatası; sertifika v1.4.3 ile aynı).
+
 ## v1.4.3
 - [x] Kritik: oyunda her dokunuş menüyü açıyordu. Sebep: `session_menu.gd` Menü düğmesini FULL_RECT MarginContainer içine koyuyordu → düğme tüm ekranı kaplıyordu (v1.3.0'dan beri). Düz Control ile değiştirildi.
 - [x] `start_flow_audit.gd`: Menü düğmesi boyut/konum/ekran-merkezi kontrolü (hata öncesi FAIL, sonrası PASS). Tüm audit'ler 0 FAIL.
