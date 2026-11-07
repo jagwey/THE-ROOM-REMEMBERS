@@ -6,10 +6,12 @@ signal title_closed
 
 const SETTINGS_PATH := "user://settings.cfg"
 const VOLUME_STEPS: Array[float] = [1.0, 0.75, 0.5, 0.25, 0.0]
+const TitleScreenScript := preload("res://scripts/ui/title_screen.gd")
 
 static var _title_shown: bool = false
 
 var _panel: GothicModalPanel
+var _title_screen: Control
 var _menu_button: Button
 var _confirm: bool = false
 var _new_button: Button
@@ -72,6 +74,12 @@ func _ready() -> void:
 	_quit_button = _panel.add_button("Kaydet ve çık", _quit)
 	_refresh_settings_buttons()
 	_panel.hide()
+	_title_screen = TitleScreenScript.new()
+	_title_screen.menu = self
+	_title_screen.start_requested.connect(func(): _title_screen.close(close_menu))
+	_title_screen.new_game_requested.connect(func(): _title_screen.close(_start_fresh))
+	_title_screen.quit_requested.connect(_quit)
+	add_child(_title_screen)
 	EndingManager.epilogue_finished.connect(open_menu)
 	if _should_show_title():
 		_open_title()
@@ -87,18 +95,18 @@ func _should_show_title() -> bool:
 
 
 func is_title_open() -> bool:
-	return _title_mode and _panel.visible
+	## Açılış deferred olduğundan görünürlüğe değil moda bak (main._ready aynı karede sorar).
+	return _title_mode
 
 
 func _open_title() -> void:
 	_title_shown = true
 	_title_mode = true
 	_menu_button.visible = false
-	_panel.dim.color.a = 0.97
-	_panel.show()
 	UiGate.set_journal(true)
 	MobileInputManager.clear_held_inputs()
-	_refresh_mode()
+	## Kayıt main._ready içinde yüklenir (bu düğümden sonra) — kartı bir kare sonra doldur.
+	_title_screen.call_deferred("open", _had_save)
 
 
 func _refresh_mode() -> void:
@@ -114,6 +122,9 @@ func _refresh_mode() -> void:
 
 ## Android geri tuşu: menü açıksa kapat, oyun sırasında menüyü aç. Başlıkta yanlışlıkla çıkmayı önler.
 func handle_back() -> void:
+	if is_title_open():
+		_title_screen.back()
+		return
 	if _panel.visible:
 		if not _title_mode:
 			close_menu()
@@ -152,9 +163,21 @@ func _toggle_music() -> void:
 
 
 func _refresh_settings_buttons() -> void:
-	_joy_button.text = "Joystick: Yüzen" if MobileInputManager.floating_joystick else "Joystick: Sabit"
-	_vol_button.text = "Ses: %%%d" % int(round(_volume * 100.0))
-	_music_button.text = "Müzik: Açık" if _music_on else "Müzik: Kapalı"
+	_joy_button.text = _joy_text()
+	_vol_button.text = _vol_text()
+	_music_button.text = _music_text()
+
+
+func _joy_text() -> String:
+	return "Joystick: Yüzen" if MobileInputManager.floating_joystick else "Joystick: Sabit"
+
+
+func _vol_text() -> String:
+	return "Ses: %%%d" % int(round(_volume * 100.0))
+
+
+func _music_text() -> String:
+	return "Müzik: Açık" if _music_on else "Müzik: Kapalı"
 
 
 func _load_settings() -> void:
@@ -181,6 +204,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 		return
 	if event.is_action_pressed("ui_cancel"):
+		if is_title_open():
+			get_viewport().set_input_as_handled()
+			return
 		if _panel.visible:
 			if _title_mode:
 				return
@@ -222,6 +248,12 @@ func _new_game() -> void:
 		_confirm = true
 		_new_button.text = "Sıfırdan başlamak için tekrar bas"
 		return
+	close_menu()
+	SaveManager.start_new_game()
+
+
+## Başlıktan onaylı yeni oyun (onay title_screen'de alındı).
+func _start_fresh() -> void:
 	close_menu()
 	SaveManager.start_new_game()
 

@@ -401,8 +401,8 @@ func _update_anim() -> void:
 	match _state:
 		&"run", &"dash", &"attack":
 			want = _state
-	if want == &"idle" and not is_on_floor() and sprite.sprite_frames and sprite.sprite_frames.has_animation("dash"):
-		## Havadayken dash karesini tut (ayrı zıplama animasyonu yok).
+	if want == &"idle" and not is_on_floor() and absf(velocity.y) > 1.0 and sprite.sprite_frames and sprite.sprite_frames.has_animation("dash"):
+		## Havadayken dash karesini tut (ayrı zıplama animasyonu yok). Donmuşken (hikâye) idle kalsın.
 		want = &"dash"
 	if sprite.animation != String(want) or not sprite.is_playing():
 		sprite.play(String(want))
