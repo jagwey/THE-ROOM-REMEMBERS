@@ -98,6 +98,11 @@ func _round(continued: bool) -> void:
 	check(title_seen == 0, "[%s] title never reappeared (%d frames)" % [tag, title_seen])
 	check(gate.current_layer() == gate.Layer.NONE, "[%s] UiGate NONE after 10s (is %d)" % [tag, gate.current_layer()])
 	check(menu._menu_button.visible, "[%s] Menü button visible after start" % tag)
+	var mrect: Rect2 = menu._menu_button.get_global_rect()
+	var vp: Vector2 = menu._menu_button.get_viewport_rect().size
+	check(mrect.size.x < 140.0 and mrect.size.y < 60.0, "[%s] Menü button small (%s)" % [tag, mrect.size])
+	check(not mrect.has_point(vp * 0.5), "[%s] Menü button does not cover screen center" % tag)
+	check(mrect.position.x > vp.x * 0.5 and mrect.position.y < vp.y * 0.25, "[%s] Menü button in top-right (%s)" % [tag, mrect.position])
 	check(get_first_node_in_group("player") != null, "[%s] player present" % tag)
 
 

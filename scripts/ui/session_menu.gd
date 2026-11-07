@@ -53,7 +53,9 @@ func _ready() -> void:
 	_menu_button.grow_horizontal = Control.GROW_DIRECTION_BEGIN
 	GothicModalPanel.style_button(_menu_button)
 	_menu_button.pressed.connect(toggle_menu)
-	var safe_area := MarginContainer.new()
+	# Düz Control: MarginContainer çocuğu tüm alana yayıyordu → Menü düğmesi tam ekran oluyordu,
+	# her dokunuş menüyü açıyordu (v1.4.3 düzeltmesi). Anchor'lar burada korunur.
+	var safe_area := Control.new()
 	safe_area.name = "SafeArea"
 	safe_area.set_anchors_preset(Control.PRESET_FULL_RECT)
 	safe_area.mouse_filter = Control.MOUSE_FILTER_IGNORE

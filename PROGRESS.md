@@ -74,6 +74,11 @@ Dal: cursor/playable-story-flow-8e4e · Sürüm: v1.2.0 (versionCode 16)
 - [x] Konuşma portreleri: Noroi ve Shilda yeni görsellerden 384px (`assets/portraits/portrait_noroi*.png`, `portrait_shilda.png`)
 - [x] Sürüm 1.4.1 / versionCode 19; tüm audit'ler 0 fail
 
+## v1.4.3
+- [x] Kritik: oyunda her dokunuş menüyü açıyordu. Sebep: `session_menu.gd` Menü düğmesini FULL_RECT MarginContainer içine koyuyordu → düğme tüm ekranı kaplıyordu (v1.3.0'dan beri). Düz Control ile değiştirildi.
+- [x] `start_flow_audit.gd`: Menü düğmesi boyut/konum/ekran-merkezi kontrolü (hata öncesi FAIL, sonrası PASS). Tüm audit'ler 0 FAIL.
+- [x] 1.4.3 / versionCode 21, APK + release (public release repo + private).
+
 ## v1.4.2
 - [x] Oyun içi güncelleme kontrolü: `scripts/autoload/update_checker.gd` (autoload `UpdateChecker`), public repo `jagwey/THE-ROOM-REMEMBERS-release` latest release; başlık ekranında "Güncelle → vX" (`title_screen.gd`). Android internet izni açıldı. Release akışı `CLAUDE.md` → "Release" bölümünde.
 - [x] Sürüm 1.4.2 / versionCode 20
