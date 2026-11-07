@@ -1,5 +1,5 @@
 # PROGRESS
-Dal: cursor/playable-story-flow-8e4e · Sürüm: v1.1.0 (versionCode 15)
+Dal: cursor/playable-story-flow-8e4e · Sürüm: v1.2.0 (versionCode 16)
 
 ## Tamamlandı
 - Playable story flow, awakening gates, objectives, softlock düzeltmeleri (v0.10.1)
@@ -25,6 +25,7 @@ Dal: cursor/playable-story-flow-8e4e · Sürüm: v1.1.0 (versionCode 15)
 - [x] Fix: hikâye donmasında oyuncu animasyonu durmuyor (havada dash kuralı yalnız dikey hızda)
 - [x] GitHub release v1.0.2 (2026-11-07): https://github.com/jagwey/THE-ROOM-REMEMBERS/releases/tag/v1.0.2 — TheRoomRemembers-1.0.2-android-arm64.apk (versionCode 14, debug imzalı)
 - [x] GitHub release v1.1.0 (2026-11-07): https://github.com/jagwey/THE-ROOM-REMEMBERS/releases/tag/v1.1.0 — TheRoomRemembers-1.1.0-android-arm64.apk (versionCode 15, debug imzalı, V3 ölüm/respawn sistemi)
+- [x] GitHub release v1.2.0 (2026-11-07): https://github.com/jagwey/THE-ROOM-REMEMBERS/releases/tag/v1.2.0 — TheRoomRemembers-1.2.0-android-arm64.apk (versionCode 16, debug imzalı, V4.1 kapı/etkileşim/zıplama/Kaydet-Çık/ikon)
 - Bilinen eksik: ses cihazda dinlenmedi; 2 saat süre ve tüm oda turu cihazda doğrulanmadı; release keystore yok
 - Test: scratchpad audit.sh (Godot 4.7.2 console, Downloads zip'ten çıkarıldı); TORIMON_TEST=1 gerekli
 
