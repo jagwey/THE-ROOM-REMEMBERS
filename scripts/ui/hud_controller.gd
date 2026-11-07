@@ -366,6 +366,9 @@ func _update_control_visibility() -> void:
 	btn_interact.visible = not UiGate.blocks_dialogue_advance() and UiGate.current_layer() != UiGate.Layer.DEATH
 	btn_journal.visible = UiGate.current_layer() != UiGate.Layer.ENDING
 	buttons_root.modulate.a = 1.0 if btn_interact.visible or btn_attack.visible else 0.0
+	## Göz açma sinematiği: kalp/hedef/düğme hiçbiri görünmez.
+	## Günlük (kitap) açıkken de HUD gizli; günlük kendi kapat düğmesini taşır.
+	safe_area.visible = UiGate.current_layer() != UiGate.Layer.CUTSCENE and UiGate.current_layer() != UiGate.Layer.JOURNAL
 
 
 ## Düğme basışı (parmak indeksiyle). Kapı (gate) mantığı eski düğme sinyalleriyle aynı.
@@ -457,6 +460,10 @@ func set_button_cooldown(button_name: StringName, ratio: float) -> void:
 
 
 func _input(event: InputEvent) -> void:
+	# Dokunmatikte motor her dokunuşa ek bir "taklit fare" olayı üretir. Aynı dokunuş iki kez
+	# işlenirse diyaloğu kapatan dokunuş joystick'i de başlatıyordu (kendi kendine koşma).
+	if event is InputEventMouse and event.device == InputEvent.DEVICE_ID_EMULATION:
+		return
 	# Bırakmalar her koşulda işlenir (kapı değişse bile takılı giriş kalmasın).
 	if event is InputEventScreenTouch and not (event as InputEventScreenTouch).pressed:
 		_release_touch_index((event as InputEventScreenTouch).index)
@@ -475,7 +482,13 @@ func _input(event: InputEvent) -> void:
 				_seal_waiting = false
 			get_viewport().set_input_as_handled()
 		return
-	if UiGate.blocks_dialogue_advance() or UiGate.current_layer() == UiGate.Layer.DEATH:
+	if UiGate.blocks_dialogue_advance():
+		return
+	if UiGate.current_layer() == UiGate.Layer.DEATH:
+		# Ölüm sahnesi: joystick/düğme yok; yalnız yas/uyanış diyaloğu dokunuşla geçilebilir.
+		if DialogueManager.is_open and _is_advance_press(event):
+			DialogueManager.advance()
+			get_viewport().set_input_as_handled()
 		return
 	if UiGate.blocks_movement() and not DialogueManager.is_open:
 		# Günlük/final: joystick yakalama yok
@@ -554,6 +567,15 @@ func _restore_joystick_home() -> void:
 	joystick_root.offset_top = _joy_home.y
 	joystick_root.offset_right = _joy_home.z
 	joystick_root.offset_bottom = _joy_home.w
+
+
+func _is_advance_press(event: InputEvent) -> bool:
+	if event is InputEventScreenTouch:
+		return (event as InputEventScreenTouch).pressed
+	if event is InputEventMouseButton:
+		var mb := event as InputEventMouseButton
+		return mb.pressed and mb.button_index == MOUSE_BUTTON_LEFT
+	return false
 
 
 func _handle_touch(event: InputEventScreenTouch) -> void:

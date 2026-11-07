@@ -85,7 +85,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func open_journal() -> void:
-	if UiGate.current_layer() == UiGate.Layer.ENDING:
+	if UiGate.current_layer() == UiGate.Layer.ENDING or UiGate.current_layer() == UiGate.Layer.CUTSCENE:
 		return
 	GameState.player_progress_knowledge["journal_unlocked"] = true
 	visible = true

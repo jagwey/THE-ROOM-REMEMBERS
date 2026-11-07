@@ -59,6 +59,9 @@ var _charge_dir: float = 1.0
 var _charge_travel: float = 0.0
 var _combat_hit_done: bool = false
 var _encounter_id: StringName = &""
+## Oyuncu yeniden doğduktan sonra kısa süre saldırı yok (doğar doğmaz ölmesin).
+var _attack_grace: float = 0.0
+const REBIRTH_GRACE := 2.0
 signal encounter_finished(encounter_id: StringName)
 var _zone_lines: Dictionary = {
 	&"forbidden": {
@@ -90,6 +93,7 @@ func _ready() -> void:
 	if not GameState.room_changed.is_connected(_on_room_changed):
 		GameState.room_changed.connect(_on_room_changed)
 	DeathManager.death_started.connect(_on_player_death_started)
+	DeathManager.rebirth_completed.connect(_on_player_reborn)
 	# Gizem beat: uzak silüet ile başla.
 	global_position = silhouette_position
 	modulate = Color(0.15, 0.12, 0.18, 0.85)
@@ -105,6 +109,9 @@ func _on_room_changed(room_id: StringName) -> void:
 ## Shilda'yı aktif odaya yerleştir; senaryosu yoksa gizle veya silüet yap.
 func place_for_room(room_id: StringName) -> void:
 	if EndingManager.current != EndingManager.Ending.NONE:
+		return
+	if is_defeated():
+		_hide_defeated()
 		return
 	var rid := String(room_id)
 	var def: Dictionary = ROOM_PRESENCE.get(rid, {"mode": "hidden", "pos": Vector2(480, 280)})
@@ -178,9 +185,10 @@ func _apply_bandage() -> void:
 func _physics_process(delta: float) -> void:
 	if presence != "present" or not visible:
 		return
-	if _player == null:
+	_attack_grace = maxf(0.0, _attack_grace - delta)
+	if not is_instance_valid(_player):
 		_player = get_tree().get_first_node_in_group("player") as Node2D
-	if _player == null:
+	if not is_instance_valid(_player):
 		return
 	if mode != Mode.COMBAT or _combat_phase != &"charge":
 		sprite.flip_h = _player.global_position.x < global_position.x
@@ -283,7 +291,9 @@ func on_trigger_zone(zone_id: StringName, _body: Node) -> void:
 			set_mode(Mode.WARN)
 			DialogueManager.whisper("Bekçi", "Yaklaşma.")
 			DialogueManager.whisper("Bekçi", "Kırmızı ışık seni yer.")
-			await DialogueManager.dialogue_closed
+			await DialogueManager.dialogue_finished
+			if DeathManager.is_dying:
+				return
 			set_mode(Mode.OBSERVE)
 			_busy = false
 		return
@@ -302,7 +312,9 @@ func _do_warn(zone_id: StringName) -> void:
 	for line in lines:
 		DialogueManager.whisper("Bekçi", String(line))
 	_show_hint(String(lines[0]))
-	await DialogueManager.dialogue_closed
+	await DialogueManager.dialogue_finished
+	if DeathManager.is_dying:
+		return
 	await get_tree().create_timer(0.35).timeout
 	if mode != Mode.INTERVENE:
 		set_mode(Mode.OBSERVE)
@@ -329,15 +341,24 @@ func _do_intervene(zone_id: StringName) -> void:
 		_approach_target = home_position
 	_intervening = true
 	_set_blocker(false)
-	await DialogueManager.dialogue_closed
+	await DialogueManager.dialogue_finished
+	if DeathManager.is_dying:
+		_intervening = false
+		return
 	# Kısa bekle; yaklaşma _physics_process'te biter.
 	await get_tree().create_timer(0.8).timeout
+	if DeathManager.is_dying:
+		_intervening = false
+		return
 	_intervening = false
 	_set_blocker(true)
 	if sprite.animation != "observe":
 		sprite.play("observe")
 	_show_hint("Dur.")
 	await get_tree().create_timer(1.2).timeout
+	if DeathManager.is_dying:
+		_set_blocker(false)
+		return
 	# Engeli kaldır, eve dön — öldürme yok.
 	_set_blocker(false)
 	global_position = home_position
@@ -361,6 +382,9 @@ func enter_mourning() -> void:
 
 func mourn_corpse(death_pos: Vector2, corpse_id: String) -> void:
 	## Yas — çiçek bırakır. Oyuncuyu öldürmez.
+	if is_defeated():
+		return
+	_abort_combat()
 	_busy = true
 	_set_blocker(false)
 	_intervening = false
@@ -371,25 +395,29 @@ func mourn_corpse(death_pos: Vector2, corpse_id: String) -> void:
 	if death_pos != Vector2.ZERO:
 		global_position = Vector2(death_pos.x + 34.0, home_position.y)
 	modulate = Color(0.2, 0.16, 0.24, 0.0)
+	var first := DeathManager.cinematic
 	var fade := create_tween()
-	fade.tween_property(self, "modulate", Color.WHITE, 0.45)
+	fade.tween_property(self, "modulate", Color.WHITE, DeathManager._d(0.7 if first else 0.3))
 	if sprite.sprite_frames and sprite.sprite_frames.has_animation("grieve"):
 		sprite.play("grieve")
-	DialogueManager.whisper("Bekçi", "…")
-	DialogueManager.whisper("Bekçi", "Yine unuttun.")
 	if corpse_id != "":
 		CorpseManager.mark_flower_on_corpse(corpse_id)
 	else:
 		GameState.world_memory_state["flowers_left"] = int(GameState.world_memory_state["flowers_left"]) + 1
-	_show_hint("…çiçek")
-	## Smoke/headless: diyalog kilitlenmesin
-	if OS.get_environment("TORIMON_SMOKE") == "1" or DisplayServer.get_name() == "headless":
-		await get_tree().create_timer(0.15).timeout
-		if DialogueManager.is_open:
-			DialogueManager.clear()
+	if first:
+		## İlk ölüm: Shilda bedenin başında diz çöker, ilk kez konuşur.
+		await DeathManager._wait(0.6)
+		DialogueManager.whisper("Bekçi", "…")
+		DialogueManager.whisper("Bekçi", "Bedenin soğuyor. Oda onu bırakmayacak.")
+		DialogueManager.whisper("Bekçi", "Uyan. Bu sefer hatırla.")
+		_show_hint("…çiçek")
+		## Dokunuşla geçilir; geçilmezse kendiliğinden ilerler — ölüm akışı asla kilitlenmez.
+		await DeathManager.wait_dialogue()
+		await DeathManager._wait(0.25)
 	else:
-		await DialogueManager.dialogue_closed
-	await get_tree().create_timer(0.25).timeout
+		## Sonraki ölümler: diyalog kutusu yok, kısa fısıltı + çiçek.
+		_show_hint("Yine unuttun.")
+		await DeathManager._wait(1.0)
 	set_mode(Mode.OBSERVE)
 	hint.visible = false
 	_busy = false
@@ -409,14 +437,14 @@ func _run_mystery_beat() -> void:
 	await get_tree().create_timer(0.85).timeout
 	# Oda girişi diyaloğu bitsin.
 	if DialogueManager.is_open:
-		await DialogueManager.dialogue_closed
+		await DialogueManager.dialogue_finished
 	# Kısa beliriş (silüetten görünür forma)
 	var tw := create_tween()
 	tw.tween_property(self, "modulate", Color.WHITE, 0.55)
 	await tw.finished
 	DialogueManager.whisper("???", "Oraya gitme.")
 	DialogueManager.whisper("???", "Yaklaşma.")
-	await DialogueManager.dialogue_closed
+	await DialogueManager.dialogue_finished
 	await get_tree().create_timer(0.25).timeout
 	# Gözlem konumuna çekil
 	var tw2 := create_tween()
@@ -478,7 +506,10 @@ func on_interact(_by: Node) -> void:
 
 func receive_player_strike() -> void:
 	## Erken saldırı = ilişki olayı. Kalıcı son yalnız Çekirdek bölgesinde.
-	if EndingManager.current != EndingManager.Ending.NONE:
+	if EndingManager.current != EndingManager.Ending.NONE or is_defeated():
+		return
+	## Aynı anda ölüm: önce oyuncunun ölümü çözülür, ölürken vuruş sayılmaz.
+	if DeathManager.is_dying:
 		return
 	GameState.character_current_life_knowledge["struck_keeper"] = true
 	if mode == Mode.COMBAT:
@@ -520,15 +551,66 @@ func receive_player_strike() -> void:
 			_strikes = 0 ## onarım için sıfırla
 			SaveManager.save_game()
 			return
+		## Shilda düştü: AI hemen durur, kalıcı işaretlenir (iyi son kapanır, tekrar doğmaz).
+		_abort_combat()
+		set_mode(Mode.OBSERVE)
+		_busy = true
+		collision_mask = 0
+		collision_layer = 0
+		GameState.set_world_flag(&"keeper_defeated", true)
+		SaveManager.save_game()
 		DialogueManager.say("Bekçi", "…Öyle olsun.")
 		await _await_dialogue_or_smoke()
 		modulate = Color(0.4, 0.35, 0.4, 0.6)
+		## Oyuncu aynı anda öldüyse önce yeniden doğuş biter, sonra son (deterministik sıra).
+		if DeathManager.is_dying:
+			await DeathManager.rebirth_completed
 		await EndingManager.trigger(EndingManager.Ending.BAD_KILL_KEEPER)
 
 
 # --- Sargı hafızası ---------------------------------------------------------------
 
+func is_defeated() -> bool:
+	return bool(GameState.get_world_flag(&"keeper_defeated", false))
+
+
+func _hide_defeated() -> void:
+	_abort_combat()
+	presence = "hidden"
+	_busy = false
+	_set_blocker(false)
+	visible = false
+	collision_layer = 0
+	collision_mask = 0
+	hint.visible = false
+	set_mode(Mode.OBSERVE)
+
+
+## Karşılaşmayı anında kes: hitbox/çarpışma kapanır, atılma rengi ve hızı sıfırlanır.
+func _abort_combat() -> void:
+	if mode == Mode.COMBAT:
+		end_encounter(false)
+	_combat_phase = &"idle"
+	_combat_timer = 1.0
+	_combat_hit_done = false
+	collision_mask = 0
+	velocity = Vector2.ZERO
+	sprite.speed_scale = 1.0
+	if modulate.r > 1.05 or modulate.g < 0.95:
+		modulate = Color.WHITE
+	hint.visible = false
+
+
+func _on_player_reborn() -> void:
+	_attack_grace = REBIRTH_GRACE
+	_player = get_tree().get_first_node_in_group("player") as Node2D
+	call_deferred("place_for_room", RoomManager.get_active_room_id())
+
+
 func _on_player_death_started(_reason: StringName) -> void:
+	## Ruh hedef alınmaz: savaş anında durur.
+	_abort_combat()
+	_attack_grace = REBIRTH_GRACE
 	if bool(GameState.character_current_life_knowledge.get("struck_keeper", false)):
 		GameState.world_memory_state["keeper_bandaged"] = true
 		GameState.world_memory_state["keeper_bandage_line_pending"] = true
@@ -580,7 +662,7 @@ func mercy_kill() -> void:
 # --- Savaş karşılaşması: pençe + atılma + çatlak duvar ------------------------------------
 
 func start_encounter(encounter_id: StringName) -> void:
-	if EndingManager.current != EndingManager.Ending.NONE:
+	if EndingManager.current != EndingManager.Ending.NONE or is_defeated() or DeathManager.is_dying:
 		return
 	_encounter_id = encounter_id
 	presence = "present"
@@ -607,9 +689,11 @@ func end_encounter(success: bool) -> void:
 
 
 func _process_combat(delta: float) -> void:
-	if _player == null:
+	if not is_instance_valid(_player) or DeathManager.is_dying:
 		return
 	_combat_timer -= delta
+	if _attack_grace > 0.0 and _combat_phase == &"idle":
+		_combat_timer = maxf(_combat_timer, _attack_grace)
 	var dx := _player.global_position.x - global_position.x
 	match _combat_phase:
 		&"idle":
@@ -695,7 +779,9 @@ func _wall_impact() -> void:
 
 
 func _hit_player() -> void:
-	if _player and _player.has_method("receive_hazard_hit"):
+	if DeathManager.is_dying or _attack_grace > 0.0 or not is_instance_valid(_player):
+		return
+	if _player.has_method("receive_hazard_hit"):
 		if _player.has_method("is_shadow_dashing") and _player.is_shadow_dashing():
 			return
 		_player.receive_hazard_hit(global_position.x)
@@ -727,4 +813,4 @@ func _await_dialogue_or_smoke() -> void:
 		if DialogueManager.is_open:
 			DialogueManager.clear()
 		return
-	await DialogueManager.dialogue_closed
+	await DialogueManager.dialogue_finished

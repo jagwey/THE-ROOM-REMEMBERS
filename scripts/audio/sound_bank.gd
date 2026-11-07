@@ -11,6 +11,7 @@ const SFX_IDS: Array[StringName] = [
 	&"typewriter", &"seal_key", &"seal_open", &"curse_whisper", &"plate_press", &"door_open",
 	&"corpse_drag", &"soul_slash", &"wall_crack", &"wall_break", &"keeper_claw", &"keeper_charge",
 	&"echo_record", &"echo_playback", &"ui_open", &"ui_close", &"death_chord", &"rebirth_chord",
+	&"breath",
 ]
 const STINGER_IDS: Array[StringName] = [&"discovery", &"ending_bad", &"ending_good", &"ending_sever"]
 const REGIONS: Array[StringName] = [&"awakening", &"decay", &"library", &"experiment", &"mirrors", &"core"]
@@ -56,6 +57,12 @@ static func recipe(id: StringName) -> Dictionary:
 	match id:
 		&"footstep":
 			return _r(0.14, [_n(0, 0.12, 0.9, 0.18, "exp", 0.025), _t(0, 0.12, 95, 0.8, "thump", 62, {"tau": 0.03})], 0.5)
+		&"breath":
+			## Uyanış nefesi: yumuşak, filtrelenmiş nefes alma + kısa verme.
+			return _r(1.7, [
+				_n(0.0, 0.95, 0.85, 0.2, "hump", 0.1, {"hp": 0.05}),
+				_n(1.0, 0.65, 0.5, 0.14, "hump", 0.1, {"hp": 0.04}),
+			], 0.38)
 		&"ui_click":
 			return _r(0.07, [_t(0, 0.06, 1100, 0.7, "sine"), _n(0, 0.02, 0.4, 0.6, "exp", 0.004)], 0.45)
 		&"jump":

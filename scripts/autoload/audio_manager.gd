@@ -38,6 +38,7 @@ var _boot_delay: int = 3
 var _player_node: CharacterBody2D
 var _player_poll: float = 0.0
 var _foot_t: float = 0.0
+var _foot_alt: bool = false
 var _typing: bool = false
 var _type_t: float = 0.0
 var _type_age: float = 0.0
@@ -87,7 +88,7 @@ func _is_headless_or_test() -> bool:
 
 # --- public API ----------------------------------------------------------
 
-func play_sfx(id: StringName, volume_db: float = 0.0) -> void:
+func play_sfx(id: StringName, volume_db: float = 0.0, pitch: float = -1.0) -> void:
 	if not _enabled:
 		return
 	var s := _get_sound(id)
@@ -100,7 +101,7 @@ func play_sfx(id: StringName, volume_db: float = 0.0) -> void:
 	var p := _free_sfx_player()
 	p.stream = s
 	p.volume_db = volume_db
-	p.pitch_scale = randf_range(0.95, 1.05)
+	p.pitch_scale = pitch if pitch > 0.0 else randf_range(0.95, 1.05)
 	p.play()
 
 
@@ -457,10 +458,17 @@ func _update_footsteps(delta: float) -> void:
 	var p := _player_node
 	if p == null or not is_instance_valid(p) or not p.is_inside_tree() or not p.is_visible_in_tree():
 		return
+	## Kitap/diyalog/ölüm sırasında adım sesi yok.
+	if UiGate.blocks_movement() or DeathManager.is_dying:
+		_foot_t = minf(_foot_t, 0.06)
+		return
 	if absf(p.velocity.x) > 40.0 and p.is_on_floor():
 		_foot_t -= delta
 		if _foot_t <= 0.0:
-			_foot_t = FOOT_INTERVAL
-			play_sfx(&"footstep", -6.0)
+			## Yumuşak taş: her adımda farklı perde/şiddet, sağ-sol adım hafif farklı.
+			_foot_t = FOOT_INTERVAL * randf_range(0.92, 1.08)
+			_foot_alt = not _foot_alt
+			var base := 0.9 if _foot_alt else 0.97
+			play_sfx(&"footstep", randf_range(-9.0, -6.5), base * randf_range(0.93, 1.07))
 	else:
 		_foot_t = minf(_foot_t, 0.06)

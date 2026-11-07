@@ -19,6 +19,17 @@ func record_corpse_at(pos: Vector2, reason: StringName = &"unknown") -> String:
 	var room: StringName = GameState.character_current_life_knowledge.get("room", &"awakening")
 	var corpses: Array = GameState.world_memory_state["corpses"]
 	var id := "corpse_%d_%d" % [int(GameState.player_progress_knowledge["deaths"]), Time.get_ticks_msec()]
+	pos = _snap_to_ground(pos)
+	var facing := 1.0
+	var trail: Array = []
+	var pl := get_tree().get_first_node_in_group("player")
+	if pl and pl.has_method("get_facing"):
+		facing = float(pl.get_facing())
+	if pl and pl.has_method("get_trail"):
+		var bounds: Rect2 = RoomManager.get_room_bounds(room)
+		for s in pl.get_trail():
+			if s is Array and s.size() >= 4 and (bounds.size.x <= 0.0 or bounds.grow(8.0).has_point(Vector2(float(s[0]), float(s[1])))):
+				trail.append(s)
 	var entry := {
 		"id": id,
 		"position": {"x": pos.x, "y": pos.y},
@@ -30,12 +41,39 @@ func record_corpse_at(pos: Vector2, reason: StringName = &"unknown") -> String:
 		"usable_for_puzzle": true,
 		"reason": String(reason),
 		"anchoring": false,
+		"facing": facing,
+		"curse": CurseManager.curse,
+		"time_unix": int(Time.get_unix_time_from_system()),
+		"trail": trail,
 	}
 	corpses.append(entry)
 	_trim_excess()
 	corpses_changed.emit(corpses.size())
 	rebuild_world_corpses()
 	return id
+
+
+## Ceset havada/duvarda kalmasın: aşağı ışın (dünya katmanı), cesetler ve oyuncu hariç.
+func _snap_to_ground(pos: Vector2) -> Vector2:
+	var vp := get_viewport()
+	if vp == null or vp.world_2d == null:
+		return pos
+	var space := vp.world_2d.direct_space_state
+	if space == null:
+		return pos
+	var q := PhysicsRayQueryParameters2D.create(pos + Vector2(0, -6), pos + Vector2(0, 160), 1)
+	var ex: Array[RID] = []
+	for n in get_tree().get_nodes_in_group("corpse"):
+		if n is CollisionObject2D:
+			ex.append((n as CollisionObject2D).get_rid())
+	var pl := get_tree().get_first_node_in_group("player")
+	if pl is CollisionObject2D:
+		ex.append((pl as CollisionObject2D).get_rid())
+	q.exclude = ex
+	var hit := space.intersect_ray(q)
+	if hit.is_empty():
+		return pos
+	return Vector2(pos.x, (hit["position"] as Vector2).y)
 
 
 func record_corpse_at_player() -> String:

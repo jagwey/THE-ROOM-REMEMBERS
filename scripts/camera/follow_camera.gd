@@ -25,6 +25,8 @@ const ROOM_BASE_ZOOM := {
 var _base_zoom: float = ZOOM_NORMAL
 
 var _target: Node2D
+## Geçici odak (ruh vb.). Silinirse oyuncuya döner.
+var _focus: Node2D = null
 var _look_offset: float = 0.0
 var _prev_target_x: float = 0.0
 var _zoom_goal: float = ZOOM_NORMAL
@@ -76,6 +78,14 @@ func get_trauma() -> float:
 	return _trauma
 
 
+func set_focus(node: Node2D) -> void:
+	_focus = node
+
+
+func clear_focus() -> void:
+	_focus = null
+
+
 func snap_to_target() -> void:
 	_target = get_tree().get_first_node_in_group("player") as Node2D
 	if _target == null:
@@ -87,11 +97,13 @@ func snap_to_target() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	if _target == null:
+	if not is_instance_valid(_target):
 		_target = get_tree().get_first_node_in_group("player") as Node2D
-		if _target == null:
+		if not is_instance_valid(_target):
 			return
 		_prev_target_x = _target.global_position.x
+	if _focus != null and not is_instance_valid(_focus):
+		_focus = null
 
 	if _zoom_hold > 0.0:
 		_zoom_hold -= delta
@@ -100,10 +112,11 @@ func _physics_process(delta: float) -> void:
 	_zoom_now = lerpf(_zoom_now, _zoom_goal, 1.0 - exp(-zoom_lambda * delta))
 	_apply_zoom(false)
 
-	var sp := _target.global_position
+	var follow: Node2D = _focus if _focus != null else _target
+	var sp := follow.global_position
 	var vx := 0.0
-	if "velocity" in _target:
-		vx = (_target.get("velocity") as Vector2).x
+	if "velocity" in follow:
+		vx = (follow.get("velocity") as Vector2).x
 	else:
 		vx = (sp.x - _prev_target_x) / maxf(delta, 0.0001)
 	_prev_target_x = sp.x

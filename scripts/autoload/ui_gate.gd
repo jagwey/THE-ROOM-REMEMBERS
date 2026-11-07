@@ -2,7 +2,7 @@ extends Node
 ## Modal öncelik: final > mühür paneli > günlük > hikâye > normal.
 ## Oynanış mantığı durur; görsel animasyonlar sürmeli (tree.paused KULLANMA).
 
-enum Layer { NONE = 0, STORY = 1, JOURNAL = 2, SEAL = 3, ENDING = 4, DEATH = 5 }
+enum Layer { NONE = 0, STORY = 1, JOURNAL = 2, SEAL = 3, ENDING = 4, DEATH = 5, CUTSCENE = 6 }
 
 signal gate_changed(layer: Layer)
 
@@ -10,6 +10,7 @@ var _story: bool = false
 var _journal: bool = false
 var _seal: bool = false
 var _ending: bool = false
+var _cutscene: bool = false
 ## Referans sayacı — iç içe kaynaklar birbirinin kilidini düşürmesin.
 var _pause_refs: Dictionary = {} # StringName -> bool
 
@@ -17,6 +18,8 @@ var _pause_refs: Dictionary = {} # StringName -> bool
 func current_layer() -> Layer:
 	if DeathManager.is_dying:
 		return Layer.DEATH
+	if _cutscene:
+		return Layer.CUTSCENE
 	if _ending:
 		return Layer.ENDING
 	if _seal:
@@ -42,6 +45,15 @@ func set_seal(active: bool) -> void:
 
 func set_ending(active: bool) -> void:
 	_set_flag(&"ending", active, func(v): _ending = v)
+
+
+## Göz açma vb. kısa sinematik: girdi, HUD ve diyalog ilerletme kapalı.
+func set_cutscene(active: bool) -> void:
+	_set_flag(&"cutscene", active, func(v): _cutscene = v)
+
+
+func is_cutscene() -> bool:
+	return _cutscene
 
 
 func _set_flag(key: StringName, active: bool, apply: Callable) -> void:
@@ -70,7 +82,7 @@ func blocks_combat() -> bool:
 func blocks_dialogue_advance() -> bool:
 	## Günlük / mühür / final açıkken alttaki hikâye diyaloğu ilerletilmez.
 	var layer := current_layer()
-	return layer == Layer.JOURNAL or layer == Layer.SEAL or layer == Layer.ENDING
+	return layer == Layer.JOURNAL or layer == Layer.SEAL or layer == Layer.ENDING or layer == Layer.CUTSCENE
 
 
 func pauses_world_threats() -> bool:

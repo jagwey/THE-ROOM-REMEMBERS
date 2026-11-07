@@ -29,6 +29,11 @@ var _state: StringName = &"idle"
 var _dash_timer: float = 0.0
 var _attack_timer: float = 0.0
 var _facing: float = 1.0
+## Yankı tekrarı: son ~3 sn konum/animasyon halkası (ölümde cesede yazılır).
+const TRAIL_STEP := 0.1
+const TRAIL_MAX := 30
+var _trail: Array = []
+var _trail_t: float = 0.0
 var _dash_dir: float = 1.0
 var _stagger_timer: float = 0.0
 var _input_locked: bool = false
@@ -114,10 +119,18 @@ func _physics_process(delta: float) -> void:
 		velocity = Vector2.ZERO
 		return
 	_hurt_cooldown = maxf(0.0, _hurt_cooldown - delta)
+	if not (_input_locked or UiGate.blocks_movement()):
+		_sample_trail(delta)
 
 	# Ölüm / modal: hareket yok; animasyon idle'da kalabilir (görsel devam).
 	if _input_locked or UiGate.blocks_movement():
+		## Dünya donar. Doğuş noktası zeminin birkaç piksel üstündeyse yere oturt
+		## (kontrol verilince düşüş karesi "koşuyor" gibi görünmesin).
 		velocity = Vector2.ZERO
+		if not is_on_floor():
+			var col := move_and_collide(Vector2(0, 24), true)
+			if col:
+				global_position += col.get_travel()
 		if _state == &"attack" or _state == &"dash":
 			_state = &"idle"
 			attack_area.monitoring = false
@@ -468,6 +481,9 @@ func _on_dash() -> void:
 
 func _on_interact() -> void:
 	if _input_locked:
+		## Ölüm sahnesinde yalnız diyalog ilerletilebilir (yas satırları kilitlenmesin).
+		if DeathManager.is_dying and DialogueManager.is_open:
+			DialogueManager.advance()
 		return
 	if UiGate.current_layer() == UiGate.Layer.JOURNAL:
 		return
@@ -543,12 +559,44 @@ func play_death() -> void:
 		sprite.play("death")
 
 
+## Yatakta uyanış: ruh renginden bedene döner, kısa esneme.
+func play_wake(duration: float = 0.6) -> void:
+	visible = true
+	sprite.modulate = Color(0.85, 0.78, 1.0, 0.0)
+	_squash = Vector2(1.22, 0.78)
+	var tw := create_tween()
+	tw.tween_property(sprite, "modulate", Color.WHITE, maxf(duration, 0.01))
+
+
+func _sample_trail(delta: float) -> void:
+	_trail_t -= delta
+	if _trail_t > 0.0:
+		return
+	_trail_t = TRAIL_STEP
+	_trail.append([roundf(global_position.x), roundf(global_position.y), String(sprite.animation), sprite.flip_h])
+	if _trail.size() > TRAIL_MAX:
+		_trail.pop_front()
+
+
+func get_trail() -> Array:
+	return _trail.duplicate(true)
+
+
 func respawn_at(pos: Vector2) -> void:
+	_trail.clear()
 	_hurt_cooldown = 3.0
+	_dash_timer = 0.0
+	_attack_timer = 0.0
+	_stagger_timer = 0.0
+	_jump_buffer = 0.0
+	_combo = 0
+	attack_area.monitoring = false
+	MobileInputManager.clear_held_inputs()
 	sprite.modulate = Color.WHITE
 	global_position = pos
 	velocity = Vector2.ZERO
 	_state = &"idle"
 	modulate = Color.WHITE
+	visible = true
 	sprite.play("idle")
 	# Kilit rebirth_completed ile kalkar; erken açılma olmasın.

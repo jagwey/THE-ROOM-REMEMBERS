@@ -48,6 +48,8 @@ const EPILOGUES := {
 
 
 func can_attempt_good_seal() -> bool:
+	if bool(GameState.get_world_flag(&"keeper_defeated", false)):
+		return false
 	var code := PuzzleManager.is_solved(&"awakening_memory_code")
 	var echo := bool(GameState.player_progress_knowledge.get("echoes_seen", []).size() > 0)
 	var truth := bool(GameState.player_progress_knowledge.get("truth_seen", false))

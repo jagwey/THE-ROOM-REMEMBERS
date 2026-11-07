@@ -21,6 +21,10 @@ func _ready() -> void:
 	collision_layer = 1
 	collision_mask = 0
 	sync_to_physics = false
+	## Yürüyerek içinden geçilir; üstüne basılabilir (geçiş asla tıkanmaz).
+	var cs := get_node_or_null("CollisionShape2D") as CollisionShape2D
+	if cs:
+		cs.one_way_collision = true
 	if interact:
 		interact.collision_layer = 8
 		interact.collision_mask = 0
@@ -54,6 +58,10 @@ func on_interact(by: Node) -> void:
 	if DialogueManager.is_open:
 		DialogueManager.advance()
 		return
+	## Oyunun ilk ceset karşılaşması: Shiren kendi bedenini tanır.
+	if not bool(GameState.player_progress_knowledge.get("first_corpse_line_seen", false)):
+		GameState.player_progress_knowledge["first_corpse_line_seen"] = true
+		DialogueManager.say("Shiren", "Bu... benim kıyafetlerim mi?")
 	# İlk etkileşim: Echo (oyuncu bilgisi).
 	if not _echo_done:
 		_echo_done = true
@@ -157,6 +165,8 @@ const LIFE_LINES := [
 func _spawn_ghost() -> void:
 	if sprite == null:
 		return
+	if _replay_trail(_data.get("trail", [])):
+		return
 	var ghost := Sprite2D.new()
 	ghost.texture = sprite.texture
 	ghost.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
@@ -169,6 +179,54 @@ func _spawn_ghost() -> void:
 	tw.parallel().tween_property(ghost, "position:y", -28.0, 1.6).set_trans(Tween.TRANS_SINE)
 	tw.tween_property(ghost, "modulate:a", 0.0, 0.8)
 	tw.tween_callback(ghost.queue_free)
+
+
+const TRAIL_STEP := 0.1
+
+
+## Yankı tekrarı: bu bedenin son ~3 saniyesi soluk mor bir Shiren olarak yeniden oynar,
+## cesedin üstünde biter ve söner. İz yoksa (eski kayıt) klasik yükselen hayalet.
+func _replay_trail(trail: Variant) -> bool:
+	if not (trail is Array) or (trail as Array).size() < 4:
+		return false
+	var frames := load("res://assets/characters/shiren.tres") as SpriteFrames
+	if frames == null:
+		return false
+	var g := AnimatedSprite2D.new()
+	g.name = "EchoReplay"
+	g.sprite_frames = frames
+	g.top_level = true
+	g.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	g.offset = Vector2(0, -44)
+	g.z_index = 4
+	g.modulate = Color(0.72, 0.6, 1.0, 0.0)
+	add_child(g)
+	var first: Array = trail[0]
+	g.global_position = Vector2(float(first[0]), float(first[1]))
+	_apply_trail_sample(g, first)
+	var am := get_node_or_null("/root/AudioManager")
+	if am:
+		am.play_sfx(&"echo_playback", -6.0)
+	var tw := g.create_tween()
+	tw.tween_property(g, "modulate:a", 0.5, 0.25)
+	for s in trail:
+		if not (s is Array) or (s as Array).size() < 4:
+			continue
+		tw.tween_callback(_apply_trail_sample.bind(g, s))
+		tw.tween_property(g, "global_position", Vector2(float(s[0]), float(s[1])), TRAIL_STEP)
+	tw.tween_interval(0.35)
+	tw.tween_property(g, "modulate:a", 0.0, 0.6)
+	tw.tween_callback(g.queue_free)
+	return true
+
+
+func _apply_trail_sample(g: AnimatedSprite2D, s: Array) -> void:
+	if not is_instance_valid(g):
+		return
+	var anim := StringName(String(s[2]))
+	if g.sprite_frames.has_animation(anim) and (g.animation != anim or not g.is_playing()):
+		g.play(anim)
+	g.flip_h = bool(s[3])
 
 
 func _spawn_dust(dir: float) -> void:

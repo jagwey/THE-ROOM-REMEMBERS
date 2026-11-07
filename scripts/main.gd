@@ -1,4 +1,6 @@
 extends Node2D
+
+const EyeOpenIntro := preload("res://scripts/ui/eye_open_intro.gd")
 ## Ana sahne — RoomManager ile çok odalı dünya.
 
 @onready var world: Node2D = $World
@@ -141,6 +143,13 @@ func _ready() -> void:
 
 
 func _play_intro() -> void:
+	## Göz kapakları aralanır (beyaz flaş yok); replikler gözler açıldıktan sonra.
+	var fast := DisplayServer.get_name() == "headless" or OS.get_environment("TORIMON_SMOKE") == "1" or OS.get_environment("TORIMON_TEST") == "1"
+	var eyes := EyeOpenIntro.new()
+	add_child(eyes)
+	await eyes.play(0.05 if fast else (0.9 if _continued else 2.2), not _continued)
+	if not is_inside_tree():
+		return
 	if not _continued:
 		DialogueManager.say("???", "Gözlerin açılıyor.")
 		DialogueManager.say("???", "Oda seni hatırlıyor. Sen henüz bilmiyorsun.")

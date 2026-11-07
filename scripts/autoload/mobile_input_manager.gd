@@ -15,6 +15,9 @@ var interact_held: bool = false
 var jump_held: bool = false
 ## HUD dinamik joystick tercihi (ayar menüsünden değiştirilebilir).
 var floating_joystick: bool = true
+## Kontrol yeniden verilince (diyalog/ölüm/menü sonrası) basılı kalan yön girişi
+## karakteri kendi kendine koşturmasın: önce nötre dönülmeli (taze basış şartı).
+var _need_neutral: bool = true
 
 
 ## Dokunmatik arayüz mü (Android/iOS)? Metinler klavye tuşu yerine HUD buton adı söyler.
@@ -47,17 +50,23 @@ func set_move_vector(v: Vector2) -> void:
 
 func get_move_axis() -> Vector2:
 	if UiGate.blocks_movement():
+		_need_neutral = true
 		return Vector2.ZERO
 	var axis := move_vector
 	if axis.length() < 0.05:
 		axis = Vector2(Input.get_axis("ui_left", "ui_right"), 0.0)
 	else:
 		axis.y = 0.0
+	if _need_neutral:
+		if absf(axis.x) < 0.2:
+			_need_neutral = false
+		return Vector2.ZERO
 	return axis
 
 
 func clear_held_inputs() -> void:
 	move_vector = Vector2.ZERO
+	_need_neutral = true
 	attack_held = false
 	dash_held = false
 	interact_held = false

@@ -35,6 +35,7 @@ func start_new_game() -> void:
 	EndingManager.reset_for_smoke()
 	EchoManager.active_echo = &""
 	DeathManager.is_dying = false
+	DeathManager.phase = DeathManager.Phase.ALIVE
 	CurseManager.reset_for_new_life()
 	RoomManager.reset_registry()
 	get_tree().reload_current_scene()
@@ -60,20 +61,35 @@ func save_game() -> void:
 		return
 	f.store_string(JSON.stringify(data))
 	f.close()
+	## Son sağlam kaydı yedekle: yazma yarıda kalırsa (pil/çökme) bir önceki yüklenir.
+	if FileAccess.file_exists(SAVE_PATH) and _read_save(SAVE_PATH) != null:
+		DirAccess.copy_absolute(ProjectSettings.globalize_path(SAVE_PATH), ProjectSettings.globalize_path(SAVE_PATH + ".prev"))
 	var error := DirAccess.rename_absolute(ProjectSettings.globalize_path(temp_path), ProjectSettings.globalize_path(SAVE_PATH))
 	if error != OK:
 		push_warning("Kayıt tamamlanamadı: " + str(error))
 
 
-func load_game(apply_room: bool = true) -> bool:
-	if not FileAccess.file_exists(SAVE_PATH):
-		return false
-	var f := FileAccess.open(SAVE_PATH, FileAccess.READ)
+## Okunamayan/bozuk dosyada null döner.
+func _read_save(path: String) -> Variant:
+	if not FileAccess.file_exists(path):
+		return null
+	var f := FileAccess.open(path, FileAccess.READ)
 	if f == null:
-		return false
+		return null
 	var parsed: Variant = JSON.parse_string(f.get_as_text())
-	if typeof(parsed) != TYPE_DICTIONARY:
-		return false
+	if typeof(parsed) != TYPE_DICTIONARY or not (parsed as Dictionary).has("player_progress_knowledge"):
+		return null
+	return parsed
+
+
+func load_game(apply_room: bool = true) -> bool:
+	var parsed: Variant = _read_save(SAVE_PATH)
+	if parsed == null:
+		## Ana kayıt bozuksa son sağlam yedek.
+		parsed = _read_save(SAVE_PATH + ".prev")
+		if parsed == null:
+			return false
+		push_warning("Kayıt bozuk — önceki yedek yüklendi")
 	var data: Dictionary = parsed
 	GameState.player_progress_knowledge = data.get("player_progress_knowledge", GameState.player_progress_knowledge)
 	GameState.world_memory_state = _deserialize_world(data.get("world_memory_state", {}))

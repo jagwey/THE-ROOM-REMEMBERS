@@ -47,6 +47,7 @@ func _ready() -> void:
 	GothicModalPanel.style_button(_menu_button)
 	_menu_button.pressed.connect(toggle_menu)
 	add_child(_menu_button)
+	UiGate.gate_changed.connect(_on_gate_changed)
 	_panel = GothicModalPanel.new()
 	## Dokunmatikte yardım metni ve tam ekran düğmesi yok — panel kısalır.
 	_panel.setup("THE ROOM REMEMBERS", Vector2(420, 284 if MobileInputManager.is_touch_ui() else 336))
@@ -223,8 +224,16 @@ func toggle_menu() -> void:
 	elif UiGate.current_layer() == UiGate.Layer.NONE:
 		open_menu()
 
+## Göz açma vb. sinematikte Menü düğmesi görünmez; bitince geri gelir.
+func _on_gate_changed(layer: int) -> void:
+	if layer == UiGate.Layer.CUTSCENE:
+		_menu_button.visible = false
+	elif not _title_mode and not _panel.visible and not is_title_open():
+		_menu_button.visible = true
+
+
 func open_menu() -> void:
-	if DeathManager.is_dying or _panel.visible:
+	if DeathManager.is_dying or _panel.visible or UiGate.is_cutscene():
 		return
 	_title_mode = false
 	_panel.dim.color.a = 0.78
