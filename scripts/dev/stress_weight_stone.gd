@@ -135,7 +135,7 @@ func _run_all_tests() -> void:
 	
 	# Press interact
 	player._on_interact()
-	check(stone.velocity.x > 0.0, "Interact button gave stone positive horizontal velocity", "vel.x=%.2f" % stone.velocity.x)
+	check(stone._stepping, "Interact button starts a tweened push step (v1.4.0)")
 	# Wait for friction deceleration
 	for frame in range(30):
 		await process_frame

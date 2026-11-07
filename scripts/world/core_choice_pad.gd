@@ -45,9 +45,9 @@ func _do_together() -> void:
 			DialogueManager.say("???", "Hazırlık eksik. Güven ve yollar tamamlanmalı.")
 		await DialogueManager.dialogue_finished
 		return
-	DialogueManager.say("Shiren", "İki parça. İki ad. Bir mühür.")
+	DialogueManager.say("Noroi", "İki parça. İki ad. Bir mühür.")
 	DialogueManager.say("Shilda", "Birlikte mühürleyelim.")
-	DialogueManager.say("Shiren", "Birlikte.")
+	DialogueManager.say("Noroi", "Birlikte.")
 	var ok: bool = await DialogueManager.dialogue_finished
 	if not ok:
 		return
@@ -60,7 +60,7 @@ func _do_sever() -> void:
 		DialogueManager.say("???", "Gerçeği henüz görmedin.")
 		await DialogueManager.dialogue_finished
 		return
-	DialogueManager.say("Shiren", "Bağı koparıyorum. Bellek serbest.")
+	DialogueManager.say("Noroi", "Bağı koparıyorum. Bellek serbest.")
 	DialogueManager.say("Shilda", "Işıklar… başka bir düzene geçer.")
 	var ok: bool = await DialogueManager.dialogue_finished
 	if not ok:

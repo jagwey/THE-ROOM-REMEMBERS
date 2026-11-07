@@ -93,7 +93,7 @@ func on_interact(by: Node) -> void:
 		var am := get_node_or_null("/root/AudioManager")
 		if am:
 			am.play_sfx(&"discovery")
-		DialogueManager.whisper("Shiren", "Ayna çatlağı derinleşti… Yansıma diğer odalara bağlandı.")
+		DialogueManager.whisper("Noroi", "Ayna çatlağı derinleşti… Yansıma diğer odalara bağlandı.")
 		return
 
 	# Diğer açık aynaları topla
@@ -103,7 +103,7 @@ func on_interact(by: Node) -> void:
 			destinations.append(String(m))
 
 	if destinations.is_empty():
-		DialogueManager.whisper("Shiren", "Ayna çatlak ve sessiz. Başka bir odadaki aynayı henüz uyandırmadım.")
+		DialogueManager.whisper("Noroi", "Ayna çatlak ve sessiz. Başka bir odadaki aynayı henüz uyandırmadım.")
 		return
 
 	_open_travel_modal(destinations)

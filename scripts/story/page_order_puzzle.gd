@@ -55,12 +55,12 @@ func _btn(panel: GothicModalPanel, row: HBoxContainer, text: String, cb: Callabl
 
 func open_puzzle() -> void:
 	if PuzzleManager.is_solved(&"library_page_order"):
-		DialogueManager.say("Shiren", "Sayfa yerinde.")
+		DialogueManager.say("Noroi", "Sayfa yerinde.")
 		return
 	if not has_node("Panel"):
 		_build_ui()
 	if not PuzzleManager.is_solved(&"library_witnesses"):
-		DialogueManager.say("Shiren", "Sayfayı kurmadan önce saat, çiçek ve mührü dinlemeliyim. Sonra ortadaki kaydı karşılaştırmalıyım.")
+		DialogueManager.say("Noroi", "Sayfayı kurmadan önce saat, çiçek ve mührü dinlemeliyim. Sonra ortadaki kaydı karşılaştırmalıyım.")
 		return
 	visible = true
 	UiGate.set_story(true)
@@ -144,9 +144,9 @@ func _on_verify() -> void:
 func _success_flow() -> void:
 	visible = false
 	UiGate.set_story(false)
-	DialogueManager.say("Shiren", "Kaydı sen mi sildin?")
+	DialogueManager.say("Noroi", "Kaydı sen mi sildin?")
 	DialogueManager.say("Shilda", "Hayır. Silmemi sen istedin.")
-	DialogueManager.say("Shiren", "O zaman neden sakladın?")
+	DialogueManager.say("Noroi", "O zaman neden sakladın?")
 	DialogueManager.say("Shilda", "Bir gün bunu yeniden sorarsın diye. Deneyin yetki kaydı sağdaki kapının ardında.")
 	var heard: bool = await DialogueManager.dialogue_finished
 	if heard:

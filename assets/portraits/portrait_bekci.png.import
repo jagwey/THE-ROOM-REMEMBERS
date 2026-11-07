@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bgl40x3h3xihx"
-path="res://.godot/imported/frame_05.png-496f1036542536e4a2a7670a0904197e.ctex"
+uid="uid://d3213r524uqqc"
+path="res://.godot/imported/portrait_bekci.png-644cbc2e2522b0772ab55d621afa29a7.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/characters/shiren/frame_05.png"
-dest_files=["res://.godot/imported/frame_05.png-496f1036542536e4a2a7670a0904197e.ctex"]
+source_file="res://assets/portraits/portrait_bekci.png"
+dest_files=["res://.godot/imported/portrait_bekci.png-644cbc2e2522b0772ab55d621afa29a7.ctex"]
 
 [params]
 

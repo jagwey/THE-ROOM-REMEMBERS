@@ -41,7 +41,7 @@ func _ready() -> void:
         ground.set_cell(Vector2i(x,1),0,Vector2i(x % 4,1))
         ground.set_cell(Vector2i(x,2),0,Vector2i(x % 4,1))
     hero = AnimatedSprite2D.new()
-    hero.sprite_frames = load("res://assets/characters/shiren.tres")
+    hero.sprite_frames = load("res://assets/characters/noroi.tres")
     hero.position = Vector2(280,212)
     add_child(hero)
     hero.play("idle")

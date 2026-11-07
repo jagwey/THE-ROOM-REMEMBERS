@@ -84,8 +84,13 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 
+## Günlük yalnız serbest oyunda (NONE) açılır; hikâye/diyalog, mühür, ölüm ve sinematikte açılmaz.
+static func can_open_in_layer(layer: int) -> bool:
+	return layer == UiGate.Layer.NONE or layer == UiGate.Layer.JOURNAL
+
+
 func open_journal() -> void:
-	if UiGate.current_layer() == UiGate.Layer.ENDING or UiGate.current_layer() == UiGate.Layer.CUTSCENE:
+	if not can_open_in_layer(UiGate.current_layer()):
 		return
 	GameState.player_progress_knowledge["journal_unlocked"] = true
 	visible = true

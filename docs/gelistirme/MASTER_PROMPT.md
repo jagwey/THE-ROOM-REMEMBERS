@@ -4,7 +4,7 @@ Aşağıdaki metin bütün büyütme sürecini yönetmek için kullanılabilir. 
 
 ---
 
-The Room Remembers oyununu mevcut projem üzerinden büyüt. Godot 4, Android öncelikli yatay 2D piksel sanat. Çalışma kökü `C:\Users\Osman\OneDrive\Desktop\Projects プロジェクト\THE-ROOM-REMEMBERS`. Oyunun kimliği: Shiren ölünce hayat bilgisi silinir; oyuncu öğrendiklerini, dünya ise cesetleri, çiçekleri ve seçimlerin izlerini tutar. Beyaz saç/açık atkı/kırmızı mühür ve siyah Bekçi/beyaz göz/kırmızı halo görünüşlerini koru.
+The Room Remembers oyununu mevcut projem üzerinden büyüt. Godot 4, Android öncelikli yatay 2D piksel sanat. Çalışma kökü `C:\Users\Osman\OneDrive\Desktop\Projects プロジェクト\THE-ROOM-REMEMBERS`. Oyunun kimliği: Noroi ölünce hayat bilgisi silinir; oyuncu öğrendiklerini, dünya ise cesetleri, çiçekleri ve seçimlerin izlerini tutar. Beyaz saç/açık atkı/kırmızı mühür ve siyah Bekçi/beyaz göz/kırmızı halo görünüşlerini koru.
 
 Önce mevcut kodu, git durumunu ve proje kurallarını incele. Kullanıcı değişikliklerinin üstüne yazma. 6 Kasım incelemesindeki 0.8.0 sürümünde yalnız iki tek ekranlık oda vardı. Bekçi'ye üç vuruşla final açılıyordu; mühür otomatik çözülüyordu. Kayıt açılışta yüklenmiyor, PuzzleManager yükleme sonrasında eşitlenmiyor, ölümde hareket sürüyor, Core cesedi gizli Awakening köküne ekleniyor, dokunmatik etkileşim epilogu ilerletmiyor ve zemin cesedi plakaya değmiyordu. Bunları güncel kodda yeniden doğrula; çözülmüş sorunları tekrar yazma.
 
@@ -16,7 +16,7 @@ Klasördeki `INCELEME_TEST_RAPORU.md` ve sıralı promptları oku. Paket proje i
 
 **Aşama 3:** Test edilmiş bölümden altı bölgeye genişle: Uyanış 3, Çürüme 3, Hafıza Kütüphanesi 3, Deney Alanı 3, Ayna Salonu 3, Çekirdek 2 oda. Toplam 17 oda. Kütüphane kanıt karşılaştırma ve olay sırası; Deney kısa hareket yankısı ve çift devre; Ayna iki görünüşte doğrulama; Çekirdek önceki kuralların birleşimi ve bilinçli final seçimi içersin. Tam oyun için 60–90 dakika tasarım hedefi kullan; bunu ölçülmüş süre gibi sunma.
 
-**Aşama 4:** Bekçi'yi basit boss'a dönüştürmeden ilişkiyi derinleştir. Uyarı, müdahale, yas ve işbirliği dünya eylemleriyle gösterilsin. Shiren'in döngünün kurulmasında rolü olabileceğini parça parça ortaya çıkar. İki sonu da son bölge ve anlamlı sınav sonrasına taşı: birlikte mühürleme veya bağı koparma. Kazara saldırı veya görünmez ilişki sayacı ilk dakikada sonu kilitlemesin. Menüler ve sonlar tamamen dokunmatik kullanılabilsin.
+**Aşama 4:** Bekçi'yi basit boss'a dönüştürmeden ilişkiyi derinleştir. Uyarı, müdahale, yas ve işbirliği dünya eylemleriyle gösterilsin. Noroi'nin döngünün kurulmasında rolü olabileceğini parça parça ortaya çıkar. İki sonu da son bölge ve anlamlı sınav sonrasına taşı: birlikte mühürleme veya bağı koparma. Kazara saldırı veya görünmez ilişki sayacı ilk dakikada sonu kilitlemesin. Menüler ve sonlar tamamen dokunmatik kullanılabilsin.
 
 **Aşama 5:** Kayıttan yeniden başlatma, odalar arası cesetler, dört ölüm, çözülmüş kapıların kalıcılığı, yanlış/doğru sembol, gerçek girişlerle ana rota ve iki finali test et. Bayrakları true yaparak geçen smoke'u doğal ilerleme diye raporlama. Headless otomatik metin geçişini touch testinde kapat. Cihaz varsa Android'de kontrol, safe area, arka plan/dönüş, ses ve performansı ölç. Cihaz veya insan testi yapılamıyorsa bunu açıkça belirt.
 

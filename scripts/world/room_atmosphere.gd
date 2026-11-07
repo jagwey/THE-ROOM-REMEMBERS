@@ -17,9 +17,75 @@ var _t: float = 0.0
 
 func _ready() -> void:
 	_tint_layers()
+	_align_backdrop()
 	set_process(false)
 	visibility_changed.connect(_on_visibility_changed)
 	call_deferred("_build_atmosphere")
+
+
+## Zemin çizgisi (y=288) ile arka plan mobilya tabanlarını hizala: far/mid/front sprite'larını
+## bölge başına aşağı kaydır, parallax dikey kaymasını kapat, tavan kemeri + zemin katmanlarını ekle.
+const FLOOR_Y := 288.0
+const BackdropScript := preload("res://scripts/world/room_backdrop.gd")
+## Far katmanda zemin satırı (PNG içi), mid katmanda 234; front alt satırları bölgeye göre.
+const FAR_FLOOR_ROW := {"awakening": 228.0, "core": 253.0, "decay": 243.0, "experiment": 243.0, "library": 240.0, "mirrors": 232.0}
+const MID_FLOOR_ROW := 234.0
+const FRONT_BOTTOM_ROW := {"awakening": 265.0, "core": 274.0, "decay": 265.0, "experiment": 288.0, "library": 288.0, "mirrors": 288.0}
+
+
+func _region_key() -> String:
+	var rid := String(room_id)
+	for k in FAR_FLOOR_ROW:
+		if rid.begins_with(k):
+			return k
+	return "awakening"
+
+
+func _align_backdrop() -> void:
+	if has_meta("backdrop_aligned"):
+		return
+	set_meta("backdrop_aligned", true)
+	var key := _region_key()
+	var shifts := {
+		"ParallaxFar": FLOOR_Y - float(FAR_FLOOR_ROW[key]),
+		"ParallaxMid": FLOOR_Y - MID_FLOOR_ROW,
+		"ParallaxFront": FLOOR_Y - float(FRONT_BOTTOM_ROW[key]),
+	}
+	var last_idx := -1
+	for nm in shifts:
+		var px := get_node_or_null(nm)
+		if px == null:
+			continue
+		last_idx = maxi(last_idx, px.get_index())
+		if px is Parallax2D:
+			## Dikey parallax yok: sprite'lar dünyada sabit y'de dursun (hizalama kamera y'sine bağlı kalmasın).
+			var ss: Vector2 = (px as Parallax2D).scroll_scale
+			(px as Parallax2D).scroll_scale = Vector2(ss.x, 1.0)
+		var dy: float = shifts[nm]
+		if dy > 0.0:
+			for c in px.get_children():
+				if c is Node2D:
+					(c as Node2D).position.y += dy
+	var back := Node2D.new()
+	back.set_script(BackdropScript)
+	back.name = "BackdropFill"
+	add_child(back)
+	move_child(back, last_idx + 1 if last_idx >= 0 else 0)
+	var tint := _region_color().lerp(Color.WHITE, 0.55)
+	back.call("setup", _backdrop_width(), tint, String(room_id) == "awakening_balcony")
+	call_deferred("_refresh_backdrop_width", back)
+
+
+func _backdrop_width() -> float:
+	if "bounds" in self and (self.get("bounds") as Rect2).size.x > 64.0:
+		return (self.get("bounds") as Rect2).size.x
+	return _room_width()
+
+
+func _refresh_backdrop_width(back: Node) -> void:
+	if is_instance_valid(back):
+		back.call("setup", _backdrop_width(), _region_color().lerp(Color.WHITE, 0.55), String(room_id) == "awakening_balcony")
+
 
 
 func _process(delta: float) -> void:

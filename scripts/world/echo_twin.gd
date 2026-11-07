@@ -1,5 +1,5 @@
 extends Node2D
-## Yarı saydam Shiren yankısı — kaydedilmiş kareleri tekrar oynatır.
+## Yarı saydam Noroi yankısı — kaydedilmiş kareleri tekrar oynatır.
 ## Katman 64 (echo) gövdesiyle plakalara basar; kayıttaki etkileşim anlarında yakındaki
 ## "echo_lever" kollarını çeker. Oyuncuyla çarpışmaz.
 
@@ -21,7 +21,7 @@ func _ready() -> void:
 	add_to_group("echo_twin")
 	z_index = 3
 	_sprite = AnimatedSprite2D.new()
-	_sprite.sprite_frames = load("res://assets/characters/shiren.tres")
+	_sprite.sprite_frames = load("res://assets/characters/noroi.tres")
 	_sprite.offset = Vector2(0, -44)
 	_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	add_child(_sprite)

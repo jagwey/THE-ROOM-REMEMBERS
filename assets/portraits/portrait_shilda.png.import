@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c5nk6eqe3m8eb"
-path="res://.godot/imported/frame_03.png-2545d8b00b6d1c47c5dfc94746d4be76.ctex"
+uid="uid://onqnag568vyn"
+path="res://.godot/imported/portrait_shilda.png-b5515064c8b8fa7f1d891a2651909145.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/characters/shiren/frame_03.png"
-dest_files=["res://.godot/imported/frame_03.png-2545d8b00b6d1c47c5dfc94746d4be76.ctex"]
+source_file="res://assets/portraits/portrait_shilda.png"
+dest_files=["res://.godot/imported/portrait_shilda.png-b5515064c8b8fa7f1d891a2651909145.ctex"]
 
 [params]
 

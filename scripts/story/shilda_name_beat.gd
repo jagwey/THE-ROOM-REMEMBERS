@@ -11,14 +11,19 @@ func _ready() -> void:
 	monitorable = true
 
 
+## Etkileşim etiketi: Shilda adını söyleyene dek "???".
+func get_interact_label() -> String:
+	return "Shilda" if GameState.is_shilda_named() else "???"
+
+
 func on_interact(_by: Node) -> void:
 	if _busy:
 		return
 	_busy = true
 	var done_partial: bool = bool(GameState.player_progress_knowledge.get("shilda_named_partial", false))
 	if not done_partial:
-		DialogueManager.say("Shilda", "Shiren… yine mi?")
-		DialogueManager.say("Shiren", "Beni… nasıl ismimle çağırdın?")
+		DialogueManager.say("Shilda", "Noroi… yine mi?")
+		DialogueManager.say("Noroi", "Beni… nasıl ismimle çağırdın?")
 		DialogueManager.say("Shilda", "Bu oda seni tanıyor. Ben sadece hatırlatıyorum.")
 		await DialogueManager.dialogue_finished
 		GameState.player_progress_knowledge["awakening_mystery_seen"] = true

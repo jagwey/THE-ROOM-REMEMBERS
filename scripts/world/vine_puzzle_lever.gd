@@ -17,10 +17,10 @@ func on_interact(_by: Node) -> void:
 	if _busy:
 		return
 	if PuzzleManager.is_solved(puzzle_id):
-		DialogueManager.say("Shiren", "Sarmaşık zaten çekilmiş.")
+		DialogueManager.say("Noroi", "Sarmaşık zaten çekilmiş.")
 		return
 	_busy = true
-	DialogueManager.say("Shiren", "Düğümü çözüyorum…")
+	DialogueManager.say("Noroi", "Düğümü çözüyorum…")
 	var ok: bool = await DialogueManager.dialogue_finished
 	if ok:
 		PuzzleManager.mark_solved(puzzle_id)

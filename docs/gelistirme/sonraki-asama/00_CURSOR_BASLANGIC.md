@@ -6,7 +6,7 @@
 
 The Room Remembers projesinde aşağıdaki geliştirme paketini uygula. Önce `docs/gelistirme/sonraki-asama/GUNCEL_DURUM_VE_TEST.md` ve bütün numaralı promptları oku. Sonra 01'i uygula, test et; 02'ye geç ve aynı şekilde sırayla ilerle. Yeni bir onay istemek için her dosyanın sonunda durma; gerçekten gereken bilgi eksikse sor, diğer bağımsız işleri sürdür. Bütün fazları bir anda yüzeysel sahnelerle tamamlanmış sayma. Her fazın çalışan halini doğrula ve ilerleme kaydını güncelle.
 
-Mevcut kullanıcı değişikliklerini koru. Oyun Godot 4, Android öncelikli, 640×360 temel alanlı, yandan görünümlü pixel art. Oyuncu Shiren, Bekçi'nin hikâyedeki adı Shilda. Eski görünen "Bekçi" adı başlangıçta kimliği gizlemek için kalabilir; güven/isim sahnesinden sonra Shilda olarak göster. Teknik keeper ID'lerini topluca değiştirerek kayıt uyumluluğunu bozma.
+Mevcut kullanıcı değişikliklerini koru. Oyun Godot 4, Android öncelikli, 640×360 temel alanlı, yandan görünümlü pixel art. Oyuncu Noroi, Bekçi'nin hikâyedeki adı Shilda. Eski görünen "Bekçi" adı başlangıçta kimliği gizlemek için kalabilir; güven/isim sahnesinden sonra Shilda olarak göster. Teknik keeper ID'lerini topluca değiştirerek kayıt uyumluluğunu bozma.
 
 Oyun fikri: karakter unutuyor, oyuncu öğreniyor, dünya izleri saklıyor. Yeni bölgeler bu fikre farklı oynanış kuralları eklemeli. Daha çok yürüyüş ve uzun metin tek başına genişletme değildir.
 
@@ -32,4 +32,4 @@ Her fazda kodu gerçekten uygula. Sonraki fazın kapısını açan placeholder y
 - Üç ceset sınırı eski kilitleri yeniden kapatıp oyuncuyu sıkıştıramasın. Kritik çözüm kalıcılaşmalı veya erişilebilir alternatif ağırlık bulunmalı. Ölüm sayısı/grind ana ilerleme şartı olmasın.
 - Tamamlanan her faz için kısa rapor, gerçek ekran görüntüsü ve test sonucu bırak. Çalıştırmadığın şeyi doğrulanmış sayma. Otomatik fixture başarıları doğal oynanış veya telefon testi değildir.
 
-Yeni anlatı detayları bu paketin yaratıcı devam önerisidir; kullanıcının onayladığı önceki hikâye diye sunulmaz. Mevcut oyundaki olaylar ve doğrulanmış Shiren/Shilda isimleri korunarak uyumlu hale getir.
+Yeni anlatı detayları bu paketin yaratıcı devam önerisidir; kullanıcının onayladığı önceki hikâye diye sunulmaz. Mevcut oyundaki olaylar ve doğrulanmış Noroi/Shilda isimleri korunarak uyumlu hale getir.

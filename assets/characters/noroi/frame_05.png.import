@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bvudfs00h5s2q"
-path="res://.godot/imported/frame_06.png-c4ad87fcbb0e8fc8f943bc2d3822ea3d.ctex"
+uid="uid://bgl40x3h3xihx"
+path="res://.godot/imported/frame_05.png-ed81d916f4446f1ed86d88dd2e697d2d.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/characters/shiren/frame_06.png"
-dest_files=["res://.godot/imported/frame_06.png-c4ad87fcbb0e8fc8f943bc2d3822ea3d.ctex"]
+source_file="res://assets/characters/noroi/frame_05.png"
+dest_files=["res://.godot/imported/frame_05.png-ed81d916f4446f1ed86d88dd2e697d2d.ctex"]
 
 [params]
 

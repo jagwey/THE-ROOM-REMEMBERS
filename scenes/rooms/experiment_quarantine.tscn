@@ -27,7 +27,7 @@ script = ExtResource("lore")
 lore_id = &"quarantine_sign"
 texture_path = "res://assets/props/curse.png"
 sprite_scale = 0.5
-lines = PackedStringArray("Shiren|“KARANTİNA. Lanet yoğunluğu ölümcül.”", "Shiren|Kırmızı sis… canlıyı yer. Ama ölüyü?", "Shilda|Ölü beden laneti emer. Kendi cesedin sana yol açar.")
+lines = PackedStringArray("Noroi|“KARANTİNA. Lanet yoğunluğu ölümcül.”", "Noroi|Kırmızı sis… canlıyı yer. Ama ölüyü?", "Shilda|Ölü beden laneti emer. Kendi cesedin sana yol açar.")
 
 [node name="Cloud" type="Area2D" parent="Interactive"]
 position = Vector2(660.0, 288.0)
@@ -40,7 +40,7 @@ script = ExtResource("lore")
 lore_id = &"quarantine_cassette"
 texture_path = "res://assets/props/cassette.png"
 sprite_scale = 0.5
-lines = PackedStringArray("Shiren|Kaset: “Denek 12 laneti emdi. Bedeni ölü ama sis çekildi.”", "Shiren|“Yetkili Shiren onayladı: ölüler paratoner olarak kullanılacak.”")
+lines = PackedStringArray("Noroi|Kaset: “Denek 12 laneti emdi. Bedeni ölü ama sis çekildi.”", "Noroi|“Yetkili Noroi onayladı: ölüler paratoner olarak kullanılacak.”")
 evidence_title = "Paratoner Raporu"
 evidence_body = "Ölü bedenler laneti emiyor. Bunu bir yöntem olarak onaylayan bendim."
 evidence_section = "notlar"
@@ -51,4 +51,4 @@ position = Vector2(1200.0, 288.0)
 script = ExtResource("lore")
 lore_id = &"quarantine_photo"
 texture_path = "res://assets/props/photograph.png"
-lines = PackedStringArray("Shiren|Bir fotoğraf: Shilda, önlüklü, elinde bir çiçek. Yanında ben. Gülüyoruz.")
+lines = PackedStringArray("Noroi|Bir fotoğraf: Shilda, önlüklü, elinde bir çiçek. Yanında ben. Gülüyoruz.")

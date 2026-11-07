@@ -17,13 +17,13 @@ func on_interact(_by: Node) -> void:
 	_busy = true
 	var seen: bool = bool(GameState.player_progress_knowledge.get("pocket_watch_seen", false))
 	if seen:
-		DialogueManager.say("Shiren", "Akrep ve yelkovan hâlâ aynı yerde.")
+		DialogueManager.say("Noroi", "Akrep ve yelkovan hâlâ aynı yerde.")
 		await DialogueManager.dialogue_finished
 		_busy = false
 		return
 
-	DialogueManager.say("Shiren", "Camı çatlak. Akrep durmuş.")
-	DialogueManager.say("Shiren", "Saniye yok — ya hep bu an, ya hiç.")
+	DialogueManager.say("Noroi", "Camı çatlak. Akrep durmuş.")
+	DialogueManager.say("Noroi", "Saniye yok — ya hep bu an, ya hiç.")
 	await DialogueManager.dialogue_finished
 
 	if not bool(GameState.player_progress_knowledge.get("pocket_watch_seen", false)):

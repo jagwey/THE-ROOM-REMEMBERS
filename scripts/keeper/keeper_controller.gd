@@ -481,6 +481,11 @@ func can_interact() -> bool:
 	return mode != Mode.COMBAT
 
 
+## Etkileşim etiketi: Shilda adını söyleyene dek "???".
+func get_interact_label() -> String:
+	return "Shilda" if GameState.is_shilda_named() else "???"
+
+
 func on_interact(_by: Node) -> void:
 	if EndingManager.current != EndingManager.Ending.NONE:
 		return
@@ -493,8 +498,8 @@ func on_interact(_by: Node) -> void:
 	if active_room == "awakening":
 		var done_partial: bool = bool(GameState.player_progress_knowledge.get("shilda_named_partial", false))
 		if not done_partial:
-			DialogueManager.say("Shilda", "Shiren… yine mi?")
-			DialogueManager.say("Shiren", "Beni… nasıl ismimle çağırdın?")
+			DialogueManager.say("Shilda", "Noroi… yine mi?")
+			DialogueManager.say("Noroi", "Beni… nasıl ismimle çağırdın?")
 			DialogueManager.say("Shilda", "Bu oda seni tanıyor. Ben sadece hatırlatıyorum.")
 			await _await_dialogue_or_smoke()
 			GameState.player_progress_knowledge["awakening_mystery_seen"] = true
@@ -511,7 +516,7 @@ func on_interact(_by: Node) -> void:
 	var st: Dictionary = EndingManager.prep_status()
 	if st["weight"] and st["code"] and st["echo"] and not st["trusted"]:
 		DialogueManager.say("Bekçi", "Bana… güvenebilir misin?")
-		DialogueManager.say("Shiren", "…Güveniyorum.")
+		DialogueManager.say("Noroi", "…Güveniyorum.")
 		DialogueManager.say("Bekçi", "O zaman Çekirdek'e git. Birlikte mühürleyelim.")
 		await _await_dialogue_or_smoke()
 		GameState.player_progress_knowledge["trusted_keeper"] = true

@@ -5,6 +5,10 @@ extends TextureButton
 
 ## "jump" ise ikonun üstüne yukarı ok çizilir (hazır ikon yok).
 @export var glyph: StringName = &""
+## true: ikon dokusu yerine prosedürel gotik halka (koyu disk + lila/altın çift halka) çizilir; Attack/Dash/Interact ile aynı dil.
+@export var gothic_ring: bool = false
+## gothic_ring açıkken halkanın içine çizilen ikon (opsiyonel).
+var ring_icon: Texture2D = null
 ## 1.0 = az önce kullanıldı (tam bekleme), 0.0 = hazır.
 var cooldown: float = 0.0:
 	set(v):
@@ -57,6 +61,13 @@ func set_held(v: bool) -> void:
 func _draw() -> void:
 	var c := size * 0.5
 	var r := minf(size.x, size.y) * 0.5
+	if gothic_ring:
+		draw_circle(c, r - 1.0, Color(Palette.VOID, 0.78))
+		draw_arc(c, r - 1.5, 0.0, TAU, 48, Color(Palette.PALE_LILAC, 0.9), 2.0, true)
+		draw_arc(c, r - 5.0, 0.0, TAU, 48, Color(0.78, 0.62, 0.3, 0.75), 1.0, true)
+		if ring_icon != null:
+			var s := r * 1.1
+			draw_texture_rect(ring_icon, Rect2(c - Vector2(s, s) * 0.5, Vector2(s, s)), false)
 	if _glow > 0.01:
 		draw_circle(c, r, Color(Palette.CRIMSON, 0.30 * _glow))
 		draw_arc(c, r - 1.5, 0.0, TAU, 40, Color(Palette.IVORY, 0.65 * _glow), 3.0, true)

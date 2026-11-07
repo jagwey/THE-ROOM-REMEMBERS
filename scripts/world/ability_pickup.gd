@@ -46,7 +46,7 @@ func is_taken() -> bool:
 
 func on_interact(_by: Node) -> void:
 	if is_taken():
-		DialogueManager.say("Shiren", "Buradaki ışık artık bende.")
+		DialogueManager.say("Noroi", "Buradaki ışık artık bende.")
 		return
 	var cam := get_tree().get_first_node_in_group("follow_camera")
 	if cam and cam.has_method("zoom_to"):
@@ -56,7 +56,7 @@ func on_interact(_by: Node) -> void:
 		if parts.size() == 2:
 			DialogueManager.say(parts[0], parts[1])
 		else:
-			DialogueManager.say("Shiren", l)
+			DialogueManager.say("Noroi", l)
 	DialogueManager.say("—", "%s kazanıldı." % title)
 	if tutorial != "":
 		DialogueManager.say("—", tutorial)

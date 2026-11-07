@@ -51,7 +51,8 @@ func setup_from_data(data: Dictionary) -> void:
 		flower.texture = load("res://assets/props/red_flower.png")
 		flower.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		flower.visible = bool(data.get("has_flower", false))
-		flower.position = Vector2(10, -8)
+		flower.scale = FLOWER_SCALE
+		flower.position = FLOWER_POS
 	_setup_lantern(bool(data.get("has_flower", false)))
 
 
@@ -59,10 +60,10 @@ func on_interact(by: Node) -> void:
 	if DialogueManager.is_open:
 		DialogueManager.advance()
 		return
-	## Oyunun ilk ceset karşılaşması: Shiren kendi bedenini tanır.
+	## Oyunun ilk ceset karşılaşması: Noroi kendi bedenini tanır.
 	if not bool(GameState.player_progress_knowledge.get("first_corpse_line_seen", false)):
 		GameState.player_progress_knowledge["first_corpse_line_seen"] = true
-		DialogueManager.say("Shiren", "Bu... benim kıyafetlerim mi?")
+		DialogueManager.say("Noroi", "Bu... benim kıyafetlerim mi?")
 	# İlk etkileşim: Echo (oyuncu bilgisi).
 	if not _echo_done:
 		_echo_done = true
@@ -79,10 +80,10 @@ func on_interact(by: Node) -> void:
 		dir = signf(by.global_position.x - global_position.x) * -1.0
 		if dir == 0.0:
 			dir = 1.0
-	_push(dir)
+	_push(dir, by)
 
 
-func _push(dir: float) -> void:
+func _push(dir: float, by_node: Node = null) -> void:
 	if not usable_for_puzzle or _pushing:
 		return
 	var bounds := RoomManager.get_room_bounds(RoomManager.get_active_room_id())
@@ -128,6 +129,8 @@ func _push(dir: float) -> void:
 		return
 
 	_pushing = true
+	if by_node and by_node.has_method("note_push"):
+		by_node.note_push(self)
 	_spawn_dust(dir)
 	var am := get_node_or_null("/root/AudioManager")
 	if am:
@@ -218,14 +221,17 @@ func _spawn_ghost() -> void:
 
 
 const TRAIL_STEP := 0.1
+## Ölüm çiçeği: küçük, zarif tomurcuk; ceset silueti tamamen görünür kalır.
+const FLOWER_SCALE := Vector2(0.32, 0.32)
+const FLOWER_POS := Vector2(6, -11)
 
 
-## Yankı tekrarı: bu bedenin son ~3 saniyesi soluk mor bir Shiren olarak yeniden oynar,
+## Yankı tekrarı: bu bedenin son ~3 saniyesi soluk mor bir Noroi olarak yeniden oynar,
 ## cesedin üstünde biter ve söner. İz yoksa (eski kayıt) klasik yükselen hayalet.
 func _replay_trail(trail: Variant) -> bool:
 	if not (trail is Array) or (trail as Array).size() < 4:
 		return false
-	var frames := load("res://assets/characters/shiren.tres") as SpriteFrames
+	var frames := load("res://assets/characters/noroi.tres") as SpriteFrames
 	if frames == null:
 		return false
 	var g := AnimatedSprite2D.new()
@@ -297,14 +303,14 @@ func _setup_lantern(on: bool) -> void:
 	var light := PointLight2D.new()
 	light.name = "LanternLight"
 	light.texture = make_light_texture()
-	light.texture_scale = 1.6
-	light.color = Color(1.0, 0.55, 0.6, 1.0)
-	light.energy = 1.4
-	light.position = Vector2(10, -14)
+	light.texture_scale = 1.15
+	light.color = Color(1.0, 0.6, 0.66, 1.0)
+	light.energy = 1.0
+	light.position = FLOWER_POS + Vector2(0, -2)
 	add_child(light)
 	var tw := light.create_tween().set_loops()
-	tw.tween_property(light, "energy", 1.0, 1.1).set_trans(Tween.TRANS_SINE)
-	tw.tween_property(light, "energy", 1.5, 1.1).set_trans(Tween.TRANS_SINE)
+	tw.tween_property(light, "energy", 0.7, 1.1).set_trans(Tween.TRANS_SINE)
+	tw.tween_property(light, "energy", 1.1, 1.1).set_trans(Tween.TRANS_SINE)
 
 
 static var _light_tex: Texture2D
@@ -352,3 +358,11 @@ func _persist_position() -> void:
 
 func get_weight() -> int:
 	return weight if usable_for_puzzle else 0
+
+
+func get_interact_label() -> String:
+	return "Beden"
+
+
+func get_glow_kind() -> StringName:
+	return &"memory"

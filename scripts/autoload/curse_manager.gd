@@ -75,13 +75,13 @@ func _fail_life() -> void:
 	var reason: StringName = &"curse"
 	var keeper := get_tree().get_first_node_in_group("keeper")
 	if keeper and keeper.has_method("can_mercy_kill") and keeper.can_mercy_kill():
-		## Shilda yakında: Shiren'i Çekirdek'e kaptırmamak için kendisi öldürür.
+		## Shilda yakında: Noroi'yi Çekirdek'e kaptırmamak için kendisi öldürür.
 		await keeper.mercy_kill()
 		reason = &"mercy"
 	else:
 		## Tam ele geçirilme: kısa sahne; kalıcı bulmacalar silinmez, son güvenli kayıttan dönülür.
 		DialogueManager.whisper("Çekirdek", "Gel… bana gel.")
-		DialogueManager.whisper("Shiren", "Bu… benim sesim değil—")
+		DialogueManager.whisper("Noroi", "Bu… benim sesim değil—")
 		var player := get_tree().get_first_node_in_group("player") as Node2D
 		if player:
 			var tw := player.create_tween()

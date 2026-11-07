@@ -28,8 +28,8 @@ const EPILOGUES := {
 		"lines": [
 			"İki mühür parçası birleşti. Çekirdek son kez nabız attı… ve sustu.",
 			"Shilda: Beni hatırlıyor musun?",
-			"Shiren: Hayır…",
-			"Shiren: Ama seni yeniden tanıyabilirim.",
+			"Noroi: Hayır…",
+			"Noroi: Ama seni yeniden tanıyabilirim.",
 			"Kilitli kapı açıldı. İkiniz birlikte dışarı yürüdünüz.",
 			"“You forgot me. I never forgot you.”",
 		],

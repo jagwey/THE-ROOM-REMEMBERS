@@ -28,7 +28,7 @@ npc_id = &"vault_voice"
 idle_anim = "echo_idle"
 walk_anim = "echo_walk"
 ghostly = true
-dialogue_sets = PackedStringArray("Ses|Shiren… beni duyuyor musun? Bu benim son kaydım.;;Ses|Beni kurtarmaya çalıştığını biliyorum. Ama bunu istemedim.;;Ses|Bir sesi saklamak için yüzlerce hafızayı yaktın.", "Ses|Artık bırak. Beni unut; Shilda'yı hatırla.")
+dialogue_sets = PackedStringArray("Ses|Noroi… beni duyuyor musun? Bu benim son kaydım.;;Ses|Beni kurtarmaya çalıştığını biliyorum. Ama bunu istemedim.;;Ses|Bir sesi saklamak için yüzlerce hafızayı yaktın.", "Ses|Artık bırak. Beni unut; Shilda'yı hatırla.")
 
 [node name="Vault" type="Area2D" parent="Interactive"]
 position = Vector2(600.0, 288.0)
@@ -36,7 +36,7 @@ script = ExtResource("lore")
 lore_id = &"memory_vault"
 texture_path = "res://assets/layers/core_crystal.png"
 sprite_scale = 0.35
-lines = PackedStringArray("Shiren|Kristal kasada binlerce ışık. Her biri birinin anısı.", "Shiren|Ortada tek bir ışık daha parlak: onun sesi.", "Shiren|Deneyi ben başlattım. Tesisi ben kilitledim. Unutmayı ben istedim.", "Shiren|Ve Shilda… bütün bunları benim yerime hatırladı.")
+lines = PackedStringArray("Noroi|Kristal kasada binlerce ışık. Her biri birinin anısı.", "Noroi|Ortada tek bir ışık daha parlak: onun sesi.", "Noroi|Deneyi ben başlattım. Tesisi ben kilitledim. Unutmayı ben istedim.", "Noroi|Ve Shilda… bütün bunları benim yerime hatırladı.")
 evidence_title = "Hafıza Kasası"
 evidence_body = "Çekirdek yuttuğu bütün anıları burada saklıyor. Kaybettiğim sesin son kaydı da burada. Bütün gerçeği gördüm."
 evidence_section = "izler"
@@ -49,4 +49,4 @@ script = ExtResource("lore")
 lore_id = &"vault_bloom"
 texture_path = "res://assets/props/red_flower.png"
 sprite_scale = 0.7
-lines = PackedStringArray("Shiren|Kasanın dibinde tek bir taze kırmızı çiçek.", "Shilda|(uzaktan) Kırk ikinci. Bu sefer… son olsun.")
+lines = PackedStringArray("Noroi|Kasanın dibinde tek bir taze kırmızı çiçek.", "Shilda|(uzaktan) Kırk ikinci. Bu sefer… son olsun.")

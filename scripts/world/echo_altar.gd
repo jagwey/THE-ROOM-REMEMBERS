@@ -1,6 +1,6 @@
 extends Area2D
 ## Yankı Sunağı — etkileşince oyuncunun 6 saniyelik hareketi kaydedilir; sonra yarı saydam
-## bir Shiren ikizi (EchoTwin) bu hareketi dünyada fiziksel olarak tekrarlar. İkiz plakaya
+## bir Noroi ikizi (EchoTwin) bu hareketi dünyada fiziksel olarak tekrarlar. İkiz plakaya
 ## basar / kolu çeker; oyuncu eşzamanlı olarak diğer mekanizmayı tetikler.
 ## Tüm anahtarlar (EchoSwitch) aynı anda aktifse puzzle_id çözülür.
 
@@ -77,7 +77,7 @@ func _build_switches() -> void:
 
 func on_interact(by: Node) -> void:
 	if PuzzleManager.is_solved(puzzle_id):
-		DialogueManager.say("Shiren", solved_text)
+		DialogueManager.say("Noroi", solved_text)
 		return
 	if _recording:
 		_finish_recording()
@@ -218,8 +218,8 @@ func _on_switch_changed(_active: bool) -> void:
 	if cam and cam.has_method("zoom_to"):
 		cam.zoom_to(1.22, 1.4)
 	SaveManager.save_game()
-	DialogueManager.say("Shiren", "Yankım geçmişi tuttu; ben yeni bir adım attım.")
-	DialogueManager.say("Shiren", solved_text)
+	DialogueManager.say("Noroi", "Yankım geçmişi tuttu; ben yeni bir adım attım.")
+	DialogueManager.say("Noroi", solved_text)
 	_refresh_label()
 
 

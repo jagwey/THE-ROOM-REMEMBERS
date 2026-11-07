@@ -141,7 +141,7 @@ func _camera() -> Node:
 	return get_tree().get_first_node_in_group("follow_camera")
 
 
-## Soluk beyaz-mor, yarı saydam Shiren silüeti + ışıltı. Saldıramaz, kapı/bulmaca kullanamaz
+## Soluk beyaz-mor, yarı saydam Noroi silüeti + ışıltı. Saldıramaz, kapı/bulmaca kullanamaz
 ## (yalnız görsel; çarpışması yok).
 func _spawn_soul(pos: Vector2) -> void:
 	_free_soul()
@@ -160,8 +160,8 @@ func _spawn_soul(pos: Vector2) -> void:
 		if ps:
 			frames = ps.sprite_frames
 			flip = ps.flip_h
-	if frames == null and ResourceLoader.exists("res://assets/characters/shiren.tres"):
-		frames = load("res://assets/characters/shiren.tres")
+	if frames == null and ResourceLoader.exists("res://assets/characters/noroi.tres"):
+		frames = load("res://assets/characters/noroi.tres")
 	var add := CanvasItemMaterial.new()
 	add.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
 	if frames:
@@ -316,7 +316,7 @@ func _respawn() -> void:
 	elif cp_room != RoomManager.get_active_room_id():
 		_set_phase(Phase.SOUL_TRANSITION)
 
-	## RESPAWNING: mühür parlar, ruh bedene iner, Shiren uyanır.
+	## RESPAWNING: mühür parlar, ruh bedene iner, Noroi uyanır.
 	_set_phase(Phase.RESPAWNING)
 	if player and player.has_method("respawn_at"):
 		player.respawn_at(cp)
@@ -340,8 +340,8 @@ func _respawn() -> void:
 	DialogueManager.clear()
 	## Karakter unutkanlığı — ilk ölümde tam, sonra sessiz (hızlı döngü).
 	if cinematic:
-		DialogueManager.say("Shiren", "…Neredeyim?")
-		DialogueManager.say("Shiren", "Bir şey… unuttum.")
+		DialogueManager.say("Noroi", "…Neredeyim?")
+		DialogueManager.say("Noroi", "Bir şey… unuttum.")
 		if _fast_mode():
 			await get_tree().create_timer(0.05).timeout
 			if DialogueManager.is_open:

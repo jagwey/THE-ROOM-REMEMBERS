@@ -49,4 +49,4 @@ func _touch(b: Node) -> void:
 	if b.has_method("has_shadow_dash") and b.has_shadow_dash():
 		return
 	_hint_done = true
-	DialogueManager.whisper("Shiren", "Kırmızı perde bedenimi itiyor. Gölge olsaydım… geçebilirdim.")
+	DialogueManager.whisper("Noroi", "Kırmızı perde bedenimi itiyor. Gölge olsaydım… geçebilirdim.")

@@ -29,7 +29,7 @@ func on_interact(_by: Node) -> void:
 	if _busy or DialogueManager.is_open:
 		return
 	_busy = true
-	DialogueManager.say("Shiren", "Kırmızı yapraklar… kurumuş. Yerde bir desen var: 7, 2, 9.")
+	DialogueManager.say("Noroi", "Kırmızı yapraklar… kurumuş. Yerde bir desen var: 7, 2, 9.")
 	var ok: bool = await DialogueManager.dialogue_finished
 	if ok:
 		GameState.learn_memory_code("decay_archive", "729")

@@ -28,7 +28,7 @@ script = ExtResource("ability")
 grant_key = "ability_soul_slash"
 title = "Ruh Kesimi"
 texture_path = "res://assets/props/slash.png"
-lines = PackedStringArray("Shiren|Havada asılı bir kesik. Benim kılıcımın izi… ama ışıktan.", "Shiren|Dokununca içimde bir şey uyanıyor.")
+lines = PackedStringArray("Noroi|Havada asılı bir kesik. Benim kılıcımın izi… ama ışıktan.", "Noroi|Dokununca içimde bir şey uyanıyor.")
 tutorial = "Q (mobilde yıldız düğmesi): Ruh Kesimi. Mor mühürleri ve mühürlü sarmaşıkları açar."
 
 [node name="Shard1" type="Area2D" parent="Interactive"]
@@ -39,7 +39,7 @@ grant_world_flag = &"seal_shard_1"
 title = "1. Mühür Parçası"
 texture_path = "res://assets/props/seal.png"
 tint = Color(1, 0.75, 0.8, 1)
-lines = PackedStringArray("Shiren|Kırık bir mührün yarısı. Kenarında Shilda'nın adı.", "Shilda|(uzaktan) Diğer yarısı aynaların ardında.")
+lines = PackedStringArray("Noroi|Kırık bir mührün yarısı. Kenarında Shilda'nın adı.", "Shilda|(uzaktan) Diğer yarısı aynaların ardında.")
 
 [node name="ProtocolSeal" type="StaticBody2D" parent="Interactive"]
 position = Vector2(720.0, 288.0)
@@ -52,9 +52,9 @@ script = ExtResource("lore")
 lore_id = &"forbidden_protocol"
 texture_path = "res://assets/layers/bookshelf.png"
 sprite_scale = 0.3
-lines = PackedStringArray("Shiren|“Protokol Yetkilisi: Shiren. Hafıza Çekirdeği Deneyi — başlatıldı.”", "Shiren|“Ek not: Deney başarısız olursa Bekçi Shilda yetkilinin hafızasını silecek.”", "Shiren|Ben başlattım. Ben kilitledim. Ve unutmayı… ben istedim.")
+lines = PackedStringArray("Noroi|“Protokol Yetkilisi: Noroi. Hafıza Çekirdeği Deneyi — başlatıldı.”", "Noroi|“Ek not: Deney başarısız olursa Bekçi Shilda yetkilinin hafızasını silecek.”", "Noroi|Ben başlattım. Ben kilitledim. Ve unutmayı… ben istedim.")
 evidence_title = "Yasak Kayıtlar"
-evidence_body = "Protokol Yetkilisi: Shiren. Deneyi ben başlattım; başarısız olursa hafızamın silinmesini Shilda'ya ben emrettim."
+evidence_body = "Protokol Yetkilisi: Noroi. Deneyi ben başlattım; başarısız olursa hafızamın silinmesini Shilda'ya ben emrettim."
 evidence_section = "izler"
 set_progress_key = "truth_fragment_protocol"
 focus_zoom = true

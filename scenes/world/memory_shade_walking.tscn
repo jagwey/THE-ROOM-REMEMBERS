@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://memory_shade_walking"]
 
 [ext_resource type="Script" path="res://scripts/world/memory_shade_walking.gd" id="1"]
-[ext_resource type="SpriteFrames" path="res://assets/characters/shiren.tres" id="2"]
+[ext_resource type="SpriteFrames" path="res://assets/characters/noroi.tres" id="2"]
 
 [sub_resource type="RectangleShape2D" id="Shape"]
 size = Vector2(18, 36)

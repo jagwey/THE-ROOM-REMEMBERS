@@ -32,17 +32,25 @@ const LOCKED_VARIANTS := [
 	"Bu sembolü daha önce gördüm mü?",
 	"Bir şey bu kapıyı içeriden tutuyor.",
 ]
-## Kapının zemine oturduğu yerel y (kapılar y≈268, zemin 288).
-const FOOT_Y := 20.0
+## Kapı tabanı zemin çizgisi (y=288); kapı düğümü bu yüksekliğe oturtulur.
+const FLOOR_Y := 288.0
+const FOOT_Y := 0.0
+const GothicDoorArt := preload("res://scripts/world/gothic_door_art.gd")
 const WALK_TIME := 0.22
 const FADE_OUT := 0.26
 const FADE_IN := 0.3
+const LABEL_MARGIN := 16.0
+
+## Büyük bölge geçişi / salon girişi kapısı (daha yüksek sütunlu niş).
+@export var grand: bool = false
 
 ## Aynı anda tek geçiş (çift dokunuş / iki kapı birden).
 static var _transitioning: bool = false
 
 var _seal: Sprite2D
 var _glow: Sprite2D
+var _label: Label
+var _door_h: float = 116.0
 var _locked_tries: int = 0
 var _last_locked_ms: int = -10000
 var _phase: float = 0.0
@@ -55,43 +63,92 @@ func _ready() -> void:
 	monitorable = true
 	add_to_group("room_door")
 	_transitioning = false
+	## Eski kapılar y≈268'e konmuştu; zemin 288 — kapı tabanı tam zeminde olsun.
+	if position.y > 250.0 and position.y < 300.0:
+		position.y = FLOOR_Y
+	if not grand:
+		grand = _is_grand_target()
 	_build_visuals()
-	var label := Label.new()
-	label.name = "DoorLabel"
-	label.position = Vector2(-110.0, FOOT_Y - 198.0)
-	label.size = Vector2(220, 36)
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.add_theme_font_size_override("font_size", 14)
-	label.add_theme_color_override("font_shadow_color", Color.BLACK)
-	label.add_theme_constant_override("shadow_offset_x", 1)
-	label.add_theme_constant_override("shadow_offset_y", 1)
+	_label = Label.new()
+	_label.name = "DoorLabel"
+	_label.size = Vector2(220, 36)
+	_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_label.add_theme_font_size_override("font_size", 14)
+	_label.add_theme_color_override("font_shadow_color", Color.BLACK)
+	_label.add_theme_constant_override("shadow_offset_x", 1)
+	_label.add_theme_constant_override("shadow_offset_y", 1)
 	var touch := MobileInputManager.is_touch_ui()
 	var hint := "El · Geç" if touch else "[E] Geç"
-	label.text = "%s\n%s" % [get_display_name(), hint]
-	label.z_index = 4
-	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(label)
-	call_deferred("_clamp_door_label", label)
-	## Etkileşim alanını da genişlet (paylaşılan şekli kopyalayarak).
-	var cs := get_node_or_null("CollisionShape2D") as CollisionShape2D
-	if cs and cs.shape is RectangleShape2D:
-		var rect := (cs.shape as RectangleShape2D).duplicate() as RectangleShape2D
-		rect.size = Vector2(maxf(rect.size.x, 52.0), maxf(rect.size.y, 72.0))
-		cs.shape = rect
+	_label.text = "%s
+%s" % [get_display_name(), hint]
+	_label.z_index = 4
+	_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	## Her zaman kapının tam ortasında; sabit sağ kenar kayması yok.
+	_label.position = Vector2(-_label.size.x * 0.5, FOOT_Y - _door_h - 40.0)
+	add_child(_label)
+	call_deferred("_clamp_door_label")
+	if not UiGate.gate_changed.is_connected(_on_gate_changed):
+		UiGate.gate_changed.connect(_on_gate_changed)
+	_on_gate_changed(UiGate.current_layer())
+	## Etkileşim alanı: kapı açıklığı + biraz pay (programatik kapıda şekil adı farklı olabilir).
+	var cs: CollisionShape2D = get_node_or_null("CollisionShape2D") as CollisionShape2D
+	if cs == null:
+		for c in get_children():
+			if c is CollisionShape2D:
+				cs = c
+				break
+	if cs == null:
+		cs = CollisionShape2D.new()
+		cs.name = "CollisionShape2D"
+		add_child(cs)
+	var rect := RectangleShape2D.new()
+	rect.size = Vector2(maxf(60.0, GothicDoorArt.get_textures(grand)["opening_w"] + 8.0), _door_h * 0.82)
+	cs.shape = rect
+	cs.position = Vector2(0.0, FOOT_Y - rect.size.y * 0.5)
 	call_deferred("_hide_legacy_door_sprites")
 
 
-func _clamp_door_label(label: Label) -> void:
-	if not is_inside_tree() or label == null:
-		return
-	var room_w := 960.0
+func _exit_tree() -> void:
+	if UiGate.gate_changed.is_connected(_on_gate_changed):
+		UiGate.gate_changed.disconnect(_on_gate_changed)
+
+
+## Ana bölge (ilk "_" öncesi) hedefle farklıysa büyük kapı.
+func _is_grand_target() -> bool:
+	var room := _find_room()
+	if room == null or not ("room_id" in room):
+		return false
+	var here := String(room.room_id).split("_")[0]
+	var there := String(target_room_id).split("_")[0]
+	return here != there
+
+
+func _find_room() -> Node:
 	var room: Node = get_parent()
-	while room and not ("bounds" in room or "room_id" in room):
+	while room and not ("room_id" in room):
 		room = room.get_parent()
-	if room and "bounds" in room:
-		room_w = (room.bounds as Rect2).size.x
-	var target_x := clampf(global_position.x - 110.0, 16.0, room_w - 236.0)
-	label.global_position.x = target_x
+	return room
+
+
+func _on_gate_changed(layer) -> void:
+	if _label:
+		_label.visible = int(layer) == int(UiGate.Layer.NONE)
+
+
+## Etiketi kapı ortasında tut; yalnız aktif odanın gerçek sınırlarına 16 px payla sıkıştır.
+func _clamp_door_label() -> void:
+	if not is_inside_tree() or _label == null:
+		return
+	var room := _find_room()
+	var bounds := Rect2(0.0, 0.0, 960.0, 360.0)
+	if room != null:
+		var b := RoomManager.get_room_bounds(StringName(room.room_id))
+		if b.size.x > 0.0:
+			bounds = b
+	var w := _label.size.x
+	var gx := global_position.x - w * 0.5
+	gx = clampf(gx, bounds.position.x + LABEL_MARGIN, bounds.end.x - LABEL_MARGIN - w)
+	_label.global_position.x = gx
 
 
 func get_display_name() -> String:
@@ -112,12 +169,15 @@ func is_locked() -> bool:
 
 
 func _build_visuals() -> void:
-	var base_y := FOOT_Y - 80.0 ## 160 px kapının merkezi
+	var art: Dictionary = GothicDoorArt.get_textures(grand)
+	var sz: Vector2 = art["size"]
+	_door_h = sz.y
+	var cy := FOOT_Y - sz.y * 0.5 ## Sprite merkezi: taban tam zeminde (y=0).
 	var back := Sprite2D.new()
 	back.name = "DoorBack"
-	back.texture = load("res://assets/props/gothic_door_back.png")
+	back.texture = art["back"]
 	back.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	back.position = Vector2(0, base_y)
+	back.position = Vector2(0, cy)
 	back.z_index = 1
 	add_child(back)
 	## Karanlığın içinden yükselen soluk kırmızı/mor ışık (ucuz: tek additive sprite).
@@ -130,30 +190,30 @@ func _build_visuals() -> void:
 	gt.fill_from = Vector2(0.5, 0.5)
 	gt.fill_to = Vector2(1.0, 0.5)
 	var grad := Gradient.new()
-	grad.set_color(0, Color(0.55, 0.2, 0.32, 0.55))
+	grad.set_color(0, Color(0.5, 0.18, 0.3, 0.32))
 	grad.set_color(1, Color(0.3, 0.18, 0.4, 0.0))
 	gt.gradient = grad
 	_glow.texture = gt
 	var mat := CanvasItemMaterial.new()
 	mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
 	_glow.material = mat
-	_glow.position = Vector2(0, FOOT_Y - 26.0)
-	_glow.scale = Vector2(0.8, 1.2)
+	_glow.position = Vector2(0, FOOT_Y - 12.0)
+	_glow.scale = Vector2(float(art["opening_w"]) / 64.0 * 0.9, 0.9)
 	_glow.z_index = 1
 	add_child(_glow)
 	var frame := Sprite2D.new()
 	frame.name = "DoorFrame"
-	frame.texture = load("res://assets/props/gothic_door_frame.png")
+	frame.texture = art["frame"]
 	frame.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	frame.position = Vector2(0, base_y)
-	frame.z_index = 1
+	frame.position = Vector2(0, cy)
+	frame.z_index = 2
 	add_child(frame)
 	_seal = Sprite2D.new()
 	_seal.name = "DoorSeal"
-	_seal.texture = load("res://assets/props/gothic_door_seal.png")
+	_seal.texture = art["seal"]
 	_seal.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	_seal.position = Vector2(0, base_y + 10.0)
-	_seal.z_index = 1
+	_seal.position = Vector2(0, FOOT_Y - float(art["seal_y"]))
+	_seal.z_index = 2
 	add_child(_seal)
 	_refresh_seal()
 
@@ -201,7 +261,7 @@ func on_interact(by: Node) -> void:
 		var msg: String = locked_message if idx == 0 else String(LOCKED_VARIANTS[idx - 1])
 		AudioManager.play_sfx(&"seal_key", -8.0, 0.55)
 		_shake_seal()
-		DialogueManager.say("Shiren", msg)
+		DialogueManager.say("Noroi", msg)
 		return
 	if not RoomManager.has_room(target_room_id):
 		push_warning("room_transition: unknown room %s" % String(target_room_id))

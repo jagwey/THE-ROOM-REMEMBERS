@@ -39,4 +39,4 @@ func _physics_process(_delta: float) -> void:
 		if memory_code_key != "" and memory_code_value != "":
 			GameState.learn_memory_code(memory_code_key, memory_code_value)
 		if reveal_line != "":
-			DialogueManager.whisper("Shiren", reveal_line)
+			DialogueManager.whisper("Noroi", reveal_line)

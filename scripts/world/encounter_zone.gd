@@ -29,7 +29,7 @@ func _ready() -> void:
 	RoomManager.room_changed.connect(_on_room_changed)
 
 
-func _on_room_changed(new_room: StringName) -> void:
+func _on_room_changed(_from_room: StringName, new_room: StringName) -> void:
 	if new_room != &"decay_shilda_wall" and _running:
 		_running = false
 		var keeper := get_tree().get_first_node_in_group("keeper")
@@ -53,7 +53,7 @@ func _on_enter(body: Node) -> void:
 		DialogueManager.say("Shilda", "Ama önce göster bana: benden kaçabilir misin?")
 		DialogueManager.say("Shilda", "Gözlerim kızarınca atıl. Duvarın önünde dur… ve son anda kenara çekil.")
 	else:
-		DialogueManager.say("Shilda", "Yine mi? …Atıl, Shiren.")
+		DialogueManager.say("Shilda", "Yine mi? …Atıl, Noroi.")
 	var ok: bool = await DialogueManager.dialogue_finished
 	if not ok or DeathManager.is_dying:
 		_running = false

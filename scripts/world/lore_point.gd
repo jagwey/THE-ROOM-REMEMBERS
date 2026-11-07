@@ -36,11 +36,37 @@ func _ready() -> void:
 		spr.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		spr.scale = Vector2(sprite_scale, sprite_scale)
 		spr.position = Vector2(0, -12)
+		var base_mod := Color.WHITE
+		if texture_path.ends_with("photograph.png"):
+			## Beyaz kutu yerine koyu, yaşlanmış parşömen çerçeve.
+			base_mod = Color(0.74, 0.62, 0.5, 1.0)
+			_add_parchment_frame(spr)
+		spr.modulate = base_mod
 		add_child(spr)
 		if not _done():
+			var peak := Color(minf(base_mod.r * 1.08, 1.0), minf(base_mod.g * 1.06, 1.0), minf(base_mod.b * 1.08, 1.0), 1.0)
 			var tw := spr.create_tween().set_loops()
-			tw.tween_property(spr, "modulate", Color(1.25, 1.1, 1.25, 1), 0.8).set_trans(Tween.TRANS_SINE)
-			tw.tween_property(spr, "modulate", Color.WHITE, 0.8).set_trans(Tween.TRANS_SINE)
+			tw.tween_property(spr, "modulate", peak, 0.9).set_trans(Tween.TRANS_SINE)
+			tw.tween_property(spr, "modulate", base_mod, 0.9).set_trans(Tween.TRANS_SINE)
+
+
+## Fotoğrafın arkasına koyu kahve kenar + soluk parşömen iç dolgu (sprite'ın altında).
+func _add_parchment_frame(spr: Sprite2D) -> void:
+	var tex := spr.texture
+	if tex == null:
+		return
+	var half := Vector2(tex.get_width(), tex.get_height()) * spr.scale * 0.5 + Vector2(2.0, 2.0)
+	var c := spr.position
+	var outer := Polygon2D.new()
+	outer.name = "ParchmentEdge"
+	outer.color = Color(0.1, 0.07, 0.05, 0.95)
+	outer.polygon = PackedVector2Array([c + Vector2(-half.x - 1.5, -half.y - 1.5), c + Vector2(half.x + 1.5, -half.y - 1.5), c + Vector2(half.x + 1.5, half.y + 1.5), c + Vector2(-half.x - 1.5, half.y + 1.5)])
+	add_child(outer)
+	var inner := Polygon2D.new()
+	inner.name = "ParchmentBody"
+	inner.color = Color(0.3, 0.22, 0.15, 0.95)
+	inner.polygon = PackedVector2Array([c + Vector2(-half.x, -half.y), c + Vector2(half.x, -half.y), c + Vector2(half.x, half.y), c + Vector2(-half.x, half.y)])
+	add_child(inner)
 
 
 func _done() -> bool:
@@ -80,12 +106,26 @@ func on_interact(_by: Node) -> void:
 	SaveManager.save_game()
 
 
+## Shilda adı verildi mi? Bayrak yoksa isim beat'inin bıraktığı bilgiden türetip bayrağa yazar
+## (shilda_name_beat.gd başka ajanın; bayrağı burada kalıcılaştırıyoruz).
+static func shilda_is_named() -> bool:
+	if bool(GameState.get_world_flag(&"shilda_named", false)):
+		return true
+	if bool(GameState.player_progress_knowledge.get("shilda_named_partial", false)):
+		GameState.set_world_flag(&"shilda_named", true)
+		return true
+	return false
+
+
 func _say(entry: String) -> void:
 	var parts := entry.split("|", true, 1)
 	if parts.size() == 2:
-		DialogueManager.say(parts[0], parts[1])
+		var who: String = parts[0]
+		if who == "???" and shilda_is_named():
+			who = "Shilda"
+		DialogueManager.say(who, parts[1])
 	else:
-		DialogueManager.say("Shiren", entry)
+		DialogueManager.say("Noroi", entry)
 
 
 static func record_evidence(eid: String, title: String, body: String, section: String = "notlar", kind: String = "evidence") -> void:

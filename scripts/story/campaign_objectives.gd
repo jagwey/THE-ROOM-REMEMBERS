@@ -36,4 +36,32 @@ const _BY_ROOM: Dictionary = {
 }
 
 static func get_objective(room_id: String) -> String:
-	return String(_BY_ROOM.get(room_id, "Kayıtları incele; sağdaki geçidi takip et."))
+	return objective_for_room(room_id)
+
+
+## Yalnız hedef metni (oda adı öneki yok — oda adı HUD başlığında).
+static func objective_for_room(room_id: String) -> String:
+	if room_id == "awakening":
+		return _awakening_objective()
+	var raw := String(_BY_ROOM.get(room_id, "Kayıtları incele; sağdaki geçidi takip et."))
+	var i := raw.find(" · ")
+	if i > 0 and i <= 32:
+		raw = raw.substr(i + 3)
+	return raw
+
+
+## Uyanış: kalan adımlar "Saate bak · Shilda ile konuş · plakaya bas" biçiminde kısalır.
+static func _awakening_objective() -> String:
+	var k: Dictionary = GameState.player_progress_knowledge
+	var steps: PackedStringArray = []
+	if not bool(k.get("pocket_watch_seen", false)):
+		steps.append("Saate bak")
+	if not bool(k.get("shilda_named_partial", false)) and not bool(k.get("shilda_named", false)):
+		steps.append("Shilda ile konuş")
+	if not PuzzleManager.is_solved(&"awakening_weight"):
+		steps.append("plakaya bas")
+	if steps.is_empty():
+		return "Kırık Geçit'ten ilerle; yarıklara dikkat et."
+	var first := steps[0]
+	steps[0] = first.substr(0, 1).to_upper() + first.substr(1)
+	return " · ".join(steps)

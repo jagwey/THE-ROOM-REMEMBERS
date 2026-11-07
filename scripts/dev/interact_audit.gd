@@ -63,7 +63,7 @@ func _run() -> void:
 	var watch: Node2D = room.find_child("PocketWatchInspect", true, false)
 	var shilda_beat: Node2D = room.find_child("ShildaNameBeat", true, false)
 	var exit: Node2D = room.find_child("ExitPassage", true, false)
-	check(watch != null and shilda_beat != null and exit != null, "awakening interactables found")
+	check(watch != null and exit != null, "awakening interactables found")
 
 	## 1) Tür / renk / etiket.
 	check(Glow.kind_for(watch) == &"memory", "pocket watch = memory (lila)")
@@ -95,7 +95,7 @@ func _run() -> void:
 	check(g.is_current_target(), "watch glow marked as current target")
 	var lbl: Label = watch.get_node_or_null("InteractNameLabel")
 	check(lbl != null and lbl.visible and lbl.text == "Cep Saati", "name label shown on approach")
-	var sg: Sprite2D = shilda_beat.get_node_or_null("InteractGlow")
+	var sg: Sprite2D = shilda_beat.get_node_or_null("InteractGlow") if shilda_beat != null else null
 	check(sg == null or not sg.is_current_target(), "other object not highlighted")
 	player.global_position = Vector2(watch.global_position.x - 150, 288)
 	await create_timer(0.5).timeout

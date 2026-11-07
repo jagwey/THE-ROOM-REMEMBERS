@@ -29,7 +29,7 @@ grant_key = "ability_shadow_dash"
 title = "Gölge Atılması"
 texture_path = "res://assets/props/halo.png"
 tint = Color(0.6, 0.45, 0.9, 1)
-lines = PackedStringArray("Shiren|Sunakta bir gölge. Benim gölgem… ama benden önce hareket ediyor.", "Shiren|İçime çekiyorum. Bedenim hafifliyor.")
+lines = PackedStringArray("Noroi|Sunakta bir gölge. Benim gölgem… ama benden önce hareket ediyor.", "Noroi|İçime çekiyorum. Bedenim hafifliyor.")
 tutorial = "X / Dash: Gölge Atılması. Atılırken lanetli bariyerlerin ve Shilda'nın saldırılarının içinden hasar almadan geçersin."
 
 [node name="Barrier" type="StaticBody2D" parent="Interactive"]
@@ -44,7 +44,7 @@ grant_world_flag = &"seal_shard_2"
 title = "2. Mühür Parçası"
 texture_path = "res://assets/props/seal.png"
 tint = Color(1, 0.75, 0.8, 1)
-lines = PackedStringArray("Shiren|Mührün öteki yarısı. Kenarında benim adım.", "Shiren|İki ad, bir mühür. Çekirdek'i ancak birlikte kapatabiliriz.")
+lines = PackedStringArray("Noroi|Mührün öteki yarısı. Kenarında benim adım.", "Noroi|İki ad, bir mühür. Çekirdek'i ancak birlikte kapatabiliriz.")
 
 [node name="ShrineEcho" type="Area2D" parent="Interactive"]
 position = Vector2(880.0, 288.0)

@@ -58,14 +58,32 @@ func _show_next() -> void:
 	last_was_whisper = bool(line.get("whisper", false))
 	_speaker = String(line["speaker"])
 	_full_line = String(line["text"])
-	if last_was_whisper and _speaker != "Bekçi":
-		_speaker = "???"
-	_pages = _paginate(_full_line, page_max_width, page_max_lines, page_font_size, page_font)
+	_speaker = resolve_whisper_speaker(_speaker, last_was_whisper, GameState.is_shilda_named())
+	_pages = _paginate(_full_line, effective_width(_speaker), page_max_lines, page_font_size, page_font)
 	if _pages.is_empty():
 		_pages = PackedStringArray([""])
 	_page_index = 0
 	_begin_page()
 	_schedule_headless_auto()
+
+
+## Fısıltıda Shilda adı: isim öğrenilmeden "???", sonra "Shilda". Diğer konuşmacılar (Noroi, Bekçi...) korunur.
+static func resolve_whisper_speaker(speaker: String, is_whisper: bool, shilda_named: bool) -> String:
+	if not is_whisper:
+		return speaker
+	if shilda_named and speaker == "???":
+		return "Shilda"
+	if not shilda_named and speaker == "Shilda":
+		return "???"
+	return speaker
+
+
+## Portre görünen konuşmacıda metin sütunu portre payı kadar daralır.
+func effective_width(speaker: String) -> float:
+	var portraits = load("res://scripts/ui/dialogue_portraits.gd")
+	if portraits.key_for(speaker) != &"":
+		return maxf(40.0, page_max_width - float(portraits.TEXT_INSET))
+	return page_max_width
 
 
 func _begin_page() -> void:
@@ -191,7 +209,7 @@ func rebuild_pages_for_metrics(width: float, max_lines: int, font_size: int, fon
 	if font != null:
 		page_font = font
 	if is_open and not _full_line.is_empty():
-		_pages = _paginate(_full_line, page_max_width, page_max_lines, page_font_size, page_font)
+		_pages = _paginate(_full_line, effective_width(_speaker), page_max_lines, page_font_size, page_font)
 		if _pages.is_empty():
 			_pages = PackedStringArray([""])
 		_page_index = mini(_page_index, _pages.size() - 1)

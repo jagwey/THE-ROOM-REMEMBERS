@@ -161,10 +161,10 @@ func _play_intro() -> void:
 	if not _continued:
 		DialogueManager.say("???", "Gözlerin açılıyor.")
 		DialogueManager.say("???", "Oda seni hatırlıyor. Sen henüz bilmiyorsun.")
-		DialogueManager.say("Shiren", "…Burası neresi?")
+		DialogueManager.say("Noroi", "…Burası neresi?")
 	else:
 		DialogueManager.say("???", "…Yine buradasın.")
-		DialogueManager.say("Shiren", "Bir şey unuttum. Oda unutmamış.")
+		DialogueManager.say("Noroi", "Bir şey unuttum. Oda unutmamış.")
 
 
 func _clear_session_loaded_flag() -> void:

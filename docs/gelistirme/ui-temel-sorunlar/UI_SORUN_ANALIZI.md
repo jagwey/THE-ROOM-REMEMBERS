@@ -77,7 +77,7 @@ Fısıltı başına yeni tween oluşturulup öncekiler iptal edilmiyor; eski giz
 
 - Günlük gövdesinde kaydırma zaten açık.
 - 40 karakterlik konuşmacı testte panel içinde kaldı.
-- Shiren ve Bekçi'nin ayrı ayrı 16 animasyon karesinde alpha taban çizgileri tutarlı: Shiren frame alt sınırı 92, Bekçi 124; mevcut sprite offset'leriyle ikisi de kök y=0 tabanına oturuyor. Ekran görüntüsünden hareketle “bütün animasyonların ayak pivotu bozuk” sonucu çıkarılmadı. Gerçek animasyon oynanışı ayrıca gözle değerlendirilmeli.
+- Noroi ve Bekçi'nin ayrı ayrı 16 animasyon karesinde alpha taban çizgileri tutarlı: Noroi frame alt sınırı 92, Bekçi 124; mevcut sprite offset'leriyle ikisi de kök y=0 tabanına oturuyor. Ekran görüntüsünden hareketle “bütün animasyonların ayak pivotu bozuk” sonucu çıkarılmadı. Gerçek animasyon oynanışı ayrıca gözle değerlendirilmeli.
 - Farklı oranlardaki siyah bantlar otomatik hata değildir.
 
 ## Test kapsamı ve kullanım

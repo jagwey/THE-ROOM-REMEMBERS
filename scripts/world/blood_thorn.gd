@@ -1,5 +1,5 @@
 extends Area2D
-## Kan Kristali / Lanet Dikeni — bilerek dokunulursa Shiren ölür ve bedeni plakada kalır.
+## Kan Kristali / Lanet Dikeni — bilerek dokunulursa Noroi ölür ve bedeni plakada kalır.
 ## İlk "ağırlık cesedi" dersi: kapıyı açık tutmak için kendi cesedini bırak.
 
 @export var anchor_x: float = 340.0 ## ölüm anında bedenin düşeceği x (plaka merkezi)
@@ -33,13 +33,13 @@ func on_interact(by: Node) -> void:
 	if DeathManager.is_dying:
 		return
 	if PuzzleManager.is_solved(puzzle_hint):
-		DialogueManager.say("Shiren", "Kristal sustu. Bedenim plakayı tutuyor.")
+		DialogueManager.say("Noroi", "Kristal sustu. Bedenim plakayı tutuyor.")
 		return
 	if not _armed:
 		_armed = true
-		DialogueManager.say("Shiren", "Kırmızı kristal… dikenleri nabız gibi atıyor.")
-		DialogueManager.say("Shiren", "Dokunursam ölürüm. Ama beden… burada, plakanın üstünde kalır.")
-		DialogueManager.say("Shiren", "(Yine dokunursan bilerek ölürsün.)")
+		DialogueManager.say("Noroi", "Kırmızı kristal… dikenleri nabız gibi atıyor.")
+		DialogueManager.say("Noroi", "Dokunursam ölürüm. Ama beden… burada, plakanın üstünde kalır.")
+		DialogueManager.say("Noroi", "(Yine dokunursan bilerek ölürsün.)")
 		await DialogueManager.dialogue_finished
 		return
 	_armed = false

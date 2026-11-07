@@ -5,6 +5,33 @@ signal room_changed(from_room: StringName, to_room: StringName)
 
 const InteractGlowScript := preload("res://scripts/world/interact_glow.gd")
 
+## Sol-alt sanal joystick (x 14..114) arkasında doğmamak için sol sınırdan en az bu kadar içeride doğ.
+const LEFT_SPAWN_MIN_X := 150.0
+
+## Kalıcı oda sırası (01..N) ve Türkçe başlıklar — HUD oda başlığı bu tablodan okur.
+const ROOM_ORDER: PackedStringArray = [
+	"awakening", "awakening_balcony", "awakening_crypt", "awakening_passage", "awakening_seal",
+	"decay_vines", "decay_weight", "decay_garden", "decay_catacombs", "decay_shilda_wall",
+	"library_hall", "library_witness", "library_page", "library_upper_stacks", "library_forbidden_wing",
+	"experiment_cells", "experiment_circuit", "experiment_authority", "experiment_quarantine", "experiment_core_conduit",
+	"mirrors_reverse", "mirrors_dual", "mirrors_unbroken", "mirrors_labyrinth", "mirrors_shrine",
+	"core_threshold", "core_seal_chamber", "core_memory_vault", "core_bloom_garden", "core",
+]
+const ROOM_TITLES_TR := {
+	"awakening": "Uyanış", "awakening_balcony": "Gözlem Balkonu", "awakening_crypt": "İlk Bedenler Mahzeni",
+	"awakening_passage": "Kırık Geçit", "awakening_seal": "Mühürlü Eşik",
+	"decay_vines": "Sarmaşık Yolu", "decay_weight": "Ağırlık Salonu", "decay_garden": "Solmuş Bahçe",
+	"decay_catacombs": "Kemik Mahzeni", "decay_shilda_wall": "Çatlak Duvar",
+	"library_hall": "Hafıza Kütüphanesi", "library_witness": "Üç Tanık", "library_page": "Unutulmuş Sayfa",
+	"library_upper_stacks": "Üst Raflar", "library_forbidden_wing": "Yasak Kanat",
+	"experiment_cells": "Gözlem Hücreleri", "experiment_circuit": "Yankı Devresi", "experiment_authority": "Yetki Masası",
+	"experiment_quarantine": "Karantina", "experiment_core_conduit": "Enerji Kanalı",
+	"mirrors_reverse": "Ayna Geçidi", "mirrors_dual": "İki Yankı", "mirrors_unbroken": "Kırılmayan Ayna",
+	"mirrors_labyrinth": "Yansıma Labirenti", "mirrors_shrine": "Ayna Tapınağı",
+	"core_threshold": "Son Eşik", "core_seal_chamber": "Mühür Odası", "core_memory_vault": "Hafıza Kasası",
+	"core_bloom_garden": "Çiçek Bahçesi", "core": "Çekirdek",
+}
+
 ## Oda meta: bounds, isimli spawn, checkpoint (spawn yoksa), atmosfer klasörü, sahne kökü.
 var _rooms: Dictionary = {} ## StringName -> { root, bounds, spawns, checkpoint, checkpoint_room, atmosphere_bg }
 
@@ -104,6 +131,22 @@ func get_active_room_id() -> StringName:
 	return _current
 
 
+## "ODA 01 · Uyanış" — sıra ROOM_ORDER'dan; bilinmeyen oda "ODA ?? · <id>".
+func get_room_number_and_title(room_id: StringName) -> String:
+	var idx := ROOM_ORDER.find(String(room_id))
+	var num := "??" if idx < 0 else "%02d" % (idx + 1)
+	var title := String(ROOM_TITLES_TR.get(String(room_id), String(room_id).replace("_", " ").capitalize()))
+	return "ODA %s · %s" % [num, title]
+
+
+## Sol joystick arkasında doğmayı önler (yalnız sol sınıra yakın doğuşlar sağa kayar).
+func _clear_of_joystick(pos: Vector2, bounds: Rect2) -> Vector2:
+	var min_x := bounds.position.x + LEFT_SPAWN_MIN_X
+	if pos.x < min_x and bounds.size.x > LEFT_SPAWN_MIN_X * 2.0:
+		pos.x = min_x
+	return pos
+
+
 func get_room_bounds(room_id: StringName) -> Rect2:
 	var e: Variant = _rooms.get(room_id, null)
 	if e == null:
@@ -140,6 +183,7 @@ func enter_room(room_id: StringName, spawn_id: StringName = &"default", apply_ro
 			spawn_pos = entry["checkpoint"] as Vector2
 		if spawn_pos == Vector2.ZERO:
 			spawn_pos = Vector2(bounds.position.x + bounds.size.x * 0.5, 288.0)
+	spawn_pos = _clear_of_joystick(spawn_pos, bounds)
 
 	var player := get_tree().get_first_node_in_group("player") as Node2D
 	if player:
@@ -216,14 +260,16 @@ func apply_initial_room(room_id: StringName, spawn_id: StringName = &"default", 
 		var resume: Variant = SaveManager.take_resume_point(room_id) if spawn_id == &"checkpoint" else null
 		if resume is Vector2 and bounds.grow(8.0).has_point(resume):
 			spawn_pos = resume ## Kaydet ve Çık → Devam et: tam kaldığı yer.
-		elif spawn_id == &"checkpoint":
-			spawn_pos = GameState.get_checkpoint()
 		else:
-			spawn_pos = spawns.get(spawn_id, Vector2.ZERO) as Vector2
-			if spawn_pos == Vector2.ZERO:
-				spawn_pos = entry["checkpoint"] as Vector2
-			if spawn_pos == Vector2.ZERO:
-				spawn_pos = Vector2(bounds.position.x + bounds.size.x * 0.5, 288.0)
+			if spawn_id == &"checkpoint":
+				spawn_pos = GameState.get_checkpoint()
+			else:
+				spawn_pos = spawns.get(spawn_id, Vector2.ZERO) as Vector2
+				if spawn_pos == Vector2.ZERO:
+					spawn_pos = entry["checkpoint"] as Vector2
+				if spawn_pos == Vector2.ZERO:
+					spawn_pos = Vector2(bounds.position.x + bounds.size.x * 0.5, 288.0)
+			spawn_pos = _clear_of_joystick(spawn_pos, bounds)
 		var player := get_tree().get_first_node_in_group("player") as Node2D
 		if player:
 			player.global_position = spawn_pos

@@ -11,6 +11,11 @@ func _ready() -> void:
 	monitorable = true
 
 
+## Etkileşim etiketi: Shilda adını söyleyene dek "???".
+func get_interact_label() -> String:
+	return "Shilda" if GameState.is_shilda_named() else "???"
+
+
 func on_interact(_by: Node) -> void:
 	if _busy:
 		return
@@ -19,7 +24,7 @@ func on_interact(_by: Node) -> void:
 		return
 	_busy = true
 	DialogueManager.say("Shilda", "Bu çürüyen kökler… seni de çeker. Dur yanımda.")
-	DialogueManager.say("Shiren", "…Tamam. Senden yana duruyorum.")
+	DialogueManager.say("Noroi", "…Tamam. Senden yana duruyorum.")
 	DialogueManager.say("Shilda", "O zaman adını mühürlemeden gitme; hatırla.")
 	var ok: bool = await DialogueManager.dialogue_finished
 	if ok:

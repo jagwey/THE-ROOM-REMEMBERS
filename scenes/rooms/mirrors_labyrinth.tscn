@@ -29,7 +29,7 @@ script = ExtResource("lore")
 lore_id = &"labyrinth_hint"
 texture_path = "res://assets/layers/mirror.png"
 sprite_scale = 0.3
-lines = PackedStringArray("Shiren|Önümde uçurum. Ama tavandaki aynada… bir yol var.", "Shiren|Gerçekte görünmüyor. Yansımaya bakarak yürümeliyim.")
+lines = PackedStringArray("Noroi|Önümde uçurum. Ama tavandaki aynada… bir yol var.", "Noroi|Gerçekte görünmüyor. Yansımaya bakarak yürümeliyim.")
 
 [node name="RegretEcho" type="Area2D" parent="Interactive"]
 position = Vector2(1120.0, 288.0)
@@ -46,7 +46,7 @@ script = ExtResource("lore")
 lore_id = &"labyrinth_mirror"
 texture_path = "res://assets/layers/mirror_shards.png"
 sprite_scale = 0.35
-lines = PackedStringArray("Shiren|Kırık aynada kendi yüzüm… yaşlı. Gerçek yaşım bu mu?")
+lines = PackedStringArray("Noroi|Kırık aynada kendi yüzüm… yaşlı. Gerçek yaşım bu mu?")
 evidence_title = "Gerçek Yüz"
 evidence_body = "Aynanın ardındaki yüzüm yaşlıydı. Yatak beni gençleştiriyor; zaman ise durmuyor."
 evidence_section = "izler"

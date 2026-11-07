@@ -28,6 +28,6 @@ Süreler tasarım hedefidir. Otomatik test sürelerinden insan oynama süresi ç
 
 ## Korunacak kimlik
 
-Beyaz dağınık saçlı Shiren, açık pelerin/atkı ve kırmızı mühür; uzun siyah Bekçi, beyaz gözler, kırmızı halo; koyu mor ve taş tonları, az miktarda güçlü kırmızı; yan görünüş ve piksel filtreleme. Torimon proje/evren adı olarak kalabilir; ekranda oyun adı The Room Remembers olmalı.
+Beyaz dağınık saçlı Noroi, açık pelerin/atkı ve kırmızı mühür; uzun siyah Bekçi, beyaz gözler, kırmızı halo; koyu mor ve taş tonları, az miktarda güçlü kırmızı; yan görünüş ve piksel filtreleme. Torimon proje/evren adı olarak kalabilir; ekranda oyun adı The Room Remembers olmalı.
 
 Kaynak konsept panosu stil referansıdır. Önceden hazırlanmış görsellerin varlığı, altı bölgenin oynanabilir olduğu veya animasyonların oyun içinde kusursuz göründüğü anlamına gelmez. Yeni mekanik gerektiren sprite, VFX, ses ve çarpışmalar ayrıca hazırlanmalı ve sahnede kontrol edilmeli.

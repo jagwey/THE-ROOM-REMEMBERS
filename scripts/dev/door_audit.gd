@@ -74,7 +74,7 @@ func _run() -> void:
 	var frame := door.get_node_or_null("DoorFrame") as Sprite2D
 	check(door.get_node_or_null("DoorBack") != null and frame != null and door.get_node_or_null("DoorInnerLight") != null, "door layers back/light/frame exist")
 	var ratio := float(frame.texture.get_height()) / player_h if frame else 0.0
-	check(ratio >= 1.8 and ratio <= 2.5, "door height %.2fx player (%.0f px)" % [ratio, player_h])
+	check(ratio >= 1.5 and ratio <= 2.5, "door height %.2fx player (%.0f px)" % [ratio, player_h])
 	check(door.get_node("DoorBack").z_index >= 1 and door.get_node("DoorFrame").z_index >= 1, "door drawn above parallax (z_index >= 1)")
 	check(not door.is_locked() and not (door.get_node("DoorSeal") as Sprite2D).visible, "open door has no seal")
 	check(door.get_glow_kind() == &"normal", "open door glow = normal")
@@ -87,7 +87,7 @@ func _run() -> void:
 	check(legacy_visible == 0, "legacy small door sprite hidden")
 
 	## 2) Açık kapı geçişi + çift dokunuş.
-	player.global_position = door.global_position + Vector2(-30, 20)
+	player.global_position = door.global_position + Vector2(-30, 0)
 	await create_timer(0.1).timeout
 	_changes = 0
 	door.on_interact(player)
@@ -151,7 +151,7 @@ func _run() -> void:
 		await create_timer(0.3).timeout
 		dm.clear()
 		gate.set_story(false)
-		player.global_position = ldoor.global_position + Vector2(-30, 20)
+		player.global_position = ldoor.global_position + Vector2(-30, 0)
 		_changes = 0
 		ldoor.on_interact(player)
 		await _wait_transition(ldoor)

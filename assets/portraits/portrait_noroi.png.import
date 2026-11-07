@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bj26xr4edjrbs"
-path="res://.godot/imported/frame_14.png-1b485c38b82e164c1a68e61a47bc3315.ctex"
+uid="uid://crgbr3eqsji26"
+path="res://.godot/imported/portrait_noroi.png-275fa610444bd862d14996ac18eb2104.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/characters/shiren/frame_14.png"
-dest_files=["res://.godot/imported/frame_14.png-1b485c38b82e164c1a68e61a47bc3315.ctex"]
+source_file="res://assets/portraits/portrait_noroi.png"
+dest_files=["res://.godot/imported/portrait_noroi.png-275fa610444bd862d14996ac18eb2104.ctex"]
 
 [params]
 

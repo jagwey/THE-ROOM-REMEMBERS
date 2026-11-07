@@ -58,7 +58,8 @@ func _recompute() -> void:
 		total += _weight_of(b)
 	if total < required_weight:
 		# Slack: Area2D ~1 px kaçırırsa yakındaki cesedi de say
-		for c in get_tree().get_nodes_in_group("corpse"):
+		var near: Array = get_tree().get_nodes_in_group("corpse") + get_tree().get_nodes_in_group("weight_stone")
+		for c in near:
 			if seen.has(c) or not (c is Node2D):
 				continue
 			var n2 := c as Node2D

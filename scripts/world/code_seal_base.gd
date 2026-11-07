@@ -31,16 +31,16 @@ func on_interact(_by: Node) -> void:
 	if _busy:
 		return
 	if PuzzleManager.is_solved(puzzle_id):
-		DialogueManager.say("Shiren", "Mühür zaten açık.")
+		DialogueManager.say("Noroi", "Mühür zaten açık.")
 		return
 	_busy = true
 	_session += 1
 	var session := _session
 	var reaction := GameState.memory_code_reaction(code_key)
 	if reaction == &"unknown":
-		DialogueManager.say("Shiren", intro_line)
+		DialogueManager.say("Noroi", intro_line)
 	else:
-		DialogueManager.say("Shiren", "…Bir sayı geliyor aklıma. Denemeliyim.")
+		DialogueManager.say("Noroi", "…Bir sayı geliyor aklıma. Denemeliyim.")
 	var intro_ok: bool = await DialogueManager.dialogue_finished
 	if session != _session or not intro_ok:
 		_busy = false
@@ -56,7 +56,7 @@ func on_interact(_by: Node) -> void:
 		_busy = false
 		return
 	if entered == "":
-		DialogueManager.say("Shiren", "…Vazgeçtim.")
+		DialogueManager.say("Noroi", "…Vazgeçtim.")
 		await DialogueManager.dialogue_finished
 		_busy = false
 		return
@@ -65,14 +65,14 @@ func on_interact(_by: Node) -> void:
 		_camera_focus()
 		match reaction:
 			&"same_life":
-				DialogueManager.say("Shiren", "Yankıdaki sayı buydu… %s." % _spaced(entered))
+				DialogueManager.say("Noroi", "Yankıdaki sayı buydu… %s." % _spaced(entered))
 			&"past_life":
-				DialogueManager.say("Shiren", "Bu sembollerin anlamını bilmiyorum…")
-				DialogueManager.say("Shiren", "Ellerim bu şifreyi nereden bildi?!")
+				DialogueManager.say("Noroi", "Bu sembollerin anlamını bilmiyorum…")
+				DialogueManager.say("Noroi", "Ellerim bu şifreyi nereden bildi?!")
 			_:
-				DialogueManager.say("Shiren", "…Ben bunu hiç görmedim.")
-				DialogueManager.say("Shiren", "Zihnimin içinde başka biri var… Parmaklarımı kim yönetiyor?!")
-		DialogueManager.say("Shiren", solved_line)
+				DialogueManager.say("Noroi", "…Ben bunu hiç görmedim.")
+				DialogueManager.say("Noroi", "Zihnimin içinde başka biri var… Parmaklarımı kim yönetiyor?!")
+		DialogueManager.say("Noroi", solved_line)
 		var confirm_ok: bool = await DialogueManager.dialogue_finished
 		if session != _session or not confirm_ok:
 			_busy = false
@@ -88,9 +88,9 @@ func on_interact(_by: Node) -> void:
 			am.play_sfx(&"seal_open")
 		SaveManager.save_game()
 	else:
-		DialogueManager.say("Shiren", wrong_line)
+		DialogueManager.say("Noroi", wrong_line)
 		if reaction == &"unknown":
-			DialogueManager.say("Shiren", "Bir yerde… bir yankı bunu söylemiş olmalı.")
+			DialogueManager.say("Noroi", "Bir yerde… bir yankı bunu söylemiş olmalı.")
 		await DialogueManager.dialogue_finished
 	_busy = false
 

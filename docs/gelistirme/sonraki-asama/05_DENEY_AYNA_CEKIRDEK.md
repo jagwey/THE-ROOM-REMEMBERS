@@ -8,7 +8,7 @@
 
 **ex_02 / Bellek Devresi:** Dünyanın bütününü geriye sarmak yerine yerel ve sınırlı bir kayıt düzeneği ekle. Bir siluet 4–6 saniyelik sabit rotayı tekrarlar, bir plaka/devreyi tutar; oyuncu ikinci kolu çalıştırır. İlk sürüm veriyle tanımlı rota olabilir; oyuncu hareketlerini kaydeden özellik yoksa bunu gerçek oyuncu kaydı diye sunma. Görsel ve etkileşim hacimleri tutarlı olsun. Modal konuşma sırasında devrenin oynanış süresi durur, siluetin idle/parıltısı sürebilir. Başlat/durdur/reset erişilebilir, başarısızlık cezasız olsun.
 
-**ex_03 / Yetki Masası:** Shiren'in mührü bir yetki kaydını açar. Yeni anlatı önerisi: kaybolmasını istemediği bir hatıra için düzenin kurulmasına izin vermiş, sonra dayanamadığı gerçeğin kendi belleğinden çıkarılmasını istemiştir. Bunun kesin ayrıntılarını mevcut kanonla uyumlu yaz. Oyuncuya kaydı inceleme veya geçici kapatma seçeneği ver; ana mekanik bilgiyi kaçıran kalıcı kilit olmasın. Dünya, Shilda'yı kayıtsız bir fail gibi göstermesin; sorumluluk paylaşımı kanıtlarla açığa çıksın. Ayna Salonu'na çıkış açılır.
+**ex_03 / Yetki Masası:** Noroi'nin mührü bir yetki kaydını açar. Yeni anlatı önerisi: kaybolmasını istemediği bir hatıra için düzenin kurulmasına izin vermiş, sonra dayanamadığı gerçeğin kendi belleğinden çıkarılmasını istemiştir. Bunun kesin ayrıntılarını mevcut kanonla uyumlu yaz. Oyuncuya kaydı inceleme veya geçici kapatma seçeneği ver; ana mekanik bilgiyi kaçıran kalıcı kilit olmasın. Dünya, Shilda'yı kayıtsız bir fail gibi göstermesin; sorumluluk paylaşımı kanıtlarla açığa çıksın. Ayna Salonu'na çıkış açılır.
 
 ## Ayna Salonu — “Hatırlamak, gördüğüne inanmak değildir.”
 
@@ -16,7 +16,7 @@
 
 **mr_02 / İki İz:** Oyuncu bir önceki bölgedeki sabit yankı rotasını kullanırken kendisi başka geçidi açar. Yansımanın hareketi bir tehlikeyi haber verir, oyuncuyu görünmez bir kuralla öldürmez. Tek mekaniğin daha karmaşık bir bağlamı olsun; yeni bir kontrol seti öğretme. Kapı açıldığında geriye güvenli kısa yol oluşsun.
 
-**mr_03 / Kırılmamış Ayna:** Shiren kendi mührünü ve koruma kararını inkâr edemeyeceği kanıtla karşılaşır. Shilda ile kısa yüzleşme: “Beni korumuyordun. Kararımı koruyordun.” / “İkisini ayırmayı unuttum.” Bu yeni diyalog önerisini mevcut olaylarla uyumla. Oyuncu finalin anlamını burada öğrenir; henüz gizli bir menüyle son seçilmez. İlişkiyi onarma seçeneği varsa karşılığını sonraki bölgede davranışla göster.
+**mr_03 / Kırılmamış Ayna:** Noroi kendi mührünü ve koruma kararını inkâr edemeyeceği kanıtla karşılaşır. Shilda ile kısa yüzleşme: “Beni korumuyordun. Kararımı koruyordun.” / “İkisini ayırmayı unuttum.” Bu yeni diyalog önerisini mevcut olaylarla uyumla. Oyuncu finalin anlamını burada öğrenir; henüz gizli bir menüyle son seçilmez. İlişkiyi onarma seçeneği varsa karşılığını sonraki bölgede davranışla göster.
 
 ## Çekirdek — “Korumak ile bırakamamak arasında seçim.”
 

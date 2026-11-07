@@ -45,15 +45,35 @@ var _color: Color = COLORS[&"normal"]
 var _label: Label
 var _tick: float = 0.0
 var _is_target: bool = false
+var _emph: float = 0.0
+var _emph_sprite: CanvasItem = null
+var _emph_base: Color = Color.WHITE
+var _emph_mat: ShaderMaterial = null
+
+const OUTLINE_COLOR := Color(1.0, 0.94, 0.82, 0.75)
+const EMPH_MODULATE := Color(1.25, 1.22, 1.28, 1.0)
+const OUTLINE_SHADER := "shader_type canvas_item;
+uniform vec4 outline_color : source_color = vec4(1.0, 0.94, 0.82, 0.75);
+uniform vec2 px_scale = vec2(1.0, 1.0);
+uniform float strength = 0.0;
+void fragment() {
+	vec4 c = texture(TEXTURE, UV) * COLOR;
+	vec2 o = TEXTURE_PIXEL_SIZE * px_scale;
+	float a = texture(TEXTURE, UV + vec2(o.x, 0.0)).a;
+	a = max(a, texture(TEXTURE, UV - vec2(o.x, 0.0)).a);
+	a = max(a, texture(TEXTURE, UV + vec2(0.0, o.y)).a);
+	a = max(a, texture(TEXTURE, UV - vec2(0.0, o.y)).a);
+	float edge = a * (1.0 - texture(TEXTURE, UV).a) * strength * outline_color.a;
+	COLOR = vec4(mix(c.rgb, outline_color.rgb, edge), max(c.a, edge));
+}
+"
 
 
-## Glow eklenmeli mi? Bedenler (gardiyan, ceset, itilebilir taş) ve NPC'ler hariç.
+## Glow eklenmeli mi? Ceset, taş ve Shilda dahil tüm on_interact hedefleri; oyuncu/NPC/ikiz hariç.
 static func wants_glow(n: Node) -> bool:
 	if not (n is Node2D) or not n.has_method("on_interact"):
 		return false
-	if n is CharacterBody2D or n is AnimatableBody2D or n is RigidBody2D:
-		return false
-	if n.is_in_group("corpse") or n.is_in_group("player"):
+	if n is RigidBody2D or n.is_in_group("player"):
 		return false
 	var scr: Script = n.get_script()
 	if scr and String(scr.resource_path).get_file() in ["npc_actor.gd", "echo_twin.gd"]:
@@ -110,8 +130,9 @@ func _ready() -> void:
 	var mat := CanvasItemMaterial.new()
 	mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
 	material = mat
+	## Nesnenin ARKASINDA ama arka planın ÖNÜNDE (z -1 ParallaxFar'ın arkasına düşüp görünmüyordu).
 	show_behind_parent = true
-	z_index = -1
+	z_index = 0
 	_phase = randf() * TAU
 	## Görselin (varsa ilk Sprite2D) merkezine otur; yoksa nesnenin hafif üstüne.
 	var anchor := Vector2(0, -16)
@@ -154,6 +175,53 @@ func is_current_target() -> bool:
 	return _is_target
 
 
+## Vurgulanacak ana görsel: ilk AnimatedSprite2D, yoksa dokulu ilk Sprite2D (ceset/taş/eşya).
+func _find_main_sprite() -> CanvasItem:
+	var par := get_parent()
+	for c in par.get_children():
+		if c != self and c is AnimatedSprite2D:
+			return c
+	for c in par.get_children():
+		if c != self and c is Sprite2D and (c as Sprite2D).texture and (c as Sprite2D).visible and c.name != "Flower":
+			return c
+	return null
+
+
+func _update_emphasis(delta: float, want: bool) -> void:
+	## Kapılar kendi büyük etiket/ışığını kullanır; kontrast vurgusu yalnız diğer nesnelere.
+	if get_parent().get_node_or_null("DoorLabel") != null:
+		return
+	_emph = move_toward(_emph, 1.0 if want else 0.0, delta * 4.0)
+	if _emph > 0.01 and not is_instance_valid(_emph_sprite):
+		_emph_sprite = _find_main_sprite()
+		if _emph_sprite == null:
+			_emph = 0.0
+			return
+		_emph_base = _emph_sprite.self_modulate
+		if _emph_sprite.material == null:
+			if _emph_mat == null:
+				var sh := Shader.new()
+				sh.code = OUTLINE_SHADER
+				_emph_mat = ShaderMaterial.new()
+				_emph_mat.shader = sh
+				_emph_mat.set_shader_parameter("outline_color", OUTLINE_COLOR)
+			_emph_sprite.material = _emph_mat
+	if not is_instance_valid(_emph_sprite):
+		return
+	if _emph_mat != null and _emph_sprite.material == _emph_mat:
+		var gs: Vector2 = (_emph_sprite as Node2D).global_scale.abs()
+		_emph_mat.set_shader_parameter("px_scale", Vector2(1.0 / maxf(gs.x, 0.05), 1.0 / maxf(gs.y, 0.05)))
+		_emph_mat.set_shader_parameter("strength", _emph)
+	var pulse := 0.5 + 0.5 * sin(_phase * 0.8)
+	var tint := Color.WHITE.lerp(EMPH_MODULATE, _emph * (0.55 + 0.45 * pulse))
+	_emph_sprite.self_modulate = Color(_emph_base.r * tint.r, _emph_base.g * tint.g, _emph_base.b * tint.b, _emph_base.a)
+	if _emph <= 0.01:
+		_emph_sprite.self_modulate = _emph_base
+		if _emph_sprite.material == _emph_mat:
+			_emph_sprite.material = null
+		_emph_sprite = null
+
+
 func _process(delta: float) -> void:
 	if not is_visible_in_tree():
 		return
@@ -181,6 +249,7 @@ func _process(delta: float) -> void:
 		if _label and _is_target:
 			_label.text = label_for(p)
 	_boost = move_toward(_boost, 1.0 if _is_target else 0.0, delta * 5.0)
+	_update_emphasis(delta, _is_target and not spent)
 	var pulse := 0.5 + 0.5 * sin(_phase)
 	var a := (0.26 + 0.18 * pulse) * (0.35 if spent else 1.0)
 	a += _boost * 0.4

@@ -6,9 +6,9 @@
 
 Kütüphane kitap saklamıyor; ölümde insandan kopan hatıraları katalogluyor. Katalogda olay, onu hatırlayan kişi ve hatıranın değiştiği an ayrı kayıtlar. Bu yüzden iki kayıt çeliştiğinde biri mutlaka yalan değildir; biri önceyi, diğeri sonrayı anlatabilir.
 
-Shiren yalnız kurban değil: bir kaybı geri çevirmemek için belleği koruyan düzene bir zamanlar yardım etmiş. Kimi kaybettiği bu bölümde kesin açıklanmasın; mevcut onaylı hikâye farklıysa bu öneriyi uyumla. Shilda tanıklığı koruyan Bekçi. Hem yardım ediyor hem gerçeğin bir bölümünü saklıyor. “Asıl kötü oymuş” gibi basit bir ters köşe kurma.
+Noroi yalnız kurban değil: bir kaybı geri çevirmemek için belleği koruyan düzene bir zamanlar yardım etmiş. Kimi kaybettiği bu bölümde kesin açıklanmasın; mevcut onaylı hikâye farklıysa bu öneriyi uyumla. Shilda tanıklığı koruyan Bekçi. Hem yardım ediyor hem gerçeğin bir bölümünü saklıyor. “Asıl kötü oymuş” gibi basit bir ters köşe kurma.
 
-Önceki yaşamların izleri dünya belleği, günlük oyuncunun kalıcı bilgisi, Shiren'in anlık hatırlayışı ayrı katmanlardır. Karakter unutunca oyuncunun topladığı kanıt ve mekanik ilerleme silinmesin. Günlük gerçek kaynakla yorumun farkını gösterebilsin.
+Önceki yaşamların izleri dünya belleği, günlük oyuncunun kalıcı bilgisi, Noroi'nin anlık hatırlayışı ayrı katmanlardır. Karakter unutunca oyuncunun topladığı kanıt ve mekanik ilerleme silinmesin. Günlük gerçek kaynakla yorumun farkını gösterebilsin.
 
 ## lb_01 — Katalog Holü
 
@@ -24,7 +24,7 @@ Tanıklıklar:
 
 1. **Saat:** Kristalin ışığı yanmadan önce saat duruyor; felaketin zamanı sanılan anın deney başlangıcı olduğu anlaşılır.
 2. **Çiçek:** Fotoğrafta kapı açık, yankıda aynı çiçeğin yanında kapanıyor; çiçeğin yalnız ölüm sonrası bırakılmadığı görülür.
-3. **Mühür:** Kayıttaki el Shilda'nın siyah eline benzemiyor; Shiren'in kırmızı mührüyle uyuşuyor. Bu bir şüphe kanıtıdır, henüz kesin itiraf değildir.
+3. **Mühür:** Kayıttaki el Shilda'nın siyah eline benzemiyor; Noroi'nin kırmızı mührüyle uyuşuyor. Bu bir şüphe kanıtıdır, henüz kesin itiraf değildir.
 
 Her kritik bilgi hem sahnede bir işaret hem günlükte bir kanıt olarak bulunsun. Ana bulmaca için kısa metin alternatifi olsun; oyuncu küçük bir pikseli göremedi diye kilitlenmesin. Oyuncu metni hızlı geçse de gerekli nesne/şekil ipucuna tekrar erişebilsin. Yapay uzun beklemeler koyma.
 
@@ -36,12 +36,12 @@ Yanlış sıra kalıcı zarar vermesin. Hangi iki parçanın çeliştiğini gös
 
 Son sahnede Shilda'nın adı bilinçli biçimde açığa çıksın. Örnek ton:
 
-- Shiren: “Kaydı sen mi sildin?”
+- Noroi: “Kaydı sen mi sildin?”
 - Shilda: “Hayır. Silmemi sen istedin.”
-- Shiren: “O zaman neden sakladın?”
+- Noroi: “O zaman neden sakladın?”
 - Shilda: “Bir gün bunu yeniden sorarsın diye.”
 
-Konuşmanın ardından oyuncu masadaki kaydın arka yüzünü kendisi inceleyebilsin: Shiren'in işareti deney yetki mühründe de vardır. Sonraki hedef böyle doğsun: “Deney kaydının aslını bul.” Tek uzun lore anlatımıyla bütün gerçeği açıklama.
+Konuşmanın ardından oyuncu masadaki kaydın arka yüzünü kendisi inceleyebilsin: Noroi'nin işareti deney yetki mühründe de vardır. Sonraki hedef böyle doğsun: “Deney kaydının aslını bul.” Tek uzun lore anlatımıyla bütün gerçeği açıklama.
 
 ## Veri, ilişki ve kayıt
 

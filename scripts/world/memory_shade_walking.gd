@@ -28,7 +28,7 @@ func _ready() -> void:
 	if sprite == null:
 		sprite = AnimatedSprite2D.new()
 		sprite.name = "AnimatedSprite2D"
-		var frames := load("res://assets/characters/shiren.tres") as SpriteFrames
+		var frames := load("res://assets/characters/noroi.tres") as SpriteFrames
 		if frames:
 			sprite.sprite_frames = frames
 		sprite.offset = Vector2(0, -44)
@@ -214,7 +214,7 @@ func _spawn_clarity_spark() -> void:
 			var am_spark := get_node_or_null("/root/AudioManager")
 			if am_spark:
 				am_spark.play_sfx(&"seal_open")
-			DialogueManager.whisper("Shiren", "+%10 Berraklık")
+			DialogueManager.whisper("Noroi", "+%10 Berraklık")
 			spark.queue_free()
 	)
 

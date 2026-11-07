@@ -1,5 +1,5 @@
 extends CharacterBody2D
-## Side-view Shiren: yürü, zıpla, saldır (kombo), dash (afterimage), ruh kesimi, etkileş.
+## Side-view Noroi: yürü, zıpla, saldır (kombo), dash (afterimage), ruh kesimi, etkileş.
 
 const SPEED := 175.0
 const ACCELERATION := 1150.0
@@ -64,11 +64,18 @@ var _last_interact_target: Node = null
 var _last_interact_ms: int = -10000
 var _last_safe_floor_pos: Vector2 = Vector2.ZERO
 var _safe_floor_pos: Vector2 = Vector2.ZERO
+## Giriş yönü (çarpışma sonrası hız değil): taşlar omuz itişi için bunu okur.
+var input_x: float = 0.0
+var _push_node: Node2D = null
+var _push_ms: int = -10000
+const PUSH_STICKY_MS := 1200
+const PUSH_STICKY_RANGE := 64.0
+const PUSH_SLOW := 0.6
 
 
 func _ready() -> void:
 	add_to_group("player")
-	sprite.sprite_frames = load("res://assets/characters/shiren.tres")
+	sprite.sprite_frames = load("res://assets/characters/noroi.tres")
 	sprite.play("idle")
 	sprite.offset = Vector2(0, -44)
 	sprite.frame_changed.connect(_on_sprite_frame)
@@ -135,7 +142,18 @@ func _on_rebirth_completed() -> void:
 	MobileInputManager.clear_held_inputs()
 
 
+## İtilen nesne (ceset/taş) bildirir: etkileşim hedefi kısa süre ona yapışık kalır, oyuncu yavaşlar.
+func note_push(n: Node2D) -> void:
+	_push_node = n
+	_push_ms = Time.get_ticks_msec()
+
+
+func is_pushing() -> bool:
+	return Time.get_ticks_msec() - _push_ms < 150
+
+
 func _physics_process(delta: float) -> void:
+	input_x = 0.0
 	if EndingManager.current != EndingManager.Ending.NONE:
 		velocity = Vector2.ZERO
 		return
@@ -214,7 +232,10 @@ func _physics_process(delta: float) -> void:
 		&"idle", &"run":
 			var axis := MobileInputManager.get_move_axis()
 			axis.x = _apply_curse_drift(axis.x, delta)
+			input_x = axis.x if absf(axis.x) > 0.1 else 0.0
 			var target := axis.x * SPEED
+			if is_pushing() and signf(axis.x) == _facing:
+				target *= PUSH_SLOW
 			var rate := ACCELERATION if absf(axis.x) > 0.1 else FRICTION
 			if not on_floor:
 				rate *= 0.7
@@ -431,7 +452,7 @@ func _on_skill() -> void:
 	if _input_locked or UiGate.blocks_combat() or _skill_cd > 0.0:
 		return
 	if not has_soul_slash():
-		DialogueManager.whisper("Shiren", "…İçimde bir şey kıpırdıyor. Henüz uyanmadı.")
+		DialogueManager.whisper("Noroi", "…İçimde bir şey kıpırdıyor. Henüz uyanmadı.")
 		return
 	_skill_cd = SKILL_COOLDOWN
 	_play_sfx(&"soul_slash")
@@ -613,8 +634,23 @@ func get_interaction_target() -> Node2D:
 			candidates.append(target)
 	if candidates.is_empty():
 		return null
-	candidates.sort_custom(func(a: Node2D, b: Node2D): return global_position.distance_squared_to(a.global_position) < global_position.distance_squared_to(b.global_position))
+	## Yapışık itiş hedefi: son 1.2 sn içinde itilen ceset/taş hâlâ önümüzdeyse ona öncelik.
+	if is_instance_valid(_push_node) and Time.get_ticks_msec() - _push_ms < PUSH_STICKY_MS 			and _push_node.is_visible_in_tree() and _push_node.has_method("on_interact"):
+		var pdx := _push_node.global_position.x - global_position.x
+		if absf(pdx) <= PUSH_STICKY_RANGE and absf(_push_node.global_position.y - global_position.y) <= 48.0 				and (pdx * _facing > -4.0):
+			return _push_node
+	## Yön ağırlıklı: arkadaki adayın mesafesi cezalı (yüz yönündekiler öne çıkar).
+	var me := global_position
+	var fac := _facing
+	candidates.sort_custom(func(a: Node2D, b: Node2D): return _interact_score(a, me, fac) < _interact_score(b, me, fac))
 	return candidates[0]
+
+
+static func _interact_score(n: Node2D, from: Vector2, facing: float) -> float:
+	var d := from.distance_to(n.global_position)
+	if (n.global_position.x - from.x) * facing < -6.0:
+		d += 28.0
+	return d
 
 
 func is_dashing() -> bool:

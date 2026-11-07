@@ -48,6 +48,14 @@ const SIGIL_SRC_W := 32
 var _seal_buffer: String = ""
 var _seal_waiting: bool = false
 var _seal_result: String = ""
+const PortraitsLib := preload("res://scripts/ui/dialogue_portraits.gd")
+const MedallionScript := preload("res://scripts/ui/portrait_medallion.gd")
+const DIALOGUE_MARGIN_BASE := 30
+var _medallion: Control
+var _portrait_speaker: String = "~none~"
+var _portrait_inset: float = 0.0
+var _header_label: Label
+var _header_tween: Tween
 var _objective: Label
 var _context_hint: Label
 var _hint_tick: float = 0.0
@@ -64,7 +72,9 @@ func _ready() -> void:
 	_refresh_hearts(GameState.hearts, GameState.max_hearts)
 	GameState.hearts_changed.connect(_refresh_hearts)
 	GameState.room_changed.connect(_refresh_objective_now)
+	GameState.room_changed.connect(_on_room_header_changed)
 	GameState.knowledge_changed.connect(_refresh_objective_now)
+	GameState.knowledge_changed.connect(_update_control_visibility_arg)
 	PuzzleManager.puzzle_solved.connect(_on_puzzle_solved_objective)
 	DialogueManager.page_shown.connect(_on_dialogue_page)
 	DialogueManager.dialogue_closed.connect(_on_dialogue_closed)
@@ -78,6 +88,8 @@ func _ready() -> void:
 	UiGate.gate_changed.connect(_on_gate_changed)
 	_update_control_visibility()
 	_setup_guidance()
+	_setup_portrait()
+	_setup_room_header()
 	call_deferred("_sync_dialogue_metrics")
 
 
@@ -104,8 +116,10 @@ func _setup_textures() -> void:
 	btn_attack.texture_normal = load("res://assets/hud/attack.png")
 	btn_dash.texture_normal = load("res://assets/hud/dash.png")
 	btn_interact.texture_normal = load("res://assets/hud/interact.png")
-	btn_skill.texture_normal = load("res://assets/props/slash.png")
-	btn_jump.texture_normal = load("res://assets/hud/joystick_thumb.png")
+	# Skill/Jump: Attack/Dash/Interact ile aynı gotik halka (prosedürel); ikon halkanın içinde.
+	btn_skill.texture_normal = null
+	btn_skill.ring_icon = load("res://assets/props/slash.png")
+	btn_jump.texture_normal = null
 	btn_journal.texture_normal = load("res://assets/hud/journal.png")
 	if dialogue_panel:
 		_build_dialogue_frame()
@@ -282,7 +296,8 @@ func _sync_dialogue_metrics() -> void:
 	if font_size <= 0:
 		font_size = UiTheme.BODY
 	# Genişlik: etiketin gerçek genişliği - outline (3px x2) - pay; ölçülemezse panel sabiti.
-	var w := dialogue_text.size.x - 12.0
+	# Portre payı (Margin sol) metin genişliğinden düşülmüş olabilir; tam genişlik DialogueManager'a verilir.
+	var w := dialogue_text.size.x + _portrait_inset - 12.0
 	if w < 120.0:
 		w = 436.0
 	# Satır yüksekliği = font + line_spacing (outline taşması etiket kutusu dışına çizilir).
@@ -296,7 +311,8 @@ func _sync_dialogue_metrics() -> void:
 
 
 func _toggle_journal() -> void:
-	if UiGate.current_layer() == UiGate.Layer.ENDING:
+	var layer := UiGate.current_layer()
+	if layer != UiGate.Layer.NONE and layer != UiGate.Layer.JOURNAL:
 		return
 	if _journal == null:
 		_journal = get_tree().get_first_node_in_group("journal_ui") as CanvasLayer
@@ -342,19 +358,22 @@ func _on_dialogue_page(speaker: String, text: String, page_index: int, page_coun
 			shown = "…"
 	dialogue_speaker.text = shown
 	dialogue_text.text = text
+	_update_portrait(speaker)
 	var more := page_index < page_count - 1 or DialogueManager.has_queued_lines() or DialogueManager.is_typing()
-	dialogue_continue.text = "…" if DialogueManager.is_typing() else ("▼" if more else "■")
+	dialogue_continue.text = "…" if DialogueManager.is_typing() else (">>" if more else "•")
 	hint_label.visible = false
 	_update_control_visibility()
 
 
 func _on_typing_finished() -> void:
 	if dialogue_panel.visible:
-		dialogue_continue.text = "▼"
+		dialogue_continue.text = ">>"
 
 
 func _on_dialogue_closed() -> void:
 	dialogue_panel.visible = false
+	_portrait_speaker = "~none~"
+	_apply_portrait_inset(0.0)
 	_apply_default_hint()
 	_update_control_visibility()
 
@@ -373,9 +392,10 @@ func _update_control_visibility() -> void:
 	btn_attack.visible = not blocked
 	btn_dash.visible = not blocked
 	btn_jump.visible = not blocked
-	btn_skill.visible = not blocked
+	btn_skill.visible = not blocked and GameState.has_any_ability()
 	btn_interact.visible = not UiGate.blocks_dialogue_advance() and UiGate.current_layer() != UiGate.Layer.DEATH
-	btn_journal.visible = UiGate.current_layer() != UiGate.Layer.ENDING
+	var layer := UiGate.current_layer()
+	btn_journal.visible = layer == UiGate.Layer.NONE or layer == UiGate.Layer.JOURNAL
 	buttons_root.modulate.a = 1.0 if btn_interact.visible or btn_attack.visible else 0.0
 	## Göz açma sinematiği: kalp/hedef/düğme hiçbiri görünmez.
 	## Günlük (kitap) açıkken de HUD gizli; günlük kendi kapat düğmesini taşır.
@@ -656,8 +676,8 @@ func _on_puzzle_solved_objective(_puzzle_id: StringName) -> void:
 
 func _setup_guidance() -> void:
 	_objective = Label.new()
-	_objective.position = Vector2(12, 68)
-	_objective.size = Vector2(440, 44)
+	_objective.position = Vector2(12, 40)
+	_objective.size = Vector2(440, 32)
 	_objective.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_objective.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	UiTheme.apply_outlined(_objective, UiTheme.HINT, false, Color(0.95, 0.88, 0.8))
@@ -722,3 +742,57 @@ func _friendly_target(node_name: String) -> String:
 	if "flower" in n:
 		return "Çiçeği incele"
 	return "İncele / konuş"
+
+
+func _update_control_visibility_arg(_a = null) -> void:
+	_update_control_visibility()
+
+
+## --- Oda başlığı ---
+func _setup_room_header() -> void:
+	_header_label = get_node_or_null("SafeArea/RoomHeader/RoomHeaderLabel") as Label
+	if _header_label == null:
+		return
+	UiTheme.apply_outlined(_header_label, UiTheme.SPEAKER, true, Color(0.92, 0.86, 0.95))
+	_header_label.text = RoomManager.get_room_number_and_title(StringName(String(GameState.character_current_life_knowledge.get("room", &"awakening"))))
+
+
+func _on_room_header_changed(room_id: StringName) -> void:
+	if _header_label == null:
+		return
+	_header_label.text = RoomManager.get_room_number_and_title(room_id)
+	var box := _header_label.get_parent() as Control
+	if _header_tween and _header_tween.is_valid():
+		_header_tween.kill()
+	# Giriş parıltısı: kısa süre parlak, sonra kalıcı.
+	box.modulate = Color(1.7, 1.45, 1.1, 1.0)
+	_header_tween = create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	_header_tween.tween_property(box, "modulate", Color.WHITE, 1.4)
+
+
+## --- Diyalog portresi ---
+func _setup_portrait() -> void:
+	if dialogue_panel == null:
+		return
+	_medallion = MedallionScript.new()
+	_medallion.name = "PortraitMedallion"
+	_medallion.position = Vector2(22, 42)
+	dialogue_panel.add_child(_medallion)
+
+
+func _apply_portrait_inset(inset: float) -> void:
+	_portrait_inset = inset
+	var margin := get_node_or_null("SafeArea/Dialogue/Margin") as MarginContainer
+	if margin:
+		margin.add_theme_constant_override("margin_left", DIALOGUE_MARGIN_BASE + int(inset))
+
+
+func _update_portrait(speaker: String) -> void:
+	if _medallion == null:
+		return
+	var sad := DialogueManager.last_was_whisper or DeathManager.is_dying
+	var key: StringName = PortraitsLib.key_for(speaker, sad)
+	var changed := speaker != _portrait_speaker
+	_portrait_speaker = speaker
+	_apply_portrait_inset(PortraitsLib.TEXT_INSET if key != &"" else 0.0)
+	_medallion.show_key(key, changed)

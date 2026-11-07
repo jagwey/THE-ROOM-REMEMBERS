@@ -2,11 +2,11 @@
 
 01 ve 02 üzerine ilk tam bölümü uygula. Altı bölgenin tamamını placeholder yapmaya geçmeden bu altı odada öğretme, keşif, sorun çözme ve kalıcı ilerleme döngüsü çalışsın. İnsan oynanış hedefi 15–25 dakika; ölçmeden süre sözü verme.
 
-Ana duygu: Shiren bu odada ilk defa uyandığını düşünüyor; dünya ve Shilda bunun tekrar olduğunu biliyor. Oyuncu önce şüpheyi görsün, sonra davranışıyla sınasın. Shilda'yı daha ilk anda uzun açıklama yapan rehbere dönüştürme.
+Ana duygu: Noroi bu odada ilk defa uyandığını düşünüyor; dünya ve Shilda bunun tekrar olduğunu biliyor. Oyuncu önce şüpheyi görsün, sonra davranışıyla sınasın. Shilda'yı daha ilk anda uzun açıklama yapan rehbere dönüştürme.
 
 ## Uyanış — üç oda
 
-**aw_01 / Uyanış Odası:** Mevcut hastane/katedral odasını koru. Yürüme, dash, etkileşim ve günlüğü bağlama göre göster. Cep saati incelenince durduğu saat kayda geçsin. Shilda ilk kez "Shiren… yine mi?" der; karakter adını nasıl bildiğini sorar. Bu isim sahnesi bir kez oynar; tekrar hayatta kısa varyasyon gelir. Oyuncunun çıkabileceği açık bir geçit olsun.
+**aw_01 / Uyanış Odası:** Mevcut hastane/katedral odasını koru. Yürüme, dash, etkileşim ve günlüğü bağlama göre göster. Cep saati incelenince durduğu saat kayda geçsin. Shilda ilk kez "Noroi… yine mi?" der; karakter adını nasıl bildiğini sorar. Bu isim sahnesi bir kez oynar; tekrar hayatta kısa varyasyon gelir. Oyuncunun çıkabileceği açık bir geçit olsun.
 
 **aw_02 / Kırık Geçit:** 1920 piksel veya üzeri geniş odada gerçek kamera takibi ilk kez hissedilsin. Çatlak zemini ışık, ses ve nesneyle önceden haber ver. Mevcut ölüm/yankı öğretisini kullan ama oyuncuyu anlamadığı bir konuşmadan sonra otomatik öldürerek öğretme. Tehlikeyi denemeyi seçerse ölüm ve izleri anlam kazansın; güvenli yan yoldan dünya yankısına erişim de mümkün olsun. İpucu için kendini defalarca öldürmesi gerekmesin.
 

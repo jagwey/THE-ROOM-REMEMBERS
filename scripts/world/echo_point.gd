@@ -25,7 +25,7 @@ func on_interact(_by: Node) -> void:
 	if once_per_life:
 		var key := "echo_point_%s" % String(echo_id)
 		if bool(GameState.character_current_life_knowledge.get(key, false)):
-			DialogueManager.say("Shiren", "…Yankı suskun.")
+			DialogueManager.say("Noroi", "…Yankı suskun.")
 			return
 	_busy = true
 	await EchoManager.play_echo(echo_id)

@@ -157,11 +157,14 @@ func memory_code_reaction(key: String) -> StringName:
 
 func get_current_objective() -> String:
 	var rid: String = String(character_current_life_knowledge.get("room", &""))
-	## Uyanış: kısa adım adım; diğer odalar: CampaignObjectives (HUD tek kaynak).
-	if rid == "awakening":
-		if not bool(player_progress_knowledge.get("pocket_watch_seen", false)):
-			return "Saata bak · plakaya bas · sağdaki geçide git"
-		if not PuzzleManager.is_solved(&"awakening_weight"):
-			return "Plakaya bas · kapı açılsın · Kırık Geçit'e git"
-		return "Kırık Geçit'ten ilerle; yarıklara dikkat et."
-	return CampaignObjectives.get_objective(rid)
+	return CampaignObjectives.objective_for_room(rid)
+
+
+## Beceri düğmesi: Ruh Kesimi veya Gölge Atılması açıldı mı.
+func has_any_ability() -> bool:
+	return bool(player_progress_knowledge.get("ability_soul_slash", false)) 		or bool(player_progress_knowledge.get("ability_shadow_dash", false))
+
+
+## Shilda adını söyledi mi (söylemeden önce etkileşim etiketi "???").
+func is_shilda_named() -> bool:
+	return bool(player_progress_knowledge.get("shilda_named", false))

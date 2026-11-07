@@ -2,11 +2,11 @@
 
 ---
 
-Mevcut The Room Remembers oyununu inceleyip hikâyeyi oynanışa bağla. Hikâye metni yazmakla kalma; gereken olayları, kayıt alanlarını, kısa Türkçe konuşmaları ve final koşullarını uygula. Mevcut Shiren/Bekçi görünüşlerini koru. Aşağıdaki anlatı yeni bir tasarım önerisidir; daha önce onaylanmış başka bir lore varsa sessizce üstüne yazma, çelişen noktaları belgeleyerek uyumlu olanı seç.
+Mevcut The Room Remembers oyununu inceleyip hikâyeyi oynanışa bağla. Hikâye metni yazmakla kalma; gereken olayları, kayıt alanlarını, kısa Türkçe konuşmaları ve final koşullarını uygula. Mevcut Noroi/Bekçi görünüşlerini koru. Aşağıdaki anlatı yeni bir tasarım önerisidir; daha önce onaylanmış başka bir lore varsa sessizce üstüne yazma, çelişen noktaları belgeleyerek uyumlu olanı seç.
 
 ## Ana dramatik öneri
 
-Oda, kaybolan hatıraları korumak için kurulmuş bir düzenek. Shiren döngünün yalnız kurbanı değildir: birini veya bir olayı kaybetmemek için bu düzenin kurulmasında rol almıştır. Bekçi, düzenin korunmuş tanığıdır. Oyuncuyu yaralayan her şey Bekçi'nin emri değildir. Bekçi'nin uyarıları hem koruma hem gerçeği erteleme içerir. Hikâye onu tamamen haklı veya tamamen kötü ilan etmesin.
+Oda, kaybolan hatıraları korumak için kurulmuş bir düzenek. Noroi döngünün yalnız kurbanı değildir: birini veya bir olayı kaybetmemek için bu düzenin kurulmasında rol almıştır. Bekçi, düzenin korunmuş tanığıdır. Oyuncuyu yaralayan her şey Bekçi'nin emri değildir. Bekçi'nin uyarıları hem koruma hem gerçeği erteleme içerir. Hikâye onu tamamen haklı veya tamamen kötü ilan etmesin.
 
 Kırmızı çiçek yas ve hatırlama; halo taşınan sorumluluk; saat olayların sırası; anahtar izin/erişim; kristal saklanan tanıklık olsun. Motifleri rastgele koleksiyon eşyaları hâline getirme. Her biri en az bir bulmaca veya çevre olayıyla işlev kazansın.
 
@@ -14,7 +14,7 @@ Kırmızı çiçek yas ve hatırlama; halo taşınan sorumluluk; saat olayların
 
 Uyanış: “Burada yalnız değilim.” Çürüme: “Benden kalanlar yolu değiştiriyor.” Kütüphane: “Anlatılanlar çelişiyor.” Deney: “Bu düzene benim de katkım var.” Ayna: “Bilmekle kabul etmek farklı.” Çekirdek: “Döngüyü sürdürmek veya bırakmak bir bedel taşıyor.”
 
-Her ana bilgi için en az iki bağımsız sunum yolu kur: kısa diyalog + çevre kanıtı veya yankı + nesne yerleşimi. Oyuncu metni atlayınca gerekli mekanik bilgiyi kaçırmasın. Günlük “kanıt”, “yorum”, “açık soru” ayrımını yansıtsın. Shiren'in her ölümde aynı uzun konuşmayı tekrarlaması gerekmesin; hayat bilgisi silinmesi oynanışı sürekli sıfırlamasın.
+Her ana bilgi için en az iki bağımsız sunum yolu kur: kısa diyalog + çevre kanıtı veya yankı + nesne yerleşimi. Oyuncu metni atlayınca gerekli mekanik bilgiyi kaçırmasın. Günlük “kanıt”, “yorum”, “açık soru” ayrımını yansıtsın. Noroi'nin her ölümde aynı uzun konuşmayı tekrarlaması gerekmesin; hayat bilgisi silinmesi oynanışı sürekli sıfırlamasın.
 
 ## Bekçi davranışı
 
@@ -42,6 +42,6 @@ Tek başına gizli trust sayacı kullanma. Kalıcı ve açıklanabilir olaylar t
 
 ## Yazım kuralları
 
-Bir konuşmada çoğunlukla 1–3 kısa satır kullan. Her cümle yalnız gizemli görünmeye çalışmasın; nesne, neden veya duygu hakkında bir şey versin. Örnek ton: “Bu çiçeği ben bırakmadım.” / “Biliyorum.” / “O zaman neden burada?” Uzun üç nokta zincirlerini azalt. Shiren'in kafasının karışıklığını kontrol kaybıyla karıştırma.
+Bir konuşmada çoğunlukla 1–3 kısa satır kullan. Her cümle yalnız gizemli görünmeye çalışmasın; nesne, neden veya duygu hakkında bir şey versin. Örnek ton: “Bu çiçeği ben bırakmadım.” / “Biliyorum.” / “O zaman neden burada?” Uzun üç nokta zincirlerini azalt. Noroi'nin kafasının karışıklığını kontrol kaybıyla karıştırma.
 
 Kritik bilgi konuşmasında yeni tehlike doğurup oyuncuyu öldürme. Yeni bilgi ortaya çıktıktan sonra günlük hemen kaydedilsin. Olay ID'leri tekrar tetiklenince çift ödül veya iki final açılmasın. Mobilde bütün metinler rahat okunabilsin; otomatik kaybolan ana hikâye metni kullanma. Sonuç olarak olay akışını, değişen dosyaları, final koşullarını ve gerçekten oynanmış doğrulama yollarını teslim et.

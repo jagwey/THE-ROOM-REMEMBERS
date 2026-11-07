@@ -357,10 +357,10 @@ func open_menu() -> void:
 func close_menu() -> void:
 	var was_title := _title_mode
 	_title_mode = false
-	_menu_button.visible = true
 	_panel.hide()
 	UiGate.set_pause_menu(false)
 	UiGate.set_title(false)
+	_menu_button.visible = (UiGate.current_layer() == UiGate.Layer.NONE)
 	MobileInputManager.clear_held_inputs()
 	if was_title:
 		title_closed.emit()

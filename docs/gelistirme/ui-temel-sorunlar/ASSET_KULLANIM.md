@@ -21,7 +21,7 @@
 
 ## Zaten bağlı (değişmedi)
 
-- Karakter: shiren / keeper / npc sheets
+- Karakter: noroi / keeper / npc sheets
 - BG: awakening + core far/mid/front
 - HUD: joystick, attack, dash, interact, journal, hearts
 - Props: crystal, curse, door, seal, pressure_plate, body_echo, red_flower, halo, core_crystal layer

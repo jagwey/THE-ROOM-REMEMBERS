@@ -32,7 +32,7 @@ English: A compact psychological action-puzzle. Die, forget, wake again. The roo
 
 ## Hikâye
 
-Shiren uyanır; isim, bağ, suç — çoğu sis. Shilda bir isim midir, yoksa odanın fısıltısı mı? Cep saati, ağırlık plakası, mühür kodu: küçük kanıtlar zincir olur. Bekçi (the Keeper) her döngüde biraz daha yakındır. Dünya hatırlar; sen yalnızca parçaları toplarsın.
+Noroi uyanır; isim, bağ, suç — çoğu sis. Shilda bir isim midir, yoksa odanın fısıltısı mı? Cep saati, ağırlık plakası, mühür kodu: küçük kanıtlar zincir olur. Bekçi (the Keeper) her döngüde biraz daha yakındır. Dünya hatırlar; sen yalnızca parçaları toplarsın.
 
 ## Ne var?
 

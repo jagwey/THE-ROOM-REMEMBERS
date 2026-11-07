@@ -61,4 +61,4 @@ Doğal insan oynanışı, tam kayıt sonrası yeni süreçten devam, gerçek cih
 
 Önce kalan dört temel hata ve okunabilirlik; sonra geniş dünya/kamera; ardından Uyanış+Çürüme altı odalık bölüm; sonra Kütüphane; sonra Deney/Ayna/Çekirdek. Tam hikâye tasarım hedefi 18 oda ve ilk tahmin olarak 60–90 dakika. Süre yalnız insan testi sonrası değerlendirilebilir. Bu öneri, kullanıcının iki dakikalık deneyimini ölçülmüş yeni bir süreyle değiştirmiyor.
 
-Hikâye için önceki referans konuşmanın son 10 turu okundu: Bekçi için Shilda adı kullanıcı tarafından seçilmiş; kaynak kodda Shiren adı var. Yeni olay detayları yaratıcı devam önerisidir, önceki konuşmanın eksiksiz kanonu diye sunulmaz.
+Hikâye için önceki referans konuşmanın son 10 turu okundu: Bekçi için Shilda adı kullanıcı tarafından seçilmiş; kaynak kodda Noroi adı var. Yeni olay detayları yaratıcı devam önerisidir, önceki konuşmanın eksiksiz kanonu diye sunulmaz.

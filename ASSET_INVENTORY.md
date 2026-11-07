@@ -25,10 +25,10 @@ Do **not** treat `bekci/project.godot` as the shipping game; it remains an asset
 
 ## Wired into Godot (`res://` in THE-ROOM-REMEMBERS)
 
-### Player — Shiren
-- `res://assets/characters/shiren.tres`
-- `res://assets/characters/shiren_sheet.png`
-- `res://assets/characters/shiren/frame_00.png` … `frame_15.png`
+### Player — Noroi
+- `res://assets/characters/noroi.tres`
+- `res://assets/characters/noroi_sheet.png`
+- `res://assets/characters/noroi/frame_00.png` … `frame_15.png`
 
 ### Keeper — Bekçi
 - `res://assets/characters/keeper.tres`
@@ -77,7 +77,7 @@ Do **not** treat `bekci/project.godot` as the shipping game; it remains an asset
 |------|---------|
 | `res://scenes/main/main.tscn` | Main tree |
 | `res://scenes/rooms/awakening.tscn` | Uyanış |
-| `res://scenes/player/player.tscn` | Shiren |
+| `res://scenes/player/player.tscn` | Noroi |
 | `res://scenes/keeper/keeper.tscn` | Observation-only Keeper |
 | `res://scenes/ui/hud.tscn` | Hearts + mobile controls |
 | `res://scripts/autoload/*.gd` | Managers |

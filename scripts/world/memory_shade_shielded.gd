@@ -32,7 +32,7 @@ func _ready() -> void:
 	if sprite == null:
 		sprite = AnimatedSprite2D.new()
 		sprite.name = "AnimatedSprite2D"
-		var frames := load("res://assets/characters/shiren.tres") as SpriteFrames
+		var frames := load("res://assets/characters/noroi.tres") as SpriteFrames
 		if frames:
 			sprite.sprite_frames = frames
 		sprite.offset = Vector2(0, -44)
@@ -176,7 +176,7 @@ func _reflect_strike(attacker: Node, dir: float) -> void:
 
 	if not _hint_given:
 		_hint_given = true
-		DialogueManager.whisper("Shiren", "Kalkan kılıcı sektiriyor! Arkasına atıl veya Ruh Kesimi kullan.")
+		DialogueManager.whisper("Noroi", "Kalkan kılıcı sektiriyor! Arkasına atıl veya Ruh Kesimi kullan.")
 
 
 func receive_soul_slash(attacker: Node) -> void:

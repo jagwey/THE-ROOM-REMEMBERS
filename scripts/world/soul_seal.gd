@@ -53,7 +53,7 @@ func receive_soul_slash(_from: Node) -> void:
 	var cam := get_tree().get_first_node_in_group("follow_camera")
 	if cam and cam.has_method("add_trauma"):
 		cam.add_trauma(0.3)
-	DialogueManager.whisper("Shiren", "Mühür ruhumu tanıdı… ve çözüldü.")
+	DialogueManager.whisper("Noroi", "Mühür ruhumu tanıdı… ve çözüldü.")
 	SaveManager.save_game()
 	_open(true)
 
@@ -62,7 +62,7 @@ func receive_sword_hit(_from: Node, _dir: float, _combo: int) -> void:
 	if PuzzleManager.is_solved(puzzle_id) or _hint_done:
 		return
 	_hint_done = true
-	DialogueManager.whisper("Shiren", "Kılıç geçmiyor. Bu mühür bedeni değil, ruhu tanıyor.")
+	DialogueManager.whisper("Noroi", "Kılıç geçmiyor. Bu mühür bedeni değil, ruhu tanıyor.")
 
 
 func _open(animate: bool) -> void:

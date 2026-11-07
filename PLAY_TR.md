@@ -20,7 +20,7 @@ HUD üstte tek satır hedef gösterir. Ölüm dünya hafızasını silmez; erken
 
 ## Dikey dilim
 
-- 18 bağlı oda · Shiren / Shilda hikâyesi · iki bilinçli final (+ çekirdekte kötü son)
+- 18 bağlı oda · Noroi / Shilda hikâyesi · iki bilinçli final (+ çekirdekte kötü son)
 - Yankı + ağırlık / bellek kodu 314 + günlük
 - Lanet: %100 → hayat biter, dünya kalır
 - Android APK: GitHub Releases

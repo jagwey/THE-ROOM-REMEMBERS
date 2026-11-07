@@ -1,6 +1,6 @@
 [
   {
-    "file": "assets/characters/shiren/frame_00.png",
+    "file": "assets/characters/noroi/frame_00.png",
     "width": 96,
     "height": 96,
     "mode": "RGBA",
@@ -14,7 +14,7 @@
     "layer": "character"
   },
   {
-    "file": "assets/characters/shiren/frame_01.png",
+    "file": "assets/characters/noroi/frame_01.png",
     "width": 96,
     "height": 96,
     "mode": "RGBA",
@@ -28,7 +28,7 @@
     "layer": "character"
   },
   {
-    "file": "assets/characters/shiren/frame_02.png",
+    "file": "assets/characters/noroi/frame_02.png",
     "width": 96,
     "height": 96,
     "mode": "RGBA",
@@ -42,7 +42,7 @@
     "layer": "character"
   },
   {
-    "file": "assets/characters/shiren/frame_03.png",
+    "file": "assets/characters/noroi/frame_03.png",
     "width": 96,
     "height": 96,
     "mode": "RGBA",
@@ -56,7 +56,7 @@
     "layer": "character"
   },
   {
-    "file": "assets/characters/shiren/frame_04.png",
+    "file": "assets/characters/noroi/frame_04.png",
     "width": 96,
     "height": 96,
     "mode": "RGBA",
@@ -70,7 +70,7 @@
     "layer": "character"
   },
   {
-    "file": "assets/characters/shiren/frame_05.png",
+    "file": "assets/characters/noroi/frame_05.png",
     "width": 96,
     "height": 96,
     "mode": "RGBA",
@@ -84,7 +84,7 @@
     "layer": "character"
   },
   {
-    "file": "assets/characters/shiren/frame_06.png",
+    "file": "assets/characters/noroi/frame_06.png",
     "width": 96,
     "height": 96,
     "mode": "RGBA",
@@ -98,7 +98,7 @@
     "layer": "character"
   },
   {
-    "file": "assets/characters/shiren/frame_07.png",
+    "file": "assets/characters/noroi/frame_07.png",
     "width": 96,
     "height": 96,
     "mode": "RGBA",
@@ -112,7 +112,7 @@
     "layer": "character"
   },
   {
-    "file": "assets/characters/shiren/frame_08.png",
+    "file": "assets/characters/noroi/frame_08.png",
     "width": 96,
     "height": 96,
     "mode": "RGBA",
@@ -126,7 +126,7 @@
     "layer": "character"
   },
   {
-    "file": "assets/characters/shiren/frame_09.png",
+    "file": "assets/characters/noroi/frame_09.png",
     "width": 96,
     "height": 96,
     "mode": "RGBA",
@@ -140,7 +140,7 @@
     "layer": "character"
   },
   {
-    "file": "assets/characters/shiren/frame_10.png",
+    "file": "assets/characters/noroi/frame_10.png",
     "width": 96,
     "height": 96,
     "mode": "RGBA",
@@ -154,7 +154,7 @@
     "layer": "character"
   },
   {
-    "file": "assets/characters/shiren/frame_11.png",
+    "file": "assets/characters/noroi/frame_11.png",
     "width": 96,
     "height": 96,
     "mode": "RGBA",
@@ -168,7 +168,7 @@
     "layer": "character"
   },
   {
-    "file": "assets/characters/shiren/frame_12.png",
+    "file": "assets/characters/noroi/frame_12.png",
     "width": 96,
     "height": 96,
     "mode": "RGBA",
@@ -182,7 +182,7 @@
     "layer": "character"
   },
   {
-    "file": "assets/characters/shiren/frame_13.png",
+    "file": "assets/characters/noroi/frame_13.png",
     "width": 96,
     "height": 96,
     "mode": "RGBA",
@@ -196,7 +196,7 @@
     "layer": "character"
   },
   {
-    "file": "assets/characters/shiren/frame_14.png",
+    "file": "assets/characters/noroi/frame_14.png",
     "width": 96,
     "height": 96,
     "mode": "RGBA",
@@ -210,7 +210,7 @@
     "layer": "character"
   },
   {
-    "file": "assets/characters/shiren/frame_15.png",
+    "file": "assets/characters/noroi/frame_15.png",
     "width": 96,
     "height": 96,
     "mode": "RGBA",
@@ -224,7 +224,7 @@
     "layer": "character"
   },
   {
-    "file": "assets/characters/shiren_sheet.png",
+    "file": "assets/characters/noroi_sheet.png",
     "width": 384,
     "height": 384,
     "mode": "RGBA",

@@ -1,21 +1,21 @@
 # V4.1 — Eksik Sprite / Ses Listesi (sanatçı için)
 
-Kaynak: `animations.json`, `assets/characters/*_sheet.png`. Hücre: Shiren 96×96, Shilda 128×128.
+Kaynak: `animations.json`, `assets/characters/*_sheet.png`. Hücre: Noroi 96×96, Shilda 128×128.
 Sahte akıcılık (aynı kareyi tekrarlama) YAPILMADI; aşağıdakiler gerçekten çizilmesi gereken kareler.
 
 ## Mevcut kare sayıları (değişmedi)
 | Karakter | Animasyon | Kare | FPS | Not |
 |---|---|---|---|---|
-| Shiren | idle | 4 | 5–6 | OK |
-| Shiren | run | 4 | 10–12 | Akıcı koşu için 6–8 önerilir |
-| Shiren | attack | 4 | 10–12 | OK |
-| Shiren | dash | 2 | 12–14 | Havada da bu kare kullanılıyor |
-| Shiren | hurt | 1 | 5 | 2–3 önerilir |
-| Shiren | death | 2 (14,15) | 4 | 4–6 önerilir |
+| Noroi | idle | 4 | 5–6 | OK |
+| Noroi | run | 4 | 10–12 | Akıcı koşu için 6–8 önerilir |
+| Noroi | attack | 4 | 10–12 | OK |
+| Noroi | dash | 2 | 12–14 | Havada da bu kare kullanılıyor |
+| Noroi | hurt | 1 | 5 | 2–3 önerilir |
+| Noroi | death | 2 (14,15) | 4 | 4–6 önerilir |
 
 Hizalama ölçümü: 16 karenin hepsi tabanı y=92'de, yatay merkez x≈48 → pivot kayması/dikey titreme yok.
 
-## Eksik Shiren kareleri (öncelik sırası)
+## Eksik Noroi kareleri (öncelik sırası)
 1. `jump_start` — 1–2 kare (çömelme → itiş)
 2. `rise` — 1–2 kare (yukarı)
 3. `apex` — 1 kare (tepe, gövde toplu)
