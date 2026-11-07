@@ -69,3 +69,7 @@ Dal: cursor/playable-story-flow-8e4e · Sürüm: v1.2.0 (versionCode 16)
 - Not: `interact_audit` önceden kırık (awakening'de `ShildaNameBeat` sahnede yok)
 - [x] Ana karakter adı Shiren -> Noroi: tüm metin/diyalog/kod/JSON/docs, `assets/characters/noroi*` (git mv), portre eşlemesi `Noroi`; 9 headless audit 0 fail, `interact_audit` tolerans düzeltmesiyle geçiyor
 - [x] Sürüm 1.4.0 (versionCode 18), debug APK scratchpad/build14/trr-1.4.0.apk (35.7 MB); dal claude/v1.4-fixes, GitHub release v1.4.0
+## v1.4.1
+- [x] "Sürekli menüye atıyor" (Android): `mobile_input_manager.gd` — FOCUS_OUT (bildirim perdesi/jest çubuğu/overlay) artık menü açmıyor, sadece kaydediyor; menü yalnız PAUSED'da. Oynanışta geri jesti (sol joystick kenar kaydırma) için 1.5 sn içinde ikinci geri gerekir, ilkinde "Menü için tekrar geri" ipucu. `session_menu.gd`: `is_menu_open()`, test kancası `TORIMON_FORCE_TITLE`. Yeni audit `scripts/dev/start_flow_audit.gd` (0 fail). Cihazda doğrulanmadı.
+- [x] Konuşma portreleri: Noroi ve Shilda yeni görsellerden 384px (`assets/portraits/portrait_noroi*.png`, `portrait_shilda.png`)
+- [x] Sürüm 1.4.1 / versionCode 19; tüm audit'ler 0 fail

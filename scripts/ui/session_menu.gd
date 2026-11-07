@@ -105,6 +105,8 @@ func _should_show_title() -> bool:
 	if _force_title:
 		_force_title = false
 		return true
+	if OS.get_environment("TORIMON_FORCE_TITLE") == "1" and not _title_shown:
+		return true ## Test kancası: başlık akışını headless çalıştır (start_flow_audit).
 	if _title_shown or DisplayServer.get_name() == "headless":
 		return false
 	for env in ["TORIMON_TEST", "TORIMON_SMOKE", "TORIMON_FRESH"]:
@@ -170,6 +172,10 @@ func _build_confirm() -> void:
 	_confirm_ok = _confirm_panel.add_button("", func(): _confirm_action.call(), row)
 	_confirm_ok.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_confirm_panel.hide()
+
+
+func is_menu_open() -> bool:
+	return _panel != null and _panel.visible
 
 
 func is_confirm_open() -> bool:

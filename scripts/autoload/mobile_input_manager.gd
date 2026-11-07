@@ -139,8 +139,12 @@ func _notification(what: int) -> void:
 	# Odak kaybı / arka plan — tutulan girişleri bırak
 	if what == NOTIFICATION_APPLICATION_FOCUS_OUT or what == NOTIFICATION_WM_WINDOW_FOCUS_OUT:
 		clear_held_inputs()
-	if what == NOTIFICATION_APPLICATION_PAUSED or what == NOTIFICATION_APPLICATION_FOCUS_OUT:
+	# v1.4.1: FOCUS_OUT Android'de geçici overlay'lerde de gelir (bildirim perdesi, jest çubuğu,
+	# kenar kaydırma). Menüyü yalnız gerçek arka plana geçişte (PAUSED) aç; odak kaybında sadece kaydet.
+	if what == NOTIFICATION_APPLICATION_PAUSED:
 		_autosave_and_pause()
+	elif what == NOTIFICATION_APPLICATION_FOCUS_OUT:
+		_autosave_only()
 	elif what == NOTIFICATION_WM_GO_BACK_REQUEST:
 		_on_go_back()
 
@@ -177,8 +181,69 @@ func _on_go_back() -> void:
 		journal.close_journal()
 		return
 	var menu := get_tree().get_first_node_in_group("session_menu")
-	if menu and menu.has_method("handle_back"):
-		menu.handle_back()
+	if menu == null or not menu.has_method("handle_back"):
+		return
+	# v1.4.1: oyun sırasında Android kenar-kaydırma "geri" jesti (sol joystick ekran kenarında)
+	# menüyü sürekli açıyordu. Oynanışta menü için 1.5 sn içinde ikinci geri gerekir.
+	if _is_gameplay_back(menu):
+		var now := Time.get_ticks_msec()
+		if now - _first_back_ms > BACK_CONFIRM_MS:
+			_first_back_ms = now
+			_show_back_hint()
+			return
+		_first_back_ms = -100000
+	menu.handle_back()
+
+
+const BACK_CONFIRM_MS := 1500
+var _first_back_ms: int = -100000
+var _back_hint: Label = null
+
+
+func _is_gameplay_back(menu: Node) -> bool:
+	if UiGate.current_layer() != UiGate.Layer.NONE:
+		return false
+	if menu.has_method("is_title_open") and menu.is_title_open():
+		return false
+	if menu.has_method("is_confirm_open") and menu.is_confirm_open():
+		return false
+	if menu.has_method("is_menu_open") and menu.is_menu_open():
+		return false
+	return true
+
+
+func _show_back_hint() -> void:
+	if _back_hint == null:
+		var layer := CanvasLayer.new()
+		layer.layer = 90
+		add_child(layer)
+		_back_hint = Label.new()
+		_back_hint.text = "Menü için tekrar geri"
+		_back_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		_back_hint.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM)
+		_back_hint.position.y -= 48
+		_back_hint.add_theme_color_override("font_color", Color("#E1D3D1"))
+		_back_hint.add_theme_color_override("font_outline_color", Color("#221B27"))
+		_back_hint.add_theme_constant_override("outline_size", 4)
+		_back_hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		layer.add_child(_back_hint)
+	_back_hint.modulate.a = 1.0
+	_back_hint.visible = true
+	var tw := create_tween()
+	tw.tween_interval(1.0)
+	tw.tween_property(_back_hint, "modulate:a", 0.0, 0.4)
+
+
+## Odak kaybı: menü açmadan ilerlemeyi kaydet.
+func _autosave_only() -> void:
+	if not OS.has_feature("mobile") or get_tree() == null or get_tree().current_scene == null:
+		return
+	var menu := get_tree().get_first_node_in_group("session_menu")
+	if menu and menu.has_method("is_title_open") and menu.is_title_open():
+		return
+	if DeathManager.is_dying or UiGate.current_layer() == UiGate.Layer.ENDING:
+		return
+	SaveManager.save_resume_point()
 
 
 var _last_autosave_frame: int = -100
