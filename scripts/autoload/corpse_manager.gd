@@ -15,7 +15,7 @@ func _ready() -> void:
 	call_deferred("rebuild_world_corpses")
 
 
-func record_corpse_at(pos: Vector2) -> String:
+func record_corpse_at(pos: Vector2, reason: StringName = &"unknown") -> String:
 	var room: StringName = GameState.character_current_life_knowledge.get("room", &"awakening")
 	var corpses: Array = GameState.world_memory_state["corpses"]
 	var id := "corpse_%d_%d" % [int(GameState.player_progress_knowledge["deaths"]), Time.get_ticks_msec()]
@@ -28,6 +28,8 @@ func record_corpse_at(pos: Vector2) -> String:
 		"echo_id": "echo_%s" % id,
 		"weight": 1,
 		"usable_for_puzzle": true,
+		"reason": String(reason),
+		"anchoring": false,
 	}
 	corpses.append(entry)
 	_trim_excess()
@@ -48,7 +50,17 @@ func _trim_excess() -> void:
 	var corpses: Array = GameState.world_memory_state["corpses"]
 	var traces: Array = GameState.world_memory_state["traces"]
 	while corpses.size() > MAX_CORPSES:
-		var old: Dictionary = corpses.pop_front()
+		## Aktif bulmacayı tutan cesetler silinmez (sert üst sınır: MAX_CORPSES + 3).
+		var idx := -1
+		for i in corpses.size():
+			if not bool((corpses[i] as Dictionary).get("anchoring", false)):
+				idx = i
+				break
+		if idx < 0:
+			if corpses.size() <= MAX_CORPSES + 3:
+				break
+			idx = 0
+		var old: Dictionary = corpses.pop_at(idx)
 		var kind := "stain"
 		var n := traces.size() % 3
 		if n == 0:

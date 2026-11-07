@@ -3,9 +3,139 @@ extends Node2D
 
 @export var room_id: StringName = &"awakening"
 
+const MOTE_MAX := 28 ## <= 40 particles per room
+const ROOM_H := 360.0
+const BEAM_TEX := "res://assets/layers/light_beam.png"
+
+var _motes: CPUParticles2D
+var _beams: Array[Sprite2D] = []
+var _beam_base: Array[float] = []
+var _beam_phase: Array[float] = []
+var _built: bool = false
+var _t: float = 0.0
+
 
 func _ready() -> void:
 	_tint_layers()
+	set_process(false)
+	visibility_changed.connect(_on_visibility_changed)
+	call_deferred("_build_atmosphere")
+
+
+func _process(delta: float) -> void:
+	_t += delta
+	for i in _beams.size():
+		var s := _beams[i]
+		var k := 0.5 + 0.5 * sin(_t * 0.45 + _beam_phase[i])
+		s.modulate.a = _beam_base[i] * (0.45 + 0.55 * k)
+
+
+func _on_visibility_changed() -> void:
+	if not _built:
+		return
+	var vis := is_visible_in_tree()
+	if vis and RoomManager.get_room_bounds(room_id).size.x > 64.0:
+		var bw := _room_width()
+		if not is_equal_approx(bw, _motes.emission_rect_extents.x * 2.0):
+			_motes.emission_rect_extents = Vector2(bw * 0.5, ROOM_H * 0.5)
+			_motes.position = Vector2(bw * 0.5, ROOM_H * 0.5)
+	_motes.emitting = vis
+	set_process(vis and not _beams.is_empty())
+
+
+func _region_color() -> Color:
+	var rid := String(room_id)
+	if rid.begins_with("core"):
+		return Palette.CRIMSON.lerp(Palette.IVORY, 0.25)
+	if rid.begins_with("decay"):
+		return Color(0.62, 0.72, 0.45)
+	if rid.begins_with("library"):
+		return Color(0.9, 0.74, 0.48)
+	if rid.begins_with("experiment"):
+		return Color(0.6, 0.82, 0.86)
+	if rid.begins_with("mirrors"):
+		return Palette.PALE_LILAC.lerp(Color(0.75, 0.82, 1.0), 0.5)
+	return Palette.PALE_LILAC.lerp(Palette.IVORY, 0.4)
+
+
+func _room_width() -> float:
+	var b := RoomManager.get_room_bounds(room_id)
+	if b.size.x > 64.0:
+		return b.size.x
+	return 960.0
+
+
+static func _dot_texture() -> ImageTexture:
+	var img := Image.create(8, 8, false, Image.FORMAT_RGBA8)
+	for y in 8:
+		for x in 8:
+			var d := Vector2(x - 3.5, y - 3.5).length() / 4.0
+			var a := clampf(1.0 - d, 0.0, 1.0)
+			img.set_pixel(x, y, Color(1, 1, 1, a * a))
+	return ImageTexture.create_from_image(img)
+
+
+func _build_atmosphere() -> void:
+	if _built or not is_inside_tree():
+		return
+	_built = true
+	var w := _room_width()
+	var col := _region_color()
+	var rid := String(room_id)
+	# Floating motes
+	_motes = CPUParticles2D.new()
+	_motes.name = "AtmosphereMotes"
+	_motes.z_index = 3
+	_motes.texture = _dot_texture()
+	_motes.amount = clampi(int(w / 40.0), 12, MOTE_MAX)
+	_motes.lifetime = 16.0
+	_motes.preprocess = 16.0
+	_motes.local_coords = true
+	_motes.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
+	_motes.emission_rect_extents = Vector2(w * 0.5, ROOM_H * 0.5)
+	_motes.position = Vector2(w * 0.5, ROOM_H * 0.5)
+	_motes.direction = Vector2(1.0, -0.15)
+	_motes.spread = 40.0
+	_motes.initial_velocity_min = 3.0
+	_motes.initial_velocity_max = 11.0
+	_motes.gravity = Vector2(0.0, -0.8) if (rid.begins_with("core") or rid.begins_with("decay")) else Vector2(0.0, 0.4)
+	_motes.scale_amount_min = 0.35
+	_motes.scale_amount_max = 0.9
+	_motes.color = Color(col.r, col.g, col.b, 0.6)
+	var g := Gradient.new()
+	g.offsets = PackedFloat32Array([0.0, 0.2, 0.8, 1.0])
+	g.colors = PackedColorArray([Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 1), Color(1, 1, 1, 0)])
+	_motes.color_ramp = g
+	_motes.emitting = is_visible_in_tree()
+	add_child(_motes)
+	# Light shafts
+	var tex := load(BEAM_TEX) as Texture2D
+	if tex:
+		var count := clampi(int(w / 600.0), 1, 3)
+		var rng := RandomNumberGenerator.new()
+		rng.seed = hash(rid)
+		var mat := CanvasItemMaterial.new()
+		mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+		for i in count:
+			var s := Sprite2D.new()
+			s.name = "LightShaft%d" % i
+			s.texture = tex
+			s.material = mat
+			s.z_index = 2
+			s.centered = true
+			var cx := (float(i) + 0.5) / float(count) * w + rng.randf_range(-60.0, 60.0)
+			s.position = Vector2(cx, ROOM_H * 0.45)
+			s.rotation = rng.randf_range(-0.28, 0.12)
+			var tw := float(tex.get_width())
+			var th := float(tex.get_height())
+			s.scale = Vector2(rng.randf_range(0.9, 1.6) * 90.0 / tw * 1.5, ROOM_H * 1.15 / th)
+			var base := rng.randf_range(0.10, 0.2)
+			s.modulate = Color(col.r, col.g, col.b, base)
+			add_child(s)
+			_beams.append(s)
+			_beam_base.append(base)
+			_beam_phase.append(rng.randf_range(0.0, TAU))
+	_on_visibility_changed()
 
 
 func _tint_layers() -> void:

@@ -1,7 +1,7 @@
 extends CharacterBody2D
 ## Bekçi — senaryolu koruyucu. Klasik düşman değil. Erken oyunda öldürmez.
 
-enum Mode { OBSERVE, WARN, INTERVENE, MOURNING, INTIMACY }
+enum Mode { OBSERVE, WARN, INTERVENE, MOURNING, INTIMACY, COMBAT }
 
 signal mode_changed(new_mode: Mode)
 
@@ -24,6 +24,42 @@ var _mystery_done: bool = false
 var _warn_counts: Dictionary = {}
 var _strikes: int = 0
 const STRIKES_TO_BAD := 3
+## Oda başına Shilda varlığı: present (etkileşimli), silhouette (arka planda izler), yoksa gizli.
+## Oda sahnesinde Spawns/keeper_observe (veya keeper_intervene / keeper_ambush) Marker2D varsa konum onu kullanır.
+const ROOM_PRESENCE := {
+	"awakening": {"mode": "present", "pos": Vector2(480, 280)},
+	"awakening_passage": {"mode": "silhouette", "pos": Vector2(1500, 270)},
+	"awakening_balcony": {"mode": "silhouette", "pos": Vector2(820, 200)},
+	"decay_garden": {"mode": "present", "pos": Vector2(700, 280)},
+	"decay_shilda_wall": {"mode": "present", "pos": Vector2(760, 280)},
+	"library_witness": {"mode": "silhouette", "pos": Vector2(820, 270)},
+	"library_forbidden_wing": {"mode": "silhouette", "pos": Vector2(140, 270)},
+	"experiment_authority": {"mode": "silhouette", "pos": Vector2(820, 270)},
+	"experiment_quarantine": {"mode": "silhouette", "pos": Vector2(860, 270)},
+	"mirrors_unbroken": {"mode": "present", "pos": Vector2(700, 280)},
+	"mirrors_shrine": {"mode": "silhouette", "pos": Vector2(820, 270)},
+	"core_threshold": {"mode": "present", "pos": Vector2(760, 280)},
+	"core_seal_chamber": {"mode": "present", "pos": Vector2(700, 280)},
+	"core": {"mode": "present", "pos": Vector2(560, 280)},
+	"core_memory_vault": {"mode": "silhouette", "pos": Vector2(820, 270)},
+	"core_bloom_garden": {"mode": "present", "pos": Vector2(760, 280)},
+}
+var presence: String = "present"
+var _saved_layer: int = 8
+
+## --- Savaş (yalnız senaryolu karşılaşmalarda) ---
+const CLAW_RANGE := 64.0
+const CLAW_WINDUP := 0.45
+const CHARGE_WINDUP := 0.6
+const CHARGE_SPEED := 320.0
+const CHARGE_MAX_DIST := 460.0
+var _combat_phase: StringName = &"idle"
+var _combat_timer: float = 0.0
+var _charge_dir: float = 1.0
+var _charge_travel: float = 0.0
+var _combat_hit_done: bool = false
+var _encounter_id: StringName = &""
+signal encounter_finished(encounter_id: StringName)
 var _zone_lines: Dictionary = {
 	&"forbidden": {
 		"warn": ["Yaklaşma.", "O mühür… senin değil."],
@@ -46,10 +82,14 @@ func _ready() -> void:
 	sprite.offset = Vector2(0, -60)
 	hint.text = ""
 	hint.visible = false
-	UiTheme.apply_label(hint, 10, false)
+	UiTheme.apply_outlined(hint, UiTheme.HINT)
 	_set_blocker(false)
 	home_position = global_position
+	_saved_layer = collision_layer
 	GameState.world_memory_state["keeper_mood"] = &"observe"
+	if not GameState.room_changed.is_connected(_on_room_changed):
+		GameState.room_changed.connect(_on_room_changed)
+	DeathManager.death_started.connect(_on_player_death_started)
 	# Gizem beat: uzak silüet ile başla.
 	global_position = silhouette_position
 	modulate = Color(0.15, 0.12, 0.18, 0.85)
@@ -58,12 +98,92 @@ func _ready() -> void:
 	call_deferred("_run_mystery_beat")
 
 
+func _on_room_changed(room_id: StringName) -> void:
+	call_deferred("place_for_room", room_id)
+
+
+## Shilda'yı aktif odaya yerleştir; senaryosu yoksa gizle veya silüet yap.
+func place_for_room(room_id: StringName) -> void:
+	if EndingManager.current != EndingManager.Ending.NONE:
+		return
+	var rid := String(room_id)
+	var def: Dictionary = ROOM_PRESENCE.get(rid, {"mode": "hidden", "pos": Vector2(480, 280)})
+	var pos: Vector2 = def["pos"]
+	var marker := _room_marker(room_id)
+	if marker:
+		pos = marker.global_position
+	if mode == Mode.COMBAT:
+		end_encounter(false)
+	presence = String(def["mode"])
+	home_position = pos
+	if _busy and rid == "awakening" and not _mystery_done:
+		return ## gizem beat'i konumu kendisi yönetiyor
+	_busy = false
+	_intervening = false
+	_set_blocker(false)
+	collision_mask = 0
+	hint.visible = false
+	global_position = pos
+	match presence:
+		"present":
+			visible = true
+			z_index = 0
+			collision_layer = _saved_layer
+			if _mystery_done or rid != "awakening":
+				modulate = Color(0.45, 0.4, 0.48, 0.75) if bool(GameState.player_progress_knowledge.get("keeper_withdrew", false)) else Color.WHITE
+			_apply_bandage()
+			call_deferred("_maybe_bandage_line")
+		"silhouette":
+			visible = true
+			z_index = -1
+			collision_layer = 0
+			modulate = Color(0.12, 0.1, 0.16, 0.5)
+		_:
+			visible = false
+			collision_layer = 0
+
+
+func _room_marker(room_id: StringName) -> Marker2D:
+	if not RoomManager.has_room(room_id):
+		return null
+	var root: Node = RoomManager._rooms[room_id].get("root")
+	if root == null:
+		return null
+	for n in ["Spawns/keeper_observe", "Spawns/keeper_intervene", "Spawns/keeper_ambush"]:
+		var m := root.get_node_or_null(n) as Marker2D
+		if m:
+			return m
+	return null
+
+
+func is_present() -> bool:
+	return visible and presence == "present"
+
+
+## Önceki yaşamda yaralandıysa sargı izi (görsel) — keeper_bandaged.
+func _apply_bandage() -> void:
+	var b := get_node_or_null("Bandage") as Line2D
+	var on := bool(GameState.world_memory_state.get("keeper_bandaged", false))
+	if on and b == null:
+		b = Line2D.new()
+		b.name = "Bandage"
+		b.width = 3.0
+		b.default_color = Color(0.88, 0.82, 0.78, 0.95)
+		b.points = PackedVector2Array([Vector2(-9, -58), Vector2(-3, -54), Vector2(3, -58), Vector2(9, -54)])
+		add_child(b)
+	if b:
+		b.visible = on
+
+
 func _physics_process(delta: float) -> void:
+	if presence != "present" or not visible:
+		return
 	if _player == null:
 		_player = get_tree().get_first_node_in_group("player") as Node2D
 	if _player == null:
 		return
-	sprite.flip_h = _player.global_position.x < global_position.x
+	if mode != Mode.COMBAT or _combat_phase != &"charge":
+		sprite.flip_h = _player.global_position.x < global_position.x
 	# Modal: yaklaşma/engel mantığı dursun; idle animasyon sürsün.
 	if UiGate.pauses_world_threats():
 		_face_idle()
@@ -86,6 +206,8 @@ func _physics_process(delta: float) -> void:
 			_show_hint("…çiçek")
 		Mode.INTIMACY:
 			_face_idle()
+		Mode.COMBAT:
+			_process_combat(delta)
 		_:
 			_face_idle()
 
@@ -200,9 +322,9 @@ func _do_intervene(zone_id: StringName) -> void:
 		var side := 1.0
 		if zone_id == &"exit":
 			side = -1.0 ## çıkışın soluna (oyuncuyu geri it)
-			_approach_target = Vector2(clampf(px + 40.0, 160.0, 620.0), home_position.y)
+			_approach_target = Vector2(clampf(px + 40.0, _room_min_x() + 120.0, _room_max_x() - 20.0), home_position.y)
 		else:
-			_approach_target = Vector2(clampf(px + 36.0 * side, 140.0, 600.0), home_position.y)
+			_approach_target = Vector2(clampf(px + 36.0 * side, _room_min_x() + 100.0, _room_max_x() - 40.0), home_position.y)
 	else:
 		_approach_target = home_position
 	_intervening = true
@@ -224,6 +346,15 @@ func _do_intervene(zone_id: StringName) -> void:
 	_busy = false
 
 
+func _room_min_x() -> float:
+	return RoomManager.get_room_bounds(RoomManager.get_active_room_id()).position.x
+
+
+func _room_max_x() -> float:
+	var b := RoomManager.get_room_bounds(RoomManager.get_active_room_id())
+	return b.end.x if b.size.x > 0.0 else 640.0
+
+
 func enter_mourning() -> void:
 	await mourn_corpse(home_position, "")
 
@@ -234,8 +365,14 @@ func mourn_corpse(death_pos: Vector2, corpse_id: String) -> void:
 	_set_blocker(false)
 	_intervening = false
 	set_mode(Mode.MOURNING)
+	## Hangi odada olursa olsun yas için belirir (silüetten).
+	visible = true
+	z_index = 0
 	if death_pos != Vector2.ZERO:
-		global_position = Vector2(death_pos.x, home_position.y)
+		global_position = Vector2(death_pos.x + 34.0, home_position.y)
+	modulate = Color(0.2, 0.16, 0.24, 0.0)
+	var fade := create_tween()
+	fade.tween_property(self, "modulate", Color.WHITE, 0.45)
 	if sprite.sprite_frames and sprite.sprite_frames.has_animation("grieve"):
 		sprite.play("grieve")
 	DialogueManager.whisper("Bekçi", "…")
@@ -253,10 +390,10 @@ func mourn_corpse(death_pos: Vector2, corpse_id: String) -> void:
 	else:
 		await DialogueManager.dialogue_closed
 	await get_tree().create_timer(0.25).timeout
-	global_position = home_position
 	set_mode(Mode.OBSERVE)
 	hint.visible = false
 	_busy = false
+	place_for_room(RoomManager.get_active_room_id())
 
 
 func _run_mystery_beat() -> void:
@@ -343,6 +480,13 @@ func receive_player_strike() -> void:
 	## Erken saldırı = ilişki olayı. Kalıcı son yalnız Çekirdek bölgesinde.
 	if EndingManager.current != EndingManager.Ending.NONE:
 		return
+	GameState.character_current_life_knowledge["struck_keeper"] = true
+	if mode == Mode.COMBAT:
+		## Karşılaşmada vuruş: geri sendeler, ilişki yine zedelenir ama son tetiklenmez.
+		_combat_phase = &"stunned"
+		_combat_timer = 0.6
+		_flash(Color(1.6, 1.2, 1.2, 1))
+		return
 	if not bool(GameState.player_progress_knowledge.get("awakening_mystery_seen", false)):
 		DialogueManager.whisper("Bekçi", "…Henüz değil.")
 		return
@@ -380,6 +524,201 @@ func receive_player_strike() -> void:
 		await _await_dialogue_or_smoke()
 		modulate = Color(0.4, 0.35, 0.4, 0.6)
 		await EndingManager.trigger(EndingManager.Ending.BAD_KILL_KEEPER)
+
+
+# --- Sargı hafızası ---------------------------------------------------------------
+
+func _on_player_death_started(_reason: StringName) -> void:
+	if bool(GameState.character_current_life_knowledge.get("struck_keeper", false)):
+		GameState.world_memory_state["keeper_bandaged"] = true
+		GameState.world_memory_state["keeper_bandage_line_pending"] = true
+
+
+func _maybe_bandage_line() -> void:
+	if not bool(GameState.world_memory_state.get("keeper_bandage_line_pending", false)):
+		return
+	if not is_present() or DialogueManager.is_open:
+		return
+	GameState.world_memory_state["keeper_bandage_line_pending"] = false
+	DialogueManager.say("Shilda", "Yaran hâlâ sızlıyor…")
+	DialogueManager.say("Shilda", "Ama sen bunu yaptığını bile hatırlamıyorsun.")
+
+
+# --- Merhamet ölümü (lanet %100) -----------------------------------------------------
+
+func can_mercy_kill() -> bool:
+	if _player == null:
+		_player = get_tree().get_first_node_in_group("player") as Node2D
+	if _player == null or EndingManager.current != EndingManager.Ending.NONE:
+		return false
+	return visible and presence != "hidden" and global_position.distance_to(_player.global_position) < 420.0
+
+
+func mercy_kill() -> void:
+	_busy = true
+	presence = "present"
+	visible = true
+	z_index = 1
+	modulate = Color.WHITE
+	_face_player()
+	var tw := create_tween()
+	tw.tween_property(self, "global_position:x", _player.global_position.x - 30.0 * signf(_player.global_position.x - global_position.x), 0.25)
+	await tw.finished
+	if sprite.sprite_frames.has_animation("attack"):
+		sprite.play("attack")
+	DialogueManager.whisper("Shilda", "Seni Çekirdek'e teslim etmeyeceğim.")
+	DialogueManager.whisper("Shilda", "Uyu… ve unut.")
+	await _await_dialogue_or_smoke()
+	var cam := get_tree().get_first_node_in_group("follow_camera")
+	if cam and cam.has_method("add_trauma"):
+		cam.add_trauma(0.7)
+	_sfx(&"keeper_claw")
+	GameState.player_progress_knowledge["mercy_kill_seen"] = true
+	_busy = false
+
+
+# --- Savaş karşılaşması: pençe + atılma + çatlak duvar ------------------------------------
+
+func start_encounter(encounter_id: StringName) -> void:
+	if EndingManager.current != EndingManager.Ending.NONE:
+		return
+	_encounter_id = encounter_id
+	presence = "present"
+	visible = true
+	z_index = 0
+	collision_layer = _saved_layer
+	collision_mask = 1
+	modulate = Color.WHITE
+	_busy = true
+	_combat_phase = &"idle"
+	_combat_timer = 1.0
+	set_mode(Mode.COMBAT)
+
+
+func end_encounter(success: bool) -> void:
+	if mode != Mode.COMBAT:
+		return
+	collision_mask = 0
+	_combat_phase = &"idle"
+	_busy = false
+	modulate = Color.WHITE
+	set_mode(Mode.OBSERVE)
+	encounter_finished.emit(_encounter_id if success else &"")
+
+
+func _process_combat(delta: float) -> void:
+	if _player == null:
+		return
+	_combat_timer -= delta
+	var dx := _player.global_position.x - global_position.x
+	match _combat_phase:
+		&"idle":
+			_face_player()
+			if sprite.animation != "walk":
+				sprite.play("walk")
+			## Yaklaş ama dibine girme
+			if absf(dx) > CLAW_RANGE * 1.4:
+				velocity = Vector2(signf(dx) * 60.0, 0)
+				move_and_slide()
+			if _combat_timer <= 0.0:
+				if absf(dx) <= CLAW_RANGE * 1.3:
+					_combat_phase = &"claw_windup"
+					_combat_timer = CLAW_WINDUP
+				else:
+					_combat_phase = &"charge_windup"
+					_combat_timer = CHARGE_WINDUP
+					_charge_dir = signf(dx) if dx != 0.0 else 1.0
+				_flash(Color(1.8, 0.35, 0.4, 1))
+				_show_hint("!")
+				sprite.play("observe")
+		&"claw_windup":
+			_face_player()
+			if _combat_timer <= 0.0:
+				sprite.play("attack")
+				_sfx(&"keeper_claw")
+				_combat_hit_done = false
+				if absf(dx) <= CLAW_RANGE and absf(_player.global_position.y - global_position.y) < 48.0:
+					_hit_player()
+				_combat_phase = &"recover"
+				_combat_timer = 0.7
+				modulate = Color.WHITE
+				hint.visible = false
+		&"charge_windup":
+			if _combat_timer <= 0.0:
+				_combat_phase = &"charge"
+				_charge_travel = 0.0
+				_combat_hit_done = false
+				_sfx(&"keeper_charge")
+				sprite.play("walk")
+				sprite.speed_scale = 2.2
+				modulate = Color(1.4, 0.75, 0.8, 1)
+				hint.visible = false
+		&"charge":
+			var step := _charge_dir * CHARGE_SPEED * delta
+			velocity = Vector2(_charge_dir * CHARGE_SPEED, 0)
+			var col := move_and_collide(Vector2(step, 0))
+			_charge_travel += absf(step)
+			if not _combat_hit_done and absf(_player.global_position.x - global_position.x) < 26.0 and absf(_player.global_position.y - global_position.y) < 48.0:
+				_combat_hit_done = true
+				_hit_player()
+			if col:
+				var other := col.get_collider()
+				if other and other.has_method("receive_keeper_charge"):
+					other.receive_keeper_charge(self)
+				_wall_impact()
+			elif _charge_travel >= CHARGE_MAX_DIST or _out_of_room():
+				_combat_phase = &"recover"
+				_combat_timer = 0.8
+				sprite.speed_scale = 1.0
+				modulate = Color.WHITE
+		&"stunned", &"recover":
+			if sprite.animation != "grieve" and _combat_phase == &"stunned":
+				sprite.play("grieve")
+			elif _combat_phase == &"recover" and sprite.animation != "observe":
+				sprite.play("observe")
+			if _combat_timer <= 0.0:
+				_combat_phase = &"idle"
+				_combat_timer = randf_range(0.6, 1.1)
+				sprite.speed_scale = 1.0
+				modulate = Color.WHITE
+
+
+func _wall_impact() -> void:
+	var cam := get_tree().get_first_node_in_group("follow_camera")
+	if cam and cam.has_method("add_trauma"):
+		cam.add_trauma(0.65)
+	_combat_phase = &"stunned"
+	_combat_timer = 1.4
+	sprite.speed_scale = 1.0
+	modulate = Color.WHITE
+	global_position.x -= _charge_dir * 10.0
+
+
+func _hit_player() -> void:
+	if _player and _player.has_method("receive_hazard_hit"):
+		if _player.has_method("is_shadow_dashing") and _player.is_shadow_dashing():
+			return
+		_player.receive_hazard_hit(global_position.x)
+
+
+func _out_of_room() -> bool:
+	var b := RoomManager.get_room_bounds(RoomManager.get_active_room_id())
+	return global_position.x < b.position.x + 20.0 or global_position.x > b.end.x - 20.0
+
+
+func _face_player() -> void:
+	if _player:
+		sprite.flip_h = _player.global_position.x < global_position.x
+
+
+func _flash(c: Color) -> void:
+	modulate = c
+
+
+func _sfx(id: StringName) -> void:
+	var am := get_node_or_null("/root/AudioManager")
+	if am:
+		am.play_sfx(id)
 
 
 func _await_dialogue_or_smoke() -> void:

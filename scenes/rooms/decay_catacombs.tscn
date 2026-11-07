@@ -1,0 +1,112 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
+[ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore"]
+[ext_resource type="Script" path="res://scripts/world/code_seal_base.gd" id="seal"]
+[ext_resource type="Script" path="res://scripts/world/blood_thorn.gd" id="thorn"]
+[ext_resource type="Script" path="res://scripts/world/hidden_symbol.gd" id="symbol"]
+[ext_resource type="Script" path="res://scripts/world/gate_blocker.gd" id="gate"]
+[ext_resource type="Texture2D" path="res://assets/props/door_closed.png" id="door_tex"]
+
+[sub_resource type="RectangleShape2D" id="Interact"]
+size = Vector2(40, 48)
+
+[sub_resource type="RectangleShape2D" id="Gate"]
+size = Vector2(24, 120)
+
+[node name="DecayCatacombs" type="Node2D"]
+script = ExtResource("room")
+room_id = &"decay_catacombs"
+region_id = &"decay"
+room_width = 1280.0
+bg_region = "decay"
+checkpoint = Vector2(120, 288)
+doors = [{"x": 40.0, "to": "decay_vines", "spawn": "from_decay_catacombs"}]
+floor_gaps = PackedVector2Array(380.0, 470.0, 820.0, 900.0)
+dark = true
+
+[node name="Interactive" type="Node2D" parent="."]
+
+[node name="Warning" type="Area2D" parent="Interactive"]
+position = Vector2(200.0, 288.0)
+script = ExtResource("lore")
+lore_id = &"catacomb_dark"
+texture_path = "res://assets/props/candles.png"
+sprite_scale = 0.5
+lines = PackedStringArray("Shiren|Zifiri karanlık. Duvarlarda bir şey kazılı ama göremiyorum.", "Shilda|Burada ölülerin ışığı yolu gösterir. Çiçekli bir beden… fener gibi yanar.")
+
+[node name="Thorn" type="Area2D" parent="Interactive"]
+position = Vector2(640.0, 290.0)
+script = ExtResource("thorn")
+anchor_x = 640.0
+puzzle_hint = &"decay_catacomb_seal"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/Thorn"]
+shape = SubResource("Interact")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/Thorn"]
+texture_filter = 0
+centered = true
+
+[node name="Sym5" type="Node2D" parent="Interactive"]
+position = Vector2(560.0, 200.0)
+script = ExtResource("symbol")
+symbol_text = "5"
+
+[node name="Sym8" type="Node2D" parent="Interactive"]
+position = Vector2(640.0, 176.0)
+script = ExtResource("symbol")
+symbol_text = "8"
+
+[node name="Sym6" type="Node2D" parent="Interactive"]
+position = Vector2(720.0, 200.0)
+script = ExtResource("symbol")
+symbol_text = "6"
+memory_code_key = "catacomb"
+memory_code_value = "586"
+reveal_line = "Bedenimin ışığında… beş, sekiz, altı."
+
+[node name="CatacombSeal" type="Area2D" parent="Interactive"]
+position = Vector2(980.0, 268.0)
+script = ExtResource("seal")
+code_key = "catacomb"
+puzzle_id = &"decay_catacomb_seal"
+story_code = "586"
+intro_line = "…Kemiklerden bir mühür. Üç boşluk."
+solved_line = "Kemik mührü… açıldı."
+wrong_line = "…Yanlış. Kemikler kımıldamadı."
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/CatacombSeal"]
+shape = SubResource("Interact")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/CatacombSeal"]
+texture_filter = 0
+centered = true
+
+[node name="BoneGate" type="StaticBody2D" parent="Interactive"]
+position = Vector2(1060.0, 288.0)
+script = ExtResource("gate")
+open_flag = &""
+puzzle_listen = &"decay_catacomb_seal"
+ignore_world_flag = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BoneGate"]
+position = Vector2(0, -40)
+shape = SubResource("Gate")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/BoneGate"]
+texture_filter = 0
+position = Vector2(0, -40)
+texture = ExtResource("door_tex")
+
+[node name="BoneRecord" type="Area2D" parent="Interactive"]
+position = Vector2(1180.0, 288.0)
+script = ExtResource("lore")
+lore_id = &"catacomb_record"
+texture_path = "res://assets/props/cassette.png"
+sprite_scale = 0.5
+lines = PackedStringArray("Shiren|Bir kaset. Benim sesim: “Ritüel tutmuyor. Çekirdek anıları yutuyor.”", "Shiren|“Tesisi içeriden kilitleyeceğim. Kimse çıkmayacak. Ben de.”")
+evidence_title = "Kemik Mahzeni Kaydı"
+evidence_body = "Kendi sesim: Çekirdek anıları yutmaya başladığında tesisi içeriden ben kilitledim."
+evidence_section = "izler"
+set_progress_key = "truth_fragment_lockdown"

@@ -5,18 +5,18 @@
 
 [resource]
 default_font = ExtResource("1_reg")
-default_font_size = 11
+default_font_size = 16
 Button/fonts/font = ExtResource("1_reg")
-Button/font_sizes/font_size = 10
+Button/font_sizes/font_size = 14
 Label/fonts/font = ExtResource("1_reg")
-Label/font_sizes/font_size = 11
+Label/font_sizes/font_size = 16
 RichTextLabel/fonts/normal_font = ExtResource("1_reg")
 RichTextLabel/fonts/bold_font = ExtResource("1_bold")
 RichTextLabel/fonts/italics_font = ExtResource("1_reg")
 RichTextLabel/fonts/bold_italics_font = ExtResource("1_bold")
 RichTextLabel/fonts/mono_font = ExtResource("1_reg")
-RichTextLabel/font_sizes/normal_font_size = 10
-RichTextLabel/font_sizes/bold_font_size = 10
-RichTextLabel/font_sizes/italics_font_size = 10
-RichTextLabel/font_sizes/bold_italics_font_size = 10
-RichTextLabel/font_sizes/mono_font_size = 10
+RichTextLabel/font_sizes/normal_font_size = 16
+RichTextLabel/font_sizes/bold_font_size = 16
+RichTextLabel/font_sizes/italics_font_size = 16
+RichTextLabel/font_sizes/bold_italics_font_size = 16
+RichTextLabel/font_sizes/mono_font_size = 16

@@ -25,7 +25,7 @@ func request_death(reason: StringName = &"unknown", full_reset: bool = false) ->
 		GameState.player_progress_knowledge["first_death_seen"] = true
 
 	# Ceset dünya hafızasına — karakter bilgisi henüz sıfırlanmadan konum alınır.
-	var corpse_id: String = CorpseManager.record_corpse_at(death_pos)
+	var corpse_id: String = CorpseManager.record_corpse_at(death_pos, reason)
 
 	GameState.reset_character_life()
 	CurseManager.reset_for_new_life()
@@ -41,7 +41,7 @@ func request_death(reason: StringName = &"unknown", full_reset: bool = false) ->
 
 	# Bekçi yas: çiçek bırakabilir (öldürmez).
 	var keeper := get_tree().get_first_node_in_group("keeper")
-	if keeper and keeper.is_visible_in_tree() and keeper.has_method("mourn_corpse"):
+	if keeper and keeper.has_method("mourn_corpse"):
 		await keeper.mourn_corpse(death_pos, corpse_id)
 
 	await _respawn()

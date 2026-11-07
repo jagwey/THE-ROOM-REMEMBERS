@@ -4,21 +4,28 @@ extends CanvasLayer
 signal closed
 
 @onready var book_art: TextureRect = $BookRoot/BookArt
-@onready var tab_gunluk: Button = $BookRoot/LeftPage/Tabs/Gunluk
-@onready var tab_notlar: Button = $BookRoot/LeftPage/Tabs/Notlar
-@onready var tab_izler: Button = $BookRoot/LeftPage/Tabs/Izler
+@onready var tab_gunluk: Button = $BookRoot/Tabs/Gunluk
+@onready var tab_notlar: Button = $BookRoot/Tabs/Notlar
+@onready var tab_izler: Button = $BookRoot/Tabs/Izler
+@onready var tab_harita: Button = $BookRoot/Tabs/Harita
+@onready var left_page: Control = $BookRoot/LeftPage
+@onready var right_page: Control = $BookRoot/RightPage
+@onready var map_view: JournalMap = $BookRoot/MapView
 @onready var list_title: Label = $BookRoot/LeftPage/ListTitle
-@onready var entry_list: ItemList = $BookRoot/LeftPage/Scroll/EntryList
+@onready var entry_list: VBoxContainer = $BookRoot/LeftPage/Scroll/EntryList
 @onready var detail_title: Label = $BookRoot/RightPage/DetailTitle
 @onready var scroll: ScrollContainer = $BookRoot/RightPage/Scroll
 @onready var detail_body: RichTextLabel = $BookRoot/RightPage/Scroll/DetailBody
 @onready var empty_label: Label = $BookRoot/RightPage/EmptyLabel
-@onready var btn_close: Button = $BookRoot/RightPage/Close
+@onready var btn_close: Button = $BookRoot/Close
 
 var _section: String = "gunluk"
 var _entries: Array = []
+var _selected_index: int = -1
 
 const JOURNAL_ATLAS := Rect2(63, 2, 193, 128)
+const INK := Color(0.239, 0.071, 0.125)
+const INK_SOFT := Color(0.36, 0.17, 0.22)
 
 
 func _ready() -> void:
@@ -30,23 +37,37 @@ func _ready() -> void:
 	atlas.atlas = load("res://assets/panels/journal.png")
 	atlas.region = JOURNAL_ATLAS
 	book_art.texture = atlas
+	book_art.stretch_mode = TextureRect.STRETCH_SCALE
 	book_art.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	list_title.add_theme_color_override("font_color", Color(0.2, 0.14, 0.18, 1.0))
-	detail_title.add_theme_color_override("font_color", Color(0.2, 0.14, 0.18, 1.0))
-	detail_body.add_theme_color_override("default_color", Color(0.18, 0.12, 0.16, 1.0))
-	empty_label.add_theme_color_override("font_color", Color(0.35, 0.28, 0.32, 1.0))
-	UiTheme.apply_label(list_title, 11, true)
-	UiTheme.apply_label(detail_title, 12, true)
-	UiTheme.apply_label(detail_body, 10, false)
-	UiTheme.apply_label(empty_label, 10, false)
-	for tab in [tab_gunluk, tab_notlar, tab_izler, btn_close]:
+	# Parşömen üstü koyu bordo mürekkep (yüksek kontrast).
+	list_title.add_theme_color_override("font_color", INK)
+	detail_title.add_theme_color_override("font_color", INK)
+	detail_body.add_theme_color_override("default_color", INK)
+	detail_body.add_theme_constant_override("line_separation", 4)
+	empty_label.add_theme_color_override("font_color", INK_SOFT)
+	UiTheme.apply_label(list_title, UiTheme.SPEAKER, true)
+	UiTheme.apply_label(detail_title, UiTheme.SPEAKER, true)
+	UiTheme.apply_label(detail_body, UiTheme.BODY, false)
+	detail_body.add_theme_constant_override("line_separation", 4)
+	detail_body.add_theme_color_override("default_color", INK)
+	UiTheme.apply_label(empty_label, UiTheme.BODY, false)
+	for tab in [tab_gunluk, tab_notlar, tab_izler, tab_harita, btn_close]:
 		if tab:
-			UiTheme.apply_label(tab, 10, false)
+			GothicModalPanel.style_button(tab, UiTheme.HINT)
+			tab.custom_minimum_size.y = 24.0
+	for tab in [tab_gunluk, tab_notlar, tab_izler, tab_harita]:
+		var on := StyleBoxFlat.new()
+		on.bg_color = Palette.DARK_RED
+		on.border_color = Palette.IVORY
+		on.set_border_width_all(2)
+		tab.add_theme_stylebox_override("disabled", on)
+		tab.add_theme_color_override("font_disabled_color", Palette.IVORY)
+	map_view.visible = false
 	tab_gunluk.pressed.connect(func(): _show_section("gunluk"))
 	tab_notlar.pressed.connect(func(): _show_section("notlar"))
 	tab_izler.pressed.connect(func(): _show_section("izler"))
+	tab_harita.pressed.connect(func(): _show_section("harita"))
 	btn_close.pressed.connect(close_journal)
-	entry_list.item_selected.connect(_on_entry_selected)
 	EchoManager.journal_updated.connect(func(): if visible: _show_section(_section))
 	set_process_unhandled_input(true)
 
@@ -92,6 +113,13 @@ func toggle_journal() -> void:
 func _show_section(section: String) -> void:
 	_section = section
 	_highlight_tabs()
+	var is_map := section == "harita"
+	map_view.visible = is_map
+	left_page.visible = not is_map
+	right_page.visible = not is_map
+	if is_map:
+		map_view.refresh()
+		return
 	var label := "Günlük"
 	match section:
 		"notlar":
@@ -105,13 +133,7 @@ func _show_section(section: String) -> void:
 	if section == "izler":
 		_entries = _entries.duplicate()
 		_append_world_traces(_entries)
-	entry_list.clear()
-	for n in _entries:
-		if n is Dictionary:
-			var t := String(n.get("title", "Kayıt"))
-			if t.length() > 22:
-				t = t.substr(0, 21) + "…"
-			entry_list.add_item(t)
+	_rebuild_list()
 	if _entries.is_empty():
 		detail_title.text = ""
 		detail_body.text = ""
@@ -119,8 +141,35 @@ func _show_section(section: String) -> void:
 		empty_label.text = "Sayfa boş…\nhenüz bir yankı yok."
 		return
 	empty_label.visible = false
-	entry_list.select(0)
 	_on_entry_selected(0)
+
+
+## Girdiler sarmalı (autowrap) düğmeler: uzun başlıklar kesilmez, liste kaydırılır.
+func _rebuild_list() -> void:
+	for c in entry_list.get_children():
+		entry_list.remove_child(c)
+		c.queue_free()
+	for i in _entries.size():
+		var n: Variant = _entries[i]
+		if not (n is Dictionary):
+			continue
+		var b := Button.new()
+		b.text = String(n.get("title", "Kayıt"))
+		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		b.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		b.clip_text = false
+		b.custom_minimum_size = Vector2(190, 26)
+		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		b.focus_mode = Control.FOCUS_ALL
+		UiTheme.apply_label(b, UiTheme.BODY, false)
+		for col in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color"]:
+			b.add_theme_color_override(col, INK)
+		b.add_theme_stylebox_override("normal", StyleBoxEmpty.new())
+		b.add_theme_stylebox_override("hover", _entry_box(0.10))
+		b.add_theme_stylebox_override("pressed", _entry_box(0.28))
+		b.add_theme_stylebox_override("focus", _entry_box(0.16))
+		b.pressed.connect(_on_entry_selected.bind(i))
+		entry_list.add_child(b)
 
 
 func _on_entry_selected(index: int) -> void:
@@ -129,17 +178,22 @@ func _on_entry_selected(index: int) -> void:
 	var n: Variant = _entries[index]
 	if not (n is Dictionary):
 		return
+	_selected_index = index
+	for i in entry_list.get_child_count():
+		var b := entry_list.get_child(i) as Button
+		if b:
+			b.add_theme_stylebox_override("normal", _entry_box(0.22) if i == index else StyleBoxEmpty.new())
 	detail_title.text = String(n.get("title", ""))
 	detail_body.text = String(n.get("body", ""))
 	detail_body.scroll_to_line(0)
 
 
 func _highlight_tabs() -> void:
-	for pair in [[tab_gunluk, "gunluk"], [tab_notlar, "notlar"], [tab_izler, "izler"]]:
+	for pair in [[tab_gunluk, "gunluk"], [tab_notlar, "notlar"], [tab_izler, "izler"], [tab_harita, "harita"]]:
 		var btn: Button = pair[0]
 		var id: String = pair[1]
 		if id == _section:
-			btn.modulate = Color(1.25, 1.1, 1.0, 1.0)
+			btn.modulate = Color.WHITE
 			btn.disabled = true
 		else:
 			btn.modulate = Color(1, 1, 1, 1)
@@ -160,3 +214,15 @@ func _append_world_traces(notes: Array) -> void:
 				"title": "İz: %s" % String(t.get("kind", "?")),
 				"body": "Fazla cesetten kalan iz. Oda unutmaz.",
 			})
+
+
+func _entry_box(alpha: float) -> StyleBoxFlat:
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0.45, 0.12, 0.2, alpha)
+	sb.border_color = Color(INK, 0.8)
+	sb.set_border_width_all(1)
+	sb.content_margin_left = 4
+	sb.content_margin_right = 4
+	sb.content_margin_top = 2
+	sb.content_margin_bottom = 2
+	return sb

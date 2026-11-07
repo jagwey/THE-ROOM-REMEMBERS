@@ -1,0 +1,60 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
+[ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore"]
+[ext_resource type="Script" path="res://scripts/world/ability_pickup.gd" id="ability"]
+[ext_resource type="Script" path="res://scripts/world/soul_seal.gd" id="soul"]
+
+[sub_resource type="RectangleShape2D" id="Interact"]
+size = Vector2(40, 48)
+
+[sub_resource type="RectangleShape2D" id="Gate"]
+size = Vector2(24, 120)
+
+[node name="LibraryForbiddenWing" type="Node2D"]
+script = ExtResource("room")
+room_id = &"library_forbidden_wing"
+region_id = &"library"
+room_width = 960.0
+bg_region = "library"
+checkpoint = Vector2(120, 288)
+doors = [{"x": 40.0, "to": "library_upper_stacks", "spawn": "from_library_forbidden_wing"}]
+
+[node name="Interactive" type="Node2D" parent="."]
+
+[node name="SoulSlash" type="Area2D" parent="Interactive"]
+position = Vector2(260.0, 288.0)
+script = ExtResource("ability")
+grant_key = "ability_soul_slash"
+title = "Ruh Kesimi"
+texture_path = "res://assets/props/slash.png"
+lines = PackedStringArray("Shiren|Havada asılı bir kesik. Benim kılıcımın izi… ama ışıktan.", "Shiren|Dokununca içimde bir şey uyanıyor.")
+tutorial = "Q (mobilde yıldız düğmesi): Ruh Kesimi. Mor mühürleri ve mühürlü sarmaşıkları açar."
+
+[node name="Shard1" type="Area2D" parent="Interactive"]
+position = Vector2(480.0, 288.0)
+script = ExtResource("ability")
+grant_key = ""
+grant_world_flag = &"seal_shard_1"
+title = "1. Mühür Parçası"
+texture_path = "res://assets/props/seal.png"
+tint = Color(1, 0.75, 0.8, 1)
+lines = PackedStringArray("Shiren|Kırık bir mührün yarısı. Kenarında Shilda'nın adı.", "Shilda|(uzaktan) Diğer yarısı aynaların ardında.")
+
+[node name="ProtocolSeal" type="StaticBody2D" parent="Interactive"]
+position = Vector2(720.0, 288.0)
+script = ExtResource("soul")
+puzzle_id = &"soul_seal_forbidden"
+
+[node name="Protocol" type="Area2D" parent="Interactive"]
+position = Vector2(840.0, 288.0)
+script = ExtResource("lore")
+lore_id = &"forbidden_protocol"
+texture_path = "res://assets/layers/bookshelf.png"
+sprite_scale = 0.3
+lines = PackedStringArray("Shiren|“Protokol Yetkilisi: Shiren. Hafıza Çekirdeği Deneyi — başlatıldı.”", "Shiren|“Ek not: Deney başarısız olursa Bekçi Shilda yetkilinin hafızasını silecek.”", "Shiren|Ben başlattım. Ben kilitledim. Ve unutmayı… ben istedim.")
+evidence_title = "Yasak Kayıtlar"
+evidence_body = "Protokol Yetkilisi: Shiren. Deneyi ben başlattım; başarısız olursa hafızamın silinmesini Shilda'ya ben emrettim."
+evidence_section = "izler"
+set_progress_key = "truth_fragment_protocol"
+focus_zoom = true

@@ -17,6 +17,12 @@ const ROOM_TITLES := {
 	"mirrors_reverse": "Ayna Geçidi", "mirrors_dual": "İki Yankı",
 	"mirrors_unbroken": "Kırılmayan Ayna", "core_threshold": "Son Eşik",
 	"core_seal_chamber": "Mühür Odası", "core": "Çekirdek",
+	"awakening_balcony": "Gözlem Balkonu", "awakening_crypt": "İlk Bedenler Mahzeni",
+	"decay_catacombs": "Kemik Mahzeni", "decay_shilda_wall": "Çatlak Duvar",
+	"library_upper_stacks": "Üst Raflar", "library_forbidden_wing": "Yasak Kanat",
+	"experiment_quarantine": "Karantina", "experiment_core_conduit": "Enerji Kanalı",
+	"mirrors_labyrinth": "Yansıma Labirenti", "mirrors_shrine": "Ayna Tapınağı",
+	"core_memory_vault": "Hafıza Kasası", "core_bloom_garden": "Çiçek Bahçesi",
 }
 
 func _ready() -> void:
@@ -33,14 +39,17 @@ func _ready() -> void:
 	icon.modulate = Color(0.85, 0.8, 0.9, 0.9)
 	add_child(icon)
 	var label := Label.new()
-	label.position = Vector2(-140 if position.x > 700 else -10, -86)
+	## Mobilde sağ alt buton kümesinin üstünde kalsın; sağ kenardaki kapılarda etiket içeri kayar.
+	var touch := MobileInputManager.is_touch_ui()
+	var right_edge := position.x > 700
+	label.position = Vector2((-240.0 if touch else -140.0) if right_edge else -10.0, -126.0 if touch else -86.0)
 	label.size = Vector2(150, 40)
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT if (right_edge and touch) else HORIZONTAL_ALIGNMENT_CENTER
 	label.add_theme_font_size_override("font_size", 11)
 	label.add_theme_color_override("font_shadow_color", Color.BLACK)
 	label.add_theme_constant_override("shadow_offset_x", 1)
 	label.add_theme_constant_override("shadow_offset_y", 1)
-	var hint := "El: Geç" if OS.has_feature("mobile") else "[E] Geç"
+	var hint := "El: Geç" if touch else "[E] Geç"
 	label.text = "%s\n%s" % [(door_title if not door_title.is_empty() else ROOM_TITLES.get(String(target_room_id), "Geçit")), hint]
 	label.z_index = 4
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE

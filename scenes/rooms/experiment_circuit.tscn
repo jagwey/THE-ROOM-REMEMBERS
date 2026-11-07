@@ -1,12 +1,11 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Texture2D" path="res://assets/backgrounds/experiment/far.png" id="1"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/experiment/mid.png" id="2"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/experiment/front.png" id="3"]
 [ext_resource type="Script" path="res://scripts/world/room_root.gd" id="4"]
 [ext_resource type="Script" path="res://scripts/world/room_transition.gd" id="5"]
-[ext_resource type="Script" path="res://scripts/story/story_beat.gd" id="6"]
-[ext_resource type="Script" path="res://scripts/world/experiment_memory_circuit.gd" id="7"]
+[ext_resource type="Script" path="res://scripts/world/echo_altar.gd" id="6"]
 
 [ext_resource type="Texture2D" path="res://assets/tiles/tile_00.png" id="walk_tile"]
 
@@ -44,9 +43,6 @@ position = Vector2(880, 288)
 
 [node name="from_circuit" type="Marker2D" parent="Spawns"]
 position = Vector2(120, 288)
-
-[node name="CircuitUI" type="CanvasLayer" parent="."]
-script = ExtResource("7")
 
 [node name="ParallaxFar" type="Parallax2D" parent="."]
 repeat_size = Vector2(640, 0)
@@ -115,7 +111,11 @@ collision_mask = 0
 monitoring = false
 monitorable = true
 script = ExtResource("6")
-beat_id = &"experiment_circuit"
+puzzle_id = &"experiment_circuit"
+intro_text = "Sunağa dokun: altı saniye boyunca yaptığın her şeyi oda hatırlar. Soldaki plakaya bas; yankın orada dururken sen sağdaki kristale koş."
+solved_text = "İki devre birleşti. Sağdaki yetki odası açıldı."
+switch_kinds = PackedStringArray("plate", "lever")
+switch_positions = PackedVector2Array(-180, 32, 230, 0)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/CircuitBeat"]
 shape = SubResource("Interact")

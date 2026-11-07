@@ -333,23 +333,17 @@ func _open_mirror_choice() -> void:
 	_choice_layer = CanvasLayer.new()
 	_choice_layer.layer = 26
 	get_tree().current_scene.add_child(_choice_layer)
-	var panel := PanelContainer.new()
-	panel.position = Vector2(100, 125)
-	panel.size = Vector2(440, 110)
-	_choice_layer.add_child(panel)
-	var box := VBoxContainer.new()
-	panel.add_child(box)
-	var label := Label.new()
-	label.text = "Aynada çiçek solda. Gerçek kapı hangisi?"
-	box.add_child(label)
+	var modal := GothicModalPanel.new()
+	modal.setup("Aynalar", Vector2(500, 190))
+	_choice_layer.add_child(modal)
+	modal.add_label("Aynada çiçek solda. Gerçek kapı hangisi?", UiTheme.BODY)
 	var row := HBoxContainer.new()
-	box.add_child(row)
+	row.add_theme_constant_override("separation", 6)
+	modal.body.add_child(row)
 	for option in ["Soldaki kapı", "Sağdaki kapı", "Geri dön"]:
-		var button := Button.new()
-		button.text = option
-		button.custom_minimum_size = Vector2(130, 36)
-		row.add_child(button)
-		button.pressed.connect(_answer_mirror.bind(option))
+		var button := modal.add_button(option, _answer_mirror.bind(option), row)
+		button.custom_minimum_size = Vector2(120, 36)
+		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	UiGate.set_story(true)
 
 func _answer_mirror(option: String) -> void:
@@ -384,7 +378,7 @@ func _build_relay() -> void:
 	_relay_label = Label.new()
 	_relay_label.position = Vector2(-70, -66)
 	_relay_label.text = "İkinci anahtar"
-	_relay_label.add_theme_font_size_override("font_size", 10)
+	UiTheme.apply_outlined(_relay_label, UiTheme.HINT)
 	relay.add_child(_relay_label)
 
 func _process(delta: float) -> void:
@@ -396,7 +390,7 @@ func _process(delta: float) -> void:
 	if UiGate.pauses_world_threats():
 		return
 	_relay_seconds = maxf(0, _relay_seconds - delta)
-	_relay_label.text = "E: birleştir · %.1f" % _relay_seconds
+	_relay_label.text = "%s: birleştir · %.1f" % [MobileInputManager.control_name(&"interact"), _relay_seconds]
 	if _relay_seconds == 0:
 		_relay_label.text = "Süre doldu. Sola dön."
 

@@ -205,6 +205,29 @@ func _apply_camera(bounds: Rect2) -> void:
 		cam.set_room_bounds(bounds)
 	if cam.has_method("snap_to_target"):
 		cam.snap_to_target()
+	refit_parallax()
+
+
+## Geniş ekran / zoom-out sonrası parallax katmanlarının tekrar sayısını görünür genişliğe göre ayarla.
+func refit_parallax() -> void:
+	if not _rooms.has(_current):
+		return
+	var root: Node2D = _rooms[_current]["root"]
+	if root == null:
+		return
+	var cam := get_tree().get_first_node_in_group("follow_camera") as Camera2D
+	var vis := root.get_viewport_rect().size
+	if cam:
+		vis /= maxf(cam.zoom.x, 0.5)
+	var room_w: float = (_rooms[_current]["bounds"] as Rect2).size.x
+	for child in root.get_children():
+		if child is Parallax2D:
+			var px := child as Parallax2D
+			var rx := px.repeat_size.x
+			if rx <= 0.0:
+				continue
+			var need := int(ceil((maxf(vis.x, room_w) + vis.x) / rx)) + 1
+			px.repeat_times = maxi(px.repeat_times, need)
 
 
 func _set_room_physics(node: Node, active: bool) -> void:

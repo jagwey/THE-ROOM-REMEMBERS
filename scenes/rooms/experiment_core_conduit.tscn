@@ -1,0 +1,51 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
+[ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore"]
+[ext_resource type="Script" path="res://scripts/world/echo_altar.gd" id="altar"]
+
+[sub_resource type="RectangleShape2D" id="Interact"]
+size = Vector2(40, 48)
+
+[sub_resource type="RectangleShape2D" id="Gate"]
+size = Vector2(24, 120)
+
+[node name="ExperimentCoreConduit" type="Node2D"]
+script = ExtResource("room")
+room_id = &"experiment_core_conduit"
+region_id = &"experiment"
+room_width = 960.0
+bg_region = "experiment"
+checkpoint = Vector2(120, 288)
+doors = [{"x": 40.0, "to": "experiment_authority", "spawn": "from_experiment_core_conduit"}]
+
+[node name="Interactive" type="Node2D" parent="."]
+
+[node name="ConduitAltar" type="Area2D" parent="Interactive"]
+position = Vector2(480.0, 268.0)
+script = ExtResource("altar")
+puzzle_id = &"experiment_conduit"
+intro_text = "Üç kanal aynı anda açık olmalı. Yankın plakayı tutsun ve bir kolu çeksin; sen diğerini çek."
+solved_text = "Enerji Çekirdek'e yönlendi. Mühür odasının ışıkları yandı."
+switch_kinds = PackedStringArray("plate", "lever", "lever")
+switch_positions = PackedVector2Array(-300, 20, -150, 0, 330, 0)
+lever_hold_seconds = 2.4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ConduitAltar"]
+shape = SubResource("Interact")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/ConduitAltar"]
+texture_filter = 0
+centered = true
+
+[node name="ConduitLog" type="Area2D" parent="Interactive"]
+position = Vector2(860.0, 288.0)
+script = ExtResource("lore")
+lore_id = &"conduit_log"
+texture_path = "res://assets/props/cassette.png"
+sprite_scale = 0.5
+lines = PackedStringArray("Shiren|Kayıt: “Çekirdek beslendikçe anılar çekiliyor. Önce isimler, sonra yüzler.”", "Shiren|“Onun sesini kurtarmak için herkesin hafızasını feda ettim.”")
+evidence_title = "Enerji Yönlendirme"
+evidence_body = "Çekirdek beslendikçe herkesin anıları çekilmiş. Bir sesi kurtarmak için hepsini feda etmişim."
+evidence_section = "izler"
+set_progress_key = "truth_fragment_conduit"

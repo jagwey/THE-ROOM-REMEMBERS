@@ -32,7 +32,5 @@ func on_interact(_by: Node) -> void:
 	DialogueManager.say("Shiren", "Kırmızı yapraklar… kurumuş. Yerde bir desen var: 7, 2, 9.")
 	var ok: bool = await DialogueManager.dialogue_finished
 	if ok:
-		var codes: Dictionary = GameState.player_progress_knowledge.get("memory_codes", {})
-		codes["decay_archive"] = "729"
-		GameState.player_progress_knowledge["memory_codes"] = codes
+		GameState.learn_memory_code("decay_archive", "729")
 	_busy = false

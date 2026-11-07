@@ -20,30 +20,30 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -200.0
-offset_top = -80.0
-offset_right = 200.0
-offset_bottom = 80.0
+offset_left = -260.0
+offset_top = -120.0
+offset_right = 260.0
+offset_bottom = 120.0
 
 [node name="Title" type="Label" parent="Panel"]
 layout_mode = 0
 offset_left = 0.0
 offset_top = 0.0
-offset_right = 400.0
-offset_bottom = 28.0
+offset_right = 520.0
+offset_bottom = 34.0
 theme_override_colors/font_color = Color(0.882, 0.827, 0.82, 1)
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 24
 horizontal_alignment = 1
 text = "Son"
 
 [node name="Body" type="Label" parent="Panel"]
 layout_mode = 0
 offset_left = 10.0
-offset_top = 40.0
-offset_right = 390.0
-offset_bottom = 110.0
+offset_top = 48.0
+offset_right = 510.0
+offset_bottom = 190.0
 theme_override_colors/font_color = Color(0.671, 0.596, 0.663, 1)
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 16
 horizontal_alignment = 1
 autowrap_mode = 3
 text = "…"
@@ -51,10 +51,10 @@ text = "…"
 [node name="Hint" type="Label" parent="Panel"]
 layout_mode = 0
 offset_left = 0.0
-offset_top = 120.0
-offset_right = 400.0
-offset_bottom = 140.0
+offset_top = 206.0
+offset_right = 520.0
+offset_bottom = 230.0
 theme_override_colors/font_color = Color(0.49, 0.35, 0.4, 1)
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 14
 horizontal_alignment = 1
 text = "Etkileş: devam"

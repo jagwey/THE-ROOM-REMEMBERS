@@ -28,7 +28,5 @@ func on_interact(_by: Node) -> void:
 	if ok and register_echo_id != "" and not echo_data.is_empty():
 		EchoManager.register_echo(register_echo_id, echo_data)
 	if ok and memory_code_key != "" and memory_code_value != "":
-		var codes: Dictionary = GameState.player_progress_knowledge.get("memory_codes", {})
-		codes[memory_code_key] = memory_code_value
-		GameState.player_progress_knowledge["memory_codes"] = codes
+		GameState.learn_memory_code(memory_code_key, memory_code_value)
 	_busy = false

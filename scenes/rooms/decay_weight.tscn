@@ -1,9 +1,10 @@
-[gd_scene load_steps=18 format=3 uid="uid://torimon_decay_weight"]
+[gd_scene load_steps=19 format=3 uid="uid://torimon_decay_weight"]
 
 [ext_resource type="Texture2D" path="res://assets/backgrounds/decay/far.png" id="1"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/decay/mid.png" id="2"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/decay/front.png" id="3"]
 [ext_resource type="Texture2D" path="res://assets/props/door_closed.png" id="4"]
+[ext_resource type="Texture2D" path="res://assets/layers/rubble.png" id="rubble_tex"]
 [ext_resource type="Script" path="res://scripts/world/room_root.gd" id="5"]
 [ext_resource type="Script" path="res://scripts/world/room_transition.gd" id="6"]
 [ext_resource type="Script" path="res://scripts/world/pressure_plate.gd" id="7"]
@@ -200,11 +201,11 @@ shape = SubResource("StoneBox")
 
 [node name="Sprite2D" type="Sprite2D" parent="WeightStone"]
 texture_filter = 0
-texture = ExtResource("4")
+texture = ExtResource("rubble_tex")
 centered = true
-position = Vector2(0, -14)
-scale = Vector2(0.45, 0.45)
-modulate = Color(0.55, 0.52, 0.58, 1)
+position = Vector2(0, -12)
+scale = Vector2(0.24, 0.24)
+modulate = Color(0.85, 0.8, 0.86, 1)
 
 [node name="Corpse" type="Node2D" parent="." groups=["corpses_root"]]
 

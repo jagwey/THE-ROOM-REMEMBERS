@@ -22,9 +22,9 @@ func _ready() -> void:
 	title.add_theme_color_override("font_color", Palette.IVORY)
 	body.add_theme_color_override("font_color", Palette.PALE_LILAC)
 	hint.add_theme_color_override("font_color", Palette.STONE)
-	UiTheme.apply_label(title, 16, true)
-	UiTheme.apply_label(body, 12, false)
-	UiTheme.apply_label(hint, 10, false)
+	UiTheme.apply_outlined(title, UiTheme.TITLE, true)
+	UiTheme.apply_outlined(body, UiTheme.BODY, false, Palette.PALE_LILAC)
+	UiTheme.apply_outlined(hint, UiTheme.HINT, false, Palette.PALE_LILAC)
 	dim.gui_input.connect(_on_dim_gui)
 
 

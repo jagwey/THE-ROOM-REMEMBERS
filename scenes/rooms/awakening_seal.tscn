@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=3 uid="uid://torimon_awakening_seal"]
+[gd_scene load_steps=26 format=3 uid="uid://torimon_awakening_seal"]
 
 [ext_resource type="Texture2D" path="res://assets/backgrounds/decay/far.png" id="1"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/decay/mid.png" id="2"]
@@ -16,6 +16,8 @@
 [ext_resource type="Script" path="res://scripts/world/awakening_seal_echo_recall.gd" id="14"]
 
 [ext_resource type="Texture2D" path="res://assets/tiles/tile_00.png" id="walk_tile"]
+
+[ext_resource type="Script" path="res://scripts/world/blood_thorn.gd" id="blood_thorn"]
 
 [sub_resource type="RectangleShape2D" id="Floor"]
 size = Vector2(1000, 48)
@@ -156,8 +158,8 @@ position = Vector2(340, 300)
 collision_layer = 0
 collision_mask = 1
 script = ExtResource("7")
-puzzle_id = &"awakening_weight"
-accept_player = true
+puzzle_id = &"awakening_seal_weight"
+accept_player = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/PressurePlate"]
 shape = SubResource("PlateShape")
@@ -166,13 +168,21 @@ shape = SubResource("PlateShape")
 texture_filter = 0
 centered = true
 
+[node name="BloodThorn" type="Area2D" parent="Interactive"]
+position = Vector2(380, 290)
+script = ExtResource("blood_thorn")
+anchor_x = 340.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BloodThorn"]
+shape = SubResource("PlateShape")
+
 [node name="SideGate" type="StaticBody2D" parent="Interactive"]
 position = Vector2(560, 270)
 collision_layer = 1
 collision_mask = 0
 script = ExtResource("8")
 open_flag = &""
-puzzle_listen = &"awakening_weight"
+puzzle_listen = &"awakening_seal_weight"
 ignore_world_flag = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/SideGate"]

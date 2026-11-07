@@ -14,32 +14,34 @@ var _locked: bool = false
 
 const EPILOGUES := {
 	"bad_kill_keeper": {
-		"title": "Kötü Son",
+		"title": "THE LOOP",
 		"lines": [
-			"Bekçi yere düştü. Çiçekler soldu.",
-			"Oda seni hâlâ hatırlıyor.",
-			"Döngü… yeniden başlıyor.",
-			"Sen unutacaksın. O unutmayacak.",
+			"Shilda yere düştü. Çiçekler bir anda soldu.",
+			"Çekirdek, onu tutan son hafızayı kaybedince patladı.",
+			"…Gözlerin açılıyor. Yine yataktasın.",
+			"Yerde Shilda'nın cansız bedeni. Elinde kurumuş bir çiçek.",
+			"Duvarda kendi el yazın: “Şimdi kim hatırlayacak?”",
 		],
 	},
 	"good_trust_seal": {
-		"title": "Birlikte Mühürleme",
+		"title": "REMEMBER ME",
 		"lines": [
-			"Çekirdek mühürlendi. Kırmızı ışık söndü.",
-			"Şiren: Buradayım.",
-			"Shilda: Birlikte… hatırlıyoruz.",
-			"Bekçi… artık yalnız değil.",
-			"Sen hâlâ bazı şeyleri unutuyorsun.",
-			"Ama bu kez, oda da biraz unutuyor.",
+			"İki mühür parçası birleşti. Çekirdek son kez nabız attı… ve sustu.",
+			"Shilda: Beni hatırlıyor musun?",
+			"Shiren: Hayır…",
+			"Shiren: Ama seni yeniden tanıyabilirim.",
+			"Kilitli kapı açıldı. İkiniz birlikte dışarı yürüdünüz.",
+			"“You forgot me. I never forgot you.”",
 		],
 	},
 	"sever_bond": {
-		"title": "Bağı Koparma",
+		"title": "BAĞI KOPARMA",
 		"lines": [
-			"Saklanan hatıra serbest kaldı.",
-			"Devre söndü. Işıklar… başka bir düzene geçti.",
-			"Çıkış dünyada değişti.",
-			"Shilda geride kaldı. Sen hatırlayarak yürüdün.",
+			"Çekirdekle olan bağı kopardın. Döngü sona erdi.",
+			"Bütün anılar geri döndü: deney, kilit, bağırışlar, onun sesi.",
+			"Shilda gülümsedi: Ben buranın son bekçisiyim. Git.",
+			"Odanın kapısında durdu; sen geçmişin bütün yüküyle tek başına yürüdün.",
+			"Bu kez unutmadın. Hiçbir şeyi.",
 		],
 	},
 }
@@ -51,7 +53,12 @@ func can_attempt_good_seal() -> bool:
 	var truth := bool(GameState.player_progress_knowledge.get("truth_seen", false))
 	# Trust can be repaired in the final conversation; a missed optional garden
 	# conversation must never make the last room impossible to finish.
-	return code and echo and truth and PuzzleManager.is_solved(&"core_seal")
+	return code and echo and truth and PuzzleManager.is_solved(&"core_seal") and has_both_shards()
+
+
+## İyi son için iki mühür parçası (Yasak Kanat + Ayna Tapınağı) gerekir.
+func has_both_shards() -> bool:
+	return bool(GameState.get_world_flag(&"seal_shard_1", false)) and bool(GameState.get_world_flag(&"seal_shard_2", false))
 
 
 func can_attempt_sever() -> bool:
@@ -67,6 +74,7 @@ func prep_status() -> Dictionary:
 		"echo": bool(GameState.player_progress_knowledge.get("echoes_seen", []).size() > 0),
 		"trusted": bool(GameState.player_progress_knowledge.get("trusted_keeper", false)),
 		"truth": bool(GameState.player_progress_knowledge.get("truth_seen", false)),
+		"shards": has_both_shards(),
 	}
 
 

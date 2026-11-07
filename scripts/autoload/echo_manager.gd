@@ -40,6 +40,21 @@ var _catalog: Dictionary = {
 		},
 		"memory_code": "314",
 	},
+	"crypt_first_bodies": {
+		"evidence_id": "ev_crypt_rebirth",
+		"lines": [
+			["Yankı", "Yatağın başında Shilda. Elinde şırınga yok; sadece bir çiçek."],
+			["Yankı", "Sen: Sil onu. Hepsini. Bir daha hatırlamak istemiyorum."],
+			["Yankı", "Shilda: Sen unutursan… ben hatırlarım. Söz."],
+		],
+		"journal": {
+			"section": "izler",
+			"title": "Silme Emri",
+			"body": "Hafızamın silinmesini ben istedim. Shilda söz verdi: ben unutursam o hatırlayacak.",
+			"kind": "evidence",
+		},
+		"memory_code": "",
+	},
 }
 
 
@@ -99,7 +114,7 @@ func play_echo(echo_id: StringName) -> void:
 		_write_journal(entry.get("journal", {}), String(entry.get("evidence_id", key)))
 		var code := String(entry.get("memory_code", ""))
 		if code != "":
-			GameState.player_progress_knowledge["memory_codes"]["awakening"] = code
+			GameState.learn_memory_code("awakening", code)
 		GameState.player_progress_knowledge["journal_unlocked"] = true
 		journal_updated.emit()
 		SaveManager.save_game()

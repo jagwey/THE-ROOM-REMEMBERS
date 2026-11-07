@@ -19,8 +19,7 @@ func on_interact(_by: Node) -> void:
 		return
 	var seen: Array = GameState.player_progress_knowledge.get("echoes_seen", [])
 	if seen.has("awakening_rift_echo"):
-		codes["awakening"] = "314"
-		GameState.player_progress_knowledge["memory_codes"] = codes
+		GameState.learn_memory_code("awakening", "314")
 		SaveManager.save_game()
 		DialogueManager.say("Shiren", "Yankıyı yeniden duyuyorum: 3 — 1 — 4. Bunu mühre yazmalıyım.")
 		return

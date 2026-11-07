@@ -1,0 +1,56 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
+[ext_resource type="Script" path="res://scripts/world/ability_pickup.gd" id="ability"]
+[ext_resource type="Script" path="res://scripts/world/npc_actor.gd" id="npc"]
+[ext_resource type="Script" path="res://scripts/world/curse_barrier.gd" id="barrier"]
+
+[sub_resource type="RectangleShape2D" id="Interact"]
+size = Vector2(40, 48)
+
+[sub_resource type="RectangleShape2D" id="Gate"]
+size = Vector2(24, 120)
+
+[node name="MirrorsShrine" type="Node2D"]
+script = ExtResource("room")
+room_id = &"mirrors_shrine"
+region_id = &"mirrors"
+room_width = 960.0
+bg_region = "mirrors"
+checkpoint = Vector2(120, 288)
+doors = [{"x": 40.0, "to": "mirrors_unbroken", "spawn": "from_mirrors_shrine"}]
+
+[node name="Interactive" type="Node2D" parent="."]
+
+[node name="ShadowDash" type="Area2D" parent="Interactive"]
+position = Vector2(300.0, 288.0)
+script = ExtResource("ability")
+grant_key = "ability_shadow_dash"
+title = "Gölge Atılması"
+texture_path = "res://assets/props/halo.png"
+tint = Color(0.6, 0.45, 0.9, 1)
+lines = PackedStringArray("Shiren|Sunakta bir gölge. Benim gölgem… ama benden önce hareket ediyor.", "Shiren|İçime çekiyorum. Bedenim hafifliyor.")
+tutorial = "X / Dash: Gölge Atılması. Atılırken lanetli bariyerlerin ve Shilda'nın saldırılarının içinden hasar almadan geçersin."
+
+[node name="Barrier" type="StaticBody2D" parent="Interactive"]
+position = Vector2(560.0, 288.0)
+script = ExtResource("barrier")
+
+[node name="Shard2" type="Area2D" parent="Interactive"]
+position = Vector2(760.0, 288.0)
+script = ExtResource("ability")
+grant_key = ""
+grant_world_flag = &"seal_shard_2"
+title = "2. Mühür Parçası"
+texture_path = "res://assets/props/seal.png"
+tint = Color(1, 0.75, 0.8, 1)
+lines = PackedStringArray("Shiren|Mührün öteki yarısı. Kenarında benim adım.", "Shiren|İki ad, bir mühür. Çekirdek'i ancak birlikte kapatabiliriz.")
+
+[node name="ShrineEcho" type="Area2D" parent="Interactive"]
+position = Vector2(880.0, 288.0)
+script = ExtResource("npc")
+npc_id = &"echo_shrine"
+idle_anim = "echo_idle"
+walk_anim = "echo_walk"
+ghostly = true
+dialogue_sets = PackedStringArray("Yansıma|Her döngüde buraya kadar geldin. Her seferinde Shilda'ya kılıç kaldırdın.;;Yansıma|Bu sefer başka bir şey dene.", "Yansıma|Ona güvenirsen birlikte mühürlersiniz. Bağı koparırsan… onu burada bırakırsın.")

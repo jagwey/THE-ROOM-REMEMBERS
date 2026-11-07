@@ -13,6 +13,77 @@ func check_it(label: String, value: bool, detail: Variant = "") -> void:
 	checks.append({"name": label, "pass": value, "detail": str(detail)})
 	print("PASS " if value else "FAIL ", label, " ", detail)
 
+## Bulmacanın çözüldüğü oda + (varsa) önkoşul bulmacası/yeteneği. Kapı grafiği softlock analizi için.
+const PUZZLE_SOURCE := {
+	"awakening_memory_code": ["awakening_seal", ""],
+	"awakening_seal_weight": ["awakening_seal", ""],
+	"core_seal": ["core_seal_chamber", ""],
+	"core_threshold": ["core_threshold", ""],
+	"experiment_authority": ["experiment_authority", ""],
+	"experiment_cells_seen": ["experiment_cells", ""],
+	"experiment_circuit": ["experiment_circuit", ""],
+	"library_catalog": ["library_hall", ""],
+	"library_page_order": ["library_page", ""],
+	"library_witnesses": ["library_witness", ""],
+	"mirrors_dual": ["mirrors_dual", ""],
+	"mirrors_reverse": ["mirrors_reverse", ""],
+	"mirrors_unbroken": ["mirrors_unbroken", ""],
+	"decay_shilda_wall_broken": ["decay_shilda_wall", ""],
+	"ability_soul_slash": ["library_forbidden_wing", ""],
+	"soul_seal_balcony": ["awakening_balcony", "ability_soul_slash"],
+	"seal_shard_1": ["library_forbidden_wing", ""],
+	"seal_shard_2": ["mirrors_shrine", ""],
+}
+
+
+func _graph_checks(rm: Node) -> void:
+	var edges: Dictionary = {} ## room -> [[target, spawn, req]]
+	var bad_targets: Array = []
+	for rid in rm._rooms.keys():
+		var room: Node = rm._rooms[rid].root
+		var croots := room.find_children("*", "Node", true, false).filter(func(n): return n.is_in_group("corpses_root"))
+		check_it("corpses_root present " + str(rid), not croots.is_empty())
+		edges[String(rid)] = []
+		for n in room.find_children("*", "Area2D", true, false):
+			if not n.is_in_group("room_door"):
+				continue
+			var target := String(n.get("target_room_id"))
+			var spawn := StringName(n.get("target_spawn_id"))
+			edges[String(rid)].append([target, String(n.get("required_puzzle"))])
+			if not rm.has_room(StringName(target)):
+				bad_targets.append("%s -> %s (room)" % [rid, target])
+			elif spawn != &"default" and spawn != &"checkpoint" and not (rm._rooms[StringName(target)].spawns as Dictionary).has(spawn):
+				bad_targets.append("%s -> %s:%s (spawn)" % [rid, target, spawn])
+	check_it("Every door targets a real room and spawn", bad_targets.is_empty(), bad_targets)
+	## Softlock analizi: kilitleri, kaynağı erişilebilir olan bulmacalar çözüldükçe aç.
+	var reach := {"awakening": true}
+	var solved := {}
+	var changed := true
+	var unknown_locks: Array = []
+	while changed:
+		changed = false
+		for pid in PUZZLE_SOURCE.keys():
+			var src: Array = PUZZLE_SOURCE[pid]
+			if not solved.has(pid) and reach.has(String(src[0])) and (String(src[1]) == "" or solved.has(String(src[1]))):
+				solved[pid] = true
+				changed = true
+		for r in reach.keys():
+			for e in edges.get(r, []):
+				var req := String(e[1])
+				if req != "" and not PUZZLE_SOURCE.has(req) and not unknown_locks.has(req):
+					unknown_locks.append(req)
+				if not reach.has(String(e[0])) and (req == "" or solved.has(req)):
+					reach[String(e[0])] = true
+					changed = true
+	var missing: Array = []
+	for rid in rm._rooms.keys():
+		if not reach.has(String(rid)):
+			missing.append(String(rid))
+	check_it("No unknown door locks", unknown_locks.is_empty(), unknown_locks)
+	check_it("All rooms reachable without softlock", missing.is_empty(), missing)
+	check_it("Both seal shards obtainable", solved.has("seal_shard_1") and solved.has("seal_shard_2"))
+
+
 func run() -> void:
 	change_scene_to_file("res://scenes/main/main.tscn")
 	await create_timer(0.3).timeout
@@ -23,7 +94,7 @@ func run() -> void:
 	var gate: Node = root.get_node("UiGate")
 	var saves: Node = root.get_node("SaveManager")
 	var player: Node2D = main.get_node("Player")
-	check_it("18 rooms registered", rm._rooms.size() == 18, rm._rooms.size())
+	check_it("30 rooms registered", rm._rooms.size() == 30, rm._rooms.size())
 	check_it("Intro waits for player", dm.is_open)
 	check_it("Story freezes threats", gate.pauses_world_threats())
 	var before := player.position
@@ -56,6 +127,7 @@ func run() -> void:
 		await create_timer(0.12).timeout
 		check_it("Safe spawn " + str(room_id), player.position.y < 330 and not root.get_node("DeathManager").is_dying, player.position)
 		visited.append(str(room_id))
+	_graph_checks(rm)
 	rm.enter_room(&"awakening", &"default")
 	dm.clear()
 	var start_x: float = player.position.x
@@ -83,7 +155,7 @@ func run() -> void:
 	# Restart must clear registries and stale puzzle progress, not leave old room nodes.
 	saves.start_new_game()
 	await create_timer(0.3).timeout
-	check_it("New game reloads all rooms", rm._rooms.size() == 18 and rm.get_active_room_id() == &"awakening")
+	check_it("New game reloads all rooms", rm._rooms.size() == 30 and rm.get_active_room_id() == &"awakening")
 	check_it("New game clears prior progress", not gs.player_progress_knowledge.has("qa_roundtrip") and root.get_node("PuzzleManager").solved.is_empty())
 	var failed := checks.filter(func(c): return not c.pass).size()
 	var report := {"checks": checks, "total": checks.size(), "failed": failed, "passed": checks.size() - failed}

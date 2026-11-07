@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=3 uid="uid://torimon_main"]
+[gd_scene load_steps=40 format=3 uid="uid://torimon_main"]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/rooms/awakening.tscn" id="2"]
@@ -28,6 +28,18 @@
 [ext_resource type="PackedScene" path="res://scenes/rooms/core_seal_chamber.tscn" id="26"]
 
 [ext_resource type="Script" path="res://scripts/ui/session_menu.gd" id="27"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/core_memory_vault.tscn" id="x_core_memory_vault"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/core_bloom_garden.tscn" id="x_core_bloom_garden"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/awakening_balcony.tscn" id="x_awakening_balcony"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/awakening_crypt.tscn" id="x_awakening_crypt"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/decay_catacombs.tscn" id="x_decay_catacombs"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/decay_shilda_wall.tscn" id="x_decay_shilda_wall"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/library_upper_stacks.tscn" id="x_library_upper_stacks"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/library_forbidden_wing.tscn" id="x_library_forbidden_wing"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/experiment_quarantine.tscn" id="x_experiment_quarantine"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/experiment_core_conduit.tscn" id="x_experiment_core_conduit"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/mirrors_labyrinth.tscn" id="x_mirrors_labyrinth"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/mirrors_shrine.tscn" id="x_mirrors_shrine"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1")
@@ -101,6 +113,54 @@ visible = false
 process_mode = 4
 
 [node name="Core" parent="World" instance=ExtResource("10")]
+visible = false
+process_mode = 4
+
+[node name="CoreMemoryVault" parent="World" instance=ExtResource("x_core_memory_vault")]
+visible = false
+process_mode = 4
+
+[node name="CoreBloomGarden" parent="World" instance=ExtResource("x_core_bloom_garden")]
+visible = false
+process_mode = 4
+
+[node name="AwakeningBalcony" parent="World" instance=ExtResource("x_awakening_balcony")]
+visible = false
+process_mode = 4
+
+[node name="AwakeningCrypt" parent="World" instance=ExtResource("x_awakening_crypt")]
+visible = false
+process_mode = 4
+
+[node name="DecayCatacombs" parent="World" instance=ExtResource("x_decay_catacombs")]
+visible = false
+process_mode = 4
+
+[node name="DecayShildaWall" parent="World" instance=ExtResource("x_decay_shilda_wall")]
+visible = false
+process_mode = 4
+
+[node name="LibraryUpperStacks" parent="World" instance=ExtResource("x_library_upper_stacks")]
+visible = false
+process_mode = 4
+
+[node name="LibraryForbiddenWing" parent="World" instance=ExtResource("x_library_forbidden_wing")]
+visible = false
+process_mode = 4
+
+[node name="ExperimentQuarantine" parent="World" instance=ExtResource("x_experiment_quarantine")]
+visible = false
+process_mode = 4
+
+[node name="ExperimentCoreConduit" parent="World" instance=ExtResource("x_experiment_core_conduit")]
+visible = false
+process_mode = 4
+
+[node name="MirrorsLabyrinth" parent="World" instance=ExtResource("x_mirrors_labyrinth")]
+visible = false
+process_mode = 4
+
+[node name="MirrorsShrine" parent="World" instance=ExtResource("x_mirrors_shrine")]
 visible = false
 process_mode = 4
 

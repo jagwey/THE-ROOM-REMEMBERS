@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://torimon_journal"]
+[gd_scene load_steps=3 format=3 uid="uid://torimon_journal"]
 
 [ext_resource type="Script" path="res://scripts/ui/journal_ui.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/ui/journal_map.gd" id="2"]
 
 [node name="Journal" type="CanvasLayer"]
 layer = 20
@@ -15,7 +16,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 0
-color = Color(0.09, 0.07, 0.11, 0.72)
+color = Color(0.09, 0.07, 0.11, 0.78)
 
 [node name="BookRoot" type="Control" parent="."]
 anchors_preset = 8
@@ -23,10 +24,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -200.0
-offset_top = -120.0
-offset_right = 200.0
-offset_bottom = 120.0
+offset_left = -270.0
+offset_top = -155.0
+offset_right = 270.0
+offset_bottom = 155.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -39,100 +40,102 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 expand_mode = 1
-stretch_mode = 5
 texture_filter = 0
+
+[node name="Tabs" type="HBoxContainer" parent="BookRoot"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = -26.0
+offset_bottom = -2.0
+grow_horizontal = 2
+theme_override_constants/separation = 4
+
+[node name="Gunluk" type="Button" parent="BookRoot/Tabs"]
+custom_minimum_size = Vector2(84, 24)
+layout_mode = 2
+text = "Günlük"
+
+[node name="Notlar" type="Button" parent="BookRoot/Tabs"]
+custom_minimum_size = Vector2(84, 24)
+layout_mode = 2
+text = "Notlar"
+
+[node name="Izler" type="Button" parent="BookRoot/Tabs"]
+custom_minimum_size = Vector2(84, 24)
+layout_mode = 2
+text = "İzler"
+
+[node name="Harita" type="Button" parent="BookRoot/Tabs"]
+custom_minimum_size = Vector2(168, 24)
+layout_mode = 2
+text = "Harita & Mühürler"
 
 [node name="LeftPage" type="Control" parent="BookRoot"]
 clip_contents = true
-layout_mode = 0
-offset_left = 28.0
-offset_top = 18.0
-offset_right = 188.0
-offset_bottom = 210.0
-
-[node name="Tabs" type="HBoxContainer" parent="BookRoot/LeftPage"]
-layout_mode = 0
-offset_right = 156.0
-offset_bottom = 20.0
-theme_override_constants/separation = 3
-
-[node name="Gunluk" type="Button" parent="BookRoot/LeftPage/Tabs"]
-custom_minimum_size = Vector2(48, 18)
-layout_mode = 2
-theme_override_font_sizes/font_size = 9
-text = "Günlük"
-
-[node name="Notlar" type="Button" parent="BookRoot/LeftPage/Tabs"]
-custom_minimum_size = Vector2(48, 18)
-layout_mode = 2
-theme_override_font_sizes/font_size = 9
-text = "Notlar"
-
-[node name="Izler" type="Button" parent="BookRoot/LeftPage/Tabs"]
-custom_minimum_size = Vector2(48, 18)
-layout_mode = 2
-theme_override_font_sizes/font_size = 9
-text = "İzler"
+layout_mode = 1
+anchor_left = 0.1
+anchor_top = 0.1
+anchor_right = 0.475
+anchor_bottom = 0.86
 
 [node name="ListTitle" type="Label" parent="BookRoot/LeftPage"]
-layout_mode = 0
-offset_top = 24.0
-offset_right = 156.0
-offset_bottom = 40.0
-theme_override_colors/font_color = Color(0.2, 0.14, 0.18, 1)
-theme_override_font_sizes/font_size = 11
+layout_mode = 1
+anchor_right = 1.0
+offset_bottom = 24.0
+theme_override_colors/font_color = Color(0.239, 0.071, 0.125, 1)
+theme_override_font_sizes/font_size = 19
 text = "Günlük"
 
 [node name="Scroll" type="ScrollContainer" parent="BookRoot/LeftPage"]
 clip_contents = true
-layout_mode = 0
-offset_top = 44.0
-offset_right = 156.0
-offset_bottom = 188.0
+layout_mode = 1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 30.0
 horizontal_scroll_mode = 0
 
-[node name="EntryList" type="ItemList" parent="BookRoot/LeftPage/Scroll"]
-custom_minimum_size = Vector2(148, 140)
+[node name="EntryList" type="VBoxContainer" parent="BookRoot/LeftPage/Scroll"]
+custom_minimum_size = Vector2(196, 0)
 layout_mode = 2
 size_flags_horizontal = 3
-size_flags_vertical = 3
-theme_override_colors/font_color = Color(0.18, 0.12, 0.16, 1)
-theme_override_colors/font_selected_color = Color(0.1, 0.06, 0.08, 1)
-theme_override_font_sizes/font_size = 10
-allow_reselect = true
-auto_height = true
+theme_override_constants/separation = 4
 
 [node name="RightPage" type="Control" parent="BookRoot"]
 clip_contents = true
-layout_mode = 0
-offset_left = 204.0
-offset_top = 18.0
-offset_right = 372.0
-offset_bottom = 210.0
+layout_mode = 1
+anchor_left = 0.53
+anchor_top = 0.1
+anchor_right = 0.925
+anchor_bottom = 0.86
 
 [node name="DetailTitle" type="Label" parent="BookRoot/RightPage"]
-layout_mode = 0
-offset_right = 160.0
-offset_bottom = 20.0
-theme_override_colors/font_color = Color(0.2, 0.14, 0.18, 1)
-theme_override_font_sizes/font_size = 12
+layout_mode = 1
+anchor_bottom = 0.0
+offset_right = 84.0
+offset_bottom = 82.0
+theme_override_colors/font_color = Color(0.239, 0.071, 0.125, 1)
+theme_override_font_sizes/font_size = 18
 autowrap_mode = 3
+clip_text = true
 text = ""
 
 [node name="Scroll" type="ScrollContainer" parent="BookRoot/RightPage"]
 clip_contents = true
-layout_mode = 0
-offset_top = 24.0
-offset_right = 160.0
-offset_bottom = 156.0
+layout_mode = 1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 88.0
+offset_bottom = -4.0
 horizontal_scroll_mode = 0
 
 [node name="DetailBody" type="RichTextLabel" parent="BookRoot/RightPage/Scroll"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_colors/default_color = Color(0.18, 0.12, 0.16, 1)
-theme_override_font_sizes/normal_font_size = 10
+theme_override_colors/default_color = Color(0.239, 0.071, 0.125, 1)
+theme_override_constants/line_separation = 4
+theme_override_font_sizes/normal_font_size = 16
 bbcode_enabled = true
 fit_content = true
 scroll_active = false
@@ -140,30 +143,35 @@ text = ""
 
 [node name="EmptyLabel" type="Label" parent="BookRoot/RightPage"]
 visible = false
-layout_mode = 0
-offset_left = 8.0
-offset_top = 60.0
-offset_right = 152.0
-offset_bottom = 120.0
-theme_override_colors/font_color = Color(0.35, 0.28, 0.32, 1)
-theme_override_font_sizes/font_size = 10
+layout_mode = 1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 88.0
+offset_bottom = -4.0
+theme_override_colors/font_color = Color(0.35, 0.18, 0.22, 1)
+theme_override_font_sizes/font_size = 16
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
 text = "Sayfa boş…"
 
-[node name="Close" type="Button" parent="BookRoot/RightPage"]
-layout_mode = 0
-anchors_preset = 3
+[node name="MapView" type="Control" parent="BookRoot"]
+visible = false
+layout_mode = 1
+anchor_left = 0.1
+anchor_top = 0.1
+anchor_right = 0.915
+anchor_bottom = 0.855
+mouse_filter = 2
+script = ExtResource("2")
+
+[node name="Close" type="Button" parent="BookRoot"]
+layout_mode = 1
+anchors_preset = 1
 anchor_left = 1.0
-anchor_top = 1.0
 anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -72.0
-offset_top = -28.0
-offset_right = 0.0
-offset_bottom = 0.0
+offset_left = -88.0
+offset_top = -26.0
+offset_bottom = -2.0
 grow_horizontal = 0
-grow_vertical = 0
-theme_override_font_sizes/font_size = 11
 text = "Kapat"

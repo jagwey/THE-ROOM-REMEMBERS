@@ -18,61 +18,39 @@ func _ready() -> void:
 
 
 func _build_ui() -> void:
-	var panel := PanelContainer.new()
+	var panel := GothicModalPanel.new()
 	panel.name = "Panel"
-	panel.set_anchors_preset(Control.PRESET_CENTER)
-	panel.offset_left = -210.0
-	panel.offset_top = -130.0
-	panel.offset_right = 210.0
-	panel.offset_bottom = 130.0
+	panel.setup("Unutulmuş sayfa — sırayı kur", Vector2(470, 330))
 	add_child(panel)
-	var v := VBoxContainer.new()
-	panel.add_child(v)
-	var title := Label.new()
-	title.text = "Unutulmuş sayfa — sırayı kur"
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	v.add_child(title)
-	var clue := Label.new()
-	clue.text = "Saat: deney önce. Çiçek: kapı sonra. Mühür: koruma en son."
-	clue.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	clue.custom_minimum_size.x = 380
-	v.add_child(clue)
+	panel.add_label("Saat: deney önce. Çiçek: kapı sonra. Mühür: koruma en son.", UiTheme.HINT)
 	for i in 3:
 		var lab := Label.new()
 		lab.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		v.add_child(lab)
+		UiTheme.apply_outlined(lab, UiTheme.BODY, true)
+		panel.body.add_child(lab)
 		_labels.append(lab)
-	var row := HBoxContainer.new()
-	v.add_child(row)
-	var b_prev := Button.new()
-	b_prev.text = "← önceki kart"
-	b_prev.pressed.connect(_select_prev)
-	row.add_child(b_prev)
-	var b_next := Button.new()
-	b_next.text = "sonraki kart →"
-	b_next.pressed.connect(_select_next)
-	row.add_child(b_next)
-	var row2 := HBoxContainer.new()
-	v.add_child(row2)
-	var b_up := Button.new()
-	b_up.text = "Yukarı al"
-	b_up.pressed.connect(_swap_up)
-	row2.add_child(b_up)
-	var b_down := Button.new()
-	b_down.text = "Aşağı al"
-	b_down.pressed.connect(_swap_down)
-	row2.add_child(b_down)
-	var row3 := HBoxContainer.new()
-	v.add_child(row3)
-	var b_try := Button.new()
-	b_try.text = "Doğrula"
-	b_try.pressed.connect(_on_verify)
-	row3.add_child(b_try)
-	var b_close := Button.new()
-	b_close.text = "Kapat"
-	b_close.pressed.connect(_hide_puzzle)
-	row3.add_child(b_close)
+	var row := _row(panel)
+	_btn(panel, row, "← önceki kart", _select_prev)
+	_btn(panel, row, "sonraki kart →", _select_next)
+	var row2 := _row(panel)
+	_btn(panel, row2, "Yukarı al", _swap_up)
+	_btn(panel, row2, "Aşağı al", _swap_down)
+	var row3 := _row(panel)
+	_btn(panel, row3, "Doğrula", _on_verify)
+	_btn(panel, row3, "Kapat", _hide_puzzle)
 	_sync_labels()
+
+
+func _row(panel: GothicModalPanel) -> HBoxContainer:
+	var r := HBoxContainer.new()
+	r.add_theme_constant_override("separation", 6)
+	panel.body.add_child(r)
+	return r
+
+
+func _btn(panel: GothicModalPanel, row: HBoxContainer, text: String, cb: Callable) -> void:
+	var b := panel.add_button(text, cb, row)
+	b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
 
 func open_puzzle() -> void:

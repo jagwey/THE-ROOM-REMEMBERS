@@ -1,0 +1,47 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
+[ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore"]
+[ext_resource type="Script" path="res://scripts/world/cracked_wall.gd" id="wall"]
+[ext_resource type="Script" path="res://scripts/world/encounter_zone.gd" id="enc"]
+
+[sub_resource type="RectangleShape2D" id="Interact"]
+size = Vector2(40, 48)
+
+[sub_resource type="RectangleShape2D" id="Gate"]
+size = Vector2(24, 120)
+
+[node name="DecayShildaWall" type="Node2D"]
+script = ExtResource("room")
+room_id = &"decay_shilda_wall"
+region_id = &"decay"
+room_width = 1280.0
+bg_region = "decay"
+checkpoint = Vector2(120, 288)
+doors = [{"x": 40.0, "to": "decay_garden", "spawn": "from_decay_shilda_wall"}, {"x": 1240.0, "to": "awakening_crypt", "spawn": "from_decay_shilda_wall", "req": "decay_shilda_wall_broken", "msg": "Duvar yolu kapatıyor."}]
+
+[node name="Interactive" type="Node2D" parent="."]
+
+[node name="Encounter" type="Area2D" parent="Interactive"]
+position = Vector2(520.0, 288.0)
+script = ExtResource("enc")
+encounter_id = &"shilda_wall"
+puzzle_id = &"decay_shilda_wall_broken"
+wall_path = NodePath("../CrackedWall")
+
+[node name="CrackedWall" type="StaticBody2D" parent="Interactive"]
+position = Vector2(1120.0, 288.0)
+script = ExtResource("wall")
+wall_id = &"decay_shilda_wall"
+shortcut_flag = &"shortcut_decay_crypt"
+
+[node name="FlowerRoom" type="Area2D" parent="Interactive"]
+position = Vector2(1190.0, 288.0)
+script = ExtResource("lore")
+lore_id = &"shilda_flowers"
+texture_path = "res://assets/props/red_flower.png"
+sprite_scale = 0.8
+lines = PackedStringArray("Shiren|Duvarın ardında kurumuş kırmızı çiçekler. Yüzlerce.", "Shiren|Her birinin yanına bir sayı kazınmış. Son sayı: kırk bir.", "Shilda|Her ölümünde bir tane. Unutmamak için.")
+evidence_title = "Kırk Bir Çiçek"
+evidence_body = "Shilda her döngüde bir çiçek saklamış. Kırk bir kez ölmüşüm."
+evidence_section = "izler"

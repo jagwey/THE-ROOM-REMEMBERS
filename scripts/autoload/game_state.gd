@@ -129,6 +129,29 @@ func damage(amount: int = 1) -> void:
 		DeathManager.request_death(&"hearts")
 
 
+## Bellek kodu öğren: hangi yaşamda (ölüm sayısı) öğrenildiğini de kaydeder.
+func learn_memory_code(key: String, code: String) -> void:
+	var codes: Dictionary = player_progress_knowledge.get("memory_codes", {})
+	var had := codes.has(key)
+	codes[key] = code
+	player_progress_knowledge["memory_codes"] = codes
+	var lives: Dictionary = player_progress_knowledge.get("memory_code_life", {})
+	if not had or not lives.has(key):
+		lives[key] = int(player_progress_knowledge.get("deaths", 0))
+	player_progress_knowledge["memory_code_life"] = lives
+	knowledge_changed.emit(&"player")
+
+
+## &"same_life" | &"past_life" | &"unknown"
+func memory_code_reaction(key: String) -> StringName:
+	var codes: Dictionary = player_progress_knowledge.get("memory_codes", {})
+	if String(codes.get(key, "")) == "":
+		return &"unknown"
+	var lives: Dictionary = player_progress_knowledge.get("memory_code_life", {})
+	var learned := int(lives.get(key, int(player_progress_knowledge.get("deaths", 0))))
+	return &"same_life" if learned >= int(player_progress_knowledge.get("deaths", 0)) else &"past_life"
+
+
 func get_current_objective() -> String:
 	var rid: String = String(character_current_life_knowledge.get("room", &""))
 	## Uyanış: kısa adım adım; diğer odalar: CampaignObjectives (HUD tek kaynak).

@@ -63,15 +63,31 @@ func _fail_life() -> void:
 	_failing = true
 	curse_failed_life.emit()
 	DialogueManager.clear()
-	DialogueManager.whisper("???", "Lanet… seni geri çekiyor.")
-	await get_tree().create_timer(0.35).timeout
+	var reason: StringName = &"curse"
+	var keeper := get_tree().get_first_node_in_group("keeper")
+	if keeper and keeper.has_method("can_mercy_kill") and keeper.can_mercy_kill():
+		## Shilda yakında: Shiren'i Çekirdek'e kaptırmamak için kendisi öldürür.
+		await keeper.mercy_kill()
+		reason = &"mercy"
+	else:
+		## Tam ele geçirilme: kısa sahne; kalıcı bulmacalar silinmez, son güvenli kayıttan dönülür.
+		DialogueManager.whisper("Çekirdek", "Gel… bana gel.")
+		DialogueManager.whisper("Shiren", "Bu… benim sesim değil—")
+		var player := get_tree().get_first_node_in_group("player") as Node2D
+		if player:
+			var tw := player.create_tween()
+			tw.tween_property(player, "modulate", Color(1.6, 0.2, 0.3, 1.0), 0.5)
+		GameState.player_progress_knowledge["possession_seen"] = true
+		await get_tree().create_timer(0.35 if DisplayServer.get_name() == "headless" else 1.2).timeout
+		if DialogueManager.is_open:
+			DialogueManager.clear()
 	curse = 0.0
 	stage = 0
 	visible_meter = false
 	curse_changed.emit(curse)
 	curse_stage_changed.emit(stage)
 	# Full reset YOK — dünya kalır.
-	DeathManager.request_death(&"curse", false)
+	DeathManager.request_death(reason, false)
 	await DeathManager.rebirth_completed
 	_failing = false
 

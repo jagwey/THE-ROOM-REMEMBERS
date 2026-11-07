@@ -1,0 +1,43 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
+[ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore"]
+[ext_resource type="Script" path="res://scripts/world/npc_actor.gd" id="npc"]
+
+[sub_resource type="RectangleShape2D" id="Interact"]
+size = Vector2(40, 48)
+
+[sub_resource type="RectangleShape2D" id="Gate"]
+size = Vector2(24, 120)
+
+[node name="LibraryUpperStacks" type="Node2D"]
+script = ExtResource("room")
+room_id = &"library_upper_stacks"
+region_id = &"library"
+room_width = 1280.0
+bg_region = "library"
+checkpoint = Vector2(120, 288)
+doors = [{"x": 40.0, "to": "library_hall", "spawn": "from_library_upper_stacks"}, {"x": 1200.0, "y": 108.0, "to": "library_forbidden_wing", "spawn": "from_library_upper_stacks", "req": "library_page_order", "msg": "Yasak kanadın kilidi, unutulmuş sayfanın düzenini istiyor."}]
+platforms = PackedVector3Array(150.0, 248.0, 120.0, 310.0, 208.0, 110.0, 460.0, 168.0, 110.0, 610.0, 128.0, 160.0, 820.0, 168.0, 110.0, 970.0, 128.0, 120.0, 1110.0, 128.0, 170.0)
+
+[node name="Interactive" type="Node2D" parent="."]
+
+[node name="Librarian" type="Area2D" parent="Interactive"]
+position = Vector2(690.0, 128.0)
+script = ExtResource("npc")
+npc_id = &"librarian"
+idle_anim = "librarian_idle"
+walk_anim = "librarian_walk"
+wander = 40.0
+dialogue_sets = PackedStringArray("Arşivci|Yine mi sen? Rafların arasında hep aynı adımlarla yürürsün.;;Shiren|Beni tanıyor musun?;;Arşivci|Senin kitaplarını ben ciltledim, Protokol Yetkilisi.", "Arşivci|Yasak kanat yukarıda. Kapısı unutulmuş sayfanın sırasını ister.;;Arşivci|Orada bir mühür parçası ve senin ruhuna ait bir kesik saklı.", "Arşivci|Ruh Kesimi'ni alırsan geri dön. Uyanış balkonundaki mor mühür seni bekliyor.;;Arşivci|Ve hatırla: kılıç bedenleri keser. Ruh, mühürleri.")
+
+[node name="FallenBooks" type="Area2D" parent="Interactive"]
+position = Vector2(330.0, 208.0)
+script = ExtResource("lore")
+lore_id = &"stacks_books"
+texture_path = "res://assets/layers/books.png"
+sprite_scale = 0.35
+lines = PackedStringArray("Shiren|“Ses Arşivi Projesi — kayıp bir sesi sonsuza dek saklamak.”", "Shiren|Yazar: Shiren. İmza benim.")
+evidence_title = "Ses Arşivi Projesi"
+evidence_body = "Çekirdek deneyi, kaybettiğim birinin sesini saklamak için başlamış. Yazarı benim."
+evidence_section = "notlar"

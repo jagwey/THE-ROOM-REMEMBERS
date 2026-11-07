@@ -1,0 +1,50 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
+[ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore"]
+[ext_resource type="Script" path="res://scripts/world/soul_seal.gd" id="soul"]
+
+[sub_resource type="RectangleShape2D" id="Interact"]
+size = Vector2(40, 48)
+
+[sub_resource type="RectangleShape2D" id="Gate"]
+size = Vector2(24, 120)
+
+[node name="AwakeningBalcony" type="Node2D"]
+script = ExtResource("room")
+room_id = &"awakening_balcony"
+region_id = &"awakening"
+room_width = 960.0
+bg_region = "awakening"
+checkpoint = Vector2(120, 288)
+doors = [{"x": 40.0, "to": "awakening", "spawn": "from_awakening_balcony"}, {"x": 920.0, "to": "awakening_crypt", "spawn": "from_awakening_balcony", "req": "soul_seal_balcony", "msg": "Mor bir mühür kapıyı tutuyor. Kılıç değil… ruh gerek."}]
+platforms = PackedVector3Array(380.0, 248.0, 110.0, 520.0, 208.0, 120.0)
+
+[node name="Interactive" type="Node2D" parent="."]
+
+[node name="Telescope" type="Area2D" parent="Interactive"]
+position = Vector2(300.0, 288.0)
+script = ExtResource("lore")
+lore_id = &"balcony_view"
+texture_path = "res://assets/layers/candlestick.png"
+sprite_scale = 0.35
+lines = PackedStringArray("Shiren|Kırık bir gözlem balkonu. Aşağıda… koca bir tesis.", "Shiren|Camların arkasında beyaz önlüklü biri, kalabalığa emir veriyor.", "Shiren|Yüzünü göremiyorum. Ama duruşu… tanıdık.", "???|Bütün tesisi bu balkondan izlerdin.")
+evidence_title = "Gözlem Balkonu"
+evidence_body = "Balkondan tesisi izleyen bir yetkili. Duruşu bana benziyor. Bu balkon bir zamanlar benimdi."
+evidence_section = "izler"
+focus_zoom = true
+
+[node name="Photo" type="Area2D" parent="Interactive"]
+position = Vector2(560.0, 288.0)
+script = ExtResource("lore")
+lore_id = &"balcony_photo"
+texture_path = "res://assets/props/photograph.png"
+lines = PackedStringArray("Shiren|Yırtık bir fotoğraf. İki kişi: biri ben… öteki silinmiş.", "Shiren|Arkasında bir not: “Sesini kaybetmeyeceğim.”")
+evidence_title = "Silinmiş Yüz"
+evidence_body = "Fotoğrafta yanımdaki kişinin yüzü kazınmış. Notta: Sesini kaybetmeyeceğim."
+evidence_section = "notlar"
+
+[node name="SoulSeal" type="StaticBody2D" parent="Interactive"]
+position = Vector2(870.0, 288.0)
+script = ExtResource("soul")
+puzzle_id = &"soul_seal_balcony"

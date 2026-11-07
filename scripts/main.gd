@@ -43,9 +43,61 @@ const ROOM_DEFS := {
 		"spawns": {"default": Vector2(120, 288), "from_mirrors": Vector2(120, 288), "from_seal_chamber": Vector2(880, 288), "from_threshold": Vector2(120, 288)}},
 	"core_seal_chamber": {"node": "CoreSealChamber", "bounds": Rect2(0, 0, 960, 360), "checkpoint": Vector2(200, 288), "bg": "res://assets/backgrounds/core",
 		"spawns": {"default": Vector2(120, 288), "from_threshold": Vector2(120, 288), "from_chamber": Vector2(120, 288)}},
-	"core": {"node": "Core", "bounds": Rect2(0, 0, 640, 360), "checkpoint": Vector2(160, 280), "bg": "res://assets/backgrounds/core",
+	"core": {"node": "Core", "bounds": Rect2(0, 0, 960, 360), "checkpoint": Vector2(160, 280), "bg": "res://assets/backgrounds/core",
 		"spawns": {"default": Vector2(160, 280), "from_chamber": Vector2(160, 280)}},
 }
+
+
+## v1.0 genişleme: mevcut odalardan yan bölgelere açılan kapılar (geri dönüş / metroidvania-lite).
+## room_id -> [{x, to, req, msg}] — hedef odada "from_<room_id>" spawn'ı built_room tarafından üretilir.
+const SIDE_DOORS := {
+	"awakening": [{"x": 660.0, "to": "awakening_balcony"}],
+	"decay_vines": [{"x": 860.0, "to": "decay_catacombs"}],
+	"decay_garden": [{"x": 680.0, "to": "decay_shilda_wall"}],
+	"library_hall": [{"x": 800.0, "to": "library_upper_stacks"}],
+	"experiment_cells": [{"x": 720.0, "to": "experiment_quarantine"}],
+	"experiment_authority": [{"x": 720.0, "to": "experiment_core_conduit"}],
+	"mirrors_reverse": [{"x": 720.0, "to": "mirrors_labyrinth"}],
+	"mirrors_unbroken": [{"x": 720.0, "to": "mirrors_shrine"}],
+	"core_threshold": [{"x": 720.0, "to": "core_memory_vault"}],
+	"core_seal_chamber": [{"x": 720.0, "to": "core_bloom_garden"}],
+}
+
+
+func _add_side_doors() -> void:
+	var door_script: Script = load("res://scripts/world/room_transition.gd")
+	for rid in SIDE_DOORS.keys():
+		if not RoomManager.has_room(StringName(rid)):
+			continue
+		var entry: Dictionary = RoomManager._rooms[StringName(rid)]
+		var root: Node2D = entry["root"]
+		var parent: Node = root.get_node_or_null("Interactive")
+		if parent == null:
+			parent = root
+		for d in SIDE_DOORS[rid]:
+			var target := String(d["to"])
+			if not RoomManager.has_room(StringName(target)):
+				continue
+			if parent.has_node("Side_%s" % target):
+				continue
+			var door := Area2D.new()
+			door.name = "Side_%s" % target
+			door.set_script(door_script)
+			door.position = Vector2(float(d["x"]), 268.0)
+			door.set("target_room_id", StringName(target))
+			door.set("target_spawn_id", StringName("from_%s" % rid))
+			if d.has("req"):
+				door.set("required_puzzle", StringName(String(d["req"])))
+			if d.has("msg"):
+				door.set("locked_message", String(d["msg"]))
+			var cs := CollisionShape2D.new()
+			var rect := RectangleShape2D.new()
+			rect.size = Vector2(44, 96)
+			cs.shape = rect
+			door.add_child(cs)
+			parent.add_child(door)
+			var spawns: Dictionary = entry["spawns"]
+			spawns[StringName("from_%s" % target)] = Vector2(float(d["x"]) + 36.0, 288.0)
 
 
 func _ready() -> void:
@@ -57,6 +109,7 @@ func _ready() -> void:
 			if SaveManager.load_game(false):
 				_continued = true
 	_register_rooms()
+	_add_side_doors()
 	if not _continued:
 		GameState.mark_room_visited(&"awakening")
 		GameState.set_checkpoint(Vector2(120, 280), &"awakening")
@@ -71,10 +124,23 @@ func _ready() -> void:
 		RoomManager.apply_initial_room(start_room, &"checkpoint", true)
 		if String(start_room).begins_with("core") and keeper:
 			keeper.visible = true
-			keeper.global_position = Vector2(400, 280)
+			keeper.global_position = Vector2(560, 280)
 	else:
 		RoomManager.apply_initial_room(start_room, start_spawn, true)
 
+	# Başlık ekranı açıksa açılış repliği oyuncu "Başla/Devam et" deyince gelir.
+	var menu := get_node_or_null("SessionMenu")
+	if menu and menu.has_method("is_title_open") and menu.is_title_open():
+		menu.title_closed.connect(_play_intro, CONNECT_ONE_SHOT)
+	else:
+		_play_intro()
+	CorpseManager.rebuild_world_corpses()
+	call_deferred("_clear_session_loaded_flag")
+	if DisplayServer.get_name() == "headless" and OS.get_environment("TORIMON_SMOKE") == "1":
+		call_deferred("_headless_faz67_smoke")
+
+
+func _play_intro() -> void:
 	if not _continued:
 		DialogueManager.say("???", "Gözlerin açılıyor.")
 		DialogueManager.say("???", "Oda seni hatırlıyor. Sen henüz bilmiyorsun.")
@@ -82,10 +148,6 @@ func _ready() -> void:
 	else:
 		DialogueManager.say("???", "…Yine buradasın.")
 		DialogueManager.say("Shiren", "Bir şey unuttum. Oda unutmamış.")
-	CorpseManager.rebuild_world_corpses()
-	call_deferred("_clear_session_loaded_flag")
-	if DisplayServer.get_name() == "headless" and OS.get_environment("TORIMON_SMOKE") == "1":
-		call_deferred("_headless_faz67_smoke")
 
 
 func _clear_session_loaded_flag() -> void:
@@ -120,7 +182,7 @@ func enter_core() -> void:
 	RoomManager.enter_room(&"core", &"default")
 	if keeper:
 		keeper.visible = true
-		keeper.global_position = Vector2(400, 280)
+		keeper.global_position = Vector2(560, 280)
 	CurseManager.add_curse(8.0, &"core_enter")
 
 
@@ -159,7 +221,7 @@ func _headless_faz67_smoke() -> void:
 	RoomManager.enter_room(&"core", &"default")
 	if keeper:
 		keeper.visible = true
-		keeper.global_position = Vector2(400, 280)
+		keeper.global_position = Vector2(560, 280)
 	await get_tree().create_timer(0.1).timeout
 	if keeper and keeper.has_method("receive_player_strike"):
 		for i in 3:

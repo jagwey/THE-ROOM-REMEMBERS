@@ -15,9 +15,9 @@ var _pressed: bool = false
 func _ready() -> void:
 	add_to_group("pressure_plate")
 	collision_layer = 0
-	collision_mask = 1 ## corpses on world layer
+	collision_mask = 1 | 64 ## corpses on world layer + echo twin
 	if accept_player:
-		collision_mask = 1 | 2
+		collision_mask = 1 | 2 | 64
 	monitoring = true
 	body_entered.connect(func(_b): _recompute())
 	body_exited.connect(func(_b): _recompute())
@@ -31,6 +31,12 @@ func _ready() -> void:
 		rect.size = Vector2(maxf(rect.size.x, 48.0), maxf(rect.size.y, 28.0))
 		cs.shape = rect
 	var legacy_awakening := puzzle_id == &"awakening_weight" and bool(GameState.get_world_flag(&"awakening_door_opened", false))
+	## v1.0 öncesi kayıtlar: oyuncu Çürüme bölgesine geçmişse mühür odası plakası çözülmüş sayılır.
+	if puzzle_id == &"awakening_seal_weight" and not PuzzleManager.is_solved(puzzle_id):
+		for r in GameState.player_progress_knowledge.get("rooms_visited", []):
+			if String(r).begins_with("decay"):
+				PuzzleManager.mark_solved(puzzle_id)
+				break
 	if PuzzleManager.is_solved(puzzle_id) or legacy_awakening:
 		_set_pressed(true, false)
 
@@ -43,6 +49,8 @@ func _physics_process(_delta: float) -> void:
 
 
 func _recompute() -> void:
+	if not is_visible_in_tree():
+		return
 	var seen: Dictionary = {}
 	var total := 0
 	for b in get_overlapping_bodies():
@@ -57,6 +65,10 @@ func _recompute() -> void:
 			if absf(global_position.x - n2.global_position.x) <= 30.0 + overlap_slack \
 					and absf(global_position.y - n2.global_position.y) <= 24.0 + overlap_slack:
 				total += _weight_of(c)
+				seen[c] = true
+	for c in get_tree().get_nodes_in_group("corpse"):
+		if c.has_method("set_anchoring"):
+			c.set_anchoring(seen.has(c) and total >= required_weight, puzzle_id)
 	_set_pressed(total >= required_weight, true)
 
 
@@ -65,6 +77,8 @@ func _weight_of(b: Node) -> int:
 		return int(b.get_weight())
 	if b.is_in_group("weight_stone") and b.has_method("get_weight"):
 		return int(b.get_weight())
+	if b.is_in_group("echo_twin_body"):
+		return 1
 	if accept_player and b.is_in_group("player"):
 		return 1
 	return 0

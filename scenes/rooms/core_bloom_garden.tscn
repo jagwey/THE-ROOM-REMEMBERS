@@ -1,0 +1,42 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
+[ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore"]
+
+[sub_resource type="RectangleShape2D" id="Interact"]
+size = Vector2(40, 48)
+
+[sub_resource type="RectangleShape2D" id="Gate"]
+size = Vector2(24, 120)
+
+[node name="CoreBloomGarden" type="Node2D"]
+script = ExtResource("room")
+room_id = &"core_bloom_garden"
+region_id = &"core"
+room_width = 960.0
+bg_region = "core"
+checkpoint = Vector2(120, 288)
+doors = [{"x": 40.0, "to": "core_seal_chamber", "spawn": "from_core_bloom_garden"}]
+
+[node name="Interactive" type="Node2D" parent="."]
+
+[node name="Memory" type="Area2D" parent="Interactive"]
+position = Vector2(360.0, 288.0)
+script = ExtResource("lore")
+lore_id = &"bloom_memory"
+texture_path = "res://assets/layers/flowers.png"
+sprite_scale = 0.35
+lines = PackedStringArray("Shiren|Çekirdeğin içinde açan bir bahçe. Buraya her döngüde bir çiçek getirilmiş.", "Shilda|Burası benim. Sen unuttukça ben buraya ekledim.")
+
+[node name="Reconcile" type="Area2D" parent="Interactive"]
+position = Vector2(640.0, 288.0)
+script = ExtResource("lore")
+lore_id = &"bloom_reconcile"
+texture_path = "res://assets/props/red_flower.png"
+sprite_scale = 0.8
+lines = PackedStringArray("Shilda|Sana kaç kez kılıç kaldırdığını sayamıyorum. Yine de buradayım.", "Shiren|Hatırlamıyorum. Ama özür dilerim.", "Shilda|…Bu yeter. Yanındayım.")
+repeat_line = "Shilda|Yanındayım."
+evidence_title = "Çiçek Bahçesi"
+evidence_body = "Shilda her döngünün çiçeğini Çekirdek'in içinde saklamış. Barıştık."
+evidence_section = "notlar"
+set_progress_key = "trusted_keeper"

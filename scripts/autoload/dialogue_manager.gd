@@ -25,9 +25,9 @@ var _type_accum: float = 0.0
 const TYPE_CPS := 48.0
 
 ## Sayfa ölçümü — HUD Content alanına göre ayarlanır
-var page_max_width: float = 300.0
-var page_max_lines: int = 3
-var page_font_size: int = 12
+var page_max_width: float = 436.0
+var page_max_lines: int = 4
+var page_font_size: int = 16
 var page_font: Font = null
 
 
@@ -187,6 +187,7 @@ func rebuild_pages_for_metrics(width: float, max_lines: int, font_size: int, fon
 	page_max_width = maxf(40.0, width)
 	page_max_lines = maxi(1, max_lines)
 	page_font_size = maxi(8, font_size)
+	# Not: HUD ölçümü; genişlik outline payı düşülmüş gelir, satır sayısı panel yüksekliğinden.
 	if font != null:
 		page_font = font
 	if is_open and not _full_line.is_empty():

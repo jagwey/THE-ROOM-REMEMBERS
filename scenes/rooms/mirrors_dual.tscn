@@ -5,7 +5,7 @@
 [ext_resource type="Texture2D" path="res://assets/backgrounds/mirrors/front.png" id="3"]
 [ext_resource type="Script" path="res://scripts/world/room_root.gd" id="4"]
 [ext_resource type="Script" path="res://scripts/world/room_transition.gd" id="5"]
-[ext_resource type="Script" path="res://scripts/story/story_beat.gd" id="6"]
+[ext_resource type="Script" path="res://scripts/world/echo_altar.gd" id="6"]
 
 [ext_resource type="Texture2D" path="res://assets/tiles/tile_00.png" id="walk_tile"]
 
@@ -111,7 +111,12 @@ collision_mask = 0
 monitoring = false
 monitorable = true
 script = ExtResource("6")
-beat_id = &"mirrors_dual"
+puzzle_id = &"mirrors_dual"
+intro_text = "İki kristal aynı nefeste uyanmalı. Yankın birini tutsun; sen ötekine dokun."
+solved_text = "İki iz birleşti. Sağdaki geçit açıldı."
+switch_kinds = PackedStringArray("lever", "lever")
+switch_positions = PackedVector2Array(-260, 0, 260, 0)
+lever_hold_seconds = 1.8
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/DualBeat"]
 shape = SubResource("Interact")

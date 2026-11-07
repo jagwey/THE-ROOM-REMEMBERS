@@ -25,12 +25,15 @@ func on_interact(_by: Node) -> void:
 
 func _do_together() -> void:
 	if not EndingManager.can_attempt_good_seal():
-		DialogueManager.say("???", "Hazırlık eksik. Güven ve yollar tamamlanmalı.")
+		if not EndingManager.has_both_shards():
+			DialogueManager.say("Shilda", "Mühür kırık. Bir yarısı Yasak Kanat'ta, öteki Ayna Tapınağı'nda.")
+		else:
+			DialogueManager.say("???", "Hazırlık eksik. Güven ve yollar tamamlanmalı.")
 		await DialogueManager.dialogue_finished
 		return
-	DialogueManager.say("Şiren", "Buradayım.")
+	DialogueManager.say("Shiren", "İki parça. İki ad. Bir mühür.")
 	DialogueManager.say("Shilda", "Birlikte mühürleyelim.")
-	DialogueManager.say("Shiren", "Birlikte mühürleme.")
+	DialogueManager.say("Shiren", "Birlikte.")
 	var ok: bool = await DialogueManager.dialogue_finished
 	if not ok:
 		return
