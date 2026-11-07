@@ -39,6 +39,7 @@ var _player_node: CharacterBody2D
 var _player_poll: float = 0.0
 var _foot_t: float = 0.0
 var _foot_alt: bool = false
+var _anim_step_ms: int = -10000 ## Son animasyon-senkron adım; varken zamanlayıcı susar (çift ses yok).
 var _typing: bool = false
 var _type_t: float = 0.0
 var _type_age: float = 0.0
@@ -450,6 +451,16 @@ func _update_typing(delta: float) -> void:
 		play_sfx(&"typewriter", -14.0)
 
 
+## Koşu animasyonunun ayak-yere-değme karesinden çağrılır (görüntüyle senkron adım sesi).
+func footstep_from_anim() -> void:
+	if UiGate.blocks_movement() or DeathManager.is_dying:
+		return
+	_anim_step_ms = Time.get_ticks_msec()
+	_foot_alt = not _foot_alt
+	var base := 0.9 if _foot_alt else 0.97
+	play_sfx(&"footstep", randf_range(-9.0, -6.5), base * randf_range(0.93, 1.07))
+
+
 func _update_footsteps(delta: float) -> void:
 	_player_poll -= delta
 	if _player_poll <= 0.0 or not is_instance_valid(_player_node):
@@ -462,6 +473,8 @@ func _update_footsteps(delta: float) -> void:
 	if UiGate.blocks_movement() or DeathManager.is_dying:
 		_foot_t = minf(_foot_t, 0.06)
 		return
+	if Time.get_ticks_msec() - _anim_step_ms < 600:
+		return ## Koşu animasyonu adımları kendisi tetikliyor.
 	if absf(p.velocity.x) > 40.0 and p.is_on_floor():
 		_foot_t -= delta
 		if _foot_t <= 0.0:

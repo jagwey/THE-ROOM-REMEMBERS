@@ -116,6 +116,8 @@ func enter_room(room_id: StringName, spawn_id: StringName = &"default", apply_ro
 		push_warning("RoomManager.enter_room: unknown room %s" % String(room_id))
 		return
 	var from_id := _current
+	## Oda değişti: eski "Kaydet ve Çık" konumu artık geçersiz.
+	GameState.character_current_life_knowledge.erase("resume")
 	_deactivate_all_rooms()
 	_current = room_id
 	var entry: Dictionary = _rooms[room_id]
@@ -192,7 +194,10 @@ func apply_initial_room(room_id: StringName, spawn_id: StringName = &"default", 
 	if teleport_to_spawn:
 		var spawns: Dictionary = entry["spawns"]
 		var spawn_pos: Vector2
-		if spawn_id == &"checkpoint":
+		var resume: Variant = SaveManager.take_resume_point(room_id) if spawn_id == &"checkpoint" else null
+		if resume is Vector2 and bounds.grow(8.0).has_point(resume):
+			spawn_pos = resume ## Kaydet ve Çık → Devam et: tam kaldığı yer.
+		elif spawn_id == &"checkpoint":
 			spawn_pos = GameState.get_checkpoint()
 		else:
 			spawn_pos = spawns.get(spawn_id, Vector2.ZERO) as Vector2

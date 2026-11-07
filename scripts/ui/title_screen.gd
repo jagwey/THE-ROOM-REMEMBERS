@@ -36,7 +36,7 @@ func _ready() -> void:
 
 func open(has_save: bool) -> void:
 	_closing = false
-	_start_button.text = "Devam et" if has_save else "Başla"
+	_start_button.text = "Devam Et" if has_save else "Başla"
 	_new_button.visible = has_save
 	_refresh_card()
 	_refresh_settings()
@@ -123,6 +123,10 @@ func _build_background() -> void:
 	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	shade.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(shade)
+	var atmos := _Atmos.new()
+	atmos.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	atmos.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(atmos)
 	var motes := _Motes.new()
 	motes.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	motes.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -233,7 +237,7 @@ func _build_main_page(parent: Control) -> void:
 	_new_button = _button(p, "Yeni oyun", func(): _show_page(&"confirm"))
 	_button(p, "Ayarlar", func(): _show_page(&"settings"))
 	_button(p, "Nasıl oynanır", func(): _show_page(&"help"))
-	_button(p, "Çıkış", func(): quit_requested.emit())
+	_button(p, "Oyundan Çık", func(): _show_page(&"quit_confirm"))
 
 
 func _build_settings_page(parent: Control) -> void:
@@ -272,6 +276,12 @@ func _build_confirm_page(parent: Control) -> void:
 	_page_label(p, "Tüm ilerleme silinecek. Oda yine de hatırlayabilir…", 13)
 	_button(p, "Evet, sıfırdan başla", func(): new_game_requested.emit())
 	_button(p, "Vazgeç", func(): _show_page(&"main"))
+	## Yalnız başlıktaki "Oyundan Çık" uygulamayı kapatır — onaylı.
+	var q := _new_page(parent, &"quit_confirm")
+	_page_label(q, "ÇIKIŞ", UiTheme.BODY, true)
+	_page_label(q, "Oyundan çıkmak istediğine emin misin?", 13)
+	_button(q, "Vazgeç", func(): _show_page(&"main"))
+	_button(q, "Çıkış Yap", func(): quit_requested.emit())
 
 
 func _build_card() -> Control:
@@ -387,3 +397,86 @@ class _Motes extends Control:
 			var a := 0.35 + 0.35 * sin(float(m["ph"]) * 2.0)
 			var c := Color(1.0, 0.72, 0.45, a) if m["warm"] else Color(0.75, 0.65, 0.85, a * 0.8)
 			draw_circle(m["pos"], float(m["r"]), c)
+
+
+## Canlı başlık atmosferi (oyun simülasyonu yok, yalnız çizim): sürüklenen sis kümeleri,
+## nabız gibi atan mühür ışıkları, rüzgârda sallanan kırmızı çiçekler ve uzakta
+## belirip kaybolan Shilda silueti. Tek Control, tek _draw — mobilde ucuz.
+class _Atmos extends Control:
+	var _t := 0.0
+	var _fog_tex: Texture2D
+	var _halo: Texture2D
+	var _seal: Texture2D
+	var _flower: Texture2D
+	var _shilda: Texture2D
+	var _fog: Array = []
+	var _flowers: Array = []
+	const SEALS := [Vector2(0.78, 0.30), Vector2(0.92, 0.55), Vector2(0.62, 0.18)]
+
+	func _ready() -> void:
+		var g := Gradient.new()
+		g.set_color(0, Color(1, 1, 1, 1))
+		g.set_color(1, Color(1, 1, 1, 0))
+		var gt := GradientTexture2D.new()
+		gt.gradient = g
+		gt.fill = GradientTexture2D.FILL_RADIAL
+		gt.fill_from = Vector2(0.5, 0.5)
+		gt.fill_to = Vector2(0.5, 0.0)
+		gt.width = 64
+		gt.height = 64
+		_fog_tex = gt
+		_halo = load("res://assets/props/halo.png")
+		_seal = load("res://assets/props/seal.png")
+		_flower = load("res://assets/props/red_flower.png")
+		var sf := load("res://assets/characters/keeper.tres") as SpriteFrames
+		if sf and sf.has_animation(&"observe") and sf.get_frame_count(&"observe") > 0:
+			_shilda = sf.get_frame_texture(&"observe", 0)
+		for i in 7:
+			_fog.append({"x": randf(), "y": randf_range(0.55, 0.95), "w": randf_range(0.35, 0.6), "v": randf_range(0.006, 0.016), "ph": randf() * TAU})
+		for i in 9:
+			_flowers.append({"x": 0.42 + 0.58 * float(i) / 8.0 + randf_range(-0.03, 0.03), "s": randf_range(0.42, 0.62), "ph": randf() * TAU})
+
+	func _process(delta: float) -> void:
+		if not is_visible_in_tree():
+			return
+		_t += delta
+		for f in _fog:
+			f["x"] = fposmod(float(f["x"]) + float(f["v"]) * delta, 1.4)
+		queue_redraw()
+
+	func _draw() -> void:
+		var sz := size if size.x > 1.0 else get_viewport_rect().size
+		## Uzak Shilda: sağda, sise gömülü koyu siluet; yavaşça belirir ve kaybolur.
+		if _shilda:
+			var a := 0.22 + 0.16 * sin(_t * 0.35)
+			var h := sz.y * 0.42
+			var w := h * float(_shilda.get_width()) / float(_shilda.get_height())
+			var pos := Vector2(sz.x * 0.80 - w * 0.5, sz.y * 0.86 - h + sin(_t * 0.6) * 1.5)
+			draw_texture_rect(_shilda, Rect2(pos, Vector2(w, h)), false, Color(0.10, 0.05, 0.14, a))
+		## Mühür ışıkları: soluk mühür halkası + kırmızı/lila hale nabzı.
+		for i in SEALS.size():
+			var c: Vector2 = SEALS[i] * sz
+			var p := 0.5 + 0.5 * sin(_t * (1.1 + 0.3 * i) + i * 2.0)
+			var col := Color(1.0, 0.24, 0.3) if i != 1 else Color(0.66, 0.62, 1.0)
+			var r := 26.0 + 6.0 * p
+			if _halo:
+				draw_texture_rect(_halo, Rect2(c - Vector2(r, r), Vector2(r, r) * 2.0), false, Color(col, 0.10 + 0.14 * p))
+			if _seal:
+				draw_texture_rect(_seal, Rect2(c - Vector2(12, 12), Vector2(24, 24)), false, Color(col.lightened(0.2), 0.10 + 0.12 * p))
+		## Sis kümeleri.
+		for f in _fog:
+			var w := float(f["w"]) * sz.x
+			var h := w * 0.32
+			var x := (float(f["x"]) - 0.2) * sz.x - w * 0.5
+			var y := float(f["y"]) * sz.y - h * 0.5 + sin(_t * 0.4 + float(f["ph"])) * 4.0
+			draw_texture_rect(_fog_tex, Rect2(x, y, w, h), false, Color(0.62, 0.58, 0.72, 0.07))
+		## Kırmızı çiçekler: zeminde hafif rüzgâr salınımı.
+		if _flower:
+			for f in _flowers:
+				var s := float(f["s"])
+				var fw := 64.0 * s
+				var base := Vector2(float(f["x"]) * sz.x, sz.y - 2.0)
+				var rot := sin(_t * 1.3 + float(f["ph"])) * 0.07
+				draw_set_transform(base, rot, Vector2.ONE)
+				draw_texture_rect(_flower, Rect2(-fw * 0.5, -fw, fw, fw), false, Color(1, 1, 1, 0.85))
+			draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)

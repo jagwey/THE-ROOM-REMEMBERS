@@ -1,6 +1,7 @@
 extends CanvasLayer
 ## Kalpler + mobil kontroller + hikâye diyaloğu (atlas çerçeve) + mühür girişi.
 
+const InteractGlowLib := preload("res://scripts/world/interact_glow.gd")
 @onready var hearts_row: HBoxContainer = $SafeArea/Hearts
 @onready var joystick_base: TextureRect = $SafeArea/Joystick/Base
 @onready var joystick_thumb: TextureRect = $SafeArea/Joystick/Thumb
@@ -682,7 +683,9 @@ func _process(delta: float) -> void:
 	if player and player.has_method("get_interaction_target"):
 		var target: Node2D = player.get_interaction_target()
 		if target:
-			var target_name := _friendly_target(String(target.name))
+			var target_name := InteractGlowLib.label_for(target)
+			if target_name == "İncele" or target.has_method("apply_push"):
+				target_name = _friendly_target(String(target.name))
 			_context_hint.text = "E / el · " + target_name
 			btn_interact.modulate = Color(1.3, 1.12, 1.12)
 		else:

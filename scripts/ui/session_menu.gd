@@ -9,6 +9,8 @@ const VOLUME_STEPS: Array[float] = [1.0, 0.75, 0.5, 0.25, 0.0]
 const TitleScreenScript := preload("res://scripts/ui/title_screen.gd")
 
 static var _title_shown: bool = false
+## Kaydet ve Çık sonrası sahne yeniden yüklenince başlık (test ortamında da) açılır.
+static var _force_title: bool = false
 
 var _panel: GothicModalPanel
 var _title_screen: Control
@@ -25,6 +27,10 @@ var _help_label: Label
 var _subtitle: Label
 var _title_mode: bool = false
 var _had_save: bool = false
+var _confirm_panel: GothicModalPanel
+var _confirm_text: Label
+var _confirm_ok: Button
+var _confirm_action: Callable
 var _volume: float = 1.0
 var _music_on: bool = true
 
@@ -72,14 +78,15 @@ func _ready() -> void:
 	_fs_button.visible = not OS.has_feature("mobile")
 	_joy_button = _panel.add_button("", _toggle_joystick_mode, row)
 	_joy_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_quit_button = _panel.add_button("Kaydet ve çık", _quit)
+	_quit_button = _panel.add_button("Kaydet ve Çık", _on_quit_button)
 	_refresh_settings_buttons()
 	_panel.hide()
+	_build_confirm()
 	_title_screen = TitleScreenScript.new()
 	_title_screen.menu = self
 	_title_screen.start_requested.connect(func(): _title_screen.close(close_menu))
 	_title_screen.new_game_requested.connect(func(): _title_screen.close(_start_fresh))
-	_title_screen.quit_requested.connect(_quit)
+	_title_screen.quit_requested.connect(_quit_app)
 	add_child(_title_screen)
 	EndingManager.epilogue_finished.connect(open_menu)
 	if _should_show_title():
@@ -87,6 +94,9 @@ func _ready() -> void:
 
 
 func _should_show_title() -> bool:
+	if _force_title:
+		_force_title = false
+		return true
 	if _title_shown or DisplayServer.get_name() == "headless":
 		return false
 	for env in ["TORIMON_TEST", "TORIMON_SMOKE", "TORIMON_FRESH"]:
@@ -116,13 +126,16 @@ func _refresh_mode() -> void:
 	_continue_button.text = ("Devam et" if _had_save else "Başla") if _title_mode else "Devam et"
 	_new_button.visible = _had_save or not _title_mode
 	_new_button.text = "Yeni oyun"
-	_quit_button.text = "Çıkış" if _title_mode else "Kaydet ve çık"
+	_quit_button.text = "Oyundan Çık" if _title_mode else "Kaydet ve Çık"
 	_confirm = false
 	_refresh_settings_buttons()
 
 
 ## Android geri tuşu: menü açıksa kapat, oyun sırasında menüyü aç. Başlıkta yanlışlıkla çıkmayı önler.
 func handle_back() -> void:
+	if is_confirm_open():
+		_close_confirm()
+		return
 	if is_title_open():
 		_title_screen.back()
 		return
@@ -133,9 +146,83 @@ func handle_back() -> void:
 		open_menu()
 
 
-func _quit() -> void:
-	if not _title_mode:
-		SaveManager.save_game()
+# --- Onay diyaloğu / Kaydet ve Çık ------------------------------------------------
+
+func _build_confirm() -> void:
+	_confirm_panel = GothicModalPanel.new()
+	_confirm_panel.setup("Emin misin?", Vector2(380, 176), &"menu", 0.55)
+	add_child(_confirm_panel)
+	_confirm_text = _confirm_panel.add_label("", UiTheme.BODY)
+	_confirm_text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 8)
+	_confirm_panel.body.add_child(row)
+	var cancel := _confirm_panel.add_button("Vazgeç", _close_confirm, row)
+	cancel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_confirm_ok = _confirm_panel.add_button("", func(): _confirm_action.call(), row)
+	_confirm_ok.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_confirm_panel.hide()
+
+
+func is_confirm_open() -> bool:
+	return _confirm_panel != null and _confirm_panel.visible
+
+
+func _show_confirm(title: String, text: String, ok_text: String, action: Callable) -> void:
+	_confirm_panel.set_title(title)
+	_confirm_text.text = text
+	_confirm_ok.text = ok_text
+	_confirm_action = action
+	move_child(_confirm_panel, -1) ## her şeyin (başlık dahil) üstünde
+	_confirm_panel.show()
+	MobileInputManager.clear_held_inputs()
+	_confirm_ok.grab_focus.call_deferred()
+
+
+func _close_confirm() -> void:
+	_confirm_panel.hide()
+	if _panel.visible and _continue_button:
+		_continue_button.grab_focus.call_deferred()
+
+
+func _on_quit_button() -> void:
+	if _title_mode:
+		_show_confirm("Çıkış", "Oyundan çıkmak istediğine emin misin?", "Çıkış Yap", _quit_app)
+	else:
+		request_save_and_exit()
+
+
+## Duraklatma menüsü: onay → kayıt (doğrulanır) → ana menü. Uygulama KAPANMAZ.
+func request_save_and_exit() -> void:
+	_show_confirm("Emin misin?", "İlerlemen kaydedilecek ve ana menüye dönülecek.", "Kaydet ve Çık", _save_and_exit)
+
+
+func _save_and_exit() -> void:
+	if not SaveManager.save_resume_point():
+		_show_confirm("Kayıt başarısız", "Kayıt başarısız. Tekrar denemek ister misin?", "Tekrar Dene", _save_and_exit)
+		return
+	_confirm_panel.hide()
+	return_to_title()
+
+
+## Sahneyi kayıttan yeniden kurar ve başlık ekranını açar (taze açılışla aynı yol).
+func return_to_title() -> void:
+	_force_title = true
+	_title_shown = false
+	_panel.hide()
+	DialogueManager.clear()
+	UiGate.set_story(false)
+	UiGate.set_journal(false)
+	UiGate.set_seal(false)
+	MobileInputManager.clear_held_inputs()
+	EchoManager.active_echo = &""
+	CurseManager.reset_for_new_life()
+	RoomManager.reset_registry()
+	get_tree().reload_current_scene()
+
+
+## Yalnız başlık ekranındaki "Oyundan Çık" (onaydan sonra) uygulamayı kapatır.
+func _quit_app() -> void:
 	get_tree().quit()
 
 
@@ -205,6 +292,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 		return
 	if event.is_action_pressed("ui_cancel"):
+		if is_confirm_open():
+			_close_confirm()
+			get_viewport().set_input_as_handled()
+			return
 		if is_title_open():
 			get_viewport().set_input_as_handled()
 			return
@@ -219,6 +310,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 func toggle_menu() -> void:
+	if is_confirm_open():
+		return
 	if _panel.visible:
 		close_menu()
 	elif UiGate.current_layer() == UiGate.Layer.NONE:

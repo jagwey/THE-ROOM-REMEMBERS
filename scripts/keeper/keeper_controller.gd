@@ -470,8 +470,15 @@ func _show_hint(text: String) -> void:
 	hint.visible = true
 
 
+## Shilda yalnız sakinken konuşulabilir (savaş modunda etkileşim hedefi olmaz).
+func can_interact() -> bool:
+	return mode != Mode.COMBAT
+
+
 func on_interact(_by: Node) -> void:
 	if EndingManager.current != EndingManager.Ending.NONE:
+		return
+	if not can_interact():
 		return
 	if _busy or DialogueManager.is_open:
 		DialogueManager.advance()

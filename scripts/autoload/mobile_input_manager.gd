@@ -171,7 +171,7 @@ func _autosave_and_pause() -> void:
 		return
 	if DeathManager.is_dying or UiGate.current_layer() == UiGate.Layer.ENDING:
 		return
-	SaveManager.save_game()
+	SaveManager.save_resume_point()
 	var menu := get_tree().get_first_node_in_group("session_menu")
 	if menu and menu.has_method("open_menu") and UiGate.current_layer() == UiGate.Layer.NONE:
 		menu.open_menu()

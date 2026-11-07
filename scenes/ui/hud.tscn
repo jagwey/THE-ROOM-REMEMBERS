@@ -123,10 +123,10 @@ script = ExtResource("2")
 
 [node name="Skill" type="TextureButton" parent="SafeArea/Buttons"]
 layout_mode = 0
-offset_left = 111
-offset_top = 101
-offset_right = 163
-offset_bottom = 153
+offset_left = 92
+offset_top = 94
+offset_right = 144
+offset_bottom = 146
 mouse_filter = 2
 ignore_texture_size = true
 stretch_mode = 5
@@ -135,10 +135,10 @@ script = ExtResource("2")
 
 [node name="Jump" type="TextureButton" parent="SafeArea/Buttons"]
 layout_mode = 0
-offset_left = 150
-offset_top = 64
-offset_right = 202
-offset_bottom = 116
+offset_left = 148
+offset_top = 62
+offset_right = 200
+offset_bottom = 114
 mouse_filter = 2
 ignore_texture_size = true
 stretch_mode = 5

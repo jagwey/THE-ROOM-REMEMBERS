@@ -3,6 +3,8 @@ extends Node
 
 var SAVE_PATH: String = "user://qa/torimon_save.json" if OS.get_environment("TORIMON_TEST") == "1" else "user://torimon_save.json"
 const SAVE_VERSION := 5
+## Yalnız test: yazma hatasını taklit eder (Kaydet ve Çık hata diyaloğu).
+var force_fail_for_test: bool = false
 
 var _new_progress: Dictionary
 var _new_world: Dictionary
@@ -46,7 +48,28 @@ func has_save() -> bool:
 	return FileAccess.file_exists(SAVE_PATH)
 
 
-func save_game() -> void:
+## Kaydet ve Çık / arka plan: oyuncunun tam konumunu "resume" olarak yazar ve kaydeder.
+## Devam et bu konumdan başlar; ölüm yine yatak (checkpoint) noktasına döner. true = kayıt doğrulandı.
+func save_resume_point() -> bool:
+	var player := get_tree().get_first_node_in_group("player") as Node2D
+	var room := RoomManager.get_active_room_id()
+	if player and room != &"" and not DeathManager.is_dying:
+		GameState.character_current_life_knowledge["resume"] = {
+			"room": String(room), "x": player.global_position.x, "y": player.global_position.y,
+		}
+	return save_game()
+
+
+## Devam et: geçerli resume noktası (oda eşleşmeli). Tek kullanımlık — tüketilince silinir.
+func take_resume_point(room_id: StringName) -> Variant:
+	var r: Variant = GameState.character_current_life_knowledge.get("resume", null)
+	GameState.character_current_life_knowledge.erase("resume")
+	if typeof(r) != TYPE_DICTIONARY or StringName(str(r.get("room", ""))) != room_id:
+		return null
+	return Vector2(float(r.get("x", 0.0)), float(r.get("y", 0.0)))
+
+
+func save_game() -> bool:
 	var data := {
 		"version": SAVE_VERSION,
 		"player_progress_knowledge": GameState.player_progress_knowledge.duplicate(true),
@@ -56,9 +79,9 @@ func save_game() -> void:
 	}
 	var temp_path := SAVE_PATH + ".tmp"
 	var f := FileAccess.open(temp_path, FileAccess.WRITE)
-	if f == null:
-		push_warning("Kayıt yazılamadı: " + str(FileAccess.get_open_error()))
-		return
+	if f == null or force_fail_for_test:
+		push_warning("Kayıt yazılamadı: " + (str(FileAccess.get_open_error()) if f == null else "test"))
+		return false
 	f.store_string(JSON.stringify(data))
 	f.close()
 	## Son sağlam kaydı yedekle: yazma yarıda kalırsa (pil/çökme) bir önceki yüklenir.
@@ -67,6 +90,9 @@ func save_game() -> void:
 	var error := DirAccess.rename_absolute(ProjectSettings.globalize_path(temp_path), ProjectSettings.globalize_path(SAVE_PATH))
 	if error != OK:
 		push_warning("Kayıt tamamlanamadı: " + str(error))
+		return false
+	## Doğrula: yazılan dosya geri okunabiliyor mu.
+	return _read_save(SAVE_PATH) != null
 
 
 ## Okunamayan/bozuk dosyada null döner.

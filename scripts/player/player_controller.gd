@@ -12,8 +12,12 @@ const COMBO_WINDOW := 0.38
 const GRAVITY := 900.0
 const JUMP_VELOCITY := -322.0
 const JUMP_CUT := 0.45
-const COYOTE_TIME := 0.12
-const JUMP_BUFFER := 0.1
+const COYOTE_TIME := 0.10
+const JUMP_BUFFER := 0.12
+## Tepe noktası: tuş basılıyken ve dikey hız küçükken yer çekimi yumuşar (kısa süzülme).
+const APEX_SPEED := 60.0
+const APEX_GRAVITY_MULT := 0.55
+const LAND_SFX_SPEED := 160.0
 const MAX_FALL := 520.0
 const HITSTOP := 0.05
 const SKILL_COOLDOWN := 0.8
@@ -40,6 +44,11 @@ var _input_locked: bool = false
 var _hurt_cooldown: float = 0.0
 var _coyote: float = 0.0
 var _jump_buffer: float = 0.0
+var _jump_held: bool = false
+## Hava fazı: jump_start · rising · apex · falling · landing · ground (animasyon/ses/test için).
+var air_phase: StringName = &"ground"
+var _phase_timer: float = 0.0
+var _last_land_ms: int = -10000
 var _dash_cd: float = 0.0
 var _skill_cd: float = 0.0
 var _combo: int = 0
@@ -49,6 +58,10 @@ var _trail_timer: float = 0.0
 var _curse_jitter: float = 0.0
 ## Prosedürel squash/stretch — az kareli sprite'a canlılık katar.
 var _squash: Vector2 = Vector2.ONE
+## Kapıya yürüme gibi senaryolu hareketlerde (girdi kilitliyken) koşu animasyonu oynasın (ayak kaymasın).
+var scripted_walk: bool = false
+var _last_interact_target: Node = null
+var _last_interact_ms: int = -10000
 
 
 func _ready() -> void:
@@ -56,6 +69,7 @@ func _ready() -> void:
 	sprite.sprite_frames = load("res://assets/characters/shiren.tres")
 	sprite.play("idle")
 	sprite.offset = Vector2(0, -44)
+	sprite.frame_changed.connect(_on_sprite_frame)
 	attack_area.monitoring = false
 	interact_area.position.y = -18.0
 	var interact_shape := interact_area.get_node("CollisionShape2D") as CollisionShape2D
@@ -134,6 +148,7 @@ func _physics_process(delta: float) -> void:
 		if _state == &"attack" or _state == &"dash":
 			_state = &"idle"
 			attack_area.monitoring = false
+		_state = &"run" if scripted_walk else (&"idle" if _state == &"run" else _state)
 		if not _input_locked:
 			_update_anim()
 		return
@@ -154,7 +169,10 @@ func _physics_process(delta: float) -> void:
 	else:
 		_coyote = maxf(0.0, _coyote - delta)
 		if _state != &"dash":
-			velocity.y = minf(velocity.y + GRAVITY * delta, MAX_FALL)
+			var g := GRAVITY
+			if _jump_held and absf(velocity.y) < APEX_SPEED:
+				g *= APEX_GRAVITY_MULT
+			velocity.y = minf(velocity.y + g * delta, MAX_FALL)
 
 	if _stagger_timer > 0.0:
 		_stagger_timer -= delta
@@ -209,7 +227,14 @@ func _physics_process(delta: float) -> void:
 		_squash = Vector2(1.0 + 0.22 * k, 1.0 - 0.2 * k)
 		if fall_speed > 240.0:
 			_camera_trauma(0.18)
+		## İniş sesi: orta düşüşte de çalar, aynı inişte iki kez çalmaz.
+		var now := Time.get_ticks_msec()
+		if fall_speed > LAND_SFX_SPEED and now - _last_land_ms > 180:
+			_last_land_ms = now
 			_play_sfx(&"land")
+		air_phase = &"landing"
+		_phase_timer = 0.12
+	_update_air_phase(delta)
 	_update_anim()
 	attack_area.position.x = 28.0 * _facing
 	interact_area.position.x = 20.0 * _facing
@@ -221,9 +246,11 @@ func _on_jump() -> void:
 	if _input_locked or UiGate.blocks_movement():
 		return
 	_jump_buffer = JUMP_BUFFER
+	_jump_held = true
 
 
 func _on_jump_released() -> void:
+	_jump_held = false
 	if velocity.y < 0.0 and _state != &"dash":
 		velocity.y *= JUMP_CUT
 
@@ -233,6 +260,8 @@ func _do_jump() -> void:
 	_coyote = 0.0
 	velocity.y = JUMP_VELOCITY
 	_squash = Vector2(0.84, 1.18)
+	air_phase = &"jump_start"
+	_phase_timer = 0.08
 	if _state == &"attack":
 		return
 	_play_sfx(&"jump")
@@ -240,6 +269,22 @@ func _do_jump() -> void:
 
 func is_airborne() -> bool:
 	return not is_on_floor()
+
+
+func _update_air_phase(delta: float) -> void:
+	_phase_timer = maxf(0.0, _phase_timer - delta)
+	if is_on_floor():
+		if air_phase != &"landing" or _phase_timer <= 0.0:
+			air_phase = &"ground"
+		return
+	if air_phase == &"jump_start" and _phase_timer > 0.0:
+		return
+	if absf(velocity.y) < APEX_SPEED:
+		air_phase = &"apex"
+	elif velocity.y < 0.0:
+		air_phase = &"rising"
+	else:
+		air_phase = &"falling"
 
 
 # --- Dash / Gölge Atılması -----------------------------------------------------
@@ -409,6 +454,17 @@ func _push_hud_cooldowns() -> void:
 		hud.set_button_cooldown(&"skill", _skill_cd / SKILL_COOLDOWN)
 
 
+## Koşu döngüsünde ayak yere değme kareleri (0 ve 2: bacaklar açık) → adım sesi görüntüyle senkron.
+const RUN_CONTACT_FRAMES := [0, 2]
+
+
+func _on_sprite_frame() -> void:
+	if sprite.animation == &"run" and sprite.frame in RUN_CONTACT_FRAMES and is_on_floor() and absf(velocity.x) > 40.0:
+		var am := get_node_or_null("/root/AudioManager")
+		if am and am.has_method("footstep_from_anim"):
+			am.footstep_from_anim()
+
+
 func _update_anim() -> void:
 	var want: StringName = &"idle"
 	match _state:
@@ -497,6 +553,12 @@ func _on_interact() -> void:
 		return
 	var target := get_interaction_target()
 	if target:
+		## Tekrar tetiklenme koruması: aynı hedefe 250 ms içinde ikinci kez basılmaz.
+		var now := Time.get_ticks_msec()
+		if target == _last_interact_target and now - _last_interact_ms < 250:
+			return
+		_last_interact_target = target
+		_last_interact_ms = now
 		if target.has_method("on_interact"):
 			target.on_interact(self)
 		elif target.has_method("apply_push"):
@@ -517,6 +579,9 @@ func get_interaction_target() -> Node2D:
 		if not target.is_visible_in_tree():
 			continue
 		if not target.has_method("on_interact") and not target.has_method("apply_push"):
+			continue
+		## Ortak kural: nesne o an etkileşime kapalıysa (ör. Shilda öfkeli) hedef olmaz.
+		if target.has_method("can_interact") and not target.can_interact():
 			continue
 		if not candidates.has(target):
 			candidates.append(target)
@@ -589,6 +654,8 @@ func respawn_at(pos: Vector2) -> void:
 	_attack_timer = 0.0
 	_stagger_timer = 0.0
 	_jump_buffer = 0.0
+	_jump_held = false
+	air_phase = &"ground"
 	_combo = 0
 	attack_area.monitoring = false
 	MobileInputManager.clear_held_inputs()
