@@ -52,7 +52,7 @@ func _run_audit() -> void:
 		gs.player_progress_knowledge["deaths"] = i * 10
 		gs.player_progress_knowledge["burst_step"] = i
 		gs.set_world_flag(&"burst_flag_%d" % i, true)
-		var res: bool = sm.save_game()
+		var res: bool = sm.commit_save(&"test")
 		if not res:
 			burst_ok = false
 			check(false, "Burst save call #%d failed" % i, "returned false")
@@ -97,7 +97,7 @@ func _run_audit() -> void:
 	_write_file(path + ".bak", "{\"corrupt\": \"stale_bak_data\"}")
 	check(FileAccess.file_exists(path + ".bak"), "Injected stale .bak file")
 	gs.player_progress_knowledge["deaths"] = 999
-	var bak_save_res: bool = sm.save_game()
+	var bak_save_res: bool = sm.commit_save(&"test")
 	check(bak_save_res, "save_game() succeeds even when stale .bak file already exists")
 	check(not FileAccess.file_exists(path + ".bak"), "save_game() cleaned up .bak upon completion")
 	
@@ -105,7 +105,7 @@ func _run_audit() -> void:
 	_write_file(path + ".tmp", "INVALID_PARTIAL_WRITE_GARBAGE_TMP")
 	check(FileAccess.file_exists(path + ".tmp"), "Injected stale .tmp file")
 	gs.player_progress_knowledge["deaths"] = 1000
-	var tmp_save_res: bool = sm.save_game()
+	var tmp_save_res: bool = sm.commit_save(&"test")
 	check(tmp_save_res, "save_game() succeeds even when stale .tmp file already exists")
 	check(not FileAccess.file_exists(path + ".tmp"), "save_game() overwritten and cleared .tmp")
 	
@@ -116,12 +116,12 @@ func _run_audit() -> void:
 	print("\n--- Test Suite 4: Corruption Recovery & Rollback ---")
 	# Ensure good .prev exists with known value (deaths = 1000)
 	gs.player_progress_knowledge["deaths"] = 2000
-	sm.save_game() # now main has 2000, .prev has 1000
+	sm.commit_save(&"test") # now main has 2000, .prev has 1000
 	
 	# Corrupt main file (truncated JSON)
 	_write_file(path, "{\"version\": 5, \"player_progress_knowledge\": {")
 	gs.player_progress_knowledge["deaths"] = 0
-	var loaded_fallback: bool = sm.load_game(false)
+	var loaded_fallback: bool = sm.load_committed(false)
 	check(loaded_fallback, "load_game() succeeds when main is corrupted via .prev fallback")
 	check(int(gs.player_progress_knowledge.get("deaths", -1)) == 1000, "State correctly restored from .prev (deaths=1000, got %s)" % str(gs.player_progress_knowledge.get("deaths")))
 	
@@ -136,7 +136,7 @@ func _run_audit() -> void:
 	})
 	_write_file(path + ".bak", bak_payload)
 	gs.player_progress_knowledge.clear()
-	var bak_load_res: bool = sm.load_game(false)
+	var bak_load_res: bool = sm.load_committed(false)
 	check(bak_load_res, "load_game() recovers from .bak when main save is corrupt")
 	check(bool(gs.player_progress_knowledge.get("recovered_from_bak", false)), "Recovered state from .bak accurately parsed")
 	
@@ -144,7 +144,7 @@ func _run_audit() -> void:
 	_write_file(path, "NOT_JSON_MAIN")
 	_write_file(path + ".bak", "NOT_JSON_BAK")
 	_write_file(path + ".prev", "NOT_JSON_PREV")
-	var hopeless_load: bool = sm.load_game(false)
+	var hopeless_load: bool = sm.load_committed(false)
 	check(not hopeless_load, "load_game() cleanly returns false without crashing when all saves are unparseable")
 
 	# --- TEST SUITE 5: Interleaved Read/Write Consistency Stress ---
@@ -154,13 +154,13 @@ func _run_audit() -> void:
 	for i in range(1, 21):
 		gs.player_progress_knowledge["sync_counter"] = i
 		gs.world_memory_state["sync_flag_%d" % i] = i
-		if not sm.save_game():
+		if not sm.commit_save(&"test"):
 			consistency_pass = false
 			break
 		# Mutate in-memory state
 		gs.player_progress_knowledge["sync_counter"] = -999
 		# Load and verify
-		if not sm.load_game(false):
+		if not sm.load_committed(false):
 			consistency_pass = false
 			break
 		if int(gs.player_progress_knowledge.get("sync_counter", -1)) != i:

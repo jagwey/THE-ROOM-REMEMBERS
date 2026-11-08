@@ -75,7 +75,7 @@ func _run() -> void:
 	OS.set_environment("TORIMON_FRESH", "") ## yeniden yüklemede kayıttan devam
 	var old_scene := current_scene
 	menu._confirm_ok.pressed.emit()
-	var saved: Variant = sm._read_save(sm.SAVE_PATH)
+	var saved: Variant = sm._read_save(sm.resume_path())
 	check(saved != null and (saved["character_current_life_knowledge"] as Dictionary).has("resume"), "save verified with resume point")
 	await process_frame
 	await process_frame

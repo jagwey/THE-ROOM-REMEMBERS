@@ -1,10 +1,15 @@
 extends Node
-## Kayıt — player + world kalıcı; character de yazılır (checkpoint için).
+## Kayıt — iki dosya: COMMITTED (SAVE_PATH; yalnız commit_save: mühür, Kaydet ve Çık, yeni oyun, final)
+## ve RESUME (SAVE_PATH + "_resume.json"; save_game / save_resume_point; çıkışta ilerleme kaybolmasın).
+## Devam Et ikisinden save_serial'ı büyük olanı yükler; lanet yeniden yüklemesi yalnız committed'ı yükler.
 
 var SAVE_PATH: String = "user://qa/torimon_save.json" if OS.get_environment("TORIMON_TEST") == "1" else "user://torimon_save.json"
 const SAVE_VERSION := 6
 ## Yalnız test: yazma hatasını taklit eder (Kaydet ve Çık hata diyaloğu).
 var force_fail_for_test: bool = false
+
+## Her yazımda artan sayaç; iki dosyada da "save_serial" olarak durur.
+var _save_serial: int = 0
 
 var _new_progress: Dictionary
 var _new_world: Dictionary
@@ -16,17 +21,23 @@ func _ready() -> void:
 	_new_progress = GameState.player_progress_knowledge.duplicate(true)
 	_new_world = GameState.world_memory_state.duplicate(true)
 	_new_life = GameState.character_current_life_knowledge.duplicate(true)
+	_save_serial = maxi(_serial_of(_read_with_fallback(SAVE_PATH)), _serial_of(_read_with_fallback(resume_path())))
+
+
+func resume_path() -> String:
+	return SAVE_PATH.get_basename() + "_resume.json"
 
 
 func start_new_game() -> void:
 	Engine.time_scale = 1.0
 	# Explicit menu confirmation precedes this action; keep a backup.
-	if has_save():
+	if FileAccess.file_exists(SAVE_PATH):
 		DirAccess.copy_absolute(ProjectSettings.globalize_path(SAVE_PATH), ProjectSettings.globalize_path(SAVE_PATH + ".bak"))
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(SAVE_PATH))
 	var prev_path := ProjectSettings.globalize_path(SAVE_PATH + ".prev")
 	if FileAccess.file_exists(SAVE_PATH + ".prev"):
 		DirAccess.remove_absolute(prev_path)
+	_delete_resume_files()
 	DialogueManager.clear()
 	UiGate.set_story(false)
 	UiGate.set_journal(false)
@@ -46,12 +57,13 @@ func start_new_game() -> void:
 	DeathManager.phase = DeathManager.Phase.ALIVE
 	CurseManager.reset_for_new_life()
 	RoomManager.reset_registry()
+	commit_save(&"new_game", GameState.DEFAULT_CHECKPOINT, &"awakening")
 	get_tree().reload_current_scene()
 
 
 
 func has_save() -> bool:
-	return FileAccess.file_exists(SAVE_PATH)
+	return FileAccess.file_exists(SAVE_PATH) or FileAccess.file_exists(resume_path())
 
 
 ## Kaydet ve Çık / arka plan: oyuncunun tam konumunu "resume" olarak yazar ve kaydeder.
@@ -75,8 +87,33 @@ func take_resume_point(room_id: StringName) -> Variant:
 	return Vector2(float(r.get("x", 0.0)), float(r.get("y", 0.0)))
 
 
+## Resume noktası: mevcut tam durumu ayrı dosyaya yazar (oda girişi, hikâye, bulmaca, uygulama kapanışı).
+## Committed kaydı DEĞİŞTİRMEZ; lanet geri yüklemesi o kayda döner.
 func save_game() -> bool:
-	var data := {
+	return _write_atomic(resume_path(), _build_data())
+
+
+## Committed kayıt: Memory Seal, Kaydet ve Çık, yeni oyun, final. Güvenli konum (mühür/yatak) saklanır,
+## oyuncunun ham konumu değil. safe_room boşsa mevcut checkpoint odası kullanılır.
+## Kaydet ve Çık: önce commit_save, sonra save_resume_point (resume daha yeni serial alır, tam konumdan devam).
+func commit_save(reason: StringName = &"commit", safe_position: Vector2 = Vector2.INF, safe_room: StringName = &"") -> bool:
+	var pos := safe_position if safe_position.is_finite() else GameState.get_checkpoint()
+	var room := safe_room
+	if room == &"":
+		room = StringName(str(GameState.character_current_life_knowledge.get("checkpoint_room", &"awakening")))
+	var data := _build_data()
+	data["commit_reason"] = String(reason)
+	var life: Dictionary = data["character_current_life_knowledge"]
+	life.erase("resume")
+	life["checkpoint"] = {"x": pos.x, "y": pos.y}
+	life["checkpoint_room"] = String(room)
+	life["room"] = String(room)
+	life["spawn_id"] = "checkpoint"
+	return _write_atomic(SAVE_PATH, data)
+
+
+func _build_data() -> Dictionary:
+	return {
 		"version": SAVE_VERSION,
 		"player_progress_knowledge": GameState.player_progress_knowledge.duplicate(true),
 		"world_memory_state": _serialize_world(GameState.world_memory_state),
@@ -85,7 +122,12 @@ func save_game() -> bool:
 		"hearts": GameState.hearts,
 		"curse": CurseManager.curse if CurseManager else 0.0,
 	}
-	var temp_path := SAVE_PATH + ".tmp"
+
+
+func _write_atomic(path: String, data: Dictionary) -> bool:
+	_save_serial += 1
+	data["save_serial"] = _save_serial
+	var temp_path := path + ".tmp"
 	var f := FileAccess.open(temp_path, FileAccess.WRITE)
 	if f == null or force_fail_for_test:
 		push_warning("Kayıt yazılamadı: " + (str(FileAccess.get_open_error()) if f == null else "test"))
@@ -93,19 +135,19 @@ func save_game() -> bool:
 	f.store_string(JSON.stringify(data))
 	f.close()
 
-	var g_target := ProjectSettings.globalize_path(SAVE_PATH)
+	var g_target := ProjectSettings.globalize_path(path)
 	var g_temp := ProjectSettings.globalize_path(temp_path)
-	var g_bak := ProjectSettings.globalize_path(SAVE_PATH + ".bak")
-	var g_prev := ProjectSettings.globalize_path(SAVE_PATH + ".prev")
+	var g_bak := ProjectSettings.globalize_path(path + ".bak")
+	var g_prev := ProjectSettings.globalize_path(path + ".prev")
 
 	## Son sağlam kaydı yedekle: yazma yarıda kalırsa (pil/çökme) bir önceki yüklenir.
-	if FileAccess.file_exists(SAVE_PATH) and _read_save(SAVE_PATH) != null:
+	if FileAccess.file_exists(path) and _read_save(path) != null:
 		DirAccess.copy_absolute(g_target, g_prev)
 
 	## Windows'ta hedef dosya varsa rename ERR_ALREADY_EXISTS (32) verir.
 	## Bu yüzden mevcut dosyayı geçici olarak .bak'a taşıyoruz.
-	if FileAccess.file_exists(SAVE_PATH):
-		if FileAccess.file_exists(SAVE_PATH + ".bak"):
+	if FileAccess.file_exists(path):
+		if FileAccess.file_exists(path + ".bak"):
 			DirAccess.remove_absolute(g_bak)
 		var bak_err := DirAccess.rename_absolute(g_target, g_bak)
 		if bak_err != OK:
@@ -116,26 +158,52 @@ func save_game() -> bool:
 	if error != OK:
 		push_warning("Kayıt tamamlanamadı: " + str(error))
 		## Geri alma: geçici dosya taşınamadıysa .bak'ı geri yükle
-		if FileAccess.file_exists(SAVE_PATH + ".bak"):
+		if FileAccess.file_exists(path + ".bak"):
 			DirAccess.rename_absolute(g_bak, g_target)
 		if FileAccess.file_exists(temp_path):
 			DirAccess.remove_absolute(g_temp)
 		return false
 
 	## Doğrula: yazılan dosya geri okunabiliyor mu
-	var verify: Variant = _read_save(SAVE_PATH)
+	var verify: Variant = _read_save(path)
 	if verify == null:
 		push_warning("Kayıt doğrulanamadı — geri alınıyor")
-		if FileAccess.file_exists(SAVE_PATH + ".bak"):
+		if FileAccess.file_exists(path + ".bak"):
 			DirAccess.remove_absolute(g_target)
 			DirAccess.rename_absolute(g_bak, g_target)
 		return false
 
 	## Başarılı doğrulama sonrası geçici .bak yedeğini temizle
-	if FileAccess.file_exists(SAVE_PATH + ".bak"):
+	if FileAccess.file_exists(path + ".bak"):
 		DirAccess.remove_absolute(g_bak)
 
 	return true
+
+
+func _delete_resume_files() -> void:
+	var rp := resume_path()
+	for suffix in ["", ".bak", ".prev", ".tmp"]:
+		if FileAccess.file_exists(rp + suffix):
+			DirAccess.remove_absolute(ProjectSettings.globalize_path(rp + suffix))
+
+
+func _serial_of(data: Variant) -> int:
+	return int((data as Dictionary).get("save_serial", 0)) if data is Dictionary else 0
+
+
+## Ana dosya bozuksa .bak, sonra .prev denenir. Hiçbiri yoksa null.
+func _read_with_fallback(path: String) -> Variant:
+	var parsed: Variant = _read_save(path)
+	if parsed != null:
+		return parsed
+	if not (FileAccess.file_exists(path) or FileAccess.file_exists(path + ".bak") or FileAccess.file_exists(path + ".prev")):
+		return null
+	parsed = _read_save(path + ".bak")
+	if parsed == null:
+		parsed = _read_save(path + ".prev")
+	if parsed != null:
+		push_warning("Kayıt bozuk — önceki yedek yüklendi")
+	return parsed
 
 
 ## Okunamayan/bozuk dosyada null döner.
@@ -151,18 +219,28 @@ func _read_save(path: String) -> Variant:
 	return parsed
 
 
+## Devam Et: committed ve resume'dan save_serial'ı büyük olan (eşitse committed).
 func load_game(apply_room: bool = true) -> bool:
-	var parsed: Variant = _read_save(SAVE_PATH)
+	var committed: Variant = _read_with_fallback(SAVE_PATH)
+	var resume: Variant = _read_with_fallback(resume_path())
+	var parsed: Variant = committed
+	if resume != null and (committed == null or _serial_of(resume) > _serial_of(committed)):
+		parsed = resume
 	if parsed == null:
-		## Ana kayıt bozuksa veya rotasyon sırasında kesildiyse .bak ya da .prev dene.
-		if FileAccess.file_exists(SAVE_PATH + ".bak"):
-			parsed = _read_save(SAVE_PATH + ".bak")
-		if parsed == null:
-			parsed = _read_save(SAVE_PATH + ".prev")
-			if parsed == null:
-				return false
-		push_warning("Kayıt bozuk — önceki yedek yüklendi")
-	var data: Dictionary = parsed
+		return false
+	return _apply_data(parsed, apply_room)
+
+
+## Lanet geri yüklemesi: yalnız committed kaydı yükler; resume dosyası silinir (Devam Et eski durumu diriltmesin).
+func load_committed(apply_room: bool = true) -> bool:
+	var parsed: Variant = _read_with_fallback(SAVE_PATH)
+	if parsed == null:
+		return false
+	_delete_resume_files()
+	return _apply_data(parsed, apply_room)
+
+
+func _apply_data(data: Dictionary, apply_room: bool) -> bool:
 	GameState.player_progress_knowledge = data.get("player_progress_knowledge", GameState.player_progress_knowledge)
 	GameState.world_memory_state = _deserialize_world(data.get("world_memory_state", {}))
 	GameState.character_current_life_knowledge = _deserialize_life(data.get("character_current_life_knowledge", {}))
