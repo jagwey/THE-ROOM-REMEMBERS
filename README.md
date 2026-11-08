@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.4.6"><img src="https://img.shields.io/badge/Son_S%C3%BCr%C3%BCm_(APK)-v1.4.6-8B0000?style=for-the-badge&logo=android&logoColor=white" alt="Latest Release v1.4.6" /></a>
+  <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.4.7"><img src="https://img.shields.io/badge/Son_S%C3%BCr%C3%BCm_(APK)-v1.4.7-8B0000?style=for-the-badge&logo=android&logoColor=white" alt="Latest Release v1.4.7" /></a>
   <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS/releases"><img src="https://img.shields.io/badge/T%C3%BCm_S%C3%BCr%C3%BCmler-9_Aktif_Paket-5c1d3d?style=for-the-badge&logo=github" alt="All Releases" /></a>
   <a href="https://godotengine.org/"><img src="https://img.shields.io/badge/Godot_Engine-4.7.2-478CBF?style=for-the-badge&logo=godotengine&logoColor=white" alt="Godot 4.7.2" /></a>
   <img src="https://img.shields.io/badge/D%C3%BCnya-6_B%C3%B6lge_%C2%B7_30_Oda_%C2%B7_5_Son-2b1838?style=for-the-badge" alt="World Scope" />
@@ -46,11 +46,12 @@ Oyuncu **Shiren** olarak ne adını ne de neden bu yıkık tesiste tutulduğunu 
 
 Depodaki tüm derlenmiş Android (`arm64-v8a`) APK sürümleri aktif olarak **[GitHub Releases](https://github.com/jagwey/THE-ROOM-REMEMBERS/releases)** sayfasında sunulmaktadır.
 
-> **Önerilen Güncel Sürüm:** [**v1.4.6 (`TheRoomRemembers-1.4.6-android-arm64.apk`)**](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.4.6) — beden taşıma (köprü/boşluk geçişi), Ruh Kesişi olmadan takılmayan metinler ve gölge, Shilda adı, HUD/harita kırpılma düzeltmeleri.
+> **Önerilen Güncel Sürüm:** [**v1.4.7 (`TheRoomRemembers-1.4.7-android-arm64.apk`)**](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.4.7) — ölümden sonra kaybolan dokunmatik düğmeler düzeltildi; v1.4.6 beden taşıma ve Ruh Kesişi düzeltmelerini içerir.
 
 | Sürüm | Durum | APK Dosyası / İndirme | Öne Çıkan Yenilikler ve Kapsam |
 | :--- | :---: | :--- | :--- |
-| **[v1.4.6](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.4.6)** | 🟢 **Güncel (Latest)** | [📥 `TheRoomRemembers-1.4.6-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.4.6) | Beden taşıma yeniden (köprü/boşluk geçişi, Kemik Mahzeni kodu), Ruh Kesişi gerektirmeyen metin/gölge düzeltmeleri, Shilda adı, oda etkileşim aralıkları, HUD/harita/pad kırpılma düzeltmeleri (`versionCode 24`). |
+| **[v1.4.7](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.4.7)** | 🟢 **Güncel (Latest)** | [📥 `TheRoomRemembers-1.4.7-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.4.7) | Ölüm/diriliş sonrası kaybolan dokunmatik düğmeler (joystick, zıplama, saldırı) düzeltildi; ölümde basılı kalan girdiler temizleniyor (`versionCode 25`). |
+| **[v1.4.6](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.4.6)** | Önceki | [📥 `TheRoomRemembers-1.4.6-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.4.6) | Beden taşıma yeniden (köprü/boşluk geçişi, Kemik Mahzeni kodu), Ruh Kesişi gerektirmeyen metin/gölge düzeltmeleri, Shilda adı, oda etkileşim aralıkları, HUD/harita/pad kırpılma düzeltmeleri (`versionCode 24`). |
 | **[v1.4.5](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.4.5)** | Önceki | [📥 `TheRoomRemembers-1.4.5-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.4.5) | Konuşmacı sözleşmesi ve isim açılışı, diyalog çerçeveleri, HUD/bölge kartı çakışma düzeltmeleri, gotik kapılar ve yeni nesneler, çatlak duvar/Devam Et düzeltmeleri, oyun içi güncelleme (`versionCode 23`). |
 | **[v1.3.0](https://github.com/jagwey/THE-ROOM-REMEMBERS/releases/tag/v1.3.0)** | 🔵 Kararlı | [📥 `TheRoomRemembers-1.3.0.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS/releases/download/v1.3.0/TheRoomRemembers-1.3.0.apk) | **M1–M3 Tam Sürüm:** Yürüyen & Kalkanlı Bellek Gölgeleri (`Memory Shades`), ceset üstü platform mekaniği, `EchoTwin` savaş kaydı, Bölge Başlık Kartları, Çatlak Ayna hızlı seyahat, mobil haptics, gotik kapı katmanlama ve ses iş parçacığı düzeltmeleri (`versionCode 17`). |
 | **[v1.2.0](https://github.com/jagwey/THE-ROOM-REMEMBERS/releases/tag/v1.2.0)** | 🔵 Kararlı | [📥 `TheRoomRemembers-1.2.0-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS/releases/tag/v1.2.0) | **V4.1 Güncellemesi:** Katmanlı gotik kapılar (`96x160`), ortak etkileşim halesi (`InteractGlow`), gelişmiş zıplama fiziği (coyote time, jump buffer, apex hang), doğrulanmış *Kaydet ve Çık / Devam Et* sistemi, yeni kırmızı göz adaptif uygulama ikonu (`versionCode 16`). |
@@ -248,10 +249,10 @@ THE-ROOM-REMEMBERS/
 ## 🚀 Kurulum, Çalıştırma ve Otomatik Test Altyapısı
 
 ### 1. Android Cihazda Oynama (APK)
-1. **[Releases → v1.4.6](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.4.6)** sayfasından `TheRoomRemembers-1.4.6-android-arm64.apk` dosyasını indirin ve telefonunuza kurun.
+1. **[Releases → v1.4.7](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.4.7)** sayfasından `TheRoomRemembers-1.4.7-android-arm64.apk` dosyasını indirin ve telefonunuza kurun.
 2. Veya USB hata ayıklaması açık bir Android cihaza `adb` ile doğrudan yükleyin:
    ```powershell
-   adb install -r TheRoomRemembers-1.4.6-android-arm64.apk
+   adb install -r TheRoomRemembers-1.4.7-android-arm64.apk
    adb shell am start -n com.torimon.theroomremembers/com.godot.game.GodotApp
    ```
 

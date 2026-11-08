@@ -40,6 +40,9 @@ func _run() -> void:
 	var deaths_before := int(state.player_progress_knowledge.get("deaths", 0))
 	var phases: Array = []
 	death.phase_changed.connect(func(p: int) -> void: phases.append(p))
+	## Diriliş HUD'a haber vermeli (yoksa dokunmatik düğmeler gizli kalır).
+	var gate_layers: Array = []
+	gate.gate_changed.connect(func(l: int) -> void: gate_layers.append(l))
 	var cam := get_first_node_in_group("follow_camera")
 	for i in LOOPS:
 		rm.enter_room(&"decay_shilda_wall", &"default")
@@ -51,6 +54,7 @@ func _run() -> void:
 		await create_timer(0.6).timeout
 		check(keeper.mode == keeper.Mode.COMBAT, "loop %d: keeper in combat" % i)
 		phases.clear()
+		gate_layers.clear()
 		state.damage(99)
 		check(death.is_dying, "loop %d: death started" % i)
 		check(keeper.mode != keeper.Mode.COMBAT and keeper.collision_mask == 0, "loop %d: combat aborted on death" % i)
@@ -71,6 +75,7 @@ func _run() -> void:
 				check(false, "loop %d: keeper re-entered combat during death" % i)
 				break
 		check(not death.is_dying, "loop %d: rebirth completes without input (%.1fs)" % [i, t])
+		check(not gate_layers.is_empty() and int(gate_layers.back()) == 0, "loop %d: gate_changed(NONE) emitted on rebirth %s" % [i, str(gate_layers.slice(-3))])
 		dm.clear()
 		await create_timer(0.1).timeout
 		check(not gate.blocks_movement(), "loop %d: controls free after rebirth" % i)

@@ -145,6 +145,13 @@ Dal: cursor/playable-story-flow-8e4e · Sürüm: v1.2.0 (versionCode 16)
 - [x] Yeni `assets/props/mirror_cracked.png` (32x56). Bağlanmadı: `cracked_mirror.tscn` hâlâ crystal.png (ana oturum bağlamalı, scale ~1).
 - Açık: decay_weight.tscn WeightStone scale 0.25 (24px, collision 22px) -> ~0.4-0.5 + collision (tscn, dokunulmadı). Testler: e2e 50/50, interact_audit 0, release 110/0.
 
+## v1.4.7 — ölüm sonrası dokunmatik düğmeler kayboluyordu (2026-11-08)
+- Kök neden: HUD `_update_control_visibility()` ölümde (UiGate DEATH, `DeathManager.is_dying`) joystick+düğmeleri gizliyor ama dirilişte `gate_changed` hiç yayılmıyordu → düğmeler oyundan çık/gir yapana dek görünmez.
+- [x] Fix `scripts/autoload/ui_gate.gd`: `DeathManager.phase_changed` → `_emit()` (ölümde basılı girdiler de temizlenir).
+- [x] Regresyon: `death_loop_audit` dirilişte `gate_changed(NONE)` bekliyor (eski kodda FAIL, yenide PASS).
+- [x] QA: 17 headless script rc=0 / 0 hata (e2e 50/50, release 110/0); pencereli 1920x1080 2 ölüm döngüsü → dirilişte joystick/zıplama/saldırı görünür (alpha 1.0), görüntü kontrol edildi.
+- [x] Yayın v1.4.7 (versionCode 25, dal claude/v1.4.1): public `THE-ROOM-REMEMBERS-release` + private. APK export-debug (scratchpad build47), sertifika SHA-256 16fd69… aynı. e2e versiyon kontrolü 1.4.7/25; README/PLAY_TR v1.4.7.
+
 ## v1.4.6 — Shilda adı, oda çakışmaları, HUD kırpılması: son QA (2026-11-08)
 - Shilda ilk replikten adıyla ("Ben Shilda. Oraya gitme."), "???" kalmadı; oda etkileşim/kapı arası ≥110px (tek bilinçli istisna ShildaGarden).
 - Günlük haritası: bölge adı kutuya sığana kadar küçülür, mühür ◇ sağ köşede sabit (journal_map.gd `_draw_region`).

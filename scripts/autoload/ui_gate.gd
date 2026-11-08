@@ -17,6 +17,23 @@ var _pause_menu: bool = false
 var _pause_refs: Dictionary = {} # StringName -> bool
 
 
+func _ready() -> void:
+	## Ölüm katmanı DeathManager.is_dying'den okunur; bayrak değişince de sinyal ver.
+	## Yoksa HUD ölümde gizlediği dokunmatik düğmeleri dirilişte geri açmıyordu.
+	_connect_death.call_deferred()
+
+
+func _connect_death() -> void:
+	if not DeathManager.phase_changed.is_connected(_on_death_phase):
+		DeathManager.phase_changed.connect(_on_death_phase)
+
+
+func _on_death_phase(_p: int) -> void:
+	if DeathManager.is_dying:
+		MobileInputManager.clear_held_inputs()
+	_emit()
+
+
 func current_layer() -> Layer:
 	if DeathManager.is_dying:
 		return Layer.DEATH
