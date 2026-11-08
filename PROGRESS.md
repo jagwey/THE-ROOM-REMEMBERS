@@ -157,4 +157,4 @@ Dal: cursor/playable-story-flow-8e4e · Sürüm: v1.2.0 (versionCode 16)
 - Kemik Mahzeni: beden x330→~610 taşınıp 5·8·6 sembolleri açılıyor, kod 586 öğreniliyor (Sym reveal_radius 200, hidden_symbol dikey tolerans 120px). Sırttaki bedende ikinci "Bırak" etiketi yok (interact_glow.gd).
 - Ruh Kesişi yokken onu isteyen metinler kapalı: campaign_objectives / room_transition / soul_seal yeteneğe göre metin seçer; kalkanlı gölge TURN_DELAY 0.7 → yetenek olmadan arkadan vurulabiliyor; blood_thorn `body_line/solved_line`.
 - QA: 17 headless audit rc=0 / 0 script error, e2e 50/50, release 110/0; pencereli 1920x1080 taşıma çekimi (masaüstü + dokunmatik) gözle kontrol edildi.
-- [x] Yayın v1.4.6 (versionCode 24): public `THE-ROOM-REMEMBERS-release` + private. APK Godot export-debug (scratchpad build46), sertifika SHA-256 16fd69… aynı. e2e versiyon kontrolü 1.4.6/24; README/PLAY_TR v1.4.6.
+- [x] Yayın v1.4.6 (versionCode 24, commit f2fcccc, dal claude/v1.4.1 push edildi): public `THE-ROOM-REMEMBERS-release` + private. APK Godot export-debug (scratchpad build46), sertifika SHA-256 16fd69… aynı. e2e versiyon kontrolü 1.4.6/24; README/PLAY_TR v1.4.6.
