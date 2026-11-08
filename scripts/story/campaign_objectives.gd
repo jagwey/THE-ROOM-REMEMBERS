@@ -49,6 +49,8 @@ static func objective_for_room(room_id: String) -> String:
 		return _awakening_objective()
 	## Mor mühür Ruh Kesimi ister; yetenek yoksa oyuncuyu nereye gideceğine yönlendir.
 	if room_id == "awakening_balcony":
+		if PuzzleManager.is_solved(&"soul_seal_balcony"):
+			return "Mor mühür çözüldü. Mahzen ile balkon arası artık açık."
 		if _has_soul_slash():
 			return "Mor mühre Ruh Kesimi savur (Q / yıldız); mahzene in."
 		return "Tesisi izle. Mor mühür şimdilik kapalı: Ruh Kesimi Yasak Kanat'ta."

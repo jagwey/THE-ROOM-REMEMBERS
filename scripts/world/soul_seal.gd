@@ -3,10 +3,10 @@ extends StaticBody2D
 
 @export var puzzle_id: StringName = &"soul_seal"
 @export var height: float = 110.0
-## Mühür yalnız bir yönden geçişi tutar. Oyuncu "arka" taraftan (başka yoldan dolaşıp)
-## yaklaşırsa mühür kendiliğinden çözülür — aksi halde o tarafta kilitli kalırdı.
-## +1 = sağ taraf arka, -1 = sol taraf arka, 0 = kapalı.
-@export var back_side: int = 1
+## Mührün "arka" yüzü: 1 = sağ, -1 = sol, 0 = yok. Oyuncu arka taraftan gelirse
+## (ör. başka yoldan mahzene girip geri dönerse) mühür kendiliğinden çözülür;
+## yoksa Ruh Kesimi olmadan odada kapana kısılırdı.
+@export var back_side: int = 0
 
 var _vis: Node2D
 var _shape: CollisionShape2D
@@ -44,35 +44,41 @@ func _ready() -> void:
 	tw.tween_property(sigil, "modulate:a", 1.0, 0.9)
 	if PuzzleManager.is_solved(puzzle_id):
 		_open(false)
-		set_physics_process(false)
+	elif back_side != 0:
+		_add_back_sensor()
 
 
-func _physics_process(_delta: float) -> void:
-	if back_side == 0 or PuzzleManager.is_solved(puzzle_id):
-		set_physics_process(false)
+func _add_back_sensor() -> void:
+	var sensor := Area2D.new()
+	sensor.name = "BackSensor"
+	sensor.collision_layer = 0
+	sensor.collision_mask = 0xFFFF
+	sensor.monitorable = false
+	var cs := CollisionShape2D.new()
+	var r := RectangleShape2D.new()
+	r.size = Vector2(56, height)
+	cs.shape = r
+	cs.position = Vector2(float(signi(back_side)) * 44.0, -height * 0.5)
+	sensor.add_child(cs)
+	add_child(sensor)
+	sensor.body_entered.connect(_on_back_body)
+
+
+func _on_back_body(body: Node) -> void:
+	if not body.is_in_group("player") or PuzzleManager.is_solved(puzzle_id):
 		return
-	var p := get_tree().get_first_node_in_group("player") as Node2D
-	if p == null:
+	if signf(body.global_position.x - global_position.x) != float(signi(back_side)):
 		return
-	var dx := (p.global_position.x - global_position.x) * float(signi(back_side))
-	if dx > 16.0 and dx < 60.0:
-		_open_from_behind()
-
-
-func _open_from_behind() -> void:
-	set_physics_process(false)
-	PuzzleManager.mark_solved(puzzle_id)
-	var am := get_node_or_null("/root/AudioManager")
-	if am:
-		am.play_sfx(&"seal_open")
-	DialogueManager.whisper("Noroi", "Mühür yalnız öbür yüzünü koruyormuş. Bu taraftan dokununca dağıldı.")
-	SaveManager.save_game()
-	_open(true)
+	_solve("Mühür bu yandan sadece bir sürgü… çektim, çözüldü.")
 
 
 func receive_soul_slash(_from: Node) -> void:
 	if PuzzleManager.is_solved(puzzle_id):
 		return
+	_solve("Mühür ruhumu tanıdı… ve çözüldü.")
+
+
+func _solve(line: String) -> void:
 	PuzzleManager.mark_solved(puzzle_id)
 	MobileInputManager.vibrate(35)
 	var am := get_node_or_null("/root/AudioManager")
@@ -81,9 +87,8 @@ func receive_soul_slash(_from: Node) -> void:
 	var cam := get_tree().get_first_node_in_group("follow_camera")
 	if cam and cam.has_method("add_trauma"):
 		cam.add_trauma(0.3)
-	DialogueManager.whisper("Noroi", "Mühür ruhumu tanıdı… ve çözüldü.")
+	DialogueManager.whisper("Noroi", line)
 	SaveManager.save_game()
-	set_physics_process(false)
 	_open(true)
 
 
