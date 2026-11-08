@@ -44,7 +44,7 @@ var _catalog: Dictionary = {
 		"evidence_id": "ev_crypt_rebirth",
 		"lines": [
 			["Yankı", "Yatağın başında Shilda. Elinde şırınga yok; sadece bir çiçek."],
-			["Yankı", "Sen: Sil onu. Hepsini. Bir daha hatırlamak istemiyorum."],
+			["Yankı", "Yüzü kazınmış biri: Hepsini silin. Hatırlayan kalmasın."],
 			["Yankı", "Shilda: Sen unutursan… ben hatırlarım. Söz."],
 		],
 		"journal": {

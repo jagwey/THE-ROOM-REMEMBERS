@@ -160,7 +160,7 @@ func _experiment_cells() -> void:
 
 	DialogueManager.say("Kayıt", "Hatıra koruma deneyi. Amaç: kaybedilen kişilerin seslerini muhafaza etmek.")
 
-	DialogueManager.say("Noroi", "Birini unutmak istememişim. Bu yüzden mi burayı kurdum?")
+	DialogueManager.say("Noroi", "Biri unutulmak istenmiş. Bu yüzden mi burası böyle?")
 	DialogueManager.say("Shilda", "Önce tek bir sesi saklamak istedin. Sonra hiçbir kaybın son olmamasını. Hatıralar bedenlerden ayrılıp odada birikti.")
 	DialogueManager.say("Shilda", "Şimdi kimseyi feda etmeyeceğiz. Sağdaki devrede eski yankı bir anahtarı tutacak. Noroi diğerini açacak.")
 
@@ -208,7 +208,7 @@ func _experiment_authority() -> void:
 
 		return
 
-	_evidence("ev_authority", "Yetki masası", "Geçmişte düzene katkıda bulunmuşum.", "evidence", "gunluk")
+	_evidence("ev_authority", "Yetki masası", "Yetki masasındaki imza kazınmış. Düzeni kimin kurduğu okunmuyor.", "evidence", "gunluk")
 
 	PuzzleManager.mark_solved(&"experiment_authority")
 
