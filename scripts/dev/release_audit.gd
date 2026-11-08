@@ -36,7 +36,29 @@ const PUZZLE_SOURCE := {
 }
 
 
+## Ruh mührü odayı ikiye böler: mührün her yanındaki giriş noktasının o yanda
+## (mühür gerektirmeyen) bir çıkışı olmalı ya da mühür o yandan açılmalı.
+func _seal_trap_checks(rm: Node) -> void:
+	var traps: Array = []
+	for rid in rm._rooms.keys():
+		var room: Node2D = rm._rooms[rid].root
+		var seals := room.find_children("*", "StaticBody2D", true, false).filter(func(n): return n.is_in_group("soul_seal"))
+		for s in seals:
+			var sx: float = room.to_local(s.global_position).x
+			var pid := StringName(s.get("puzzle_id"))
+			var exits := {-1: false, 1: false}
+			for n in room.find_children("*", "Area2D", true, false):
+				if n.is_in_group("room_door") and StringName(n.get("required_puzzle")) != pid:
+					exits[int(signf(room.to_local(n.global_position).x - sx))] = true
+			for sname in (rm._rooms[rid].spawns as Dictionary).keys():
+				var side := int(signf((rm._rooms[rid].spawns[sname] as Vector2).x - sx))
+				if side != 0 and not exits[side] and int(s.get("back_side")) != side:
+					traps.append("%s:%s side %d" % [rid, sname, side])
+	check_it("No soul-seal traps (every spawn side has an exit)", traps.is_empty(), traps)
+
+
 func _graph_checks(rm: Node) -> void:
+	_seal_trap_checks(rm)
 	var edges: Dictionary = {} ## room -> [[target, spawn, req]]
 	var bad_targets: Array = []
 	for rid in rm._rooms.keys():

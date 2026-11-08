@@ -53,3 +53,4 @@ evidence_section = "notlar"
 position = Vector2(810, 288.0)
 script = ExtResource("soul")
 puzzle_id = &"soul_seal_balcony"
+back_side = 1

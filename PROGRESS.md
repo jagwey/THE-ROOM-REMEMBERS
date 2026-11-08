@@ -145,6 +145,14 @@ Dal: cursor/playable-story-flow-8e4e · Sürüm: v1.2.0 (versionCode 16)
 - [x] Yeni `assets/props/mirror_cracked.png` (32x56). Bağlanmadı: `cracked_mirror.tscn` hâlâ crystal.png (ana oturum bağlamalı, scale ~1).
 - Açık: decay_weight.tscn WeightStone scale 0.25 (24px, collision 22px) -> ~0.4-0.5 + collision (tscn, dokunulmadı). Testler: e2e 50/50, interact_audit 0, release 110/0.
 
+## v1.4.8 — Gözlem Balkonu ruh mührü tuzağı (2026-11-08)
+- Sorun: Oda 02'ye mahzenden (Shilda duvarı → mahzen → balkon) gelince `from_awakening_crypt` doğuşu mührün sağında (x=880); sola mühür, sağda mühür isteyen kapı → Ruh Kesimi yoksa çıkış yok.
+- Düzeltme: soul_seal.gd `back_side` (1/-1): mühür arka yüzden yaklaşınca kendiliğinden çözülür (BackSensor Area2D). awakening_balcony.tscn `back_side = 1`. Önden hâlâ yalnız Ruh Kesimi açar.
+- Hedef metni: mühür çözülünce "Mor mühür çözüldü. Mahzen ile balkon arası artık açık." (campaign_objectives.gd).
+- release_audit.gd yeni kontrol "No soul-seal traps": her doğuşun bulunduğu yanda mühür istemeyen çıkış ya da `back_side` olmalı (düzeltmesiz FAIL, düzeltmeyle PASS).
+- QA: geçici scratchpad testi (önden kapalı/arkadan açılır/geri yürünür) headless + pencereli 1920x1080 geçti, çekimler gözle kontrol edildi. 17 headless audit rc=0 / 0 script error, e2e 50/50, release 111/0.
+- [x] Yayın v1.4.8 (versionCode 26, dal claude/v1.4.1): public `THE-ROOM-REMEMBERS-release` + private. APK export-debug (scratchpad build48), sertifika SHA-256 16fd69… aynı. e2e versiyon kontrolü 1.4.8/26; README/PLAY_TR v1.4.8.
+
 ## v1.4.7 — ölüm sonrası dokunmatik düğmeler kayboluyordu (2026-11-08)
 - Kök neden: HUD `_update_control_visibility()` ölümde (UiGate DEATH, `DeathManager.is_dying`) joystick+düğmeleri gizliyor ama dirilişte `gate_changed` hiç yayılmıyordu → düğmeler oyundan çık/gir yapana dek görünmez.
 - [x] Fix `scripts/autoload/ui_gate.gd`: `DeathManager.phase_changed` → `_emit()` (ölümde basılı girdiler de temizlenir).
