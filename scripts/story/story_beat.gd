@@ -161,7 +161,7 @@ func _experiment_cells() -> void:
 	DialogueManager.say("Kayıt", "Hatıra koruma deneyi. Amaç: kaybedilen kişilerin seslerini muhafaza etmek.")
 
 	DialogueManager.say("Noroi", "Biri unutulmak istenmiş. Bu yüzden mi burası böyle?")
-	DialogueManager.say("Shilda", "Önce tek bir sesi saklamak istedin. Sonra hiçbir kaybın son olmamasını. Hatıralar bedenlerden ayrılıp odada birikti.")
+	DialogueManager.say("Shilda", "O önce tek bir sesi saklamak istedi. Sonra hiçbir kaybın son olmamasını. Hatıralar bedenlerden ayrılıp odada birikti.")
 	DialogueManager.say("Shilda", "Şimdi kimseyi feda etmeyeceğiz. Sağdaki devrede eski yankı bir anahtarı tutacak. Noroi diğerini açacak.")
 
 	var ok: bool = await DialogueManager.dialogue_finished

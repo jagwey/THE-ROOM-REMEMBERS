@@ -10,7 +10,7 @@ const FORBIDDEN: Array[String] = [
 	"Protokol Yetkilisi: Noroi", "Yetkili Noroi", "Ben başlattım",
 	"bir zamanlar benimdi", "ben istedim", "Bana kendisi emretti",
 	"İmza benim", "Yazarı benim", "Yazar: Noroi", "Sil onu", "hafızayı yaktın",
-	"düzene katkıda", "burayı kurdum",
+	"düzene katkıda", "burayı kurdum", "sesi saklamak istedin",
 ]
 const REQUIRED: Array[String] = ["1927", "1995", "Araştırma Yardımcısı S."]
 
