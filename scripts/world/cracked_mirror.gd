@@ -4,12 +4,12 @@ extends Area2D
 ## Oyuncu etkileşime geçtiğinde açık aynalar arasında hızlı geçiş (RoomManager.enter_room) yapılmasını sağlar.
 
 const MIRROR_NAMES := {
-	"awakening_balcony": "Uyanış Balkonu",
-	"awakening": "Uyanış Odası",
-	"decay_garden": "Çürüme Bahçesi",
+	"awakening_balcony": "Gözlem Balkonu",
+	"awakening": "Uyanış",
+	"decay_garden": "Solmuş Bahçe",
 	"library_hall": "Hafıza Kütüphanesi",
-	"experiment_cells": "Deney Hücreleri",
-	"mirrors_reverse": "Aynalar Salonu",
+	"experiment_cells": "Gözlem Hücreleri",
+	"mirrors_reverse": "Ayna Geçidi",
 }
 
 @export var mirror_id: StringName = &""

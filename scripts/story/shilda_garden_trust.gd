@@ -22,9 +22,9 @@ func on_interact(_by: Node) -> void:
 		DialogueManager.say("Shilda", "Burada güvendesin.")
 		return
 	_busy = true
-	DialogueManager.say("Shilda", "Bu çürüyen kökler… seni de çeker. Dur yanımda.")
+	DialogueManager.say("Shilda", "Bu çürüyen kökler seni de yutar. Yanımda dur.")
 	DialogueManager.say("Noroi", "…Tamam. Senden yana duruyorum.")
-	DialogueManager.say("Shilda", "O zaman adını mühürlemeden gitme; hatırla.")
+	DialogueManager.say("Shilda", "O zaman benden uzaklaşma. Kökler çabuk yutar.")
 	var ok: bool = await DialogueManager.dialogue_finished
 	if ok:
 		GameState.player_progress_knowledge["shilda_garden_beat"] = true

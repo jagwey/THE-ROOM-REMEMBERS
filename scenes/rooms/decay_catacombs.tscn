@@ -33,14 +33,14 @@ script = ExtResource("lore")
 lore_id = &"catacomb_dark"
 texture_path = "res://assets/props/candles.png"
 sprite_scale = 0.5
-lines = PackedStringArray("Noroi|Zifiri karanlık. Duvarlarda bir şey kazılı ama göremiyorum.", "Shilda|Burada ölülerin ışığı yolu gösterir. Çiçekli bir beden… fener gibi yanar.", "Shilda|Bedenini sırtlayabilirsin. Taşı onu, duvarların dibine götür.")
+lines = PackedStringArray("Noroi|Zifiri karanlık. Duvarlarda bir şey kazılı ama göremiyorum.", "Shilda|Burada ölülerin ışığı yolu gösterir. Çiçekli bir beden… fener gibi yanar.", "Shilda|Bedenini sırtlayabilirsin. Onu duvarın dibine kadar taşı.")
 
 [node name="Thorn" type="Area2D" parent="Interactive"]
 position = Vector2(640.0, 290.0)
 script = ExtResource("thorn")
 anchor_x = 640.0
 puzzle_hint = &"decay_catacomb_seal"
-body_line = "Dokunursam ölürüm. Bedenim burada kalır… çiçek alırsa karanlıkta fener gibi yanar."
+body_line = "Dokunursam ölürüm. Bedenim burada kalır; çiçek alırsa karanlıkta fener gibi yanar."
 solved_line = "Diken sustu. Kemik mührü zaten açık."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/Thorn"]
@@ -110,8 +110,8 @@ script = ExtResource("lore")
 lore_id = &"catacomb_record"
 texture_path = "res://assets/props/memory_echo.png"
 sprite_scale = 1.1
-lines = PackedStringArray("Noroi|Bir anı yankısı. Benim sesim: “Ritüel tutmuyor. Çekirdek anıları yutuyor.”", "Noroi|“Tesisi içeriden kilitleyeceğim. Kimse çıkmayacak. Ben de.”")
+lines = PackedStringArray("Noroi|Bir anı yankısı. Yabancı bir ses: “Lanet kontrolden çıktı. Çekirdek anıları yutuyor.”", "Noroi|“Mühürler kapandı. Buradan kimse çıkamaz. Ben de.”")
 evidence_title = "Kemik Mahzeni Kaydı"
-evidence_body = "Kendi sesim: Çekirdek anıları yutmaya başladığında tesisi içeriden ben kilitledim."
+evidence_body = "Bir yankı: Çekirdek anıları yutmaya başladığında mühürler kapandı. Kimse çıkamıyor."
 evidence_section = "izler"
 set_progress_key = "truth_fragment_lockdown"

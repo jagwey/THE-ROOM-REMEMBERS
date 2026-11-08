@@ -35,7 +35,7 @@ var _catalog: Dictionary = {
 		"journal": {
 			"section": "izler",
 			"title": "Yarığın sayısı",
-			"body": "Rüyada gördüm: 3 — 1 — 4. Karakter bilmiyor. Ben biliyorum.",
+			"body": "Rüyamda gördüm: 3 — 1 — 4. Aklım bilmiyor; ellerim biliyor.",
 			"kind": "evidence",
 		},
 		"memory_code": "314",
@@ -43,14 +43,14 @@ var _catalog: Dictionary = {
 	"crypt_first_bodies": {
 		"evidence_id": "ev_crypt_rebirth",
 		"lines": [
-			["Yankı", "Yatağın başında Shilda. Elinde şırınga yok; sadece bir çiçek."],
-			["Yankı", "Sen: Sil onu. Hepsini. Bir daha hatırlamak istemiyorum."],
-			["Yankı", "Shilda: Sen unutursan… ben hatırlarım. Söz."],
+			["Yankı", "Yatağın başında Shilda. Elinde bir çiçek var."],
+			["Yankı", "Shilda: Yine döndün. Ben hâlâ vazgeçmedim."],
+			["Yankı", "Shilda: Sen unutursan, ben hatırlarım. Söz."],
 		],
 		"journal": {
 			"section": "izler",
-			"title": "Silme Emri",
-			"body": "Hafızamın silinmesini ben istedim. Shilda söz verdi: ben unutursam o hatırlayacak.",
+			"title": "Çiçek Sözü",
+			"body": "Ben unuttukça Shilda hatırlıyor. Her dönüşümde başucuma bir çiçek bırakmış.",
 			"kind": "evidence",
 		},
 		"memory_code": "",

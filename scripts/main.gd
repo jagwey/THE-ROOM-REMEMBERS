@@ -111,7 +111,6 @@ func _ready() -> void:
 		if SaveManager.has_save():
 			if SaveManager.load_game(false):
 				_continued = true
-	GameState.set_shilda_named(true) # Shilda baştan "Shilda" (eski kayıtlar dahil)
 	_register_rooms()
 	_add_side_doors()
 	if not _continued:

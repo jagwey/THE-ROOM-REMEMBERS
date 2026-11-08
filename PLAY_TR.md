@@ -1,10 +1,10 @@
-# THE ROOM REMEMBERS — Oynanış ve Çalıştırma Rehberi (`v1.4.7` · Godot 4.7)
+# THE ROOM REMEMBERS — Oynanış ve Çalıştırma Rehberi (`v1.4.8` · Godot 4.7)
 
 ## 1. Proje Bilgileri
 - **Depo:** [`jagwey/THE-ROOM-REMEMBERS`](https://github.com/jagwey/THE-ROOM-REMEMBERS)
 - **Motor:** Godot **4.7.2** (`gl_compatibility`)
 - **Ana Sahne:** `scenes/main/main.tscn` (**F5**)
-- **Güncel Android Sürümü:** **[v1.4.7 (`TheRoomRemembers-1.4.7-android-arm64.apk`)](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.4.7)** (`com.torimon.theroomremembers`, `versionCode 25`)
+- **Güncel Android Sürümü:** **[v1.4.8 (`TheRoomRemembers-1.4.8-android-arm64.apk`)](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.4.8)** (`com.torimon.theroomremembers`, `versionCode 26`)
 
 ---
 
@@ -57,7 +57,7 @@
 ### Android APK Dışa Aktarma
 ```powershell
 New-Item -ItemType Directory -Force -Path $env:LOCALAPPDATA\Temp\torimon-build | Out-Null
-godot --headless --path . --export-debug "Android" "$env:LOCALAPPDATA\Temp\torimon-build\TheRoomRemembers-1.4.7-android-arm64.apk"
+godot --headless --path . --export-debug "Android" "$env:LOCALAPPDATA\Temp\torimon-build\TheRoomRemembers-1.4.8-android-arm64.apk"
 ```
 
 ### Headless Denetim ve Smoke Testleri

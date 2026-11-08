@@ -29,7 +29,7 @@ npc_id = &"librarian"
 idle_anim = "librarian_idle"
 walk_anim = "librarian_walk"
 wander = 40.0
-dialogue_sets = PackedStringArray("Arşivci|Yine mi sen? Rafların arasında hep aynı adımlarla yürürsün.;;Noroi|Beni tanıyor musun?;;Arşivci|Senin kitaplarını ben ciltledim, Protokol Yetkilisi.", "Arşivci|Yasak kanat yukarıda. Kapısı unutulmuş sayfanın sırasını ister.;;Arşivci|Orada bir mühür parçası ve senin ruhuna ait bir kesik saklı.", "Arşivci|Ruh Kesimi'ni alırsan geri dön. Uyanış balkonundaki mor mühür seni bekliyor.;;Arşivci|Ve hatırla: kılıç bedenleri keser. Ruh, mühürleri.")
+dialogue_sets = PackedStringArray("Arşivci|Yeni biri daha. Rafların arasında hepiniz aynı adımlarla yürürsünüz.;;Noroi|Beni tanıyor musun?;;Arşivci|Seni değil. Ama adın “1995 — son giren” listesinde; onu ben yazdım.", "Arşivci|Yasak kanat yukarıda. Kapısı unutulmuş sayfanın sırasını ister.;;Arşivci|Orada bir mühür parçası ve senin ruhuna ait bir kesik saklı.", "Arşivci|Ruh Kesimi'ni alırsan geri dön. Gözlem balkonundaki mor mühür seni bekliyor.;;Arşivci|Ve hatırla: kılıç bedenleri keser. Ruh, mühürleri.")
 
 [node name="FallenBooks" type="Area2D" parent="Interactive"]
 position = Vector2(330.0, 208.0)
@@ -37,7 +37,7 @@ script = ExtResource("lore")
 lore_id = &"stacks_books"
 texture_path = "res://assets/layers/books.png"
 sprite_scale = 0.35
-lines = PackedStringArray("Noroi|“Ses Arşivi Projesi — kayıp bir sesi sonsuza dek saklamak.”", "Noroi|Yazar: Noroi. İmza benim.")
-evidence_title = "Ses Arşivi Projesi"
-evidence_body = "Çekirdek deneyi, kaybettiğim birinin sesini saklamak için başlamış. Yazarı benim."
+lines = PackedStringArray("Noroi|“Hatıra Bağı Projesi — hatırayı bedenden koparıp boyuta bağlamak.”", "Noroi|İmza: X. Bu harf her sayfada var.")
+evidence_title = "Hatıra Bağı Projesi"
+evidence_body = "Çekirdek deneyi, hatırayı bedenden koparıp boyuta bağlamak için başlamış. Yazarı X."
 evidence_section = "notlar"

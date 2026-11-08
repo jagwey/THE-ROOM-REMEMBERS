@@ -3,18 +3,18 @@ extends RefCounted
 ## HUD hedef metinleri — `GameState.get_current_objective()` ve oda kimliğiyle eşleşir.
 
 const _BY_ROOM: Dictionary = {
-	"awakening": "Saati incele, Shilda ile konuş; sağdaki geçidi bul.",
+	"awakening": "Saati incele, gölgeyle konuş; sağdaki geçidi bul.",
 	"awakening_passage": "Kırmızı yarıklardan sakın; yankıdaki kodu alıp sağa ilerle.",
 	"awakening_seal": "Plaka canlıyı tutmaz. Kan kristali… bedenin plakada kalsın; yankıdaki kodu mühre gir.",
 	"decay_vines": "Sarmaşık kolunu bul ve kısayolu aç.",
 	"decay_weight": "Taşı plakaya it; gerekirse sıfırlama kolunu kullan.",
-	"decay_garden": "Çiçeği incele, Shilda'yı dinle; arşiv mührünü aç.",
+	"decay_garden": "Çiçeği incele, gölgeyle konuş; arşiv mührünü aç.",
 	"library_hall": "Arşivciyle konuş, tanıklıkları araştır.",
 	"library_witness": "Saat, çiçek ve mühür kayıtlarını oku.",
 	"library_page": "Tanıklıkları olay sırasına koy.",
 	"experiment_cells": "Gözlem kaydını incele; güvenli geçidi bul.",
 	"experiment_circuit": "Yankıyı etkinleştir, pencerede devreni aç.",
-	"experiment_authority": "Kendi imzanı bul; deneyi kimin başlattığını öğren.",
+	"experiment_authority": "İmzayı bul; deneyi kimin başlattığını öğren.",
 	"mirrors_reverse": "Yansımanın terslediği yönü çöz; doğru kapıyı seç.",
 	"mirrors_dual": "Mührü başlat, süre içinde kristali birleştir.",
 	"mirrors_unbroken": "Gerçeği dinle; Shilda ile yüzleş.",
@@ -65,7 +65,7 @@ static func _awakening_objective() -> String:
 	var steps: PackedStringArray = []
 	if not bool(k.get("pocket_watch_seen", false)):
 		steps.append("Saate bak")
-	if not GameState.is_shilda_named():
+	if not bool(GameState.player_progress_knowledge.get("shilda_talk_done", false)) and not GameState.is_shilda_named():
 		steps.append("Gölgeyle konuş")
 	if not PuzzleManager.is_solved(&"awakening_weight"):
 		steps.append("plakaya bas")

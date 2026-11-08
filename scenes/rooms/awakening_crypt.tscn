@@ -27,9 +27,9 @@ script = ExtResource("lore")
 lore_id = &"crypt_beds"
 texture_path = "res://assets/props/body_echo.png"
 sprite_scale = 0.9
-lines = PackedStringArray("Noroi|Sıra sıra yataklar. Her birinde… bir beden.", "Noroi|Hepsi ben. Ama her biri bir öncekinden daha genç.", "Noroi|Yatak beni her ölümde yeniden doğurmuyor. Beni geri sarıyor.", "Noroi|Suçluluktan önceki halime. Hiçbir şey bilmediğim zamana.")
+lines = PackedStringArray("Noroi|Sıra sıra yataklar. Her birinde… bir beden.", "Noroi|Hepsi yabancı yüzler. Benim gibi buraya girmişler.", "Noroi|Hiçbiri çıkamamış. Peki ben neden hâlâ ayaktayım?", "Noroi|Sondaki yatak boş. Sanki beni bekliyor.")
 evidence_title = "İlk Bedenler"
-evidence_body = "Yeniden doğuş yatağı her ölümde beni daha genç, daha masum bir halime döndürüyor. Mahzende onlarca beden var."
+evidence_body = "Yataklarda yüzlerce yabancı beden var. Hepsi benim gibi içeri girmiş, hepsini lanet yutmuş."
 evidence_section = "izler"
 set_progress_key = "truth_fragment_crypt"
 focus_zoom = true
@@ -40,9 +40,9 @@ script = ExtResource("lore")
 lore_id = &"crypt_ledger"
 texture_path = "res://assets/props/ledger.png"
 sprite_scale = 0.9
-lines = PackedStringArray("Noroi|Shilda'nın el yazısı: “Döngü 41. Yine unuttu. Yine çiçek bıraktım.”", "Noroi|“Bana kendisi emretti. Hatırlamaması için. Ben hatırlarım; o yeter.”")
+lines = PackedStringArray("Noroi|Shilda'nın el yazısı: “Kırk birinci ölüm. Yine unuttu. Yine çiçek bıraktım.”", "Noroi|“Hatırlamıyor, olsun. Ben hatırlarım; ikimize yeter.”")
 evidence_title = "Bekçinin Defteri"
-evidence_body = "Shilda her döngüyü saymış. Hafızamı silmesini ondan ben istemişim."
+evidence_body = "Shilda her ölümümü saymış. Ben unuttukça o hatırlamış."
 evidence_section = "notlar"
 
 [node name="CryptEcho" type="Area2D" parent="Interactive"]

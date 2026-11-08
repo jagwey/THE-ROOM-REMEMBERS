@@ -43,5 +43,5 @@ texture_path = "res://assets/props/red_flower.png"
 sprite_scale = 0.8
 lines = PackedStringArray("Noroi|Duvarın ardında kurumuş kırmızı çiçekler. Yüzlerce.", "Noroi|Her birinin yanına bir sayı kazınmış. Son sayı: kırk bir.", "Shilda|Her ölümünde bir tane. Unutmamak için.")
 evidence_title = "Kırk Bir Çiçek"
-evidence_body = "Shilda her döngüde bir çiçek saklamış. Kırk bir kez ölmüşüm."
+evidence_body = "Shilda her ölümüm için bir çiçek saklamış. Kırk bir kez ölmüşüm."
 evidence_section = "izler"

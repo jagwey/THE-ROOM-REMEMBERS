@@ -20,7 +20,7 @@ func _touch() -> bool:
 
 
 func _label_text() -> String:
-	var act := "Birlikte Mühürle" if ending_kind == &"together" else "Bağı Kopar"
+	var act := "Mührü Birlikte Kır" if ending_kind == &"together" else "Bağı Kopar"
 	## Dokunmatikte [E] tuşu yok: HUD/kapı etiketleriyle aynı "El ·" öneki.
 	return ("El · " + act) if _touch() else (act + " [E]")
 
@@ -100,8 +100,8 @@ func _do_together() -> void:
 			DialogueManager.say("", "Hazırlık eksik. Güven ve yollar tamamlanmalı.")
 		await DialogueManager.dialogue_finished
 		return
-	DialogueManager.say("Noroi", "İki parça. İki ad. Bir mühür.")
-	DialogueManager.say("Shilda", "Birlikte mühürleyelim.")
+	DialogueManager.say("Noroi", "İki parça. İki ad. Tek bir anahtar.")
+	DialogueManager.say("Shilda", "X'in mührünü birlikte kıralım.")
 	DialogueManager.say("Noroi", "Birlikte.")
 	var ok: bool = await DialogueManager.dialogue_finished
 	if not ok:
@@ -115,8 +115,8 @@ func _do_sever() -> void:
 		DialogueManager.say("", "Gerçeği henüz görmedin.")
 		await DialogueManager.dialogue_finished
 		return
-	DialogueManager.say("Noroi", "Bağı koparıyorum. Bellek serbest.")
-	DialogueManager.say("Shilda", "Işıklar… başka bir düzene geçer.")
+	DialogueManager.say("Noroi", "Bağı koparıyorum. Anılarım bana dönsün.")
+	DialogueManager.say("Shilda", "Dikkat et, Noroi… Hatırladıkların seni değiştirebilir.")
 	var ok: bool = await DialogueManager.dialogue_finished
 	if not ok:
 		return

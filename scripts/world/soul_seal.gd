@@ -3,6 +3,10 @@ extends StaticBody2D
 
 @export var puzzle_id: StringName = &"soul_seal"
 @export var height: float = 110.0
+## Mühür yalnız bir yönden geçişi tutar. Oyuncu "arka" taraftan (başka yoldan dolaşıp)
+## yaklaşırsa mühür kendiliğinden çözülür — aksi halde o tarafta kilitli kalırdı.
+## +1 = sağ taraf arka, -1 = sol taraf arka, 0 = kapalı.
+@export var back_side: int = 1
 
 var _vis: Node2D
 var _shape: CollisionShape2D
@@ -40,6 +44,30 @@ func _ready() -> void:
 	tw.tween_property(sigil, "modulate:a", 1.0, 0.9)
 	if PuzzleManager.is_solved(puzzle_id):
 		_open(false)
+		set_physics_process(false)
+
+
+func _physics_process(_delta: float) -> void:
+	if back_side == 0 or PuzzleManager.is_solved(puzzle_id):
+		set_physics_process(false)
+		return
+	var p := get_tree().get_first_node_in_group("player") as Node2D
+	if p == null:
+		return
+	var dx := (p.global_position.x - global_position.x) * float(signi(back_side))
+	if dx > 16.0 and dx < 60.0:
+		_open_from_behind()
+
+
+func _open_from_behind() -> void:
+	set_physics_process(false)
+	PuzzleManager.mark_solved(puzzle_id)
+	var am := get_node_or_null("/root/AudioManager")
+	if am:
+		am.play_sfx(&"seal_open")
+	DialogueManager.whisper("Noroi", "Mühür yalnız öbür yüzünü koruyormuş. Bu taraftan dokununca dağıldı.")
+	SaveManager.save_game()
+	_open(true)
 
 
 func receive_soul_slash(_from: Node) -> void:
@@ -55,6 +83,7 @@ func receive_soul_slash(_from: Node) -> void:
 		cam.add_trauma(0.3)
 	DialogueManager.whisper("Noroi", "Mühür ruhumu tanıdı… ve çözüldü.")
 	SaveManager.save_game()
+	set_physics_process(false)
 	_open(true)
 
 

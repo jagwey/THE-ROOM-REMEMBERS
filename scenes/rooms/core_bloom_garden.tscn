@@ -26,7 +26,7 @@ script = ExtResource("lore")
 lore_id = &"bloom_memory"
 texture_path = "res://assets/layers/flowers.png"
 sprite_scale = 0.35
-lines = PackedStringArray("Noroi|Çekirdeğin içinde açan bir bahçe. Buraya her döngüde bir çiçek getirilmiş.", "Shilda|Burası benim. Sen unuttukça ben buraya ekledim.")
+lines = PackedStringArray("Noroi|Çekirdeğin içinde açan bir bahçe. Her ölümümde buraya bir çiçek getirilmiş.", "Shilda|Burası benim bahçem. Sen unuttukça ben buraya çiçek ekledim.")
 
 [node name="Reconcile" type="Area2D" parent="Interactive"]
 position = Vector2(640.0, 288.0)
@@ -34,9 +34,9 @@ script = ExtResource("lore")
 lore_id = &"bloom_reconcile"
 texture_path = "res://assets/props/red_flower.png"
 sprite_scale = 0.8
-lines = PackedStringArray("Shilda|Sana kaç kez kılıç kaldırdığını sayamıyorum. Yine de buradayım.", "Noroi|Hatırlamıyorum. Ama özür dilerim.", "Shilda|…Bu yeter. Yanındayım.")
+lines = PackedStringArray("Shilda|Bana kaç kez kılıç kaldırdığını sayamıyorum. Yine de buradayım.", "Noroi|Hatırlamıyorum. Ama özür dilerim.", "Shilda|…Bu yeter. Yanındayım.")
 repeat_line = "Shilda|Yanındayım."
 evidence_title = "Çiçek Bahçesi"
-evidence_body = "Shilda her döngünün çiçeğini Çekirdek'in içinde saklamış. Barıştık."
+evidence_body = "Shilda her ölümüm için bir çiçeği Çekirdek'in içinde saklamış. Barıştık."
 evidence_section = "notlar"
 set_progress_key = "trusted_keeper"

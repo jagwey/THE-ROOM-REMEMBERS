@@ -17,7 +17,7 @@ region_id = &"awakening"
 room_width = 960.0
 bg_region = "awakening"
 checkpoint = Vector2(120, 288)
-doors = [{"x": 40.0, "to": "awakening", "spawn": "from_awakening_balcony"}, {"x": 920.0, "to": "awakening_crypt", "spawn": "from_awakening_balcony", "req": "soul_seal_balcony", "msg": "Mor bir mühür kapıyı tutuyor. Kılıç değil… ruh gerek."}]
+doors = [{"x": 40.0, "to": "awakening", "spawn": "from_awakening_balcony"}, {"x": 920.0, "to": "awakening_crypt", "spawn": "from_awakening_balcony", "req": "soul_seal_balcony", "msg": "Mor bir mühür kapıyı tutuyor. Buna kılıç değil, ruh gerek."}]
 platforms = PackedVector3Array(380.0, 248.0, 110.0, 410.0, 208.0, 120.0)
 
 [node name="Spawns" type="Node2D" parent="."]
@@ -33,9 +33,9 @@ script = ExtResource("lore")
 lore_id = &"balcony_view"
 texture_path = "res://assets/props/telescope.png"
 sprite_scale = 0.9
-lines = PackedStringArray("Noroi|Kırık bir gözlem balkonu. Aşağıda… koca bir tesis.", "Noroi|Camların arkasında beyaz önlüklü biri, kalabalığa emir veriyor.", "Noroi|Yüzünü göremiyorum. Ama duruşu… tanıdık.", "Shilda|Bütün tesisi bu balkondan izlerdin.")
+lines = PackedStringArray("Noroi|Kırık bir gözlem balkonu. Aşağıda… koca bir tesis.", "Noroi|Cam duvarın ardında beyaz önlüklü bir silüet var. Aşağıdakilere bakıyor.", "Noroi|Yüzünü göremiyorum. Neden içim ürperiyor?", "Shilda|Bütün tesisi bu balkondan izlerdi. Yüzünü kimse görmedi.")
 evidence_title = "Gözlem Balkonu"
-evidence_body = "Balkondan tesisi izleyen bir yetkili. Duruşu bana benziyor. Bu balkon bir zamanlar benimdi."
+evidence_body = "Balkondan tesisi izleyen beyaz önlüklü bir silüet. Yüzü yok. Kim olduğunu bilmiyorum."
 evidence_section = "izler"
 focus_zoom = true
 
@@ -46,7 +46,7 @@ lore_id = &"balcony_photo"
 texture_path = "res://assets/props/photograph.png"
 lines = PackedStringArray("Noroi|Yırtık bir fotoğraf. İki kişi: biri ben… öteki silinmiş.", "Noroi|Arkasında bir not: “Sesini kaybetmeyeceğim.”")
 evidence_title = "Silinmiş Yüz"
-evidence_body = "Fotoğrafta yanımdaki kişinin yüzü kazınmış. Notta: Sesini kaybetmeyeceğim."
+evidence_body = "Fotoğrafta yanımdaki kişinin yüzü kazınmış. Notta: “Sesini kaybetmeyeceğim.”"
 evidence_section = "notlar"
 
 [node name="SoulSeal" type="StaticBody2D" parent="Interactive"]

@@ -35,7 +35,7 @@ title = "Gölge Atılması"
 texture_path = "res://assets/props/halo.png"
 tint = Color(0.6, 0.45, 0.9, 1)
 lines = PackedStringArray("Noroi|Sunakta bir gölge. Benim gölgem… ama benden önce hareket ediyor.", "Noroi|İçime çekiyorum. Bedenim hafifliyor.")
-tutorial = "X / Atıl: Gölge Atılması. Atılırken lanetli bariyerlerin ve Shilda'nın saldırılarının içinden hasar almadan geçersin."
+tutorial = "X / Atıl: Gölge Atılması. Atılırken lanetli bariyerlerden ve Shilda'nın saldırılarından hasar almadan geçersin."
 
 [node name="Barrier" type="StaticBody2D" parent="Interactive"]
 position = Vector2(560.0, 288.0)
@@ -58,4 +58,4 @@ npc_id = &"echo_shrine"
 idle_anim = "echo_idle"
 walk_anim = "echo_walk"
 ghostly = true
-dialogue_sets = PackedStringArray("Yansıma|Her döngüde buraya kadar geldin. Her seferinde Shilda'ya kılıç kaldırdın.;;Yansıma|Bu sefer başka bir şey dene.", "Yansıma|Ona güvenirsen birlikte mühürlersiniz. Bağı koparırsan… onu burada bırakırsın.")
+dialogue_sets = PackedStringArray("Yansıma|Her döngüde buraya kadar geldin. Her seferinde Shilda'ya kılıç kaldırdın.;;Yansıma|Bu sefer başka bir şey dene.", "Yansıma|Ona güvenirsen mührü birlikte kırarsınız. Bağı koparırsan her şeyi tek başına hatırlarsın.")

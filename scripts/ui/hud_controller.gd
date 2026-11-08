@@ -221,7 +221,9 @@ func _apply_dialogue_skin(speaker: String) -> void:
 ## Konuşmacı etiketi / isimlik / metin hizası: boş "ölü satır" kalmaz, metin alanı sabit yükseklikte.
 func _apply_dialogue_layout(speaker: String) -> void:
 	var narrator := _is_narrator(speaker)
-	var has_plate := _nameplate != null and _nameplate.texture != null and not narrator
+	# Adı henüz bilinmeyen konuşmacı ("???"): isimlik görselinde ad yazılı, onun yerine metin etiketi.
+	var masked := speaker.strip_edges() == "???"
+	var has_plate := _nameplate != null and _nameplate.texture != null and not narrator and not masked
 	if _nameplate:
 		_nameplate.visible = has_plate
 	dialogue_speaker.visible = not narrator and not has_plate

@@ -37,6 +37,7 @@ func play_epilogue(ep_title: String, lines: Array) -> void:
 	UiGate.set_ending(true)
 	MobileInputManager.clear_held_inputs()
 	title.text = ep_title
+	hint.text = "Etkileş / dokun: devam"
 	_show_line()
 	while _playing:
 		await get_tree().process_frame
