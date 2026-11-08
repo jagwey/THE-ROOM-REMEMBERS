@@ -29,6 +29,10 @@ Dal: cursor/playable-story-flow-8e4e · Sürüm: v1.2.0 (versionCode 16)
 - Bilinen eksik: ses cihazda dinlenmedi; 2 saat süre ve tüm oda turu cihazda doğrulanmadı; release keystore yok
 - Test: scratchpad audit.sh (Godot 4.7.2 console, Downloads zip'ten çıkarıldı); TORIMON_TEST=1 gerekli
 
+## v3 hikâye revizyonu (spec 3.0, plan docs/superpowers/plans/v3-story-overhaul.md, SDD ledger .superpowers/sdd/v3-story-overhaul/progress.md)
+- [x] T1 lore/canon (2026-11-09, a985d0c): Noroi yazar/yetkili değil, X kazınmış, 1927/1995 ipuçları, Araştırma Yardımcısı S.; lore_canon_audit 0, release 111/0, e2e 50/0; pencereli kontrol edildi
+- [ ] T2 story flags + save v6 · T3 kayıt ayrımı · T4 Hafıza Mühürleri · T5 lanet bantları · T6 yatak respawn · T7 açılış/isim · T8 menüler · T9 tek final · T10 diyalog · T11 audit+test planı
+
 ## Kalan
 - docs/gelistirme/ altındaki izlenmeyen log/zip dosyaları: .gitignore veya temizlik kararı bekliyor
 ## V3.0 ölüm/respawn (2026-11-07, güvenli nokta: tag `pre-v3-death-system`)
