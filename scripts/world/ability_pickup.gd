@@ -57,9 +57,9 @@ func on_interact(_by: Node) -> void:
 			DialogueManager.say(parts[0], parts[1])
 		else:
 			DialogueManager.say("Noroi", l)
-	DialogueManager.say("—", "%s kazanıldı." % title)
+	DialogueManager.say("", "%s kazanıldı." % title)
 	if tutorial != "":
-		DialogueManager.say("—", tutorial)
+		DialogueManager.say("", tutorial)
 	if grant_world_flag != &"":
 		GameState.set_world_flag(grant_world_flag, true)
 	else:

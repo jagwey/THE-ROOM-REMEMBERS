@@ -28,20 +28,20 @@ const STRIKES_TO_BAD := 3
 ## Oda sahnesinde Spawns/keeper_observe (veya keeper_intervene / keeper_ambush) Marker2D varsa konum onu kullanır.
 const ROOM_PRESENCE := {
 	"awakening": {"mode": "present", "pos": Vector2(480, 280)},
-	"awakening_passage": {"mode": "silhouette", "pos": Vector2(1500, 270)},
-	"awakening_balcony": {"mode": "silhouette", "pos": Vector2(820, 200)},
+	"awakening_passage": {"mode": "silhouette", "pos": Vector2(1500, 280)},
+	"awakening_balcony": {"mode": "silhouette", "pos": Vector2(820, 280)},
 	"decay_garden": {"mode": "present", "pos": Vector2(700, 280)},
 	"decay_shilda_wall": {"mode": "present", "pos": Vector2(760, 280)},
-	"library_witness": {"mode": "silhouette", "pos": Vector2(820, 270)},
-	"library_forbidden_wing": {"mode": "silhouette", "pos": Vector2(140, 270)},
-	"experiment_authority": {"mode": "silhouette", "pos": Vector2(820, 270)},
-	"experiment_quarantine": {"mode": "silhouette", "pos": Vector2(860, 270)},
+	"library_witness": {"mode": "silhouette", "pos": Vector2(820, 280)},
+	"library_forbidden_wing": {"mode": "silhouette", "pos": Vector2(140, 280)},
+	"experiment_authority": {"mode": "silhouette", "pos": Vector2(820, 280)},
+	"experiment_quarantine": {"mode": "silhouette", "pos": Vector2(860, 280)},
 	"mirrors_unbroken": {"mode": "present", "pos": Vector2(700, 280)},
-	"mirrors_shrine": {"mode": "silhouette", "pos": Vector2(820, 270)},
+	"mirrors_shrine": {"mode": "silhouette", "pos": Vector2(820, 280)},
 	"core_threshold": {"mode": "present", "pos": Vector2(760, 280)},
 	"core_seal_chamber": {"mode": "present", "pos": Vector2(700, 280)},
 	"core": {"mode": "present", "pos": Vector2(560, 280)},
-	"core_memory_vault": {"mode": "silhouette", "pos": Vector2(820, 270)},
+	"core_memory_vault": {"mode": "silhouette", "pos": Vector2(820, 280)},
 	"core_bloom_garden": {"mode": "present", "pos": Vector2(760, 280)},
 }
 var presence: String = "present"
@@ -82,7 +82,7 @@ var _zone_lines: Dictionary = {
 func _ready() -> void:
 	add_to_group("keeper")
 	sprite.sprite_frames = load("res://assets/characters/keeper.tres")
-	sprite.offset = Vector2(0, -60)
+	sprite.offset = Vector2(0, -51) ## ayak alt kenari (opak satir 122) node y+8 = zemin
 	hint.text = ""
 	hint.visible = false
 	UiTheme.apply_outlined(hint, UiTheme.HINT)
@@ -289,8 +289,8 @@ func on_trigger_zone(zone_id: StringName, _body: Node) -> void:
 		if count <= 0:
 			_busy = true
 			set_mode(Mode.WARN)
-			DialogueManager.whisper("Bekçi", "Yaklaşma.")
-			DialogueManager.whisper("Bekçi", "Kırmızı ışık seni yer.")
+			DialogueManager.whisper(GameState.keeper_speaker_name(), "Yaklaşma.")
+			DialogueManager.whisper(GameState.keeper_speaker_name(), "Kırmızı ışık seni yer.")
 			await DialogueManager.dialogue_finished
 			if DeathManager.is_dying:
 				return
@@ -310,7 +310,7 @@ func _do_warn(zone_id: StringName) -> void:
 	CurseManager.add_curse(6.0, zone_id)
 	var lines: Array = _zone_lines.get(zone_id, {}).get("warn", ["Yaklaşma."])
 	for line in lines:
-		DialogueManager.whisper("Bekçi", String(line))
+		DialogueManager.whisper(GameState.keeper_speaker_name(), String(line))
 	_show_hint(String(lines[0]))
 	await DialogueManager.dialogue_finished
 	if DeathManager.is_dying:
@@ -327,7 +327,7 @@ func _do_intervene(zone_id: StringName) -> void:
 	set_mode(Mode.INTERVENE)
 	var lines: Array = _zone_lines.get(zone_id, {}).get("intervene", ["Dur."])
 	for line in lines:
-		DialogueManager.whisper("Bekçi", String(line))
+		DialogueManager.whisper(GameState.keeper_speaker_name(), String(line))
 	# Oyuncu ile yasak nokta arasına yumuşak yerleş.
 	if _player:
 		var px: float = _player.global_position.x
@@ -398,8 +398,8 @@ func mourn_corpse(death_pos: Vector2, corpse_id: String) -> void:
 	var first := DeathManager.cinematic
 	var fade := create_tween()
 	fade.tween_property(self, "modulate", Color.WHITE, DeathManager._d(0.7 if first else 0.3))
-	if sprite.sprite_frames and sprite.sprite_frames.has_animation("grieve"):
-		sprite.play("grieve")
+	if sprite.sprite_frames and sprite.sprite_frames.has_animation("flower"):
+		sprite.play("flower")
 	if corpse_id != "":
 		CorpseManager.mark_flower_on_corpse(corpse_id)
 	else:
@@ -407,9 +407,9 @@ func mourn_corpse(death_pos: Vector2, corpse_id: String) -> void:
 	if first:
 		## İlk ölüm: Shilda bedenin başında diz çöker, ilk kez konuşur.
 		await DeathManager._wait(0.6)
-		DialogueManager.whisper("Bekçi", "…")
-		DialogueManager.whisper("Bekçi", "Bedenin soğuyor. Oda onu bırakmayacak.")
-		DialogueManager.whisper("Bekçi", "Uyan. Bu sefer hatırla.")
+		DialogueManager.whisper(GameState.keeper_speaker_name(), "…")
+		DialogueManager.whisper(GameState.keeper_speaker_name(), "Bedenin soğuyor. Oda onu bırakmayacak.")
+		DialogueManager.whisper(GameState.keeper_speaker_name(), "Uyan. Bu sefer hatırla.")
 		_show_hint("…çiçek")
 		## Dokunuşla geçilir; geçilmezse kendiliğinden ilerler — ölüm akışı asla kilitlenmez.
 		await DeathManager.wait_dialogue()
@@ -496,14 +496,15 @@ func on_interact(_by: Node) -> void:
 		return
 	var active_room := String(RoomManager.get_active_room_id())
 	if active_room == "awakening":
-		var done_partial: bool = bool(GameState.player_progress_knowledge.get("shilda_named_partial", false))
-		if not done_partial:
-			DialogueManager.say("Shilda", "Noroi… yine mi?")
-			DialogueManager.say("Noroi", "Beni… nasıl ismimle çağırdın?")
+		if not GameState.is_shilda_named():
+			DialogueManager.say("???", "Noroi… yine mi?")
+			DialogueManager.say("Noroi", "Beni… nasıl ismimle çağırdın? Sen kimsin?")
+			# Ad tam bu satırda açıklanır: isimlik ve portre anında Shilda'ya döner.
+			DialogueManager.say_with("Shilda", "Ben Shilda.", func(): GameState.set_shilda_named(true))
 			DialogueManager.say("Shilda", "Bu oda seni tanıyor. Ben sadece hatırlatıyorum.")
 			await _await_dialogue_or_smoke()
+			GameState.set_shilda_named(true) # diyalog iptal edilse de tutarlı kalsın
 			GameState.player_progress_knowledge["awakening_mystery_seen"] = true
-			GameState.player_progress_knowledge["shilda_named_partial"] = true
 			GameState.player_progress_knowledge["seen_keeper"] = true
 			GameState.knowledge_changed.emit(&"player")
 			SaveManager.save_game()
@@ -515,29 +516,29 @@ func on_interact(_by: Node) -> void:
 	# İyi yol: hazırlık varsa güven teklifi
 	var st: Dictionary = EndingManager.prep_status()
 	if st["weight"] and st["code"] and st["echo"] and not st["trusted"]:
-		DialogueManager.say("Bekçi", "Bana… güvenebilir misin?")
+		DialogueManager.say(GameState.keeper_speaker_name(), "Bana… güvenebilir misin?")
 		DialogueManager.say("Noroi", "…Güveniyorum.")
-		DialogueManager.say("Bekçi", "O zaman Çekirdek'e git. Birlikte mühürleyelim.")
+		DialogueManager.say(GameState.keeper_speaker_name(), "O zaman Çekirdek'e git. Birlikte mühürleyelim.")
 		await _await_dialogue_or_smoke()
 		GameState.player_progress_knowledge["trusted_keeper"] = true
 		set_mode(Mode.INTIMACY)
 		SaveManager.save_game()
 		return
 	if st["trusted"]:
-		DialogueManager.say("Bekçi", "Çekirdek seni bekliyor.")
+		DialogueManager.say(GameState.keeper_speaker_name(), "Çekirdek seni bekliyor.")
 		return
 	match mode:
 		Mode.WARN:
-			DialogueManager.say("Bekçi", "Söyledim… yaklaşma.")
+			DialogueManager.say(GameState.keeper_speaker_name(), "Söyledim… yaklaşma.")
 		Mode.INTERVENE:
-			DialogueManager.say("Bekçi", "Geri dön.")
+			DialogueManager.say(GameState.keeper_speaker_name(), "Geri dön.")
 		Mode.MOURNING:
-			DialogueManager.say("Bekçi", "…")
+			DialogueManager.say(GameState.keeper_speaker_name(), "…")
 		Mode.INTIMACY:
-			DialogueManager.say("Bekçi", "Yanındayım.")
+			DialogueManager.say(GameState.keeper_speaker_name(), "Yanındayım.")
 		_:
-			DialogueManager.say("Bekçi", "…Seni izliyorum.")
-			DialogueManager.say("Bekçi", "Henüz hatırlama.")
+			DialogueManager.say(GameState.keeper_speaker_name(), "…Seni izliyorum.")
+			DialogueManager.say(GameState.keeper_speaker_name(), "Henüz hatırlama.")
 
 
 func receive_player_strike() -> void:
@@ -555,7 +556,7 @@ func receive_player_strike() -> void:
 		_flash(Color(1.6, 1.2, 1.2, 1))
 		return
 	if not bool(GameState.player_progress_knowledge.get("awakening_mystery_seen", false)):
-		DialogueManager.whisper("Bekçi", "…Henüz değil.")
+		DialogueManager.whisper(GameState.keeper_speaker_name(), "…Henüz değil.")
 		return
 	_strikes += 1
 	CurseManager.add_curse(10.0, &"strike_keeper")
@@ -564,11 +565,11 @@ func receive_player_strike() -> void:
 	_show_hint("!")
 	var in_core := String(GameState.character_current_life_knowledge.get("room", "")).begins_with("core")
 	if _strikes == 1:
-		DialogueManager.say("Bekçi", "Bunu… yapma.")
+		DialogueManager.say(GameState.keeper_speaker_name(), "Bunu… yapma.")
 		await _await_dialogue_or_smoke()
 		return
 	if _strikes == 2:
-		DialogueManager.say("Bekçi", "Lütfen. Ben düşmanın değilim.")
+		DialogueManager.say(GameState.keeper_speaker_name(), "Lütfen. Ben düşmanın değilim.")
 		await _await_dialogue_or_smoke()
 		GameState.player_progress_knowledge["trusted_keeper"] = false
 		GameState.player_progress_knowledge["keeper_hurt"] = true
@@ -576,8 +577,8 @@ func receive_player_strike() -> void:
 	if _strikes >= STRIKES_TO_BAD:
 		if not in_core:
 			## İlk bölgeler: ilişki kırılır; oyun bitmez. Onarım mümkün.
-			DialogueManager.say("Bekçi", "…Yeter.")
-			DialogueManager.say("Bekçi", "Bir gün bunu yeniden sorarsın diye… geri çekiliyorum.")
+			DialogueManager.say(GameState.keeper_speaker_name(), "…Yeter.")
+			DialogueManager.say(GameState.keeper_speaker_name(), "Bir gün bunu yeniden sorarsın diye… geri çekiliyorum.")
 			await _await_dialogue_or_smoke()
 			GameState.player_progress_knowledge["trusted_keeper"] = false
 			GameState.player_progress_knowledge["keeper_hurt"] = true
@@ -595,7 +596,7 @@ func receive_player_strike() -> void:
 		collision_layer = 0
 		GameState.set_world_flag(&"keeper_defeated", true)
 		SaveManager.save_game()
-		DialogueManager.say("Bekçi", "…Öyle olsun.")
+		DialogueManager.say(GameState.keeper_speaker_name(), "…Öyle olsun.")
 		await _await_dialogue_or_smoke()
 		modulate = Color(0.4, 0.35, 0.4, 0.6)
 		## Oyuncu aynı anda öldüyse önce yeniden doğuş biter, sonra son (deterministik sıra).
@@ -751,6 +752,7 @@ func _process_combat(delta: float) -> void:
 				_flash(Color(1.8, 0.35, 0.4, 1))
 				_show_hint("!")
 				sprite.play("observe")
+				_sfx(&"keeper_telegraph")
 		&"claw_windup":
 			_face_player()
 			if _combat_timer <= 0.0:

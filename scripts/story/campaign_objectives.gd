@@ -50,14 +50,14 @@ static func objective_for_room(room_id: String) -> String:
 	return raw
 
 
-## Uyanış: kalan adımlar "Saate bak · Shilda ile konuş · plakaya bas" biçiminde kısalır.
+## Uyanış: kalan adımlar "Saate bak · Gölgeyle konuş · plakaya bas" biçiminde kısalır.
 static func _awakening_objective() -> String:
 	var k: Dictionary = GameState.player_progress_knowledge
 	var steps: PackedStringArray = []
 	if not bool(k.get("pocket_watch_seen", false)):
 		steps.append("Saate bak")
-	if not bool(k.get("shilda_named_partial", false)) and not bool(k.get("shilda_named", false)):
-		steps.append("Shilda ile konuş")
+	if not GameState.is_shilda_named():
+		steps.append("Gölgeyle konuş")
 	if not PuzzleManager.is_solved(&"awakening_weight"):
 		steps.append("plakaya bas")
 	if steps.is_empty():

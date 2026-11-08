@@ -17,7 +17,7 @@ var player_progress_knowledge: Dictionary = {
 	"seen_keeper": false,
 	"awakening_mystery_seen": false,
 	"pocket_watch_seen": false,
-	"shilda_named_partial": false,
+	"shilda_named": false,
 	"first_death_seen": false,
 	"rooms_visited": [],
 	"journal_unlocked": false,
@@ -166,5 +166,32 @@ func has_any_ability() -> bool:
 
 
 ## Shilda adını söyledi mi (söylemeden önce etkileşim etiketi "???").
+## TEK kaynak: player_progress_knowledge["shilda_named"]. Eski kayıtlardaki
+## shilda_named_partial / world flag "shilda_named" true ise burada göç ettirilir.
 func is_shilda_named() -> bool:
-	return bool(player_progress_knowledge.get("shilda_named", false))
+	if bool(player_progress_knowledge.get("shilda_named", false)):
+		return true
+	var legacy: bool = bool(player_progress_knowledge.get("shilda_named_partial", false))
+	var flags: Dictionary = world_memory_state.get("flags", {})
+	if legacy or bool(flags.get(&"shilda_named", flags.get("shilda_named", false))):
+		player_progress_knowledge["shilda_named"] = true
+		player_progress_knowledge.erase("shilda_named_partial")
+		flags.erase(&"shilda_named")
+		flags.erase("shilda_named")
+		return true
+	return false
+
+
+func set_shilda_named(value: bool = true) -> void:
+	player_progress_knowledge["shilda_named"] = value
+	if value:
+		player_progress_knowledge.erase("shilda_named_partial")
+		var flags: Dictionary = world_memory_state.get("flags", {})
+		flags.erase(&"shilda_named")
+		flags.erase("shilda_named")
+	knowledge_changed.emit(&"player")
+
+
+## Shilda'nın konuşmacı adı: isim öncesi "???", sonrası "Shilda".
+func keeper_speaker_name() -> String:
+	return "Shilda" if is_shilda_named() else "???"

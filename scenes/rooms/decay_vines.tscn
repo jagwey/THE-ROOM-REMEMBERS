@@ -99,13 +99,13 @@ z_index = 1
 
 [node name="Column1" type="Sprite2D" parent="Decor"]
 texture_filter = 0
-position = Vector2(200, 234)
+position = Vector2(200, 227)
 texture = ExtResource("9")
 centered = true
 
 [node name="Column2" type="Sprite2D" parent="Decor"]
 texture_filter = 0
-position = Vector2(900, 230)
+position = Vector2(900, 227)
 texture = ExtResource("9")
 centered = true
 
@@ -118,7 +118,8 @@ modulate = Color(0.62, 0.58, 0.55, 0.78)
 
 [node name="Rubble" type="Sprite2D" parent="Decor"]
 texture_filter = 0
-position = Vector2(520, 300)
+position = Vector2(520, 269)
+scale = Vector2(0.6, 0.6)
 texture = ExtResource("11")
 centered = true
 

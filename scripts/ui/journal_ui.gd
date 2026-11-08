@@ -46,7 +46,9 @@ func _ready() -> void:
 	detail_body.add_theme_constant_override("line_separation", 4)
 	empty_label.add_theme_color_override("font_color", INK_SOFT)
 	UiTheme.apply_label(list_title, UiTheme.SPEAKER, true)
-	UiTheme.apply_label(detail_title, UiTheme.SPEAKER, true)
+	UiTheme.apply_label(detail_title, UiTheme.HINT, true)
+	detail_title.max_lines_visible = 4
+	detail_title.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	UiTheme.apply_label(detail_body, UiTheme.BODY, false)
 	detail_body.add_theme_constant_override("line_separation", 4)
 	detail_body.add_theme_color_override("default_color", INK)
@@ -163,7 +165,7 @@ func _rebuild_list() -> void:
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		b.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		b.clip_text = false
-		b.custom_minimum_size = Vector2(190, 26)
+		b.custom_minimum_size = Vector2(170, 26)
 		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		b.focus_mode = Control.FOCUS_ALL
 		UiTheme.apply_label(b, UiTheme.BODY, false)

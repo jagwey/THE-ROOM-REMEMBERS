@@ -23,15 +23,15 @@ func on_interact(_by: Node) -> void:
 	if not cg and not cs:
 		DialogueManager.say("Noroi", "Çekirdek uğultulu… eksikler var.")
 		if not st["weight"]:
-			DialogueManager.say("???", "Ağırlık yolu kapalı.")
+			DialogueManager.say("", "Ağırlık yolu kapalı.")
 		if not st["code"]:
-			DialogueManager.say("???", "Sayı henüz senin değil.")
+			DialogueManager.say("", "Sayı henüz senin değil.")
 		if not st["echo"]:
-			DialogueManager.say("???", "Yankı yok.")
+			DialogueManager.say("", "Yankı yok.")
 		if not st["trusted"]:
-			DialogueManager.say("???", "Bekçi'ye güvenmedin.")
+			DialogueManager.say("", "Shilda'ya güvenmedin.")
 		if not st["truth"]:
-			DialogueManager.say("???", "Gerçeği henüz görmedin.")
+			DialogueManager.say("", "Gerçeği henüz görmedin.")
 		DialogueManager.say("Noroi", "Sadece konuşmak yetmez.")
 		await DialogueManager.dialogue_finished
 		return

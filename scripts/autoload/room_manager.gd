@@ -252,6 +252,7 @@ func apply_initial_room(room_id: StringName, spawn_id: StringName = &"default", 
 		root.process_mode = Node.PROCESS_MODE_INHERIT
 		_set_room_physics(root, true)
 		_set_room_canvas_layers(root, true)
+		_setup_m3_mechanics(room_id, root, entry["spawns"])
 
 	var bounds: Rect2 = entry["bounds"]
 	if teleport_to_spawn:

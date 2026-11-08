@@ -10,7 +10,18 @@ extends "res://scripts/world/room_atmosphere.gd"
 
 func _ready() -> void:
 	super._ready()
+	_style_decor_labels()
 	_register_room()
+
+
+## Dekor etiketleri (ör. ArchivistLabel) koyu zeminde okunur: UiTheme.apply_outlined.
+func _style_decor_labels() -> void:
+	var decor := get_node_or_null("Decor")
+	if decor == null:
+		return
+	for c in decor.get_children():
+		if c is Label:
+			UiTheme.apply_outlined(c as Label, 12, false)
 
 
 func _register_room() -> void:

@@ -28,11 +28,11 @@ const LABEL_BY_SCRIPT := {
 	"blood_thorn.gd": "Kan Dikeni", "core_crystal.gd": "Çekirdek Kristali", "core_portal.gd": "Geçit",
 	"core_choice_pad.gd": "Seçim Zemini", "mirror_relay.gd": "Ayna", "reset_lever.gd": "Kol",
 	"vine_puzzle_lever.gd": "Kol", "vine_interact.gd": "Sarmaşık", "archive_door.gd": "Arşiv Kapısı",
-	"story_beat.gd": "Hatıra", "keeper_controller.gd": "Shilda", "shilda_name_beat.gd": "Shilda",
+	"story_beat.gd": "Hatıra", "keeper_controller.gd": "Shilda",
 	"shilda_garden_trust.gd": "Shilda", "evidence_card.gd": "Kayıt", "ability_pickup.gd": "Sunak",
 }
 const LORE_LABEL_BY_TEXTURE := {
-	"photograph": "Eski Fotoğraf", "cassette": "Kaset", "red_flower": "Kırmızı Çiçek", "flowers": "Kırmızı Çiçek",
+	"photograph": "Eski Fotoğraf", "memory_echo": "Anı Yankısı", "red_flower": "Kırmızı Çiçek", "flowers": "Kırmızı Çiçek",
 	"books": "Eski Günlük", "bookshelf": "Eski Günlük", "mirror": "Ayna", "mirror_shards": "Ayna Kırığı",
 	"candles": "Mumlar", "candlestick": "Şamdan", "key": "Anahtar", "seal": "Mühür", "curse": "Lanet İzi",
 	"body_echo": "Hatıra İzi", "core_crystal": "Çekirdek Kristali",

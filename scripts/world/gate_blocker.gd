@@ -30,11 +30,14 @@ func _is_open() -> bool:
 
 func _on_flag(f: StringName, value: Variant) -> void:
 	if f == open_flag:
+		if bool(value):
+			_pulse_open()
 		_apply(bool(value))
 
 
 func _on_puzzle(puzzle_id: StringName) -> void:
 	if puzzle_id == puzzle_listen:
+		_pulse_open()
 		_apply(true)
 
 
@@ -47,3 +50,11 @@ func _apply(open: bool) -> void:
 	visible = not open
 	if sprite:
 		sprite.modulate = Color(1, 1, 1, 0.0) if open else Color(1, 1, 1, 1)
+
+
+func _pulse_open() -> void:
+	if not is_visible_in_tree():
+		return
+	var cam := get_tree().get_first_node_in_group("follow_camera")
+	if cam and cam.has_method("focus_pulse"):
+		cam.focus_pulse(global_position + Vector2(0, -50))

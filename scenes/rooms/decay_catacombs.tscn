@@ -96,16 +96,16 @@ shape = SubResource("Gate")
 
 [node name="Sprite2D" type="Sprite2D" parent="Interactive/BoneGate"]
 texture_filter = 0
-position = Vector2(0, -40)
+position = Vector2(0, -48)
 texture = ExtResource("door_tex")
 
 [node name="BoneRecord" type="Area2D" parent="Interactive"]
 position = Vector2(1180.0, 288.0)
 script = ExtResource("lore")
 lore_id = &"catacomb_record"
-texture_path = "res://assets/props/cassette.png"
-sprite_scale = 0.5
-lines = PackedStringArray("Noroi|Bir kaset. Benim sesim: “Ritüel tutmuyor. Çekirdek anıları yutuyor.”", "Noroi|“Tesisi içeriden kilitleyeceğim. Kimse çıkmayacak. Ben de.”")
+texture_path = "res://assets/props/memory_echo.png"
+sprite_scale = 1.1
+lines = PackedStringArray("Noroi|Bir anı yankısı. Benim sesim: “Ritüel tutmuyor. Çekirdek anıları yutuyor.”", "Noroi|“Tesisi içeriden kilitleyeceğim. Kimse çıkmayacak. Ben de.”")
 evidence_title = "Kemik Mahzeni Kaydı"
 evidence_body = "Kendi sesim: Çekirdek anıları yutmaya başladığında tesisi içeriden ben kilitledim."
 evidence_section = "izler"

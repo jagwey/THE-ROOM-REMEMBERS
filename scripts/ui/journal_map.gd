@@ -14,12 +14,18 @@ const REGIONS: Array = [
 	{"id": "mirrors", "name": "Aynalar Salonu", "seal": &"mirrors_unbroken"},
 	{"id": "core", "name": "Çekirdek Dairesi", "seal": &"core_seal"},
 ]
-## Henüz sahnesi olmayabilecek gelecek odalar: haritada soluk gösterilir.
+## Henüz sahnesi olmayabilecek gelecek odalar (yedek liste); asıl kaynak RoomManager.ROOM_TITLES_TR (30 oda).
 const FUTURE_ROOMS: PackedStringArray = [
 	"awakening_balcony", "awakening_crypt", "decay_catacombs", "decay_shilda_wall",
 	"library_upper_stacks", "library_forbidden_wing", "experiment_quarantine",
 	"experiment_core_conduit", "mirrors_labyrinth", "mirrors_shrine", "core_memory_vault", "core_bloom_garden",
 ]
+
+## Kısayol bayrağı -> bağladığı iki bölge (bayrak adında iki bölge geçmiyorsa).
+const SHORTCUT_LINKS := {
+	"shortcut_decay_crypt": ["decay", "awakening"],
+	"decay_vine_shortcut": ["decay", "library"],
+}
 
 var _rooms_by_region: Dictionary = {}
 
@@ -45,6 +51,9 @@ func _collect_rooms() -> void:
 		if consts.has("ROOM_DEFS"):
 			for k in (consts["ROOM_DEFS"] as Dictionary).keys():
 				ids.append(String(k))
+	for f in RoomManager.ROOM_TITLES_TR.keys():
+		if not ids.has(String(f)):
+			ids.append(String(f))
 	for f in FUTURE_ROOMS:
 		if not ids.has(f):
 			ids.append(f)
@@ -114,7 +123,11 @@ func _draw() -> void:
 	var gap_spine := 26.0
 	var page_w := (size.x - gap_spine) * 0.5
 	var right_x := page_w + gap_spine
-	_text(Vector2(0, 0), "Harita & Mühürler", UiTheme.SPEAKER, INK, true)
+	var title_size: int = UiTheme.SPEAKER
+	var title_font: Font = UiTheme.font_bold if UiTheme.font_bold else _font()
+	while title_size > UiTheme.HINT and title_font.get_string_size("Harita & Mühürler", HORIZONTAL_ALIGNMENT_LEFT, -1, title_size).x > page_w - 44.0:
+		title_size -= 1
+	_text(Vector2(0, 0), "Harita & Mühürler", title_size, INK, true)
 	var shard1 := bool(flags.get("seal_shard_1", false))
 	var shard2 := bool(flags.get("seal_shard_2", false))
 	_diamond(Vector2(7, 37), 6.0, shard1, INK)
@@ -122,7 +135,7 @@ func _draw() -> void:
 	_text(Vector2(40, 29), "Mühür %d/2" % (int(shard1) + int(shard2)), UiTheme.HINT, INK)
 	var shortcuts: Array = []
 	for k in flags.keys():
-		if String(k).contains("shortcut") and bool(flags[k]):
+		if (String(k).contains("shortcut") or String(k).begins_with("shortcut_")) and bool(flags[k]):
 			shortcuts.append(String(k))
 	for r in REGIONS:
 		var sid := String(r["seal"])
@@ -131,7 +144,7 @@ func _draw() -> void:
 	_text(Vector2(0, 50), "Kanıt %d" % ev_count, UiTheme.HINT, INK)
 	_text(Vector2(0, 68), "Kısayol %d" % shortcuts.size(), UiTheme.HINT, GOLD if shortcuts.size() > 0 else Color(INK, 0.55))
 	# Gösterge (sağ sayfa, kurdelenin solu)
-	var lx := right_x + 4.0
+	var lx := right_x - 26.0
 	draw_circle(Vector2(lx + 7, 11), 7.0, INK)
 	_text(Vector2(lx + 20, 3), "Oda", UiTheme.HINT, INK)
 	draw_circle(Vector2(lx + 7, 33), 7.0, Palette.CRIMSON)
@@ -148,13 +161,18 @@ func _draw() -> void:
 		var reg: Dictionary = REGIONS[i]
 		var col := floori(i / 3.0)
 		var row := i % 3
-		cell_rect[String(reg["id"])] = Rect2(0.0 if col == 0 else right_x, gy + row * (ch + vgap), page_w, ch)
+		# Kağıt alanı: sol sayfa ciltten (x ~ page_w-24) önce biter; sağ sayfa kurdele hizasından başlar ve çerçeveye taşmaz.
+		var bx := 0.0 if col == 0 else right_x - 32.0
+		var bw := page_w - 24.0 if col == 0 else page_w - 30.0
+		cell_rect[String(reg["id"])] = Rect2(bx, gy + row * (ch + vgap), bw, ch)
 	# Kısayol çizgileri (altın kesikli) — anahtardaki iki bölge adı bulunursa.
 	for key in shortcuts:
 		var found: Array = []
 		for r in REGIONS:
 			if String(key).contains(String(r["id"])):
 				found.append(String(r["id"]))
+		if found.size() < 2 and SHORTCUT_LINKS.has(String(key)):
+			found = (SHORTCUT_LINKS[String(key)] as Array).duplicate()
 		if found.size() >= 2:
 			var a: Vector2 = (cell_rect[found[0]] as Rect2).get_center()
 			var b: Vector2 = (cell_rect[found[1]] as Rect2).get_center()
@@ -191,11 +209,11 @@ func _draw_region(reg: Dictionary, rect: Rect2, visited: Array, corpses_by_room:
 	_text(rect.position + Vector2(8, 3), String(reg["name"]), UiTheme.HINT, Color(INK, tone), any_seen)
 	# Bölge mührü (sağ üst): çözülmüşse dolu.
 	var solved := PuzzleManager.is_solved(reg["seal"])
-	_diamond(rect.position + Vector2(rect.size.x - 14.0, 12.0), 5.0, solved, Color(Palette.CRIMSON, 1.0 if solved else 0.55))
+	_diamond(rect.position + Vector2(rect.size.x - 12.0, 10.0), 4.5, solved, Color(Palette.CRIMSON, 1.0 if solved else 0.55))
 	# Oda düğümleri: zincir + daireler; cesetli oda crimson dolu, içinde sayı.
 	var n := maxi(1, rooms.size())
-	var left := rect.position.x + 16.0
-	var span := maxf(1.0, rect.size.x - 32.0)
+	var left := rect.position.x + 22.0
+	var span := maxf(1.0, rect.size.x - 44.0)
 	var cy := rect.position.y + rect.size.y - 17.0
 	for j in range(n - 1):
 		var x1 := left + span * float(j) / float(n - 1)

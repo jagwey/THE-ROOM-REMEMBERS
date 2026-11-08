@@ -44,12 +44,12 @@ func _ready() -> void:
 	_load_settings()
 	_menu_button = Button.new()
 	_menu_button.text = "Menü"
-	# Sağ üst köşe: HUD günlük düğmesinin solu (anchor — geniş ekranda da köşede kalır).
+	# Sağ üst köşe: HUD günlük düğmesinin ALTI (üst sıra uzun oda başlığına ayrılır; anchor — geniş ekranda da köşede kalır).
 	_menu_button.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	_menu_button.offset_left = -150.0
-	_menu_button.offset_right = -84.0
-	_menu_button.offset_top = 10.0
-	_menu_button.offset_bottom = 42.0
+	_menu_button.offset_left = -76.0
+	_menu_button.offset_right = -8.0
+	_menu_button.offset_top = 82.0
+	_menu_button.offset_bottom = 114.0
 	_menu_button.grow_horizontal = Control.GROW_DIRECTION_BEGIN
 	GothicModalPanel.style_button(_menu_button)
 	_menu_button.pressed.connect(toggle_menu)

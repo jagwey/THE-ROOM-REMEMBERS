@@ -90,3 +90,40 @@ Dal: cursor/playable-story-flow-8e4e · Sürüm: v1.2.0 (versionCode 16)
 ## v1.4.2
 - [x] Oyun içi güncelleme kontrolü: `scripts/autoload/update_checker.gd` (autoload `UpdateChecker`), public repo `jagwey/THE-ROOM-REMEMBERS-release` latest release; başlık ekranında "Güncelle → vX" (`title_screen.gd`). Android internet izni açıldı. Release akışı `CLAUDE.md` → "Release" bölümünde.
 - [x] Sürüm 1.4.2 / versionCode 20
+
+## v1.4.5 (devam) — Konuşmacı sözleşmesi (ajan A)
+- [x] Sözleşme: `""`/`Sistem`/`Kayıt` = anlatıcı (portre yok); `???` yalnız isim öncesi Shilda; `Shilda` isim sonrası; `Noroi` ana karakter. "Sen" ve "Bekçi" konuşmacıları kaldırıldı (portre eşlemesinden de).
+- [x] `GameState.is_shilda_named()/set_shilda_named()/keeper_speaker_name()` tek kaynak (`player_progress_knowledge["shilda_named"]`); eski `shilda_named_partial` ve world flag otomatik göç. `DialogueManager.say_with(speaker, text, on_show)` satır-başı geri çağrısı: "Ben Shilda." satırında ad açılır.
+- [x] Açılış satırları `""`; oda 1 hedefi isim öncesi "Gölgeyle konuş"; `seen_keeper` oyun başında set edilmiyor; yetim `shilda_name_beat.gd` + ShildaBeatShape silindi.
+- [x] library_hall Türkçe karakterler + dekor etiketleri `UiTheme.apply_outlined` (`room_root.gd`); ending_manager epilog başlıkları Türkçe.
+- Test: `ui_header_portrait_audit` konuşmacı sözleşmesi taraması + isim açıklama sırası; `e2e_runner` sürüm 1.4.4/22.
+
+## v1.4.5 (devam) — Diyalog çerçeveleri + HUD çakışmaları (ajan B, bölüm 2)
+- [x] 2.1: `assets/panels/dialogue_skins/*.png` temizlendi (artık pikseller). `hud_controller.gd`: anlatıcı = varsayılan çerçeve, isimlik/Speaker yok; `???` = varsayılan (bekçi) çerçeve + portrait_bekci (ayrı asset yok); Shilda = warning + name_shilda; Noroi = memory + name_noroi; satır başına anında geçiş; `>>` yerine next_arrow ikonu + nabız. `hud.tscn`: Dialogue 540x165, Continue TextureRect.
+- [x] 2.2 HUD: `region_title_card.gd` diyalog/UiGate açıkken kuyruğa alır; masaüstünde dokunmatik düğmeler gizli (`_touch_seen`/`is_touch_ui`); RoomHeader genişliği dinamik (220-440, "..." yok); `room_transition.gd` kapı etiketi kamera+oda sınırına kenetli; `session_menu.gd` Menü düğmesi günlük düğmesinin altına (başlıkla çakışmasın).
+- [x] 2.2 Günlük: DetailTitle şeritten kurdele soluna daraltıldı (HINT boyut, 4 satır + "…"); giriş düğmesi min 170; harita başlığı cilde değmiyor; bölge kutuları sayfa içinde (sağ -30), mühür elması sağ-üst, zincir span=rect.x-44; gösterge kurdele soluna; altın kısayol çizgileri (`SHORTCUT_LINKS` tahmini, ROOM_GRAPH yok); `_collect_rooms` 30 oda.
+- [x] Yeni test: `scripts/dev/room_header_fit_audit.gd` (30 başlık, en geniş awakening_crypt 288px). ui_header_portrait/start_flow/room_header_fit 0 fail; controls/death_loop/m1_stress/door/release temiz.
+- Ekran görüntüleri: scratchpad `...\scratchpad\B\s_*.png` (header_desktop, narrator, unknown, shilda, noroi, journal_notes, journal_map).
+
+## v1.4.5 (devam) — Gorsel/dekor duzeltmeleri (ajan C, bolum 3)
+- [x] awakening: far.png gotik tas yatak + cam tup (hastane yatagi/serum/ekran kalkti), mid.png sonuk isik lekesi temizlendi.
+- [x] Decor tum odalarda zemine (y=288) oturtuldu (olcekli: books/candlestick/rubble/altar/pocket_watch); isik huzmeleri y<=288 ile sinirli (`room_atmosphere.gd` SHAFT_*), `light_beam.png` ust/alt alpha fade; core runeleri z_index 3.
+- [x] Yeni props: telescope, ledger, memory_echo, weight_stone, memory_frame; door_closed/door_open 64x96 gotik yeniden cizildi, kapi spritelari zemine hizalandi. lore_point: parsomen cerceve yerine MemoryFrame, sprite alt kenari zemine.
+- [x] keeper: `sprite.offset.y=-51` (ayak zemine), balkon/tum silhouette y=280; `flower` animasyonu (kneel/gul/birak) olay sahnesinde oynar (grieve ayni); keeper_sheet kenar tasmasi temizlendi.
+- [x] noroi: sheet satir 4 (jump/fall, turetilmis kareler), `noroi.tres` jump+fall, `player_controller._update_anim` yukselirken jump / dusarken fall; atak karesi bleed pikselleri temizlendi.
+- [x] Dogrulama: tum headless auditler 0 fail (controls, death_loop, door, eye_intro, interact, jump, push, resume_m3, room_header_fit, start_flow, update_check, ui_header_portrait, m1_stress, release 110/0, save_quit, save_robust), e2e 50/50. 1920x1080 ekran goruntuleri scratchpad `...\scratchpad\C\shots\*_f.png` (7 oda) gozle kontrol edildi.
+- Eksik: jump/fall elle cizilmedi (run/idle karelerinden turetildi); kapi collision sekilleri yeniden boyutlanmadi; atak hilal ucu silindi (yeniden konumlanmadi).
+
+## v1.4.5 (devam) — Fizik/kayit + game feel (bolum 4-5)
+- [x] `cracked_wall.gd`: kirilinca layer/mask=0 + `_shape.disabled=true` aninda (+set_deferred). m1_stress kok neden: kirilma `set_deferred("disabled")` ile erteleniyordu, denetim ayni karede okuyunca FAIL. Kirilmada kamera `focus_pulse`.
+- [x] `room_manager.apply_initial_room` artik `_setup_m3_mechanics` cagirir ("Devam Et" sonrasi catlak ayna/golge kaybolmaz). Test: `scripts/dev/resume_m3_audit.gd`.
+- [x] Acilis kancasi: ilk cep saati etkilesiminde soguk mavi flas + `clock_tick` (tik + kalp atisi) (`pocket_watch_inspect.gd`, bir kez).
+- [x] Hitstop 40/45 ms; hit'te tas kirintisi parcaciklari; inis tozu (`_spawn_dust`); Shilda saldiri telegraph sesi `keeper_telegraph` (windup'ta); `follow_camera.focus_pulse` (0.5 sn odak+halka) gate_blocker/vine_gate/cracked_wall'da.
+- [x] `audio_manager.gd`: konusmaciya gore prosedurel dialog blip (Noroi/Shilda/Arsivci/???/anlatici), -19 dB, headless/test'te kapali.
+
+## v1.4.5 (devam) — Son QA turu (2026-11-08)
+- [x] HUD: `_layout_objective_and_hint()` hedef satır sayısına göre boyutlanır, ipucu altına itilir (core'da üst üste binme yok).
+- [x] `region_title_card.gd`: koyu zemin (Backing), diyalog/UiGate açılınca kart gizlenip kuyruğa geri alınır, kapanınca yeniden gösterilir; `is_showing()` statik.
+- [x] `room_transition.gd`: kapı etiketi kamera dışındayken ve bölge kartı ekrandayken gizli.
+- [x] Doğrulama (TORIMON_TEST=1): 17 headless audit rc=0, SCRIPT ERROR yok (release 110/0, e2e 50/50). 1920x1080 pencereli masaüstü+dokunmatik çekimler (intro, ???→Shilda açılışı, balkon, decay_weight, core, günlük notlar/harita) gözle kontrol edildi; çekimler scratchpad'de, repoda değil.
+- Eksik: jump/fall türetilmiş kareler; kapı collision şekilleri; SHORTCUT_LINKS tahmini; ayrı "???" portre asset'i yok; masaüstü istemi "E / El".

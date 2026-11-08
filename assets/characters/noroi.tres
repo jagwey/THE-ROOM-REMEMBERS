@@ -1,4 +1,4 @@
-[gd_resource type="SpriteFrames" load_steps=18 format=3]
+[gd_resource type="SpriteFrames" load_steps=22 format=3]
 
 [ext_resource type="Texture2D" path="res://assets/characters/noroi_sheet.png" id="1"]
 
@@ -82,10 +82,32 @@ atlas = ExtResource("1")
 region = Rect2(288, 288, 96, 96)
 filter_clip = true
 
+[sub_resource type="AtlasTexture" id="Atlas_16"]
+atlas = ExtResource("1")
+region = Rect2(0, 384, 96, 96)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="Atlas_17"]
+atlas = ExtResource("1")
+region = Rect2(96, 384, 96, 96)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="Atlas_18"]
+atlas = ExtResource("1")
+region = Rect2(192, 384, 96, 96)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="Atlas_19"]
+atlas = ExtResource("1")
+region = Rect2(288, 384, 96, 96)
+filter_clip = true
+
 [resource]
 animations = [{"frames": [{"duration": 1.0, "texture": SubResource("Atlas_0")}, {"duration": 1.0, "texture": SubResource("Atlas_1")}, {"duration": 1.0, "texture": SubResource("Atlas_2")}, {"duration": 1.0, "texture": SubResource("Atlas_3")}], "loop": true, "name": &"idle", "speed": 6.0},
 {"frames": [{"duration": 1.0, "texture": SubResource("Atlas_4")}, {"duration": 1.0, "texture": SubResource("Atlas_5")}, {"duration": 1.0, "texture": SubResource("Atlas_6")}, {"duration": 1.0, "texture": SubResource("Atlas_7")}], "loop": true, "name": &"run", "speed": 12.0},
 {"frames": [{"duration": 1.0, "texture": SubResource("Atlas_8")}, {"duration": 1.0, "texture": SubResource("Atlas_9")}, {"duration": 1.0, "texture": SubResource("Atlas_10")}, {"duration": 1.0, "texture": SubResource("Atlas_11")}], "loop": false, "name": &"attack", "speed": 12.0},
 {"frames": [{"duration": 1.0, "texture": SubResource("Atlas_12")}, {"duration": 1.0, "texture": SubResource("Atlas_13")}], "loop": false, "name": &"dash", "speed": 14.0},
 {"frames": [{"duration": 1.0, "texture": SubResource("Atlas_14")}], "loop": false, "name": &"hurt", "speed": 5.0},
-{"frames": [{"duration": 1.0, "texture": SubResource("Atlas_14")}, {"duration": 1.0, "texture": SubResource("Atlas_15")}], "loop": false, "name": &"death", "speed": 4.0}]
+{"frames": [{"duration": 1.0, "texture": SubResource("Atlas_14")}, {"duration": 1.0, "texture": SubResource("Atlas_15")}], "loop": false, "name": &"death", "speed": 4.0},
+{"frames": [{"duration": 1.0, "texture": SubResource("Atlas_16")}, {"duration": 1.0, "texture": SubResource("Atlas_17")}], "loop": false, "name": &"jump", "speed": 6.0},
+{"frames": [{"duration": 1.0, "texture": SubResource("Atlas_18")}, {"duration": 1.0, "texture": SubResource("Atlas_19")}], "loop": true, "name": &"fall", "speed": 6.0}]

@@ -119,21 +119,21 @@ z_index = 1
 
 [node name="Column1" type="Sprite2D" parent="Decor"]
 texture_filter = 0
-position = Vector2(220, 240)
+position = Vector2(220, 227)
 texture = ExtResource("8")
 centered = true
 modulate = Color(0.78, 0.72, 0.8, 0.88)
 
 [node name="Column2" type="Sprite2D" parent="Decor"]
 texture_filter = 0
-position = Vector2(960, 232)
+position = Vector2(960, 227)
 texture = ExtResource("8")
 centered = true
 modulate = Color(0.75, 0.7, 0.78, 0.85)
 
 [node name="Column3" type="Sprite2D" parent="Decor"]
 texture_filter = 0
-position = Vector2(1700, 238)
+position = Vector2(1700, 227)
 texture = ExtResource("8")
 centered = true
 modulate = Color(0.8, 0.74, 0.82, 0.82)
@@ -155,27 +155,30 @@ modulate = Color(0.65, 0.58, 0.7, 0.68)
 
 [node name="Candlestick" type="Sprite2D" parent="Decor"]
 texture_filter = 0
-position = Vector2(520, 268)
+position = Vector2(520, 245)
+scale = Vector2(0.7, 0.7)
 texture = ExtResource("11")
 centered = true
 
 [node name="Books" type="Sprite2D" parent="Decor"]
 texture_filter = 0
-position = Vector2(1180, 288)
+position = Vector2(1180, 270)
+scale = Vector2(0.55, 0.55)
 texture = ExtResource("12")
 centered = true
 modulate = Color(0.88, 0.82, 0.86, 0.9)
 
 [node name="Rubble" type="Sprite2D" parent="Decor"]
 texture_filter = 0
-position = Vector2(1460, 298)
+position = Vector2(1460, 269)
+scale = Vector2(0.6, 0.6)
 texture = ExtResource("9")
 centered = true
 modulate = Color(0.78, 0.72, 0.76, 0.88)
 
 [node name="Flowers" type="Sprite2D" parent="Decor"]
 texture_filter = 0
-position = Vector2(760, 284)
+position = Vector2(760, 266)
 texture = ExtResource("13")
 centered = true
 modulate = Color(0.92, 0.78, 0.82, 0.75)

@@ -80,7 +80,7 @@ z_index = 1
 
 [node name="Tank" type="Sprite2D" parent="Decor"]
 texture_filter = 0
-position = Vector2(480, 248)
+position = Vector2(480, 227)
 texture = ExtResource("7")
 centered = true
 

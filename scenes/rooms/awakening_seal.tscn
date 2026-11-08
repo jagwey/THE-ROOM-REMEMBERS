@@ -107,7 +107,7 @@ z_index = 1
 
 [node name="Column1" type="Sprite2D" parent="Decor"]
 texture_filter = 0
-position = Vector2(120, 236)
+position = Vector2(120, 227)
 texture = ExtResource("10")
 centered = true
 
@@ -120,7 +120,8 @@ modulate = Color(0.7, 0.65, 0.72, 0.75)
 
 [node name="Rubble" type="Sprite2D" parent="Decor"]
 texture_filter = 0
-position = Vector2(720, 296)
+position = Vector2(720, 269)
+scale = Vector2(0.6, 0.6)
 texture = ExtResource("12")
 centered = true
 
@@ -190,6 +191,7 @@ shape = SubResource("GateShape")
 
 [node name="Sprite2D" type="Sprite2D" parent="Interactive/SideGate"]
 texture_filter = 0
+position = Vector2(0, -30)
 texture = ExtResource("4")
 centered = true
 modulate = Color(0.55, 0.45, 0.5, 1)

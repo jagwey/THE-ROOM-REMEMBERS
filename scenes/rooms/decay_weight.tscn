@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" path="res://assets/backgrounds/decay/mid.png" id="2"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/decay/front.png" id="3"]
 [ext_resource type="Texture2D" path="res://assets/props/door_closed.png" id="4"]
-[ext_resource type="Texture2D" path="res://assets/layers/rubble.png" id="rubble_tex"]
+[ext_resource type="Texture2D" path="res://assets/props/weight_stone.png" id="rubble_tex"]
 [ext_resource type="Script" path="res://scripts/world/room_root.gd" id="5"]
 [ext_resource type="Script" path="res://scripts/world/room_transition.gd" id="6"]
 [ext_resource type="Script" path="res://scripts/world/pressure_plate.gd" id="7"]
@@ -104,13 +104,14 @@ z_index = 1
 
 [node name="Column1" type="Sprite2D" parent="Decor"]
 texture_filter = 0
-position = Vector2(140, 232)
+position = Vector2(140, 227)
 texture = ExtResource("11")
 centered = true
 
 [node name="Rubble" type="Sprite2D" parent="Decor"]
 texture_filter = 0
-position = Vector2(780, 298)
+position = Vector2(780, 269)
+scale = Vector2(0.6, 0.6)
 texture = ExtResource("12")
 centered = true
 
@@ -170,6 +171,7 @@ shape = SubResource("GateShape")
 
 [node name="Sprite2D" type="Sprite2D" parent="Interactive/PathGate"]
 texture_filter = 0
+position = Vector2(0, -28)
 texture = ExtResource("4")
 centered = true
 modulate = Color(0.48, 0.42, 0.46, 1)
@@ -204,8 +206,8 @@ texture_filter = 0
 texture = ExtResource("rubble_tex")
 centered = true
 position = Vector2(0, -12)
-scale = Vector2(0.24, 0.24)
-modulate = Color(0.85, 0.8, 0.86, 1)
+scale = Vector2(0.25, 0.25)
+modulate = Color(0.9, 0.86, 0.92, 1)
 
 [node name="Corpse" type="Node2D" parent="." groups=["corpses_root"]]
 

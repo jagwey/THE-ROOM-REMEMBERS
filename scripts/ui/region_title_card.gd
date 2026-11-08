@@ -19,6 +19,12 @@ var _sub_label: Label
 var _top_line: ColorRect
 var _bottom_line: ColorRect
 var _tween: Tween
+## Diyalog/kapı açıkken gelen kartlar sıraya girer, kapı boşalınca gösterilir.
+var _queue: Array[String] = []
+## Ekrandaki kartın bölgesi; kart sürerken diyalog açılırsa kart gizlenip sıraya geri alınır.
+var _current := ""
+## Kart, üst-orta oda başlığının (y 6..38) ve sol üst hedef/ipucunun (y 40..96) altında durur.
+const CARD_Y := 112.0
 
 
 func _ready() -> void:
@@ -34,14 +40,23 @@ func _build_ui() -> void:
 	_container = Control.new()
 	_container.name = "TitleCardContainer"
 	_container.set_anchors_preset(Control.PRESET_CENTER_TOP)
-	_container.offset_top = 48.0
+	_container.offset_top = CARD_Y
 	_container.offset_left = -200.0
 	_container.offset_right = 200.0
-	_container.offset_bottom = 112.0
+	_container.offset_bottom = CARD_Y + 64.0
 	_container.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_container.modulate.a = 0.0
 	add_child(_container)
+
+	# Koyu zemin: arkadaki dünya etiketleri ([E] Geç, prop adları) kartla çakışmasın.
+	var backing := ColorRect.new()
+	backing.name = "Backing"
+	backing.color = Color(0.07, 0.05, 0.09, 0.78)
+	backing.position = Vector2(-20, -6)
+	backing.size = Vector2(440, 74)
+	backing.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_container.add_child(backing)
 
 	_top_line = ColorRect.new()
 	_top_line.color = Color(Palette.PALE_LILAC.r, Palette.PALE_LILAC.g, Palette.PALE_LILAC.b, 0.45)
@@ -96,11 +111,49 @@ static func show_region_title(region_name: String) -> void:
 				inst.call_deferred("display_card", region_name)
 
 
+## Kart ekrandayken true: dünya etiketleri (kapı adları) bu sürede gizlenir, kartın arkasından sızmaz.
+static func is_showing() -> bool:
+	if instance == null or not is_instance_valid(instance):
+		return false
+	var c: Control = instance.get("_container")
+	return c != null and c.modulate.a > 0.02
+
+
+func _is_gated() -> bool:
+	return DialogueManager.is_open or UiGate.blocks_gameplay_input()
+
+
+func _process(_delta: float) -> void:
+	if _is_gated():
+		# Kart ekrandayken diyalog/kapı açıldı: üst üste binmesin, kartı sakla ve sonra yeniden göster.
+		if _container and _container.modulate.a > 0.02:
+			if _tween and _tween.is_valid():
+				_tween.kill()
+			_container.modulate.a = 0.0
+			if _current != "" and not _queue.has(_current):
+				_queue.push_front(_current)
+		return
+	if _queue.is_empty():
+		return
+	_show_now(_queue.pop_front())
+
+
 func display_card(region_name: String) -> void:
+	if not REGION_CARDS.has(region_name):
+		return
+	if _is_gated():
+		if not _queue.has(region_name):
+			_queue.append(region_name)
+		return
+	_show_now(region_name)
+
+
+func _show_now(region_name: String) -> void:
 	var info: Dictionary = REGION_CARDS.get(region_name, {})
 	if info.is_empty():
 		return
 	_build_ui()
+	_current = region_name
 	_title_label.text = String(info.get("title", ""))
 	_sub_label.text = String(info.get("sub", ""))
 
@@ -114,10 +167,11 @@ func display_card(region_name: String) -> void:
 	if _tween and _tween.is_valid():
 		_tween.kill()
 
-	_container.position.y = 48.0
+	_container.position.y = CARD_Y + 8.0
 	_container.modulate.a = 0.0
 
 	_tween = create_tween()
 	_tween.tween_property(_container, "modulate:a", 1.0, 0.45).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	_tween.parallel().tween_property(_container, "position:y", 40.0, 2.2).set_trans(Tween.TRANS_SINE)
+	_tween.parallel().tween_property(_container, "position:y", CARD_Y, 2.2).set_trans(Tween.TRANS_SINE)
 	_tween.tween_property(_container, "modulate:a", 0.0, 0.65).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	_tween.tween_callback(func(): _current = "")

@@ -792,16 +792,6 @@
     "layer": "props"
   },
   {
-    "file": "assets/props/cassette.png",
-    "width": 64,
-    "height": 64,
-    "mode": "RGBA",
-    "transparent": true,
-    "role": "props",
-    "source_cell": 6,
-    "layer": "props"
-  },
-  {
     "file": "assets/props/photograph.png",
     "width": 64,
     "height": 64,

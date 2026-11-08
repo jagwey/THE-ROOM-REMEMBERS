@@ -97,7 +97,7 @@ func play_echo(echo_id: StringName) -> void:
 	var seen: Array = GameState.player_progress_knowledge["echoes_seen"]
 	var first_time := not seen.has(key)
 
-	DialogueManager.say("…", "(gözlerin buğulanıyor)")
+	DialogueManager.say("", "(gözlerin buğulanıyor)")
 	for pair in entry.get("lines", []):
 		if pair is Array and pair.size() >= 2:
 			DialogueManager.say(String(pair[0]), String(pair[1]))

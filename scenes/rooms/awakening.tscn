@@ -1,4 +1,4 @@
-[gd_scene load_steps=36 format=3 uid="uid://torimon_awakening"]
+[gd_scene load_steps=34 format=3 uid="uid://torimon_awakening"]
 
 [ext_resource type="Texture2D" path="res://assets/backgrounds/awakening/far.png" id="1"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/awakening/mid.png" id="2"]
@@ -23,7 +23,6 @@
 [ext_resource type="Script" path="res://scripts/world/room_transition.gd" id="22"]
 [ext_resource type="Script" path="res://scripts/story/awakening_room.gd" id="23"]
 [ext_resource type="Script" path="res://scripts/story/pocket_watch_inspect.gd" id="24"]
-[ext_resource type="Script" path="res://scripts/story/shilda_name_beat.gd" id="25"]
 [ext_resource type="Texture2D" path="res://assets/props/pressure_plate.png" id="26"]
 
 [ext_resource type="Texture2D" path="res://assets/tiles/tile_00.png" id="walk_tile"]
@@ -54,9 +53,6 @@ size = Vector2(36, 36)
 
 [sub_resource type="RectangleShape2D" id="PocketWatchShape"]
 size = Vector2(56, 40)
-
-[sub_resource type="RectangleShape2D" id="ShildaBeatShape"]
-size = Vector2(120, 72)
 
 [node name="Awakening" type="Node2D"]
 script = ExtResource("23")
@@ -97,7 +93,7 @@ z_index = 1
 
 [node name="ColumnLeft" type="Sprite2D" parent="Decor"]
 texture_filter = 0
-position = Vector2(48, 236)
+position = Vector2(48, 227)
 texture = ExtResource("21")
 centered = true
 modulate = Color(0.85, 0.8, 0.88, 0.85)
@@ -111,42 +107,45 @@ modulate = Color(0.75, 0.7, 0.78, 0.7)
 
 [node name="Candlestick" type="Sprite2D" parent="Decor"]
 texture_filter = 0
-position = Vector2(250, 268)
+position = Vector2(250, 245)
+scale = Vector2(0.7, 0.7)
 texture = ExtResource("14")
 centered = true
 
 [node name="Candles" type="Sprite2D" parent="Decor"]
 texture_filter = 0
-position = Vector2(190, 278)
+position = Vector2(190, 263)
 scale = Vector2(0.85, 0.85)
 texture = ExtResource("20")
 centered = true
 
 [node name="Books" type="Sprite2D" parent="Decor"]
 texture_filter = 0
-position = Vector2(210, 292)
+position = Vector2(210, 270)
+scale = Vector2(0.55, 0.55)
 texture = ExtResource("17")
 centered = true
 modulate = Color(0.9, 0.85, 0.88, 0.9)
 
 [node name="Rubble" type="Sprite2D" parent="Decor"]
 texture_filter = 0
-position = Vector2(470, 298)
+position = Vector2(470, 269)
+scale = Vector2(0.6, 0.6)
 texture = ExtResource("16")
 centered = true
 modulate = Color(0.8, 0.75, 0.82, 0.85)
 
 [node name="Flowers" type="Sprite2D" parent="Decor"]
 texture_filter = 0
-position = Vector2(500, 286)
+position = Vector2(500, 266)
 texture = ExtResource("18")
 centered = true
 modulate = Color(0.95, 0.75, 0.8, 0.8)
 
 [node name="PocketWatch" type="Sprite2D" parent="Decor"]
 texture_filter = 0
-position = Vector2(236, 300)
-scale = Vector2(0.7, 0.7)
+position = Vector2(236, 275)
+scale = Vector2(0.45, 0.45)
 texture = ExtResource("19")
 centered = true
 modulate = Color(0.9, 0.85, 0.8, 0.85)
@@ -169,7 +168,7 @@ centered = true
 
 [node name="ExitDoor" type="Sprite2D" parent="Interactive"]
 texture_filter = 0
-position = Vector2(1240, 248)
+position = Vector2(1240, 240)
 texture = ExtResource("5")
 centered = true
 
@@ -225,7 +224,6 @@ shape = SubResource("GateShape")
 [node name="Sprite2D" type="Sprite2D" parent="Interactive/DoorGate"]
 texture_filter = 0
 position = Vector2(0, -8)
-scale = Vector2(0.55, 0.85)
 texture = ExtResource("5")
 centered = true
 modulate = Color(0.55, 0.5, 0.58, 0.92)

@@ -58,6 +58,9 @@ func receive_keeper_charge(_keeper: Node) -> void:
 	_apply_state(true)
 	if is_broken():
 		GameState.set_world_flag(shortcut_flag, true)
+		var cam := get_tree().get_first_node_in_group("follow_camera")
+		if cam and cam.has_method("focus_pulse"):
+			cam.focus_pulse(global_position + Vector2(0, -70))
 		broken.emit(wall_id)
 		DialogueManager.say("Noroi", "Duvar yıkıldı… arkasında bir geçit var.")
 	else:
@@ -76,7 +79,10 @@ func receive_sword_hit(_from: Node, _dir: float, _combo: int) -> void:
 func _apply_state(animate: bool) -> void:
 	var h := hits()
 	if h >= max_hits:
+		collision_layer = 0
+		collision_mask = 0
 		if _shape:
+			_shape.disabled = true
 			_shape.set_deferred("disabled", true)
 		if animate:
 			var tw := create_tween()

@@ -13,7 +13,7 @@ const InteractGlowLib := preload("res://scripts/world/interact_glow.gd")
 @onready var dialogue_panel: NinePatchRect = $SafeArea/Dialogue
 @onready var dialogue_speaker: Label = $SafeArea/Dialogue/Margin/VBox/Speaker
 @onready var dialogue_text: Label = $SafeArea/Dialogue/Margin/VBox/Text
-@onready var dialogue_continue: Label = $SafeArea/Dialogue/Continue
+@onready var dialogue_continue: TextureRect = $SafeArea/Dialogue/Continue
 @onready var hint_label: Label = $SafeArea/Hint
 @onready var btn_journal: TextureButton = $SafeArea/JournalBtn
 @onready var safe_area: Control = $SafeArea
@@ -59,6 +59,10 @@ var _header_tween: Tween
 var _objective: Label
 var _context_hint: Label
 var _hint_tick: float = 0.0
+## Masaüstünde sanal joystick/düğmeler gizli; ilk gerçek dokunuşta açılır.
+var _touch_seen: bool = false
+var _continue_tween: Tween
+var _continue_base := Vector2.ZERO
 
 
 func _ready() -> void:
@@ -94,12 +98,11 @@ func _ready() -> void:
 
 
 func _apply_fonts() -> void:
-	## Pixeloid hiyerarşi: hint 10 · body 12 · speaker 13 · continue 10 · seal 13/20
+	## Pixeloid hiyerarşi: hint 10 · body 12 · speaker 13 · seal 13/20
 	UiTheme.apply_outlined(hint_label, UiTheme.HINT, false, Palette.PALE_LILAC)
 	UiTheme.apply_outlined(dialogue_speaker, UiTheme.SPEAKER, true)
 	UiTheme.apply_outlined(dialogue_text, UiTheme.BODY, false)
 	dialogue_text.add_theme_constant_override("line_spacing", 2)
-	UiTheme.apply_outlined(dialogue_continue, UiTheme.HINT, false, Palette.PALE_LILAC)
 	if seal_digits:
 		UiTheme.apply_outlined(seal_digits, UiTheme.TITLE, true)
 	var seal_title := get_node_or_null("SafeArea/SealCode/Box/Title") as Label
@@ -136,7 +139,13 @@ const DIALOGUE_SKINS := {
 	&"shilda": ["res://assets/panels/dialogue_skins/dialogue_warning.png", "res://assets/panels/dialogue_skins/name_shilda.png"],
 	&"noroi": ["res://assets/panels/dialogue_skins/dialogue_memory.png", "res://assets/panels/dialogue_skins/name_noroi.png"],
 }
-const NAMEPLATE_H := 30.0
+## Panel boyutu (çerçeve görselleri ~3.27:1; 540x165 oranı korur, esneme <%1).
+const DIALOGUE_SIZE := Vector2(540, 165)
+const NAMEPLATE_H := 32.0
+const NAMEPLATE_POS := Vector2(100.0, 26.0)
+const MEDALLION_POS := Vector2(22, 52)
+## Adsız anlatıcı satırları: portre yok, varsayılan çerçeve, isimlik/konuşmacı yok.
+const NARRATOR_NAMES := ["", "Sistem", "Kayıt"]
 var _skin_cache: Dictionary = {}
 var _skin_key: StringName = &"~"
 var _nameplate: TextureRect
@@ -167,42 +176,69 @@ func _skin_for(speaker: String) -> StringName:
 	return &"default"
 
 
+func _is_narrator(speaker: String) -> bool:
+	return NARRATOR_NAMES.has(speaker.strip_edges())
+
+
+## Çerçeve + isimlik konuşmacıya göre anında değişir (Shilda=uyarı, Noroi=anı, diğer=varsayılan).
 func _apply_dialogue_skin(speaker: String) -> void:
 	var key := _skin_for(speaker)
-	if key == _skin_key or dialogue_panel == null:
+	if dialogue_panel == null:
 		return
-	var paths: Array = DIALOGUE_SKINS[key]
-	var frame := _smooth_tex(paths[0])
-	if frame == null:
-		return
-	_skin_key = key
-	dialogue_panel.texture = frame
-	dialogue_panel.patch_margin_left = 0
-	dialogue_panel.patch_margin_top = 0
-	dialogue_panel.patch_margin_right = 0
-	dialogue_panel.patch_margin_bottom = 0
-	dialogue_panel.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
-	var sigil := dialogue_panel.get_node_or_null("Sigil")
-	if sigil:
-		sigil.queue_free()
-	if _nameplate == null:
-		_nameplate = TextureRect.new()
-		_nameplate.name = "Nameplate"
-		_nameplate.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		_nameplate.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		_nameplate.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT
-		_nameplate.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
-		dialogue_panel.add_child(_nameplate)
-	var plate := _smooth_tex(paths[1])
-	_nameplate.texture = plate
-	_nameplate.visible = plate != null
-	if plate:
-		var w := NAMEPLATE_H * float(plate.get_width()) / maxf(1.0, float(plate.get_height()))
-		# Çerçevenin üst kenarına, madalyonun sağına otur.
-		_nameplate.position = Vector2(100.0, 14.0)
-		_nameplate.size = Vector2(w, NAMEPLATE_H)
-	# İsimlik adı zaten yazıyor: etiket yerini korusun ama görünmesin.
-	dialogue_speaker.modulate.a = 0.0 if plate != null else 1.0
+	if key != _skin_key:
+		var paths: Array = DIALOGUE_SKINS[key]
+		var frame := _smooth_tex(paths[0])
+		if frame == null:
+			return
+		_skin_key = key
+		dialogue_panel.texture = frame
+		dialogue_panel.patch_margin_left = 0
+		dialogue_panel.patch_margin_top = 0
+		dialogue_panel.patch_margin_right = 0
+		dialogue_panel.patch_margin_bottom = 0
+		dialogue_panel.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+		var sigil := dialogue_panel.get_node_or_null("Sigil")
+		if sigil:
+			sigil.queue_free()
+		if _nameplate == null:
+			_nameplate = TextureRect.new()
+			_nameplate.name = "Nameplate"
+			_nameplate.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			_nameplate.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			_nameplate.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT
+			_nameplate.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+			dialogue_panel.add_child(_nameplate)
+		var plate := _smooth_tex(paths[1])
+		_nameplate.texture = plate
+		_nameplate.visible = plate != null
+		if plate:
+			var w := NAMEPLATE_H * float(plate.get_width()) / maxf(1.0, float(plate.get_height()))
+			_nameplate.position = NAMEPLATE_POS
+			_nameplate.size = Vector2(w, NAMEPLATE_H)
+	_apply_dialogue_layout(speaker)
+
+
+## Konuşmacı etiketi / isimlik / metin hizası: boş "ölü satır" kalmaz, metin alanı sabit yükseklikte.
+func _apply_dialogue_layout(speaker: String) -> void:
+	var narrator := _is_narrator(speaker)
+	var has_plate := _nameplate != null and _nameplate.texture != null and not narrator
+	if _nameplate:
+		_nameplate.visible = has_plate
+	dialogue_speaker.visible = not narrator and not has_plate
+	dialogue_speaker.modulate.a = 1.0
+	var margin := get_node_or_null("SafeArea/Dialogue/Margin") as MarginContainer
+	if margin:
+		var top := 62   # isimlik altında
+		var bottom := 20
+		if narrator:
+			top = 41
+			bottom = 41
+		elif not has_plate:
+			top = 35    # konuşmacı etiketi ilk satır
+		margin.add_theme_constant_override("margin_top", top)
+		margin.add_theme_constant_override("margin_bottom", bottom)
+		margin.add_theme_constant_override("margin_right", 44)
+	dialogue_text.vertical_alignment = VERTICAL_ALIGNMENT_CENTER if narrator else VERTICAL_ALIGNMENT_TOP
 
 
 func _build_dialogue_frame() -> void:
@@ -363,7 +399,7 @@ func _apply_safe_area() -> void:
 ## Masaüstünde tuş özeti; mobilde butonlar zaten görünür, ipucu gizli kalır.
 func _apply_default_hint() -> void:
 	hint_label.text = "WASD · Z saldır · X dash · E etkileş · I günlük"
-	hint_label.visible = not MobileInputManager.is_touch_ui()
+	hint_label.visible = not (MobileInputManager.is_touch_ui() or _touch_seen)
 
 
 func _sync_dialogue_metrics() -> void:
@@ -441,18 +477,50 @@ func _on_dialogue_page(speaker: String, text: String, page_index: int, page_coun
 	_apply_dialogue_skin(speaker)
 	_update_portrait(speaker)
 	var more := page_index < page_count - 1 or DialogueManager.has_queued_lines() or DialogueManager.is_typing()
-	dialogue_continue.text = "…" if DialogueManager.is_typing() else (">>" if more else "•")
+	_set_continue(not DialogueManager.is_typing(), more)
+	_set_header_hidden_for_dialogue(true)
 	hint_label.visible = false
 	_update_control_visibility()
 
 
+## Devam oku (next_arrow.png): yazı bitince görünür, hafif yukarı-aşağı nabız. Son sayfada soluk.
+func _set_continue(show_arrow: bool, more: bool) -> void:
+	if dialogue_continue.texture == null:
+		dialogue_continue.texture = _smooth_tex("res://assets/panels/dialogue_skins/next_arrow.png")
+	dialogue_continue.visible = show_arrow
+	dialogue_continue.modulate.a = 1.0 if more else 0.6
+	if _continue_tween and _continue_tween.is_valid():
+		_continue_tween.kill()
+	if not show_arrow:
+		return
+	if _continue_base == Vector2.ZERO:
+		_continue_base = Vector2(dialogue_continue.offset_top, dialogue_continue.offset_bottom)
+	_continue_tween = create_tween().set_loops()
+	_continue_tween.tween_method(_pulse_continue, -2.0, 2.0, 0.55).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	_continue_tween.tween_method(_pulse_continue, 2.0, -2.0, 0.55).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+
+
+func _pulse_continue(d: float) -> void:
+	dialogue_continue.offset_top = _continue_base.x + d
+	dialogue_continue.offset_bottom = _continue_base.y + d
+
+
+## Diyalog sırasında üst-orta oda başlığı gizlenir (panelle üst üste binmesin).
+func _set_header_hidden_for_dialogue(hidden: bool) -> void:
+	var box := get_node_or_null("SafeArea/RoomHeader") as Control
+	if box:
+		box.visible = not hidden
+
+
 func _on_typing_finished() -> void:
 	if dialogue_panel.visible:
-		dialogue_continue.text = ">>"
+		_set_continue(true, true)
 
 
 func _on_dialogue_closed() -> void:
 	dialogue_panel.visible = false
+	_set_continue(false, false)
+	_set_header_hidden_for_dialogue(false)
 	_portrait_speaker = "~none~"
 	_apply_portrait_inset(0.0)
 	_apply_default_hint()
@@ -468,13 +536,15 @@ func _on_gate_changed(_layer: UiGate.Layer) -> void:
 
 func _update_control_visibility() -> void:
 	var blocked := UiGate.blocks_gameplay_input()
+	# Masaüstünde sanal joystick/düğmeler yok: yalnız dokunmatik modda ya da ilk dokunuştan sonra.
+	var touch := _touch_seen or MobileInputManager.is_touch_ui()
 	# Hikâye diyaloğunda hareket/saldırı/dash gizlenir; etkileş devam için kalır.
-	joystick_root.visible = not blocked
-	btn_attack.visible = not blocked
-	btn_dash.visible = not blocked
-	btn_jump.visible = not blocked
-	btn_skill.visible = not blocked and GameState.has_any_ability()
-	btn_interact.visible = not UiGate.blocks_dialogue_advance() and UiGate.current_layer() != UiGate.Layer.DEATH
+	joystick_root.visible = touch and not blocked
+	btn_attack.visible = touch and not blocked
+	btn_dash.visible = touch and not blocked
+	btn_jump.visible = touch and not blocked
+	btn_skill.visible = touch and not blocked and GameState.has_any_ability()
+	btn_interact.visible = touch and not UiGate.blocks_dialogue_advance() and UiGate.current_layer() != UiGate.Layer.DEATH
 	var layer := UiGate.current_layer()
 	btn_journal.visible = layer == UiGate.Layer.NONE or layer == UiGate.Layer.JOURNAL
 	buttons_root.modulate.a = 1.0 if btn_interact.visible or btn_attack.visible else 0.0
@@ -576,6 +646,9 @@ func _input(event: InputEvent) -> void:
 	# işlenirse diyaloğu kapatan dokunuş joystick'i de başlatıyordu (kendi kendine koşma).
 	if event is InputEventMouse and event.device == InputEvent.DEVICE_ID_EMULATION:
 		return
+	if event is InputEventScreenTouch and not _touch_seen:
+		_touch_seen = true
+		_update_control_visibility()
 	# Bırakmalar her koşulda işlenir (kapı değişse bile takılı giriş kalmasın).
 	if event is InputEventScreenTouch and not (event as InputEventScreenTouch).pressed:
 		_release_touch_index((event as InputEventScreenTouch).index)
@@ -749,6 +822,18 @@ func _refresh_objective_now(_room_id: StringName = &"") -> void:
 	if _objective == null:
 		return
 	_objective.text = GameState.get_current_objective()
+	_layout_objective_and_hint()
+	_layout_objective_and_hint.call_deferred()
+
+
+## Hedef 2 satira sarinca kontrol ipucunu altina iter (ust uste binmesin).
+func _layout_objective_and_hint() -> void:
+	if _objective == null or hint_label == null:
+		return
+	var lines: int = maxi(1, _objective.get_line_count())
+	var h: float = float(lines * _objective.get_line_height()) + 4.0
+	_objective.size = Vector2(_objective.size.x, h)
+	hint_label.position.y = _objective.position.y + h + 2.0
 
 
 func _on_puzzle_solved_objective(_puzzle_id: StringName) -> void:
@@ -836,12 +921,40 @@ func _setup_room_header() -> void:
 		return
 	UiTheme.apply_outlined(_header_label, UiTheme.SPEAKER, true, Color(0.92, 0.86, 0.95))
 	_header_label.text = RoomManager.get_room_number_and_title(StringName(String(GameState.character_current_life_knowledge.get("room", &"awakening"))))
+	_fit_room_header()
+
+
+## Başlık kutusu metne göre büyür: yazı genişliği + iki yan süs payı, [MIN, MAX] arası.
+const HEADER_MIN_W := 220.0
+const HEADER_MAX_W := 440.0
+const HEADER_INSET := 28.0 ## RoomHeaderLabel yan boşluğu (hud.tscn offset_left/right ile aynı)
+
+
+## Verilen metin için gereken kutu genişliği (sıkıştırılmamış). Audit de bunu kullanır.
+static func header_needed_width(text: String, font: Font, font_size: int) -> float:
+	var tw := font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x
+	# +6: dış çizgi (outline 3px x2) taşması
+	return ceilf(tw) + 6.0 + HEADER_INSET * 2.0
+
+
+func _fit_room_header() -> void:
+	if _header_label == null:
+		return
+	var box := _header_label.get_parent() as Control
+	var font: Font = _header_label.get_theme_font("font")
+	if font == null:
+		font = ThemeDB.fallback_font
+	var fsize := _header_label.get_theme_font_size("font_size")
+	var w := clampf(header_needed_width(_header_label.text, font, fsize), HEADER_MIN_W, HEADER_MAX_W)
+	box.offset_left = -w * 0.5
+	box.offset_right = w * 0.5
 
 
 func _on_room_header_changed(room_id: StringName) -> void:
 	if _header_label == null:
 		return
 	_header_label.text = RoomManager.get_room_number_and_title(room_id)
+	_fit_room_header()
 	var box := _header_label.get_parent() as Control
 	if _header_tween and _header_tween.is_valid():
 		_header_tween.kill()
@@ -857,7 +970,7 @@ func _setup_portrait() -> void:
 		return
 	_medallion = MedallionScript.new()
 	_medallion.name = "PortraitMedallion"
-	_medallion.position = Vector2(22, 42)
+	_medallion.position = MEDALLION_POS
 	dialogue_panel.add_child(_medallion)
 
 

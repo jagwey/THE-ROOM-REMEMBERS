@@ -30,8 +30,8 @@ func on_interact(_by: Node) -> void:
 	var ev: Dictionary = GameState.player_progress_knowledge.get("evidence", {})
 	var has_flower := ev.has("ev_garden_shilda")
 	if trusted and has_flower:
-		DialogueManager.say("Bekçi", "Arşiv… seni bekliyor.")
-		DialogueManager.say("Sen", "Kapı… açılıyor.")
+		DialogueManager.say(GameState.keeper_speaker_name(), "Arşiv… seni bekliyor.")
+		DialogueManager.say("Noroi", "Kapı… açılıyor.")
 		var ok: bool = await DialogueManager.dialogue_finished
 		if not ok:
 			return
@@ -41,7 +41,7 @@ func on_interact(_by: Node) -> void:
 		_refresh_visual()
 		RoomManager.enter_room(target_room_id, target_spawn_id)
 	elif not has_flower:
-		DialogueManager.say("Sen", "Kilitte bir çiçek izi var.")
-		DialogueManager.say("???", "Önce bahçeyi dinle.")
+		DialogueManager.say("Noroi", "Kilitte bir çiçek izi var.")
+		DialogueManager.say("", "Önce bahçeyi dinle.")
 	else:
-		DialogueManager.say("Bekçi", "Henüz değil. Bana… bir kez daha bak.")
+		DialogueManager.say(GameState.keeper_speaker_name(), "Henüz değil. Bana… bir kez daha bak.")

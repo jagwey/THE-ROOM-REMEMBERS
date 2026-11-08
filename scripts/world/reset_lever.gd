@@ -15,9 +15,9 @@ func on_interact(_by: Node) -> void:
 	var n: Node = get_node_or_null(stone_path)
 	if n and n.has_method("reset_to_start"):
 		n.call("reset_to_start")
-		DialogueManager.say("Sen", "Taş yerine kaydı.")
+		DialogueManager.say("Noroi", "Taş yerine kaydı.")
 	elif n and n.has_method("reset_to_home"):
 		n.call("reset_to_home")
-		DialogueManager.say("Sen", "Taş yerine kaydı.")
+		DialogueManager.say("Noroi", "Taş yerine kaydı.")
 	else:
 		push_warning("reset_lever: invalid stone_path")

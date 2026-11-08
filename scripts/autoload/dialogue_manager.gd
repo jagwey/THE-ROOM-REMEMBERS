@@ -35,13 +35,18 @@ func say(speaker: String, text: String) -> void:
 	_enqueue(speaker, text, false)
 
 
+## Satır ilk gösterilmeden hemen önce `on_show` çağrılır (ör. isim açıklanınca plaka/portre anında değişsin).
+func say_with(speaker: String, text: String, on_show: Callable) -> void:
+	_enqueue(speaker, text, false, on_show)
+
+
 func whisper(speaker: String, text: String) -> void:
 	## Hikâye fısıltısı: modal paneli kullanır (ortam VFX fısıltısından ayrı).
 	_enqueue(speaker, text, true)
 
 
-func _enqueue(speaker: String, text: String, is_whisper: bool) -> void:
-	_queue.append({"speaker": speaker, "text": text, "whisper": is_whisper})
+func _enqueue(speaker: String, text: String, is_whisper: bool, on_show: Callable = Callable()) -> void:
+	_queue.append({"speaker": speaker, "text": text, "whisper": is_whisper, "on_show": on_show})
 	if not is_open:
 		_show_next()
 
@@ -56,6 +61,9 @@ func _show_next() -> void:
 		UiGate.set_story(true)
 	var line: Dictionary = _queue.pop_front()
 	last_was_whisper = bool(line.get("whisper", false))
+	var on_show: Callable = line.get("on_show", Callable())
+	if on_show.is_valid():
+		on_show.call()
 	_speaker = String(line["speaker"])
 	_full_line = String(line["text"])
 	_speaker = resolve_whisper_speaker(_speaker, last_was_whisper, GameState.is_shilda_named())

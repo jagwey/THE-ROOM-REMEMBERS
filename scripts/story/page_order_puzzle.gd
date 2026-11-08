@@ -131,7 +131,7 @@ func _on_verify() -> void:
 			break
 	if not ok:
 		visible = false
-		DialogueManager.say("???", "Sıra tutmuyor.")
+		DialogueManager.say("", "Sıra tutmuyor.")
 		await DialogueManager.dialogue_finished
 		_verifying = false
 		visible = true

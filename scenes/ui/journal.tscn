@@ -96,7 +96,7 @@ offset_top = 30.0
 horizontal_scroll_mode = 0
 
 [node name="EntryList" type="VBoxContainer" parent="BookRoot/LeftPage/Scroll"]
-custom_minimum_size = Vector2(196, 0)
+custom_minimum_size = Vector2(170, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 4
@@ -113,7 +113,7 @@ anchor_bottom = 0.86
 layout_mode = 1
 anchor_right = 1.0
 anchor_bottom = 0.0
-offset_right = 0.0
+offset_right = -90.0
 offset_bottom = 82.0
 theme_override_colors/font_color = Color(0.239, 0.071, 0.125, 1)
 theme_override_font_sizes/font_size = 18

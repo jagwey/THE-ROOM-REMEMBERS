@@ -40,6 +40,7 @@ const WALK_TIME := 0.22
 const FADE_OUT := 0.26
 const FADE_IN := 0.3
 const LABEL_MARGIN := 16.0
+const _REGION_CARD := preload("res://scripts/ui/region_title_card.gd")
 
 ## Büyük bölge geçişi / salon girişi kapısı (daha yüksek sütunlu niş).
 @export var grand: bool = false
@@ -135,7 +136,7 @@ func _on_gate_changed(layer) -> void:
 		_label.visible = int(layer) == int(UiGate.Layer.NONE)
 
 
-## Etiketi kapı ortasında tut; yalnız aktif odanın gerçek sınırlarına 16 px payla sıkıştır.
+## Etiketi kapı ortasında tut; oda sınırı VE aktif Camera2D görüş alanı içinde 16 px payla sıkıştır.
 func _clamp_door_label() -> void:
 	if not is_inside_tree() or _label == null:
 		return
@@ -146,9 +147,39 @@ func _clamp_door_label() -> void:
 		if b.size.x > 0.0:
 			bounds = b
 	var w := _label.size.x
+	# Önce kapı ortasına geri al, sonra sınırlara sıkıştır (kamera kayarken yeniden hesaplanır).
 	var gx := global_position.x - w * 0.5
-	gx = clampf(gx, bounds.position.x + LABEL_MARGIN, bounds.end.x - LABEL_MARGIN - w)
+	var lo := bounds.position.x + LABEL_MARGIN
+	var hi := bounds.end.x - LABEL_MARGIN - w
+	var view := _camera_view_rect()
+	# Kapının kendisi kadrajda değilse etiketi gizle: ekran dışı kapıların etiketleri kenara yığılıp üst üste binmesin.
+	if view.size.x > 0.0:
+		var on_screen := global_position.x >= view.position.x - 8.0 and global_position.x <= view.end.x + 8.0
+		var card_up: bool = _REGION_CARD.is_showing()
+		_label.modulate.a = 1.0 if (on_screen and not card_up) else 0.0
+	if view.size.x > 0.0:
+		lo = maxf(lo, view.position.x + LABEL_MARGIN)
+		hi = minf(hi, view.end.x - LABEL_MARGIN - w)
+	if hi >= lo:
+		gx = clampf(gx, lo, hi)
+	else:
+		gx = clampf(gx, lo, lo) if view.size.x > 0.0 and w > view.size.x - 2.0 * LABEL_MARGIN else gx
 	_label.global_position.x = gx
+	if view.size.x > 0.0:
+		var gy := _label.global_position.y
+		_label.global_position.y = clampf(gy, view.position.y + LABEL_MARGIN, maxf(view.position.y + LABEL_MARGIN, view.end.y - LABEL_MARGIN - _label.size.y))
+
+
+## Aktif Camera2D'nin dünya koordinatındaki görüş dikdörtgeni; kamera yoksa boş Rect2.
+func _camera_view_rect() -> Rect2:
+	var vp := get_viewport()
+	if vp == null:
+		return Rect2()
+	var cam := vp.get_camera_2d()
+	if cam == null:
+		return Rect2()
+	var size := vp.get_visible_rect().size / cam.zoom
+	return Rect2(cam.get_screen_center_position() - size * 0.5, size)
 
 
 func get_display_name() -> String:
@@ -238,6 +269,8 @@ func _hide_legacy_door_sprites() -> void:
 
 func _process(delta: float) -> void:
 	_phase += delta * 1.7
+	if _label and _label.visible:
+		_clamp_door_label()
 	if _glow:
 		_glow.modulate.a = 0.75 + 0.25 * sin(_phase)
 	if _seal:

@@ -86,6 +86,42 @@ func clear_focus() -> void:
 	_focus = null
 
 
+## Kapı/mühür/kısayol açılınca kısa (0.5 sn) kamera odağı + parlak halka.
+func focus_pulse(world_pos: Vector2, duration: float = 0.5) -> void:
+	if _focus != null or get_parent() == null:
+		return
+	var m := Marker2D.new()
+	get_parent().add_child(m)
+	m.global_position = world_pos
+	_focus = m
+	var grad := Gradient.new()
+	grad.colors = PackedColorArray([Color(1, 0.95, 0.8, 0.85), Color(1, 0.95, 0.8, 0.0)])
+	var tex := GradientTexture2D.new()
+	tex.gradient = grad
+	tex.fill = GradientTexture2D.FILL_RADIAL
+	tex.fill_from = Vector2(0.5, 0.5)
+	tex.fill_to = Vector2(1.0, 0.5)
+	tex.width = 96
+	tex.height = 96
+	var glow := Sprite2D.new()
+	glow.texture = tex
+	glow.z_index = 20
+	var mat := CanvasItemMaterial.new()
+	mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	glow.material = mat
+	glow.modulate.a = 0.0
+	m.add_child(glow)
+	var tw := m.create_tween()
+	tw.set_parallel(true)
+	tw.tween_property(glow, "modulate:a", 1.0, duration * 0.3)
+	tw.tween_property(glow, "scale", Vector2(1.8, 1.8), duration)
+	tw.chain().tween_property(glow, "modulate:a", 0.0, duration * 0.4)
+	tw.chain().tween_callback(func() -> void:
+		if _focus == m:
+			_focus = null
+		m.queue_free())
+
+
 func snap_to_target() -> void:
 	_target = get_tree().get_first_node_in_group("player") as Node2D
 	if _target == null:

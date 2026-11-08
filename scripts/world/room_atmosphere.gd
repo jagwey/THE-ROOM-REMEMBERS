@@ -6,6 +6,9 @@ extends Node2D
 const MOTE_MAX := 28 ## <= 40 particles per room
 const ROOM_H := 360.0
 const BEAM_TEX := "res://assets/layers/light_beam.png"
+## Isik huzmeleri y=288 zemin cizgisini asmaz (dondurulmus alt kose dahil): merkez 130, yukseklik 240.
+const SHAFT_CY := 130.0
+const SHAFT_H := 240.0
 
 var _motes: CPUParticles2D
 var _beams: Array[Sprite2D] = []
@@ -190,11 +193,11 @@ func _build_atmosphere() -> void:
 			s.z_index = 2
 			s.centered = true
 			var cx := (float(i) + 0.5) / float(count) * w + rng.randf_range(-60.0, 60.0)
-			s.position = Vector2(cx, ROOM_H * 0.45)
-			s.rotation = rng.randf_range(-0.28, 0.12)
+			s.position = Vector2(cx, SHAFT_CY)
+			s.rotation = rng.randf_range(-0.2, 0.1)
 			var tw := float(tex.get_width())
 			var th := float(tex.get_height())
-			s.scale = Vector2(rng.randf_range(0.9, 1.6) * 90.0 / tw * 1.5, ROOM_H * 1.15 / th)
+			s.scale = Vector2(rng.randf_range(0.9, 1.6) * 90.0 / tw * 1.5, SHAFT_H / th)
 			var base := rng.randf_range(0.10, 0.2)
 			s.modulate = Color(col.r, col.g, col.b, base)
 			add_child(s)

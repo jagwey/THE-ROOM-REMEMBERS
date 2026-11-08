@@ -14,12 +14,12 @@ static var _cache: Dictionary = {}
 
 
 ## Konuşmacı -> portre anahtarı; portresiz konuşmacı için &"".
-## "???" Bekçi/Shilda sesidir (bekçi silüeti). Noroi/Sen: fısıltı veya yas bağlamında "sad".
+## "" / "Sistem" / "Kayıt" portresiz. "???" = isim öncesi Shilda (bekçi silüeti). Noroi: fısıltı veya yas bağlamında "sad".
 static func key_for(speaker: String, sad: bool = false) -> StringName:
 	match speaker.strip_edges():
-		"Noroi", "Sen":
+		"Noroi":
 			return &"noroi_sad" if sad else &"noroi"
-		"Bekçi", "???":
+		"???":
 			return &"bekci"
 		"Shilda":
 			return &"shilda"

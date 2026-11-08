@@ -22,6 +22,7 @@ func on_interact(_by: Node) -> void:
 		_busy = false
 		return
 
+	_opening_hook()
 	DialogueManager.say("Noroi", "Camı çatlak. Akrep durmuş.")
 	DialogueManager.say("Noroi", "Saniye yok — ya hep bu an, ya hiç.")
 	await DialogueManager.dialogue_finished
@@ -38,6 +39,23 @@ func on_interact(_by: Node) -> void:
 		GameState.knowledge_changed.emit(&"player")
 		SaveManager.save_game()
 	_busy = false
+
+
+## Açılış kancası: ilk kez, soğuk mavi kısa ekran flaşı + saat tik / kalp atışı.
+func _opening_hook() -> void:
+	AudioManager.play_sfx(&"clock_tick", -3.0, 1.0)
+	var layer := CanvasLayer.new()
+	layer.layer = 90
+	var rect := ColorRect.new()
+	rect.color = Color(0.55, 0.78, 1.0, 0.0)
+	rect.set_anchors_preset(Control.PRESET_FULL_RECT)
+	rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	layer.add_child(rect)
+	add_child(layer)
+	var tw := rect.create_tween()
+	tw.tween_property(rect, "color:a", 0.38, 0.06)
+	tw.tween_property(rect, "color:a", 0.0, 0.45)
+	tw.tween_callback(layer.queue_free)
 
 
 func _add_evidence(eid: String, title: String, body: String, kind: String, section: String) -> void:

@@ -15,10 +15,10 @@ func _ready() -> void:
 
 func on_interact(_by: Node) -> void:
 	if PuzzleManager.is_solved(puzzle_id):
-		DialogueManager.say("Sen", "Geçit açık.")
+		DialogueManager.say("Noroi", "Geçit açık.")
 		return
-	DialogueManager.say("Sen", "Sarmaşık… burayı tıkıyor.")
-	DialogueManager.say("Sen", "Kesersem yol kalır.")
+	DialogueManager.say("Noroi", "Sarmaşık… burayı tıkıyor.")
+	DialogueManager.say("Noroi", "Kesersem yol kalır.")
 	var ok: bool = await DialogueManager.dialogue_finished
 	if not ok:
 		return
@@ -26,4 +26,4 @@ func on_interact(_by: Node) -> void:
 	GameState.set_world_flag(&"decay_vine_cleared", true)
 	visible = false
 	SaveManager.save_game()
-	DialogueManager.say("Sen", "Kısa yol açıldı.")
+	DialogueManager.say("Noroi", "Kısa yol açıldı.")

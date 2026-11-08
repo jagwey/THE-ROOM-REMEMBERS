@@ -70,7 +70,7 @@ func on_interact(by: Node) -> void:
 		var eid := _resolve_echo_id()
 		_spawn_ghost()
 		await EchoManager.play_echo(eid)
-		DialogueManager.say("Sen", "…Ağır. İtebilirim.")
+		DialogueManager.say("Noroi", "…Ağır. İtebilirim.")
 		return
 	# Sonraki: cesedi oyuncunun baktığı yöne it (mobil dostu).
 	var dir := 1.0
@@ -91,7 +91,7 @@ func _push(dir: float, by_node: Node = null) -> void:
 		bounds = Rect2(0, 0, 640, 360)
 	var raw_target_x := clampf(global_position.x + dir * push_step, bounds.position.x + 40.0, bounds.end.x - 40.0)
 	if absf(raw_target_x - global_position.x) < 0.5:
-		DialogueManager.say("Sen", "…Daha ileri gitmiyor.")
+		DialogueManager.say("Noroi", "…Daha ileri gitmiyor.")
 		return
 
 	var space := get_world_2d().direct_space_state
@@ -108,7 +108,7 @@ func _push(dir: float, by_node: Node = null) -> void:
 			var hit_pos: Vector2 = wall_hit["position"]
 			var stop_x: float = hit_pos.x - dir * 14.0
 			if (dir > 0.0 and stop_x <= global_position.x + 2.0) or (dir < 0.0 and stop_x >= global_position.x - 2.0):
-				DialogueManager.say("Sen", "…Engelle karşılaştı.")
+				DialogueManager.say("Noroi", "…Engelle karşılaştı.")
 				return
 			target_x = minf(target_x, stop_x) if dir > 0.0 else maxf(target_x, stop_x)
 
@@ -121,11 +121,11 @@ func _push(dir: float, by_node: Node = null) -> void:
 		q_floor.exclude = [get_rid()]
 		var floor_hit: Dictionary = space.intersect_ray(q_floor)
 		if floor_hit.is_empty():
-			DialogueManager.say("Sen", "…Uçurumun kenarında durdu.")
+			DialogueManager.say("Noroi", "…Uçurumun kenarında durdu.")
 			return
 
 	if absf(target_x - global_position.x) < 0.5:
-		DialogueManager.say("Sen", "…Daha ileri gitmiyor.")
+		DialogueManager.say("Noroi", "…Daha ileri gitmiyor.")
 		return
 
 	_pushing = true

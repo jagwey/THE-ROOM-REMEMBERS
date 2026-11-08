@@ -23,7 +23,7 @@ func _ready() -> void:
 
 		$Sprite2D.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		if $Sprite2D.texture == null:
-			$Sprite2D.texture = load("res://assets/props/cassette.png")
+			$Sprite2D.texture = load("res://assets/props/memory_echo.png")
 			$Sprite2D.scale = Vector2(0.5, 0.5)
 	if beat_id == &"mirrors_dual":
 		_build_relay()
@@ -251,7 +251,7 @@ func _mirrors_unbroken() -> void:
 
 		return
 
-	GameState.player_progress_knowledge["shilda_named"] = true
+	GameState.set_shilda_named(true)
 
 	GameState.player_progress_knowledge["truth_seen"] = true
 

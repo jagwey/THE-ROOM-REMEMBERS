@@ -14,7 +14,7 @@ var _locked: bool = false
 
 const EPILOGUES := {
 	"bad_kill_keeper": {
-		"title": "THE LOOP",
+		"title": "DÖNGÜ",
 		"lines": [
 			"Shilda yere düştü. Çiçekler bir anda soldu.",
 			"Çekirdek, onu tutan son hafızayı kaybedince patladı.",
@@ -24,14 +24,14 @@ const EPILOGUES := {
 		],
 	},
 	"good_trust_seal": {
-		"title": "REMEMBER ME",
+		"title": "BENİ HATIRLA",
 		"lines": [
 			"İki mühür parçası birleşti. Çekirdek son kez nabız attı… ve sustu.",
 			"Shilda: Beni hatırlıyor musun?",
 			"Noroi: Hayır…",
 			"Noroi: Ama seni yeniden tanıyabilirim.",
 			"Kilitli kapı açıldı. İkiniz birlikte dışarı yürüdünüz.",
-			"“You forgot me. I never forgot you.”",
+			"“Beni unuttun. Ben seni hiç unutmadım.”",
 		],
 	},
 	"sever_bond": {
@@ -130,5 +130,5 @@ func _show_epilogue(id: String) -> void:
 		DialogueManager.clear()
 		DialogueManager.say(String(data.get("title", "Son")), "…")
 		for line in data.get("lines", []):
-			DialogueManager.say("…", String(line))
+			DialogueManager.say("", String(line))
 		await DialogueManager.dialogue_closed

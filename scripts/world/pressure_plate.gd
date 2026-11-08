@@ -96,8 +96,8 @@ func _set_pressed(value: bool, emit_solve: bool) -> void:
 		PuzzleManager.mark_solved(puzzle_id)
 		if puzzle_id == &"awakening_weight":
 			GameState.set_world_flag(&"awakening_door_opened", true)
-			DialogueManager.say("???", "Bir şey… açıldı.")
+			DialogueManager.say("", "Bir şey… açıldı.")
 		elif puzzle_id == &"decay_weight_latch":
 			GameState.set_world_flag(&"decay_weight_latched", true)
-			DialogueManager.say("???", "Mekanizmaya oturdu.")
+			DialogueManager.say("", "Mekanizmaya oturdu.")
 		SaveManager.save_game()

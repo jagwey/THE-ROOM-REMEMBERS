@@ -11,7 +11,7 @@ const SFX_IDS: Array[StringName] = [
 	&"typewriter", &"seal_key", &"seal_open", &"curse_whisper", &"plate_press", &"door_open",
 	&"corpse_drag", &"soul_slash", &"wall_crack", &"wall_break", &"keeper_claw", &"keeper_charge",
 	&"echo_record", &"echo_playback", &"ui_open", &"ui_close", &"death_chord", &"rebirth_chord",
-	&"breath",
+	&"breath", &"keeper_telegraph", &"clock_tick",
 ]
 const STINGER_IDS: Array[StringName] = [&"discovery", &"ending_bad", &"ending_good", &"ending_sever"]
 const REGIONS: Array[StringName] = [&"awakening", &"decay", &"library", &"experiment", &"mirrors", &"core"]
@@ -132,6 +132,17 @@ static func recipe(id: StringName) -> Dictionary:
 				_t(0, 0.95, 70, 0.8, "sine", 320), _t(0, 0.95, 75, 0.5, "sine", 345),
 				_n(0, 0.95, 0.8, 0.25, "rise", 0.1, {"hp": 0.04}),
 			], 0.75)
+		&"keeper_telegraph":
+			return _r(0.6, [
+				_t(0, 0.5, 420, 0.5, "sine", 900), _t(0, 0.5, 445, 0.35, "sine", 940),
+				_n(0, 0.5, 0.6, 0.2, "rise", 0.1, {"hp": 0.1}),
+			], 0.7)
+		&"clock_tick":
+			return _r(1.0, [
+				_n(0, 0.03, 0.9, 0.7, "exp", 0.006), _t(0, 0.1, 1900, 0.6, "sine"),
+				_t(0.35, 0.18, 70, 0.9, "thump", 40, {"tau": 0.06}),
+				_t(0.55, 0.18, 60, 0.7, "thump", 36, {"tau": 0.06}),
+			], 0.7)
 		&"door_open":
 			return _r(0.9, [
 				_t(0, 0.7, 150, 0.4, "pad", 230, {"lfo_k": 9.0, "lfo_d": 0.5}),

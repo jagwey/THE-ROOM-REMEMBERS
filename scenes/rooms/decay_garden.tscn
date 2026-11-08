@@ -103,20 +103,20 @@ z_index = 1
 
 [node name="Column1" type="Sprite2D" parent="Decor"]
 texture_filter = 0
-position = Vector2(100, 230)
+position = Vector2(100, 227)
 texture = ExtResource("12")
 centered = true
 
 [node name="FlowersDecor" type="Sprite2D" parent="Decor"]
 texture_filter = 0
-position = Vector2(360, 286)
+position = Vector2(360, 266)
 texture = ExtResource("5")
 centered = true
 modulate = Color(0.95, 0.72, 0.78, 0.88)
 
 [node name="FlowersDecor2" type="Sprite2D" parent="Decor"]
 texture_filter = 0
-position = Vector2(520, 290)
+position = Vector2(520, 269)
 texture = ExtResource("5")
 centered = true
 modulate = Color(0.9, 0.68, 0.74, 0.82)
@@ -188,6 +188,7 @@ shape = SubResource("GateShape")
 
 [node name="Sprite2D" type="Sprite2D" parent="Interactive/ArchiveDoor"]
 texture_filter = 0
+position = Vector2(0, -28)
 texture = ExtResource("4")
 centered = true
 modulate = Color(0.42, 0.38, 0.45, 1)

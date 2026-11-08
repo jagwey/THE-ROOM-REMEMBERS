@@ -9,6 +9,7 @@ func _ready() -> void:
 	collision_mask = 0
 	monitoring = false
 	monitorable = true
+	z_index = 3 ## zemin dokusu runeleri ikiye bolmesin
 	queue_redraw()
 
 
@@ -42,7 +43,7 @@ func _do_together() -> void:
 		if not EndingManager.has_both_shards():
 			DialogueManager.say("Shilda", "Mühür kırık. Bir yarısı Yasak Kanat'ta, öteki Ayna Tapınağı'nda.")
 		else:
-			DialogueManager.say("???", "Hazırlık eksik. Güven ve yollar tamamlanmalı.")
+			DialogueManager.say("", "Hazırlık eksik. Güven ve yollar tamamlanmalı.")
 		await DialogueManager.dialogue_finished
 		return
 	DialogueManager.say("Noroi", "İki parça. İki ad. Bir mühür.")
@@ -57,7 +58,7 @@ func _do_together() -> void:
 
 func _do_sever() -> void:
 	if not EndingManager.can_attempt_sever():
-		DialogueManager.say("???", "Gerçeği henüz görmedin.")
+		DialogueManager.say("", "Gerçeği henüz görmedin.")
 		await DialogueManager.dialogue_finished
 		return
 	DialogueManager.say("Noroi", "Bağı koparıyorum. Bellek serbest.")

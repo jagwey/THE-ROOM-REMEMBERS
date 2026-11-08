@@ -36,12 +36,32 @@ func _ready() -> void:
 		spr.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		spr.scale = Vector2(sprite_scale, sprite_scale)
 		spr.position = Vector2(0, -12)
+		var _ur := spr.texture.get_image().get_used_rect() if spr.texture else Rect2i()
+		if _ur.size.y > 0 and not texture_path.ends_with("photograph.png"):
+			spr.position = Vector2(0, -(float(_ur.end.y) - spr.texture.get_height() * 0.5) * sprite_scale)
+		elif _ur.size.y > 0:
+			spr.position = Vector2(0, -22)
 		var base_mod := Color.WHITE
 		if texture_path.ends_with("photograph.png"):
 			## Beyaz kutu yerine koyu, yaşlanmış parşömen çerçeve.
 			base_mod = Color(0.74, 0.62, 0.5, 1.0)
 			_add_parchment_frame(spr)
 		spr.modulate = base_mod
+		if texture_path.ends_with("memory_echo.png"):
+			## Karanlık odalarda okunur olsun: toplamsal yumuşak hale.
+			var halo := Sprite2D.new()
+			halo.texture = spr.texture
+			halo.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+			halo.position = spr.position
+			halo.scale = spr.scale * 1.7
+			halo.modulate = Color(0.8, 0.65, 1.0, 1.0)
+			var mat := CanvasItemMaterial.new()
+			mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+			halo.material = mat
+			add_child(halo)
+			var htw := halo.create_tween().set_loops()
+			htw.tween_property(halo, "modulate:a", 0.55, 1.2).set_trans(Tween.TRANS_SINE)
+			htw.tween_property(halo, "modulate:a", 1.0, 1.2).set_trans(Tween.TRANS_SINE)
 		add_child(spr)
 		if not _done():
 			var peak := Color(minf(base_mod.r * 1.08, 1.0), minf(base_mod.g * 1.06, 1.0), minf(base_mod.b * 1.08, 1.0), 1.0)
@@ -50,23 +70,20 @@ func _ready() -> void:
 			tw.tween_property(spr, "modulate", base_mod, 0.9).set_trans(Tween.TRANS_SINE)
 
 
-## Fotoğrafın arkasına koyu kahve kenar + soluk parşömen iç dolgu (sprite'ın altında).
+## Fotografin arkasina ince, parlayan anı çerçevesi (sprite'ın altında).
 func _add_parchment_frame(spr: Sprite2D) -> void:
-	var tex := spr.texture
-	if tex == null:
+	if spr.texture == null:
 		return
-	var half := Vector2(tex.get_width(), tex.get_height()) * spr.scale * 0.5 + Vector2(2.0, 2.0)
-	var c := spr.position
-	var outer := Polygon2D.new()
-	outer.name = "ParchmentEdge"
-	outer.color = Color(0.1, 0.07, 0.05, 0.95)
-	outer.polygon = PackedVector2Array([c + Vector2(-half.x - 1.5, -half.y - 1.5), c + Vector2(half.x + 1.5, -half.y - 1.5), c + Vector2(half.x + 1.5, half.y + 1.5), c + Vector2(-half.x - 1.5, half.y + 1.5)])
-	add_child(outer)
-	var inner := Polygon2D.new()
-	inner.name = "ParchmentBody"
-	inner.color = Color(0.3, 0.22, 0.15, 0.95)
-	inner.polygon = PackedVector2Array([c + Vector2(-half.x, -half.y), c + Vector2(half.x, -half.y), c + Vector2(half.x, half.y), c + Vector2(-half.x, half.y)])
-	add_child(inner)
+	var fr := Sprite2D.new()
+	fr.name = "MemoryFrame"
+	fr.texture = load("res://assets/props/memory_frame.png")
+	fr.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	fr.position = spr.position
+	fr.scale = Vector2.ONE * (spr.texture.get_width() * spr.scale.x / 56.0 * 1.1)
+	add_child(fr)
+	var tw := fr.create_tween().set_loops()
+	tw.tween_property(fr, "modulate:a", 0.7, 1.1).set_trans(Tween.TRANS_SINE)
+	tw.tween_property(fr, "modulate:a", 1.0, 1.1).set_trans(Tween.TRANS_SINE)
 
 
 func _done() -> bool:
@@ -106,15 +123,9 @@ func on_interact(_by: Node) -> void:
 	SaveManager.save_game()
 
 
-## Shilda adı verildi mi? Bayrak yoksa isim beat'inin bıraktığı bilgiden türetip bayrağa yazar
-## (shilda_name_beat.gd başka ajanın; bayrağı burada kalıcılaştırıyoruz).
+## Shilda adı verildi mi? Tek kaynak: GameState.is_shilda_named().
 static func shilda_is_named() -> bool:
-	if bool(GameState.get_world_flag(&"shilda_named", false)):
-		return true
-	if bool(GameState.player_progress_knowledge.get("shilda_named_partial", false)):
-		GameState.set_world_flag(&"shilda_named", true)
-		return true
-	return false
+	return GameState.is_shilda_named()
 
 
 func _say(entry: String) -> void:

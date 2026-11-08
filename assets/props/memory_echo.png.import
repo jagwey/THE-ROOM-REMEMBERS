@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bbb2wor8thete"
-path="res://.godot/imported/cassette.png-95128accc9b37d9c6e2ef21c28e88e48.ctex"
+uid="uid://bq4cpryqwf7bu"
+path="res://.godot/imported/memory_echo.png-84f91132a05bf7152bd7edcee7ffba64.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/props/cassette.png"
-dest_files=["res://.godot/imported/cassette.png-95128accc9b37d9c6e2ef21c28e88e48.ctex"]
+source_file="res://assets/props/memory_echo.png"
+dest_files=["res://.godot/imported/memory_echo.png-84f91132a05bf7152bd7edcee7ffba64.ctex"]
 
 [params]
 

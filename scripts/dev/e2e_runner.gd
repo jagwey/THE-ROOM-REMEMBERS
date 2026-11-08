@@ -387,9 +387,9 @@ func _run_tier_1_feature_coverage() -> void:
 	record_check(1, 31, "POCO X6 Pro 5G Android APK build & test", arm64_enabled and package_name_ok, "arm64 enabled=%s package name=%s" % [arm64_enabled, package_name_ok], false, "M4")
 
 	# F32: Versioning & export configuration (M5)
-	var godot_v130: bool = proj_cfg.contains('config/version="1.3.0"')
-	var preset_v130: bool = exp_presets.contains('version/name="1.3.0"') and exp_presets.contains('version/code=17')
-	record_check(1, 32, "Versioning & export configuration", godot_v130 and preset_v130, "version 1.3.0 code 17 verified", false, "M5")
+	var godot_v145: bool = proj_cfg.contains('config/version="1.4.5"')
+	var preset_v145: bool = exp_presets.contains('version/name="1.4.5"') and exp_presets.contains('version/code=23')
+	record_check(1, 32, "Versioning & export configuration", godot_v145 and preset_v145, "version 1.4.5 code 23 verified", false, "M5")
 
 	# F33: Git commit, tag, and GitHub Release (M5)
 	var git_clean: bool = FileAccess.file_exists("res://PROJECT.md") and FileAccess.file_exists("res://TEST_INFRA.md")

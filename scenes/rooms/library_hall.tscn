@@ -85,7 +85,7 @@ offset_left = 400.0
 offset_top = 100.0
 offset_right = 560.0
 offset_bottom = 124.0
-text = "Arsivci"
+text = "Arşivci"
 horizontal_alignment = 1
 
 [node name="ArchivistSprite" type="Sprite2D" parent="Decor"]
@@ -150,7 +150,7 @@ monitoring = false
 monitorable = true
 script = ExtResource("7")
 evidence_id = &"ev_catalog_left"
-title = "Kayit A"
+title = "Kayıt A"
 body = "Önce kapı, sonra deney."
 section = "notlar"
 
@@ -165,8 +165,8 @@ monitoring = false
 monitorable = true
 script = ExtResource("7")
 evidence_id = &"ev_catalog_right"
-title = "Kayit B"
-body = "Once deney, sonra kapi."
+title = "Kayıt B"
+body = "Önce deney, sonra kapı."
 section = "notlar"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/CardRight"]

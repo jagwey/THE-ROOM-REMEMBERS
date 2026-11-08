@@ -16,8 +16,8 @@ func _ready() -> void:
 
 
 func on_interact(_by: Node) -> void:
-	DialogueManager.say("Sen", title)
-	DialogueManager.say("Sen", body if body != "" else "…")
+	DialogueManager.say("Noroi", title)
+	DialogueManager.say("Noroi", body if body != "" else "…")
 	var ok: bool = await DialogueManager.dialogue_finished
 	if not ok:
 		return

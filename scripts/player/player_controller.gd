@@ -19,7 +19,7 @@ const APEX_SPEED := 60.0
 const APEX_GRAVITY_MULT := 0.55
 const LAND_SFX_SPEED := 160.0
 const MAX_FALL := 520.0
-const HITSTOP := 0.05
+const HITSTOP := 0.04 ## 35-45 ms
 const SKILL_COOLDOWN := 0.8
 ## Fizik katmanları: 1 dünya · 2 oyuncu · 4 tehlike · 8 etkileşim · 16 lanet bariyeri · 32 kırılabilir
 const LAYER_CURSE_BARRIER := 16
@@ -97,7 +97,6 @@ func _ready() -> void:
 	_last_safe_floor_pos = global_position
 	_safe_floor_pos = global_position
 	call_deferred("_apply_initial_checkpoint_if_new_game")
-	GameState.player_progress_knowledge["seen_keeper"] = true
 	var vfx := get_tree().get_first_node_in_group("curse_vfx")
 	if vfx and vfx.has_signal("stagger_pulse"):
 		vfx.stagger_pulse.connect(_on_curse_stagger)
@@ -267,6 +266,8 @@ func _physics_process(delta: float) -> void:
 		_squash = Vector2(1.0 + 0.22 * k, 1.0 - 0.2 * k)
 		if fall_speed > 240.0:
 			_camera_trauma(0.18)
+		if fall_speed > 140.0:
+			_spawn_dust(global_position + Vector2(0.0, -2.0), k)
 		## İniş sesi: orta düşüşte de çalar, aynı inişte iki kez çalmaz.
 		var now := Time.get_ticks_msec()
 		if fall_speed > LAND_SFX_SPEED and now - _last_land_ms > 180:
@@ -410,7 +411,7 @@ func _on_hit_confirm(target: Node, trauma: float) -> void:
 	if target is Node2D:
 		at = ((target as Node2D).global_position + at) * 0.5
 	_spawn_sparks(at)
-	_hitstop(HITSTOP if _combo < 2 else HITSTOP * 1.8)
+	_hitstop(HITSTOP if _combo < 2 else 0.045)
 
 
 func _hitstop(duration: float) -> void:
@@ -419,6 +420,29 @@ func _hitstop(duration: float) -> void:
 	Engine.time_scale = 0.05
 	await get_tree().create_timer(duration, true, false, true).timeout
 	Engine.time_scale = 1.0
+
+
+func _spawn_dust(at: Vector2, k: float) -> void:
+	if DisplayServer.get_name() == "headless":
+		return
+	var p := CPUParticles2D.new()
+	p.one_shot = true
+	p.amount = 6 + int(6.0 * k)
+	p.lifetime = 0.35
+	p.explosiveness = 1.0
+	p.direction = Vector2(0, -1)
+	p.spread = 85.0
+	p.initial_velocity_min = 18.0
+	p.initial_velocity_max = 55.0
+	p.gravity = Vector2(0, 90)
+	p.scale_amount_min = 1.5
+	p.scale_amount_max = 3.0
+	p.color = Color(0.62, 0.56, 0.58, 0.7)
+	p.global_position = at
+	p.z_index = 5
+	get_parent().add_child(p)
+	p.emitting = true
+	get_tree().create_timer(0.8).timeout.connect(p.queue_free)
 
 
 func _spawn_sparks(at: Vector2) -> void:
@@ -440,6 +464,25 @@ func _spawn_sparks(at: Vector2) -> void:
 	get_parent().add_child(p)
 	p.emitting = true
 	get_tree().create_timer(0.6).timeout.connect(p.queue_free)
+	## Taş/yaprak kırıntıları (ucuz, 5 parçacık).
+	var c := CPUParticles2D.new()
+	c.one_shot = true
+	c.amount = 5
+	c.lifetime = 0.45
+	c.explosiveness = 1.0
+	c.spread = 100.0
+	c.direction = Vector2(_facing, -0.6)
+	c.initial_velocity_min = 40.0
+	c.initial_velocity_max = 110.0
+	c.gravity = Vector2(0, 420)
+	c.scale_amount_min = 1.5
+	c.scale_amount_max = 2.5
+	c.color = Color(0.45, 0.4, 0.42, 1.0)
+	c.global_position = at
+	c.z_index = 5
+	get_parent().add_child(c)
+	c.emitting = true
+	get_tree().create_timer(0.8).timeout.connect(c.queue_free)
 
 
 # --- Ruh Kesimi (Soul Slash) ---------------------------------------------------------
@@ -518,8 +561,10 @@ func _update_anim() -> void:
 		&"run", &"dash", &"attack":
 			want = _state
 	if want == &"idle" and not is_on_floor() and absf(velocity.y) > 1.0 and sprite.sprite_frames and sprite.sprite_frames.has_animation("dash"):
-		## Havadayken dash karesini tut (ayrı zıplama animasyonu yok). Donmuşken (hikâye) idle kalsın.
+		## Havadayken yükselirken jump, düşerken fall (yoksa dash karesi). Donmuşken (hikâye) idle kalsın.
 		want = &"dash"
+		if sprite.sprite_frames.has_animation("jump") and sprite.sprite_frames.has_animation("fall"):
+			want = &"jump" if velocity.y < 0.0 else &"fall"
 	if sprite.animation != String(want) or not sprite.is_playing():
 		sprite.play(String(want))
 	if _state == &"run":

@@ -43,6 +43,8 @@ var _anim_step_ms: int = -10000 ## Son animasyon-senkron adım; varken zamanlay�
 var _typing: bool = false
 var _type_t: float = 0.0
 var _type_age: float = 0.0
+var _type_speaker: String = ""
+var _blips: Dictionary = {} ## speaker key -> AudioStreamWAV (prosedürel diyalog blip'i)
 var _gen_log: Dictionary = {} ## key -> usec (debug)
 
 
@@ -403,7 +405,8 @@ func _on_room_changed(room_id: StringName) -> void:
 	set_region(StringName(s if cut < 0 else s.substr(0, cut)))
 
 
-func _on_page_shown(_speaker: String, _text: String, _i: int, _n: int) -> void:
+func _on_page_shown(speaker: String, _text: String, _i: int, _n: int) -> void:
+	_type_speaker = speaker
 	if not _typing:
 		_typing = true
 		_type_t = 0.0
@@ -467,7 +470,57 @@ func _update_typing(delta: float) -> void:
 	_type_t -= delta
 	if _type_t <= 0.0:
 		_type_t = TYPE_INTERVAL
-		play_sfx(&"typewriter", -14.0)
+		_play_blip(_type_speaker)
+
+
+## Konuşmacıya göre kısa, yumuşak, düşük sesli harf blip'i (prosedürel; dosya yok).
+func _blip_profile(speaker: String) -> Array:
+	## [taban Hz, harmonik oranı, süre sn, glide]
+	match speaker.strip_edges().to_lower():
+		"noroi":
+			return [520.0, 0.25, 0.045, 0.0]
+		"shilda":
+			return [340.0, 0.5, 0.06, -0.08]
+		"arşivci", "arsivci":
+			return [230.0, 0.15, 0.07, 0.0]
+		"???":
+			return [180.0, 0.7, 0.07, 0.12]
+		_:
+			return [400.0, 0.0, 0.035, 0.0] ## sistem / anlatıcı
+
+
+func _make_blip(speaker: String) -> AudioStreamWAV:
+	var prof := _blip_profile(speaker)
+	var rate := 22050
+	var n := int(float(prof[2]) * rate)
+	var data := PackedByteArray()
+	data.resize(n * 2)
+	for i in n:
+		var t := float(i) / float(rate)
+		var k := float(i) / float(n)
+		var f: float = float(prof[0]) * (1.0 + float(prof[3]) * k)
+		var env := minf(k * 12.0, 1.0) * pow(1.0 - k, 1.6)
+		var v := sin(TAU * f * t) + float(prof[1]) * sin(TAU * f * 2.0 * t)
+		data.encode_s16(i * 2, int(clampf(v * env * 0.45, -1.0, 1.0) * 32767.0))
+	var w := AudioStreamWAV.new()
+	w.format = AudioStreamWAV.FORMAT_16_BITS
+	w.mix_rate = rate
+	w.stereo = false
+	w.data = data
+	return w
+
+
+func _play_blip(speaker: String) -> void:
+	if not _enabled:
+		return
+	var key := speaker.strip_edges().to_lower()
+	if not _blips.has(key):
+		_blips[key] = _make_blip(speaker)
+	var p := _free_sfx_player()
+	p.stream = _blips[key]
+	p.volume_db = -19.0
+	p.pitch_scale = randf_range(0.94, 1.08)
+	p.play()
 
 
 ## Koşu animasyonunun ayak-yere-değme karesinden çağrılır (görüntüyle senkron adım sesi).
