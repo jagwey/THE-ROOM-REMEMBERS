@@ -137,5 +137,5 @@ func _run() -> void:
 	else:
 		check(false, "keeper node with can_interact found")
 	print("INTERACT_AUDIT failures=", failures)
-	DirAccess.remove_absolute(ProjectSettings.globalize_path(sm.SAVE_PATH))
+	sm.delete_all_save_files()
 	quit(1 if failures else 0)

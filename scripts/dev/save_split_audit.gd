@@ -22,10 +22,7 @@ func _write(path: String, text: String) -> void:
 
 
 func _clean(sm: Node) -> void:
-	for base in [String(sm.SAVE_PATH), String(sm.resume_path())]:
-		for suffix in ["", ".bak", ".prev", ".tmp"]:
-			if FileAccess.file_exists(base + suffix):
-				DirAccess.remove_absolute(ProjectSettings.globalize_path(base + suffix))
+	sm.delete_all_save_files()
 
 
 func _run() -> void:
@@ -106,6 +103,34 @@ func _run() -> void:
 	_write(path, "garbage")
 	_write(path + ".bak", JSON.stringify({"player_progress_knowledge": {"deaths": 77}}))
 	check(sm.load_committed(false) and int(gs.player_progress_knowledge["deaths"]) == 77, "corrupt committed falls back to .bak")
+
+	## load_game() own fallbacks: resume .prev/.bak, corrupt resume + good committed, both corrupt
+	_clean(sm)
+	gs.player_progress_knowledge["deaths"] = 10
+	sm.commit_save(&"c")
+	gs.player_progress_knowledge["deaths"] = 11
+	sm.save_game()
+	gs.player_progress_knowledge["deaths"] = 12
+	sm.save_game()
+	_write(rpath, "{\"player_progress_kno")
+	check(sm.load_game(false) and int(gs.player_progress_knowledge["deaths"]) == 11, "corrupt resume falls back to its own .prev")
+	_write(rpath, "garbage")
+	_write(rpath + ".prev", "garbage")
+	_write(rpath + ".bak", JSON.stringify({"player_progress_knowledge": {"deaths": 55}, "save_serial": 9999}))
+	check(sm.load_game(false) and int(gs.player_progress_knowledge["deaths"]) == 55, "corrupt resume falls back to its own .bak")
+	_write(rpath + ".bak", "garbage")
+	check(sm.load_game(false) and int(gs.player_progress_knowledge["deaths"]) == 10, "fully corrupt resume + good committed -> committed")
+	_write(path, "garbage")
+	_write(path + ".prev", "garbage")
+	_write(path + ".bak", "garbage")
+	check(not sm.load_game(false), "both corrupt -> safe false, no crash")
+	_clean(sm)
+	var burst_ok := true
+	_write(rpath + ".tmp", "stale")
+	_write(rpath + ".bak", "{\"stale\": 1}")
+	for i in range(8):
+		burst_ok = burst_ok and sm.save_game()
+	check(burst_ok and not FileAccess.file_exists(rpath + ".tmp") and not FileAccess.file_exists(rpath + ".bak"), "resume burst with stale .tmp/.bak ok and cleaned")
 
 	## Legacy single file (no save_serial) + missing fields -> defaults
 	_clean(sm)

@@ -157,5 +157,5 @@ func _run() -> void:
 		await _wait_transition(ldoor)
 		check(rm.get_active_room_id() == &"decay_vines", "unlocked door travels (%s)" % rm.get_active_room_id())
 	print("DOOR_AUDIT failures=", failures)
-	DirAccess.remove_absolute(ProjectSettings.globalize_path(sm.SAVE_PATH))
+	sm.delete_all_save_files()
 	quit(1 if failures else 0)

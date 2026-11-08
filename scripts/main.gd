@@ -107,7 +107,8 @@ func _ready() -> void:
 	RenderingServer.set_default_clear_color(Palette.VOID)
 	_continued = false
 	GameState.session_loaded_from_save = false
-	if OS.get_environment("TORIMON_SMOKE") != "1" and OS.get_environment("TORIMON_FRESH") != "1":
+	var fresh_pending := SaveManager.consume_fresh_start()
+	if not fresh_pending and OS.get_environment("TORIMON_SMOKE") != "1" and OS.get_environment("TORIMON_FRESH") != "1":
 		if SaveManager.has_save():
 			if SaveManager.load_game(false):
 				_continued = true

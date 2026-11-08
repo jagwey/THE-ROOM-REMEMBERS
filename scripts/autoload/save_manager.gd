@@ -10,6 +10,9 @@ var force_fail_for_test: bool = false
 
 ## Her yazımda artan sayaç; iki dosyada da "save_serial" olarak durur.
 var _save_serial: int = 0
+## start_new_game -> sahne yeniden yüklenince main.gd "Devam" yerine taze girişi (uzun göz, açılış diyaloğu) oynar.
+var fresh_start_pending: bool = false
+var _fell_back: bool = false
 
 var _new_progress: Dictionary
 var _new_world: Dictionary
@@ -58,6 +61,7 @@ func start_new_game() -> void:
 	CurseManager.reset_for_new_life()
 	RoomManager.reset_registry()
 	commit_save(&"new_game", GameState.DEFAULT_CHECKPOINT, &"awakening")
+	fresh_start_pending = true
 	get_tree().reload_current_scene()
 
 
@@ -180,6 +184,20 @@ func _write_atomic(path: String, data: Dictionary) -> bool:
 	return true
 
 
+## Test/temizlik: committed + resume ve hepsinin .prev/.bak/.tmp dosyaları.
+func delete_all_save_files() -> void:
+	for base in [SAVE_PATH, resume_path()]:
+		for suffix in ["", ".bak", ".prev", ".tmp"]:
+			if FileAccess.file_exists(base + suffix):
+				DirAccess.remove_absolute(ProjectSettings.globalize_path(base + suffix))
+
+
+func consume_fresh_start() -> bool:
+	var v := fresh_start_pending
+	fresh_start_pending = false
+	return v
+
+
 func _delete_resume_files() -> void:
 	var rp := resume_path()
 	for suffix in ["", ".bak", ".prev", ".tmp"]:
@@ -202,7 +220,7 @@ func _read_with_fallback(path: String) -> Variant:
 	if parsed == null:
 		parsed = _read_save(path + ".prev")
 	if parsed != null:
-		push_warning("Kayıt bozuk — önceki yedek yüklendi")
+		_fell_back = true
 	return parsed
 
 
@@ -221,6 +239,7 @@ func _read_save(path: String) -> Variant:
 
 ## Devam Et: committed ve resume'dan save_serial'ı büyük olan (eşitse committed).
 func load_game(apply_room: bool = true) -> bool:
+	_fell_back = false
 	var committed: Variant = _read_with_fallback(SAVE_PATH)
 	var resume: Variant = _read_with_fallback(resume_path())
 	var parsed: Variant = committed
@@ -228,16 +247,25 @@ func load_game(apply_room: bool = true) -> bool:
 		parsed = resume
 	if parsed == null:
 		return false
+	_warn_if_fell_back()
 	return _apply_data(parsed, apply_room)
 
 
 ## Lanet geri yüklemesi: yalnız committed kaydı yükler; resume dosyası silinir (Devam Et eski durumu diriltmesin).
 func load_committed(apply_room: bool = true) -> bool:
+	_fell_back = false
 	var parsed: Variant = _read_with_fallback(SAVE_PATH)
 	if parsed == null:
 		return false
+	_warn_if_fell_back()
 	_delete_resume_files()
 	return _apply_data(parsed, apply_room)
+
+
+func _warn_if_fell_back() -> void:
+	if _fell_back:
+		push_warning("Kayıt bozuk — önceki yedek yüklendi")
+		_fell_back = false
 
 
 func _apply_data(data: Dictionary, apply_room: bool) -> bool:

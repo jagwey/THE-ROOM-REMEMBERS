@@ -51,12 +51,12 @@ func _run() -> void:
 	## Kaydet-yükle turu
 	gs.set_story_flag(&"first_warning_heard")
 	gs.set_story_flag(&"core_access_granted")
-	check(sm.commit_save(&"test"), "save_game ok")
+	check(sm.commit_save(&"test"), "commit_save ok")
 	var raw: Variant = sm._read_save(path)
 	var sf: Variant = (raw as Dictionary).get("story_flags", null)
 	check(sf is Dictionary and (sf as Dictionary).has("first_warning_heard"), "save JSON has String-keyed story_flags")
 	gs.clear_story_flags()
-	check(sm.load_committed(false), "load_game ok")
+	check(sm.load_committed(false), "load_committed ok")
 	check(gs.has_story_flag(&"first_warning_heard") and gs.has_story_flag(&"core_access_granted"), "flags survive roundtrip")
 	check(not gs.has_story_flag(&"game_completed"), "unset flag stays unset after roundtrip")
 	check(gs.story_flags.has(&"first_warning_heard") and gs.story_flags.keys()[0] is StringName, "loaded keys are StringName")
@@ -74,7 +74,7 @@ func _run() -> void:
 	}
 	_write(path, JSON.stringify(v5))
 	gs.clear_story_flags()
-	check(sm.load_committed(false), "v5 save loads without error")
+	check(sm.load_committed(false), "v5 save loads via load_committed without error")
 	for id in [&"shilda_name_known", &"first_death_completed", &"core_access_granted", &"intro_completed", &"first_corpse_discovered", &"dimension_origin_discovered", &"shilda_past_discovered"]:
 		check(gs.has_story_flag(id), "v5 migration derives %s" % String(id))
 	check(not gs.has_story_flag(&"game_completed") and not gs.has_story_flag(&"final_seal_broken"), "v5 migration leaves underivable flags unset")

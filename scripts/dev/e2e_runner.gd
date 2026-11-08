@@ -688,7 +688,7 @@ func _print_and_save_summary() -> void:
 	# Clean up QA save file to maintain clean environment
 	var sm: Node = root.get_node_or_null("SaveManager")
 	if sm and "qa/" in String(sm.SAVE_PATH):
-		DirAccess.remove_absolute(ProjectSettings.globalize_path(sm.SAVE_PATH))
+		sm.delete_all_save_files()
 	
 	var milestone_filter: String = OS.get_environment("TORIMON_MILESTONE").strip_edges().to_upper()
 	var exit_failures: int = total_failed

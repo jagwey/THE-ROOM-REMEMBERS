@@ -31,7 +31,7 @@ func _round(continued: bool) -> void:
 		root.get_node("GameState").player_progress_knowledge["awakening_mystery_seen"] = true
 		sm.save_game()
 	else:
-		DirAccess.remove_absolute(ProjectSettings.globalize_path(String(sm.SAVE_PATH)))
+		sm.delete_all_save_files()
 	root.get_node("RoomManager").reset_registry()
 	menu_cls_reset()
 	root.get_node("UiGate").set_title(false)
@@ -106,6 +106,23 @@ func _round(continued: bool) -> void:
 	check(get_first_node_in_group("player") != null, "[%s] player present" % tag)
 
 
+## Yeni Oyun: kayıt commit edilir ama sahne "Devam" değil taze girişle açılmalı.
+func _new_game_round() -> void:
+	var sm := root.get_node("SaveManager")
+	var gs := root.get_node("GameState")
+	gs.player_progress_knowledge["deaths"] = 3
+	sm.save_game()
+	sm.start_new_game()
+	await process_frame
+	await create_timer(0.5).timeout
+	check(not gs.session_loaded_from_save, "[newgame] session_loaded_from_save false (fresh path)")
+	check(current_scene != null and not bool(current_scene._continued), "[newgame] main took fresh path, not continue")
+	check(not sm.fresh_start_pending, "[newgame] fresh flag consumed")
+	check(FileAccess.file_exists(sm.SAVE_PATH) and not FileAccess.file_exists(sm.resume_path()), "[newgame] committed exists, no stale resume")
+	check(int(gs.player_progress_knowledge.get("deaths", -1)) == 0, "[newgame] progress reset")
+	sm.delete_all_save_files()
+
+
 func _run() -> void:
 	if not ("qa/" in String(root.get_node("SaveManager").SAVE_PATH)):
 		print("STARTFLOW SKIP (run with TORIMON_TEST=1)")
@@ -113,5 +130,6 @@ func _run() -> void:
 		return
 	await _round(false)
 	await _round(true)
+	await _new_game_round()
 	print("STARTFLOW done failures=", failures)
 	quit(1 if failures > 0 else 0)

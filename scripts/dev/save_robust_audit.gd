@@ -48,9 +48,9 @@ func _run() -> void:
 	## Hiç geçerli kayıt yok.
 	_write(path, "not json")
 	_write(path + ".prev", "[]")
-	check(not sm.load_committed(false), "no valid save -> load_game false, no crash")
+	check(not sm.load_committed(false), "no valid save -> load_committed false, no crash")
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(path + ".prev"))
-	sm._delete_resume_files()
+	sm.delete_all_save_files()
 	print("SAVE_AUDIT failures=", failures)
 	quit(1 if failures else 0)

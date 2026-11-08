@@ -115,5 +115,5 @@ func _run() -> void:
 	check(not (state.character_current_life_knowledge as Dictionary).has("resume"), "death clears resume (respawn at bed)")
 	check(player.global_position.distance_to(state.get_checkpoint()) < 40.0, "respawn near checkpoint")
 	print("SAVEQUIT_AUDIT failures=", failures)
-	DirAccess.remove_absolute(ProjectSettings.globalize_path(sm.SAVE_PATH))
+	sm.delete_all_save_files()
 	quit(1 if failures else 0)
