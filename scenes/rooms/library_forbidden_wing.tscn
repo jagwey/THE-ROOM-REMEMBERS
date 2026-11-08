@@ -4,6 +4,7 @@
 [ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore"]
 [ext_resource type="Script" path="res://scripts/world/ability_pickup.gd" id="ability"]
 [ext_resource type="Script" path="res://scripts/world/soul_seal.gd" id="soul"]
+[ext_resource type="Script" path="res://scripts/world/memory_seal_point.gd" id="memory_seal_pt"]
 
 [sub_resource type="RectangleShape2D" id="Interact"]
 size = Vector2(40, 48)
@@ -63,3 +64,11 @@ evidence_body = "Yetkili imza: ███ (kazınmış). Deney başarısız olurs
 evidence_section = "izler"
 set_progress_key = "truth_fragment_protocol"
 focus_zoom = true
+
+[node name="seal_library_forbidden_wing" type="Marker2D" parent="Spawns"]
+position = Vector2(370, 288)
+
+[node name="MemorySeal" type="Area2D" parent="Interactive"]
+position = Vector2(370, 288)
+script = ExtResource("memory_seal_pt")
+room_id = &"library_forbidden_wing"

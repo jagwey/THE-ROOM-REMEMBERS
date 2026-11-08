@@ -66,6 +66,8 @@ const STORY_FLAGS := [
 	&"final_seal_broken", &"x_revealed", &"game_completed",
 ]
 var story_flags: Dictionary = {}
+## Etkinleştirilmiş Hafıza Mühürleri (oda id). Uyanış mührü her zaman açıktır.
+var discovered_seals: Array[StringName] = [&"awakening"]
 
 var hearts: int = MAX_HEARTS
 var max_hearts: int = MAX_HEARTS
@@ -139,6 +141,15 @@ func set_story_flag(id: StringName, value: bool = true) -> void:
 
 func has_story_flag(id: StringName) -> bool:
 	return bool(story_flags.get(id, false))
+
+
+func reset_discovered_seals() -> void:
+	discovered_seals = [&"awakening"]
+
+
+func discover_seal(room_id: StringName) -> void:
+	if not discovered_seals.has(room_id):
+		discovered_seals.append(room_id)
 
 
 func clear_story_flags() -> void:

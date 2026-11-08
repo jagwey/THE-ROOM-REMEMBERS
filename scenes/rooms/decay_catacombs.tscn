@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://scripts/world/hidden_symbol.gd" id="symbol"]
 [ext_resource type="Script" path="res://scripts/world/gate_blocker.gd" id="gate"]
 [ext_resource type="Texture2D" path="res://assets/props/door_closed.png" id="door_tex"]
+[ext_resource type="Script" path="res://scripts/world/memory_seal_point.gd" id="memory_seal_pt"]
 
 [sub_resource type="RectangleShape2D" id="Interact"]
 size = Vector2(40, 48)
@@ -115,3 +116,13 @@ evidence_title = "Kemik Mahzeni Kaydı"
 evidence_body = "Tanımadığım bir ses: Çekirdek anıları yutmaya başladığında tesisi içeriden kilitledi."
 evidence_section = "izler"
 set_progress_key = "truth_fragment_lockdown"
+
+[node name="Spawns" type="Node2D" parent="."]
+
+[node name="seal_decay_catacombs" type="Marker2D" parent="Spawns"]
+position = Vector2(300, 288)
+
+[node name="MemorySeal" type="Area2D" parent="Interactive"]
+position = Vector2(300, 288)
+script = ExtResource("memory_seal_pt")
+room_id = &"decay_catacombs"

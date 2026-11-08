@@ -33,7 +33,8 @@ Dal: cursor/playable-story-flow-8e4e · Sürüm: v1.2.0 (versionCode 16)
 - [x] T1 lore/canon (2026-11-09, a985d0c): Noroi yazar/yetkili değil, X kazınmış, 1927/1995 ipuçları, Araştırma Yardımcısı S.; lore_canon_audit 0, release 111/0, e2e 50/0; pencereli kontrol edildi
 - [x] T2 story flags + save v6 (2026-11-09): `GameState.story_flags` API (set/has/clear + sinyal, 13 bayrak), SAVE_VERSION 6 + v≤5 göçü, kancalar: first_death_completed, first_corpse_discovered, first_archive_record_read, core_access_granted, dimension_origin/shilda_past (awakening_crypt defteri); `story_flags_audit` 0 hata
 - [x] T3 kayıt ayrımı (2026-11-09): committed (`SAVE_PATH`, yalnız `commit_save(reason, pos, room)`) + resume (`*_resume.json`, `save_game`/`save_resume_point`), `save_serial` ile Devam Et = yenisi, `load_committed()` resume'ü siler; `save_split_audit` 0 hata
-- [ ] T4 Hafıza Mühürleri · T5 lanet bantları · T6 yatak respawn · T7 açılış/isim · T8 menüler · T9 tek final · T10 diyalog · T11 audit+test planı
+- [x] T4 Hafıza Mühürleri (2026-11-09): 12 ana odada `memory_seal_point` (commit_save + banner + `discovered_seals` iki dosyada, güvenlik kapısı, Mühürler arası geçiş modalı, `seal_<oda>` spawn); `memory_seal_audit` 0 hata, release 111/0, e2e 50/0; pencereli kontrol edildi
+- [ ] T5 lanet bantları · T6 yatak respawn · T7 açılış/isim · T8 menüler · T9 tek final · T10 diyalog · T11 audit+test planı
 
 ## Kalan
 - docs/gelistirme/ altındaki izlenmeyen log/zip dosyaları: .gitignore veya temizlik kararı bekliyor

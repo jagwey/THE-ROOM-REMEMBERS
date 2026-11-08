@@ -51,6 +51,7 @@ func start_new_game() -> void:
 	GameState.world_memory_state = _new_world.duplicate(true)
 	GameState.character_current_life_knowledge = _new_life.duplicate(true)
 	GameState.clear_story_flags()
+	GameState.reset_discovered_seals()
 	GameState.session_loaded_from_save = false
 	GameState.hearts = GameState.max_hearts
 	PuzzleManager.sync_from_world()
@@ -123,6 +124,7 @@ func _build_data() -> Dictionary:
 		"world_memory_state": _serialize_world(GameState.world_memory_state),
 		"character_current_life_knowledge": _serialize_life(GameState.character_current_life_knowledge),
 		"story_flags": _serialize_story_flags(GameState.story_flags),
+		"discovered_seals": _serialize_seals(GameState.discovered_seals),
 		"hearts": GameState.hearts,
 		"curse": CurseManager.curse if CurseManager else 0.0,
 	}
@@ -274,6 +276,7 @@ func _apply_data(data: Dictionary, apply_room: bool) -> bool:
 	GameState.character_current_life_knowledge = _deserialize_life(data.get("character_current_life_knowledge", {}))
 	GameState.session_loaded_from_save = true
 	GameState.story_flags = _deserialize_story_flags(data.get("story_flags", {}))
+	GameState.discovered_seals = _deserialize_seals(data.get("discovered_seals", null))
 	var ver := int(data.get("version", 0))
 	if ver > 0 and ver < SAVE_VERSION:
 		if ver < 5:
@@ -292,6 +295,24 @@ func _apply_data(data: Dictionary, apply_room: bool) -> bool:
 		CorpseManager.rebuild_world_corpses()
 	GameState.knowledge_changed.emit(&"world")
 	return true
+
+
+func _serialize_seals(seals: Array[StringName]) -> Array:
+	var out: Array = []
+	for id in seals:
+		out.append(String(id))
+	return out
+
+
+## Eksik/bozuk alan: yalnız Uyanış mührü açık. Uyanış mührü her zaman listede.
+func _deserialize_seals(raw: Variant) -> Array[StringName]:
+	var out: Array[StringName] = [&"awakening"]
+	if raw is Array:
+		for v in raw:
+			var id := StringName(String(v))
+			if id != &"" and not out.has(id):
+				out.append(id)
+	return out
 
 
 func _serialize_story_flags(flags: Dictionary) -> Dictionary:

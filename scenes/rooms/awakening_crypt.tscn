@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
 [ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore"]
 [ext_resource type="Script" path="res://scripts/world/echo_point.gd" id="echo"]
+[ext_resource type="Script" path="res://scripts/world/memory_seal_point.gd" id="memory_seal_pt"]
 
 [sub_resource type="RectangleShape2D" id="Interact"]
 size = Vector2(40, 48)
@@ -57,3 +58,13 @@ shape = SubResource("Interact")
 [node name="Sprite2D" type="Sprite2D" parent="Interactive/CryptEcho"]
 texture_filter = 0
 centered = true
+
+[node name="Spawns" type="Node2D" parent="."]
+
+[node name="seal_awakening_crypt" type="Marker2D" parent="Spawns"]
+position = Vector2(440, 288)
+
+[node name="MemorySeal" type="Area2D" parent="Interactive"]
+position = Vector2(440, 288)
+script = ExtResource("memory_seal_pt")
+room_id = &"awakening_crypt"

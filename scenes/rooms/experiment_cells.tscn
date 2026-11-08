@@ -9,6 +9,7 @@
 [ext_resource type="Texture2D" path="res://assets/layers/tank.png" id="7"]
 
 [ext_resource type="Texture2D" path="res://assets/tiles/tile_00.png" id="walk_tile"]
+[ext_resource type="Script" path="res://scripts/world/memory_seal_point.gd" id="memory_seal_pt"]
 
 [sub_resource type="RectangleShape2D" id="Floor"]
 size = Vector2(1000, 48)
@@ -309,3 +310,11 @@ centered = false
 [node name="Foundation" type="Polygon2D" parent="WalkableTerrain"]
 polygon = PackedVector2Array(0, 320, 960, 320, 960, 360, 0, 360)
 color = Color(0.08, 0.06, 0.1, 1)
+
+[node name="seal_experiment_cells" type="Marker2D" parent="Spawns"]
+position = Vector2(360, 288)
+
+[node name="MemorySeal" type="Area2D" parent="Interactive"]
+position = Vector2(360, 288)
+script = ExtResource("memory_seal_pt")
+room_id = &"experiment_cells"

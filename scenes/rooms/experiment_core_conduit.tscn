@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
 [ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore"]
 [ext_resource type="Script" path="res://scripts/world/echo_altar.gd" id="altar"]
+[ext_resource type="Script" path="res://scripts/world/memory_seal_point.gd" id="memory_seal_pt"]
 
 [sub_resource type="RectangleShape2D" id="Interact"]
 size = Vector2(40, 48)
@@ -49,3 +50,13 @@ evidence_title = "Enerji Yönlendirme"
 evidence_body = "Çekirdek beslendikçe herkesin anıları çekilmiş. Bir sesi kurtarmak için hepsini feda etmişim."
 evidence_section = "izler"
 set_progress_key = "truth_fragment_conduit"
+
+[node name="Spawns" type="Node2D" parent="."]
+
+[node name="seal_experiment_core_conduit" type="Marker2D" parent="Spawns"]
+position = Vector2(280, 288)
+
+[node name="MemorySeal" type="Area2D" parent="Interactive"]
+position = Vector2(280, 288)
+script = ExtResource("memory_seal_pt")
+room_id = &"experiment_core_conduit"

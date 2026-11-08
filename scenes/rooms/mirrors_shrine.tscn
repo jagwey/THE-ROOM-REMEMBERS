@@ -4,6 +4,7 @@
 [ext_resource type="Script" path="res://scripts/world/ability_pickup.gd" id="ability"]
 [ext_resource type="Script" path="res://scripts/world/npc_actor.gd" id="npc"]
 [ext_resource type="Script" path="res://scripts/world/curse_barrier.gd" id="barrier"]
+[ext_resource type="Script" path="res://scripts/world/memory_seal_point.gd" id="memory_seal_pt"]
 
 [sub_resource type="RectangleShape2D" id="Interact"]
 size = Vector2(40, 48)
@@ -59,3 +60,11 @@ idle_anim = "echo_idle"
 walk_anim = "echo_walk"
 ghostly = true
 dialogue_sets = PackedStringArray("Yansıma|Her döngüde buraya kadar geldin. Her seferinde Shilda'ya kılıç kaldırdın.;;Yansıma|Bu sefer başka bir şey dene.", "Yansıma|Ona güvenirsen birlikte mühürlersiniz. Bağı koparırsan… onu burada bırakırsın.")
+
+[node name="seal_mirrors_shrine" type="Marker2D" parent="Spawns"]
+position = Vector2(430, 288)
+
+[node name="MemorySeal" type="Area2D" parent="Interactive"]
+position = Vector2(430, 288)
+script = ExtResource("memory_seal_pt")
+room_id = &"mirrors_shrine"
