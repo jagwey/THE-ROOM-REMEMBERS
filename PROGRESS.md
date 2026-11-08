@@ -121,9 +121,10 @@ Dal: cursor/playable-story-flow-8e4e · Sürüm: v1.2.0 (versionCode 16)
 - [x] Hitstop 40/45 ms; hit'te tas kirintisi parcaciklari; inis tozu (`_spawn_dust`); Shilda saldiri telegraph sesi `keeper_telegraph` (windup'ta); `follow_camera.focus_pulse` (0.5 sn odak+halka) gate_blocker/vine_gate/cracked_wall'da.
 - [x] `audio_manager.gd`: konusmaciya gore prosedurel dialog blip (Noroi/Shilda/Arsivci/???/anlatici), -19 dB, headless/test'te kapali.
 
-## v1.4.5 (devam) — Son QA turu (2026-11-08)
+## v1.4.5 — Son QA turu + yayın (2026-11-08)
 - [x] HUD: `_layout_objective_and_hint()` hedef satır sayısına göre boyutlanır, ipucu altına itilir (core'da üst üste binme yok).
 - [x] `region_title_card.gd`: koyu zemin (Backing), diyalog/UiGate açılınca kart gizlenip kuyruğa geri alınır, kapanınca yeniden gösterilir; `is_showing()` statik.
 - [x] `room_transition.gd`: kapı etiketi kamera dışındayken ve bölge kartı ekrandayken gizli.
 - [x] Doğrulama (TORIMON_TEST=1): 17 headless audit rc=0, SCRIPT ERROR yok (release 110/0, e2e 50/50). 1920x1080 pencereli masaüstü+dokunmatik çekimler (intro, ???→Shilda açılışı, balkon, decay_weight, core, günlük notlar/harita) gözle kontrol edildi; çekimler scratchpad'de, repoda değil.
 - Eksik: jump/fall türetilmiş kareler; kapı collision şekilleri; SHORTCUT_LINKS tahmini; ayrı "???" portre asset'i yok; masaüstü istemi "E / El".
+- [x] Yayın v1.4.5 (versionCode 23): commit 879f34d (dal claude/v1.4.1, push edildi), release public `THE-ROOM-REMEMBERS-release` + private. APK Godot export-debug (scratchpad kopyasından), sertifika SHA-256 16fd69… önceki sürümlerle aynı. e2e versiyon kontrolü 1.4.5/23.
