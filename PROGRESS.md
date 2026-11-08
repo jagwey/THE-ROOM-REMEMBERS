@@ -128,3 +128,33 @@ Dal: cursor/playable-story-flow-8e4e · Sürüm: v1.2.0 (versionCode 16)
 - [x] Doğrulama (TORIMON_TEST=1): 17 headless audit rc=0, SCRIPT ERROR yok (release 110/0, e2e 50/50). 1920x1080 pencereli masaüstü+dokunmatik çekimler (intro, ???→Shilda açılışı, balkon, decay_weight, core, günlük notlar/harita) gözle kontrol edildi; çekimler scratchpad'de, repoda değil.
 - Eksik: jump/fall türetilmiş kareler; kapı collision şekilleri; SHORTCUT_LINKS tahmini; ayrı "???" portre asset'i yok; masaüstü istemi "E / El".
 - [x] Yayın v1.4.5 (versionCode 23): commit 879f34d (dal claude/v1.4.1, push edildi), release public `THE-ROOM-REMEMBERS-release` + private. APK Godot export-debug (scratchpad kopyasından), sertifika SHA-256 16fd69… önceki sürümlerle aynı. e2e versiyon kontrolü 1.4.5/23.
+- [x] Oda nesne/kapı çakışma düzeltmesi (>=110px): decay_garden, awakening, balcony, library_hall, core, seal, witness, cells, mirrors_*, core_* + Shilda keeper_observe marker'ları; SIDE_DOORS/MIRROR_POSITIONS güncellendi. Kontrol: scratchpad rooms/overlap_check.gd (repo dışı)
+
+## v1.4.5 (devam) — HUD/günlük/modal düzeltmeleri (ajan D)
+- [x] HUD: hedef/ipucu genişliği safe area'ya sıkıştırıldı + sarma (`_fit_guidance_width`); ipucu dokunmatikte gizli; SafeArea TITLE'da gizli; Zıpla düğmesi El'den uzaklaştırıldı; keypad `⌫` -> `Sil`; dokunmatik ipucu "El ·".
+- [x] Bölge/oda adları tek kaynak: `RoomManager.ROOM_TITLES_TR` + `RegionTitleCard.REGION_CARDS["name"]`; kart arka planı alfa 0.94; bölge değişince eski kuyruk temizlenir. CampaignObjectives'ten oda adı öneki kaldırıldı.
+- [x] Günlük: DetailTitle genişletildi (max 2 satır), sol başlık aşağı, harita bağlantı çizgisinden uzak, mühür ◇ metne değmiyor (`journal_map.gd`, `journal.tscn`).
+- [x] Esc/kapanış: `GothicModalPanel.on_close`; Çatlak Ayna paneli UiGate'i görünürlüğe bağlı; ayna seçimi Esc ile `UiGate.set_story(false)`.
+- [x] Menü Title Case; "atıl" tek terim. Açık: `mirrors_shrine.tscn` satır 33 "X / Dash" (oda tscn, dokunulmadı).
+- Testler (TORIMON_TEST=1): e2e 50/50, ui_header_portrait, room_header_fit, controls, start_flow, release_audit (110/110) geçti. e2e F18 yalnız eski string aramasını güncelledi.
+
+## v1.4.5 (devam) — sanat/glow/pad (ajan E)
+- [x] `interact_glow.gd`: AnimatedSprite2D (Shilda) için kare boyutundan merkez/tepe, etiket hale+"..." üstünde (gap 32); "???" -> "Shilda"; `cracked_mirror.gd` -> "Çatlak Ayna".
+- [x] `core_choice_pad.gd`: düz daire/X-A kaldırıldı; gotik rün + "Bağı Kopar [E]" / "Birlikte Mühürle [E]".
+- [x] Sanat: noroi `fall` gerçek düşüş pozu (r4c2-3), portrait_noroi_sad, keeper enkaz temizliği + ayrı `flower` kareleri (boş hücreler 4,6-6,7) + `disappear` son boş kare kaldırıldı; door_closed/weight_stone/light_beam/library+mirrors mid kenar yumuşatma.
+- [x] Yeni `assets/props/mirror_cracked.png` (32x56). Bağlanmadı: `cracked_mirror.tscn` hâlâ crystal.png (ana oturum bağlamalı, scale ~1).
+- Açık: decay_weight.tscn WeightStone scale 0.25 (24px, collision 22px) -> ~0.4-0.5 + collision (tscn, dokunulmadı). Testler: e2e 50/50, interact_audit 0, release 110/0.
+
+## v1.4.6 — Shilda adı, oda çakışmaları, HUD kırpılması: son QA (2026-11-08)
+- Shilda ilk replikten adıyla ("Ben Shilda. Oraya gitme."), "???" kalmadı; oda etkileşim/kapı arası ≥110px (tek bilinçli istisna ShildaGarden).
+- Günlük haritası: bölge adı kutuya sığana kadar küçülür, mühür ◇ sağ köşede sabit (journal_map.gd `_draw_region`).
+- Çekirdek pad etiketi ekran kenarına kırpılmaz (core_choice_pad.gd `_process` kaydırma); dokunmatikte "El · …" ve rünün üstünde (Atıl düğmesi örtmüyor).
+- QA: 17 headless audit rc=0 / 0 script error, e2e 50/50, release 110/0; pencereli 1920x1080 + 1800x810 (20:9, dokunmatik) çekim gözle kontrol edildi.
+- Sürüm v1.4.6 ile yayınlandı (aşağıda).
+
+## v1.4.6 — Beden taşıma + Ruh Kesişi kapısı (2026-11-08)
+- Beden taşıma yeniden: corpse.gd `pick_up/drop`, oyuncu takip eder, boşluk/köprüden zıplayarak geçer; ölüm/oda değişiminde bırakılır. Oyuncu taşırken %90 hız (player_controller `CARRY_SLOW`).
+- Kemik Mahzeni: beden x330→~610 taşınıp 5·8·6 sembolleri açılıyor, kod 586 öğreniliyor (Sym reveal_radius 200, hidden_symbol dikey tolerans 120px). Sırttaki bedende ikinci "Bırak" etiketi yok (interact_glow.gd).
+- Ruh Kesişi yokken onu isteyen metinler kapalı: campaign_objectives / room_transition / soul_seal yeteneğe göre metin seçer; kalkanlı gölge TURN_DELAY 0.7 → yetenek olmadan arkadan vurulabiliyor; blood_thorn `body_line/solved_line`.
+- QA: 17 headless audit rc=0 / 0 script error, e2e 50/50, release 110/0; pencereli 1920x1080 taşıma çekimi (masaüstü + dokunmatik) gözle kontrol edildi.
+- [x] Yayın v1.4.6 (versionCode 24): public `THE-ROOM-REMEMBERS-release` + private. APK Godot export-debug (scratchpad build46), sertifika SHA-256 16fd69… aynı. e2e versiyon kontrolü 1.4.6/24; README/PLAY_TR v1.4.6.

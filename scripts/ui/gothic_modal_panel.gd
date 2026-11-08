@@ -16,6 +16,9 @@ var title_label: Label
 ## İçerik bu kutuya eklenir (title sonrası).
 var body: VBoxContainer
 
+## Esc / geri ile kapanınca çağrılır (UiGate kilidini bırakmak için).
+var on_close: Callable = Callable()
+
 var _inner: PanelContainer
 
 
@@ -151,5 +154,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			call("close")
 		else:
 			visible = false
+		if on_close.is_valid():
+			on_close.call()
 		get_viewport().set_input_as_handled()
 

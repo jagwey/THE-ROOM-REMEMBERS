@@ -95,6 +95,7 @@ func _ready() -> void:
 	DeathManager.death_started.connect(_on_player_death_started)
 	DeathManager.rebirth_completed.connect(_on_player_reborn)
 	# Gizem beat: uzak silüet ile başla.
+	GameState.set_shilda_named(true) # açılıştan itibaren adı belli (eski kayıtlar dahil)
 	global_position = silhouette_position
 	modulate = Color(0.15, 0.12, 0.18, 0.85)
 	sprite.play("observe")
@@ -448,8 +449,9 @@ func _run_mystery_beat() -> void:
 	var tw := create_tween()
 	tw.tween_property(self, "modulate", Color.WHITE, 0.55)
 	await tw.finished
-	DialogueManager.whisper("???", "Oraya gitme.")
-	DialogueManager.whisper("???", "Yaklaşma.")
+	GameState.set_shilda_named(true)
+	DialogueManager.whisper("Shilda", "Ben Shilda. Oraya gitme.")
+	DialogueManager.whisper("Shilda", "Yaklaşma.")
 	await DialogueManager.dialogue_finished
 	await get_tree().create_timer(0.25).timeout
 	# Gözlem konumuna çekil
@@ -481,9 +483,9 @@ func can_interact() -> bool:
 	return mode != Mode.COMBAT
 
 
-## Etkileşim etiketi: Shilda adını söyleyene dek "???".
+## Etkileşim etiketi: Shilda her zaman adıyla ("???" yok).
 func get_interact_label() -> String:
-	return "Shilda" if GameState.is_shilda_named() else "???"
+	return "Shilda"
 
 
 func on_interact(_by: Node) -> void:
@@ -496,14 +498,13 @@ func on_interact(_by: Node) -> void:
 		return
 	var active_room := String(RoomManager.get_active_room_id())
 	if active_room == "awakening":
-		if not GameState.is_shilda_named():
-			DialogueManager.say("???", "Noroi… yine mi?")
-			DialogueManager.say("Noroi", "Beni… nasıl ismimle çağırdın? Sen kimsin?")
-			# Ad tam bu satırda açıklanır: isimlik ve portre anında Shilda'ya döner.
-			DialogueManager.say_with("Shilda", "Ben Shilda.", func(): GameState.set_shilda_named(true))
+		if not bool(GameState.player_progress_knowledge.get("shilda_talk_done", false)):
+			# Ad açılışta zaten söylendi; bu konuşma tanışmanın devamı.
+			DialogueManager.say("Shilda", "Noroi… yine mi?")
+			DialogueManager.say("Noroi", "Beni ismimle çağırdın. Bu oda beni tanıyor mu?")
 			DialogueManager.say("Shilda", "Bu oda seni tanıyor. Ben sadece hatırlatıyorum.")
 			await _await_dialogue_or_smoke()
-			GameState.set_shilda_named(true) # diyalog iptal edilse de tutarlı kalsın
+			GameState.player_progress_knowledge["shilda_talk_done"] = true
 			GameState.player_progress_knowledge["awakening_mystery_seen"] = true
 			GameState.player_progress_knowledge["seen_keeper"] = true
 			GameState.knowledge_changed.emit(&"player")

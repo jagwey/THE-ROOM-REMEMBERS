@@ -234,12 +234,12 @@ func _page_label(parent: Control, text: String, size: int = UiTheme.HINT, bold: 
 func _build_main_page(parent: Control) -> void:
 	var p := _new_page(parent, &"main")
 	_start_button = _button(p, "Başla", func(): start_requested.emit())
-	_new_button = _button(p, "Yeni oyun", func(): _show_page(&"confirm"))
+	_new_button = _button(p, "Yeni Oyun", func(): _show_page(&"confirm"))
 	_button(p, "Ayarlar", func(): _show_page(&"settings"))
-	_button(p, "Nasıl oynanır", func(): _show_page(&"help"))
+	_button(p, "Nasıl Oynanır", func(): _show_page(&"help"))
 	_button(p, "Oyundan Çık", func(): _show_page(&"quit_confirm"))
 	## Yeni sürüm varsa (UpdateChecker, public release repo) görünür.
-	_update_button = _button(p, "Güncelleme var", func(): UpdateChecker.open_download())
+	_update_button = _button(p, "Güncelleme Var", func(): UpdateChecker.open_download())
 	_update_button.add_theme_color_override("font_color", Color("#E05A6A"))
 	_update_button.visible = false
 	UpdateChecker.update_available.connect(_on_update_available)
@@ -268,7 +268,7 @@ func _build_settings_page(parent: Control) -> void:
 	_joy_button = _button(p, "", func():
 		menu._toggle_joystick_mode()
 		_refresh_settings())
-	_fs_button = _button(p, "Tam ekran (F11)", func(): menu.toggle_fullscreen())
+	_fs_button = _button(p, "Tam Ekran (F11)", func(): menu.toggle_fullscreen())
 	_fs_button.visible = not OS.has_feature("mobile")
 	_button(p, "< Geri", func(): _show_page(&"main"))
 
@@ -290,7 +290,7 @@ func _build_confirm_page(parent: Control) -> void:
 	var p := _new_page(parent, &"confirm")
 	_page_label(p, "YENİ OYUN", UiTheme.BODY, true)
 	_page_label(p, "Tüm ilerleme silinecek. Oda yine de hatırlayabilir…", 13)
-	_button(p, "Evet, sıfırdan başla", func(): new_game_requested.emit())
+	_button(p, "Evet, Sıfırdan Başla", func(): new_game_requested.emit())
 	_button(p, "Vazgeç", func(): _show_page(&"main"))
 	## Yalnız başlıktaki "Oyundan Çık" uygulamayı kapatır — onaylı.
 	var q := _new_page(parent, &"quit_confirm")

@@ -291,7 +291,7 @@ func _setup_seal_pad() -> void:
 	grid.add_theme_constant_override("h_separation", 4)
 	grid.add_theme_constant_override("v_separation", 4)
 	pad.add_child(grid)
-	var keys: PackedStringArray = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "⌫", "0", "OK"]
+	var keys: PackedStringArray = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "Sil", "0", "OK"]
 	for d in keys:
 		var b := Button.new()
 		b.text = d
@@ -333,7 +333,7 @@ func _seal_press(digit: String) -> void:
 	if not _seal_waiting:
 		return
 	match digit:
-		"⌫":
+		"Sil":
 			if _seal_buffer.length() > 0:
 				_seal_buffer = _seal_buffer.substr(0, _seal_buffer.length() - 1)
 		"OK":
@@ -398,7 +398,7 @@ func _apply_safe_area() -> void:
 
 ## Masaüstünde tuş özeti; mobilde butonlar zaten görünür, ipucu gizli kalır.
 func _apply_default_hint() -> void:
-	hint_label.text = "WASD · Z saldır · X dash · E etkileş · I günlük"
+	hint_label.text = "WASD · Z saldır · X atıl · E etkileş · I günlük"
 	hint_label.visible = not (MobileInputManager.is_touch_ui() or _touch_seen)
 
 
@@ -550,7 +550,8 @@ func _update_control_visibility() -> void:
 	buttons_root.modulate.a = 1.0 if btn_interact.visible or btn_attack.visible else 0.0
 	## Göz açma sinematiği: kalp/hedef/düğme hiçbiri görünmez.
 	## Günlük (kitap) açıkken de HUD gizli; günlük kendi kapat düğmesini taşır.
-	safe_area.visible = UiGate.current_layer() != UiGate.Layer.CUTSCENE and UiGate.current_layer() != UiGate.Layer.JOURNAL
+	var vis_layer := UiGate.current_layer()
+	safe_area.visible = vis_layer != UiGate.Layer.CUTSCENE and vis_layer != UiGate.Layer.JOURNAL and vis_layer != UiGate.Layer.TITLE
 
 
 ## Düğme basışı (parmak indeksiyle). Kapı (gate) mantığı eski düğme sinyalleriyle aynı.
@@ -659,7 +660,7 @@ func _input(event: InputEvent) -> void:
 			if event.keycode >= KEY_0 and event.keycode <= KEY_9:
 				_seal_press(str(event.keycode - KEY_0))
 			elif event.keycode == KEY_BACKSPACE:
-				_seal_press("⌫")
+				_seal_press("Sil")
 			elif event.keycode == KEY_ENTER or event.keycode == KEY_KP_ENTER:
 				_seal_press("OK")
 			elif event.keycode == KEY_ESCAPE:
@@ -830,10 +831,33 @@ func _refresh_objective_now(_room_id: StringName = &"") -> void:
 func _layout_objective_and_hint() -> void:
 	if _objective == null or hint_label == null:
 		return
+	_fit_guidance_width()
 	var lines: int = maxi(1, _objective.get_line_count())
 	var h: float = float(lines * _objective.get_line_height()) + 4.0
 	_objective.size = Vector2(_objective.size.x, h)
 	hint_label.position.y = _objective.position.y + h + 2.0
+
+
+## Hedef/ipucu yazısı her en-boy oranında güvenli alanın içinde kalır: sol >= 8, sağ günlük
+## düğmesinin (76px) soluna kadar; dar ekranda genişlik daralır ve yazı sarılır.
+const GUIDE_LEFT := 12.0
+const GUIDE_MAX_W := 440.0
+const GUIDE_RIGHT_RESERVE := 84.0
+
+
+func _fit_guidance_width() -> void:
+	if _objective == null or safe_area == null:
+		return
+	var avail := safe_area.size.x - GUIDE_LEFT - GUIDE_RIGHT_RESERVE
+	if avail <= 0.0:
+		avail = GUIDE_MAX_W
+	var w := clampf(avail, 120.0, GUIDE_MAX_W)
+	if absf(_objective.size.x - w) > 0.5 or _objective.position.x != GUIDE_LEFT:
+		_objective.position.x = GUIDE_LEFT
+		_objective.size.x = w
+	hint_label.position.x = GUIDE_LEFT
+	hint_label.size.x = w
+	hint_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 
 
 func _on_puzzle_solved_objective(_puzzle_id: StringName) -> void:
@@ -869,11 +893,16 @@ func _process(delta: float) -> void:
 	var playable := UiGate.current_layer() == UiGate.Layer.NONE
 	_objective.visible = playable
 	_context_hint.visible = playable
+	hint_label.visible = playable and not (_touch_seen or MobileInputManager.is_touch_ui())
+	_fit_guidance_width()
 	_hint_tick -= delta
 	if _hint_tick > 0.0 or not playable:
 		return
 	_hint_tick = 0.15
-	_objective.text = GameState.get_current_objective()
+	var obj_text := GameState.get_current_objective()
+	if obj_text != _objective.text:
+		_objective.text = obj_text
+		_layout_objective_and_hint()
 	var player := get_tree().get_first_node_in_group("player")
 	_context_hint.text = ""
 	if player and player.has_method("get_interaction_target"):
@@ -882,8 +911,8 @@ func _process(delta: float) -> void:
 			var target_name := InteractGlowLib.label_for(target)
 			if target_name == "İncele" or target.has_method("apply_push"):
 				target_name = _friendly_target(String(target.name))
-			var prefix := "El · " if MobileInputManager.is_touch_ui() else "E / El · "
-			_context_hint.text = prefix + target_name
+			var touch_hint: bool = _touch_seen or MobileInputManager.is_touch_ui()
+			_context_hint.text = ("El · " if touch_hint else "E · ") + target_name
 			btn_interact.modulate = Color(1.3, 1.12, 1.12)
 		else:
 			btn_interact.modulate = Color.WHITE

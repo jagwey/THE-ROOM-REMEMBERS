@@ -32,6 +32,9 @@ atmosphere_bg = "res://assets/backgrounds/experiment"
 
 [node name="Spawns" type="Node2D" parent="."]
 
+[node name="keeper_observe" type="Marker2D" parent="Spawns"]
+position = Vector2(810, 288)
+
 [node name="default" type="Marker2D" parent="Spawns"]
 position = Vector2(120, 288)
 

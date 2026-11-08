@@ -20,6 +20,11 @@ bg_region = "mirrors"
 checkpoint = Vector2(120, 288)
 doors = [{"x": 40.0, "to": "mirrors_unbroken", "spawn": "from_mirrors_shrine"}]
 
+[node name="Spawns" type="Node2D" parent="."]
+
+[node name="keeper_observe" type="Marker2D" parent="Spawns"]
+position = Vector2(170, 288)
+
 [node name="Interactive" type="Node2D" parent="."]
 
 [node name="ShadowDash" type="Area2D" parent="Interactive"]
@@ -30,7 +35,7 @@ title = "Gölge Atılması"
 texture_path = "res://assets/props/halo.png"
 tint = Color(0.6, 0.45, 0.9, 1)
 lines = PackedStringArray("Noroi|Sunakta bir gölge. Benim gölgem… ama benden önce hareket ediyor.", "Noroi|İçime çekiyorum. Bedenim hafifliyor.")
-tutorial = "X / Dash: Gölge Atılması. Atılırken lanetli bariyerlerin ve Shilda'nın saldırılarının içinden hasar almadan geçersin."
+tutorial = "X / Atıl: Gölge Atılması. Atılırken lanetli bariyerlerin ve Shilda'nın saldırılarının içinden hasar almadan geçersin."
 
 [node name="Barrier" type="StaticBody2D" parent="Interactive"]
 position = Vector2(560.0, 288.0)

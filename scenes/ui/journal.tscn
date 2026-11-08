@@ -82,7 +82,8 @@ anchor_bottom = 0.86
 [node name="ListTitle" type="Label" parent="BookRoot/LeftPage"]
 layout_mode = 1
 anchor_right = 1.0
-offset_bottom = 24.0
+offset_top = 7.0
+offset_bottom = 31.0
 theme_override_colors/font_color = Color(0.239, 0.071, 0.125, 1)
 theme_override_font_sizes/font_size = 19
 text = "Günlük"
@@ -92,7 +93,7 @@ clip_contents = true
 layout_mode = 1
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = 30.0
+offset_top = 37.0
 horizontal_scroll_mode = 0
 
 [node name="EntryList" type="VBoxContainer" parent="BookRoot/LeftPage/Scroll"]
@@ -113,8 +114,9 @@ anchor_bottom = 0.86
 layout_mode = 1
 anchor_right = 1.0
 anchor_bottom = 0.0
-offset_right = -90.0
-offset_bottom = 82.0
+offset_top = 90.0
+offset_right = -4.0
+offset_bottom = 124.0
 theme_override_colors/font_color = Color(0.239, 0.071, 0.125, 1)
 theme_override_font_sizes/font_size = 18
 autowrap_mode = 2
@@ -125,7 +127,7 @@ clip_contents = true
 layout_mode = 1
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = 88.0
+offset_top = 128.0
 offset_bottom = -4.0
 horizontal_scroll_mode = 0
 

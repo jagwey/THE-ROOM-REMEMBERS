@@ -1,5 +1,6 @@
 extends AnimatableBody2D
-## Fiziksel ceset — Echo + iterek ağırlık bulmacası (mobil: Etkileş).
+## Fiziksel ceset — Echo + taşıma/ağırlık bulmacası (mobil: Etkileş).
+## Yankıdan sonra Etkileş bedeni sırtlar; tekrar Etkileş yere bırakır (boşluklardan atlayarak taşınır).
 
 @export var corpse_id: String = ""
 @export var echo_id: StringName = &""
@@ -14,6 +15,11 @@ extends AnimatableBody2D
 var _data: Dictionary = {}
 var _echo_done: bool = false
 var _pushing: bool = false
+## Taşıyan oyuncu (null = yerde). Taşınırken çarpışma kapalı, ağırlık 0.
+var _carrier: Node2D = null
+## Taşıyan son kez sağlam zemindeyken bedenin bırakılacağı yer (ölüm/oda değişiminde buraya düşer).
+var _last_safe: Vector2 = Vector2.ZERO
+const CARRY_OFFSET := Vector2(-3, -50)
 
 
 func _ready() -> void:
@@ -31,6 +37,10 @@ func _ready() -> void:
 		interact.collision_mask = 0
 		interact.monitoring = false
 		interact.monitorable = true
+	if not DeathManager.death_started.is_connected(_on_death_started):
+		DeathManager.death_started.connect(_on_death_started)
+	if not RoomManager.room_changed.is_connected(_on_room_changed):
+		RoomManager.room_changed.connect(_on_room_changed)
 
 
 func setup_from_data(data: Dictionary) -> void:
@@ -70,9 +80,17 @@ func on_interact(by: Node) -> void:
 		var eid := _resolve_echo_id()
 		_spawn_ghost()
 		await EchoManager.play_echo(eid)
-		DialogueManager.say("Noroi", "…Ağır. İtebilirim.")
+		DialogueManager.say("Noroi", "…Ağır. Ama sırtlayıp taşıyabilirim.")
 		return
-	# Sonraki: cesedi oyuncunun baktığı yöne it (mobil dostu).
+	# Taşınıyorsa: bırak.
+	if is_carried():
+		drop()
+		return
+	# Oyuncu: sırtla (atlayarak boşluklardan geçirilebilir).
+	if by and by.has_method("set_carrying"):
+		pick_up(by as Node2D)
+		return
+	# Oyuncu olmayan çağıran (test/eski yol): baktığı yöne it.
 	var dir := 1.0
 	if by and by.has_method("get_facing"):
 		dir = float(by.get_facing())
@@ -81,6 +99,126 @@ func on_interact(by: Node) -> void:
 		if dir == 0.0:
 			dir = 1.0
 	_push(dir, by)
+
+
+func is_carried() -> bool:
+	return _carrier != null and is_instance_valid(_carrier)
+
+
+func pick_up(by: Node2D) -> void:
+	if is_carried() or _pushing:
+		return
+	if not usable_for_puzzle:
+		DialogueManager.say("Noroi", "…Bu beden yerinden kalkmıyor.")
+		return
+	if by.has_method("is_carrying") and by.is_carrying():
+		return
+	_carrier = by
+	_last_safe = global_position
+	collision_layer = 0
+	z_index = 3
+	by.set_carrying(self)
+	_recompute_plates()
+	_spawn_dust(1.0)
+	var am := get_node_or_null("/root/AudioManager")
+	if am:
+		am.play_sfx(&"corpse_drag")
+	if not bool(GameState.player_progress_knowledge.get("carry_hint_seen", false)):
+		GameState.player_progress_knowledge["carry_hint_seen"] = true
+		DialogueManager.whisper("Noroi", "Bedeni sırtladım. Atlayabilirim; Etkileş ile bırakırım.")
+
+
+## Taşıyanın önündeki zemine bırakır; boşluk varsa ayak altına, o da yoksa son sağlam noktaya.
+func drop() -> void:
+	if not is_carried():
+		return
+	var by := _carrier
+	var facing := 1.0
+	if by.has_method("get_facing"):
+		facing = float(by.get_facing())
+	var bounds := RoomManager.get_room_bounds(RoomManager.get_active_room_id())
+	var spot := _last_safe
+	for x: float in [by.global_position.x + facing * 20.0, by.global_position.x]:
+		var cx := clampf(x, bounds.position.x + 40.0, bounds.end.x - 40.0) if bounds.size.x > 0.0 else x
+		var y = _floor_y_at(cx, by.global_position.y)
+		if y != null:
+			spot = Vector2(cx, float(y))
+			break
+	_release(spot)
+
+
+func _release(at: Vector2) -> void:
+	var by := _carrier
+	_carrier = null
+	global_position = at
+	rotation = 0.0
+	if sprite:
+		sprite.flip_h = false
+	collision_layer = 1
+	z_index = 0
+	if by and is_instance_valid(by) and by.has_method("set_carrying"):
+		by.set_carrying(null)
+	_spawn_dust(1.0)
+	_persist_position()
+
+
+## Zemin (katman 1, cesetler hariç) yüzeyinin y'si; yoksa null.
+func _floor_y_at(x: float, ref_y: float) -> Variant:
+	var space := get_world_2d().direct_space_state
+	if space == null:
+		return null
+	var q := PhysicsRayQueryParameters2D.create(Vector2(x, ref_y - 24.0), Vector2(x, ref_y + 40.0), 1)
+	var ex: Array[RID] = [get_rid()]
+	for c in get_tree().get_nodes_in_group("corpse"):
+		if c is CollisionObject2D:
+			ex.append((c as CollisionObject2D).get_rid())
+	q.exclude = ex
+	var hit: Dictionary = space.intersect_ray(q)
+	if hit.is_empty():
+		return null
+	return (hit["position"] as Vector2).y
+
+
+func _physics_process(_delta: float) -> void:
+	if _carrier == null:
+		return
+	if not is_instance_valid(_carrier):
+		_carrier = null
+		_release(_last_safe)
+		return
+	var facing := 1.0
+	if _carrier.has_method("get_facing"):
+		facing = float(_carrier.get_facing())
+	global_position = _carrier.global_position + Vector2(CARRY_OFFSET.x * facing, CARRY_OFFSET.y)
+	if sprite:
+		sprite.flip_h = facing < 0.0
+	if _carrier is CharacterBody2D and (_carrier as CharacterBody2D).is_on_floor():
+		var fy = _floor_y_at(_carrier.global_position.x, _carrier.global_position.y)
+		if fy != null:
+			_last_safe = Vector2(_carrier.global_position.x, float(fy))
+			_store_position(_last_safe)
+
+
+## Ölüm/oda değişimi: beden son sağlam noktaya düşer (boşlukta kaybolmaz).
+func _on_death_started(_reason: StringName) -> void:
+	if is_carried():
+		_release(_last_safe)
+
+
+func _on_room_changed(_from: StringName, _to: StringName) -> void:
+	if _carrier != null:
+		var by := _carrier
+		_carrier = null
+		_store_position(_last_safe)
+		if is_instance_valid(by) and by.has_method("set_carrying"):
+			by.set_carrying(null)
+
+
+func _exit_tree() -> void:
+	if _carrier != null and is_instance_valid(_carrier) and _carrier.has_method("set_carrying"):
+		if _carrier.get("_carried") == self:
+			_carrier.set_carrying(null)
+	_carrier = null
 
 
 func _push(dir: float, by_node: Node = null) -> void:
@@ -349,19 +487,38 @@ func _persist_position() -> void:
 		if c is Dictionary and String(c.get("id", "")) == corpse_id:
 			c["position"] = {"x": global_position.x, "y": global_position.y}
 			break
-	# Plakayı yenile
-	for p in get_tree().get_nodes_in_group("pressure_plate"):
-		if p.has_method("_recompute"):
-			p._recompute()
+	_recompute_plates()
 	SaveManager.save_game()
 
 
+## Kayıt sözlüğündeki konumu günceller (diske yazmadan): taşınırken oda/ölüm değişse de beden kaybolmaz.
+func _store_position(p: Vector2) -> void:
+	for c in GameState.world_memory_state["corpses"]:
+		if c is Dictionary and String(c.get("id", "")) == corpse_id:
+			c["position"] = {"x": p.x, "y": p.y}
+			break
+
+
+func _recompute_plates() -> void:
+	if not is_inside_tree():
+		return
+	for p in get_tree().get_nodes_in_group("pressure_plate"):
+		if p.has_method("_recompute"):
+			p._recompute()
+
+
 func get_weight() -> int:
+	if is_carried():
+		return 0
 	return weight if usable_for_puzzle else 0
 
 
 func get_interact_label() -> String:
-	return "Beden"
+	if not _echo_done:
+		return "Beden"
+	if is_carried():
+		return "Bırak"
+	return "Taşı" if usable_for_puzzle else "Beden"
 
 
 func get_glow_kind() -> StringName:

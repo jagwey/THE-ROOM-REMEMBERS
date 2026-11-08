@@ -377,11 +377,11 @@ func _setup_m3_mechanics(room_id: StringName, root: Node2D, spawns: Dictionary) 
 
 	# 1. Cracked Mirror setup (F28)
 	const MIRROR_POSITIONS := {
-		"awakening_balcony": Vector2(240, 288),
-		"decay_garden": Vector2(480, 288),
-		"library_hall": Vector2(520, 288),
-		"experiment_cells": Vector2(480, 288),
-		"mirrors_reverse": Vector2(480, 288),
+		"awakening_balcony": Vector2(190, 288),
+		"decay_garden": Vector2(465, 288),
+		"library_hall": Vector2(190, 288),
+		"experiment_cells": Vector2(280, 288),
+		"mirrors_reverse": Vector2(280, 288),
 	}
 	if MIRROR_POSITIONS.has(rid):
 		var pos: Vector2 = MIRROR_POSITIONS[rid]
@@ -396,7 +396,7 @@ func _setup_m3_mechanics(room_id: StringName, root: Node2D, spawns: Dictionary) 
 	# 2. Walking Shades setup (F22)
 	const WALKING_SHADES := {
 		"decay_garden": [Vector2(420, 288)],
-		"decay_catacombs": [Vector2(450, 288), Vector2(750, 288)],
+		"decay_catacombs": [Vector2(260, 288), Vector2(750, 288)],
 		"experiment_cells": [Vector2(350, 288)],
 	}
 	if WALKING_SHADES.has(rid):

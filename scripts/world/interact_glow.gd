@@ -28,7 +28,7 @@ const LABEL_BY_SCRIPT := {
 	"blood_thorn.gd": "Kan Dikeni", "core_crystal.gd": "Çekirdek Kristali", "core_portal.gd": "Geçit",
 	"core_choice_pad.gd": "Seçim Zemini", "mirror_relay.gd": "Ayna", "reset_lever.gd": "Kol",
 	"vine_puzzle_lever.gd": "Kol", "vine_interact.gd": "Sarmaşık", "archive_door.gd": "Arşiv Kapısı",
-	"story_beat.gd": "Hatıra", "keeper_controller.gd": "Shilda",
+	"story_beat.gd": "Hatıra", "keeper_controller.gd": "Shilda", "cracked_mirror.gd": "Çatlak Ayna",
 	"shilda_garden_trust.gd": "Shilda", "evidence_card.gd": "Kayıt", "ability_pickup.gd": "Sunak",
 }
 const LORE_LABEL_BY_TEXTURE := {
@@ -109,7 +109,8 @@ static func label_for(n: Node) -> String:
 	if n == null:
 		return ""
 	if n.has_method("get_interact_label"):
-		return String(n.get_interact_label())
+		var il := String(n.get_interact_label())
+		return "Shilda" if il == "???" else il
 	var f := _script_file(n)
 	if f == "lore_point.gd":
 		var tp := String(n.get("texture_path")).get_file().get_basename()
@@ -138,7 +139,29 @@ func _ready() -> void:
 	var anchor := Vector2(0, -16)
 	var big := 1.0
 	var top := -40.0
-	for c in get_parent().get_children():
+	var label_gap := 20.0
+	var par := get_parent()
+	var anim: AnimatedSprite2D = null
+	for c in par.get_children():
+		if c is AnimatedSprite2D and (c as AnimatedSprite2D).sprite_frames:
+			anim = c
+			break
+	if anim != null:
+		## Animasyonlu hedef (Shilda): görsel merkez/tepe geçerli karenin boyutundan hesaplanır.
+		var ftex: Texture2D = anim.sprite_frames.get_frame_texture(anim.animation, anim.frame)
+		if ftex == null:
+			ftex = anim.sprite_frames.get_frame_texture(anim.sprite_frames.get_animation_names()[0], 0)
+		if ftex != null:
+			var fsz := ftex.get_size() * anim.scale.abs()
+			var center_off := Vector2.ZERO if anim.centered else fsz * 0.5
+			anchor = anim.position + anim.offset * anim.scale + center_off
+			big = clampf(maxf(fsz.x, fsz.y) / 48.0, 0.7, 1.8)
+			top = anchor.y - fsz.y * 0.5
+			## Hale başın üstüne taşar; etiket halenin ve "..." ipucunun da üstünde dursun.
+			label_gap = 32.0
+	for c in par.get_children():
+		if anim != null:
+			break
 		if c != self and c is Sprite2D and (c as Sprite2D).texture:
 			var sp := c as Sprite2D
 			anchor = sp.position + sp.offset * sp.scale
@@ -157,7 +180,7 @@ func _ready() -> void:
 		_label.name = LABEL_NAME
 		_label.text = label_for(get_parent())
 		_label.size = Vector2(120, 16)
-		_label.position = Vector2(-60, top - 20.0)
+		_label.position = Vector2(-60, top - label_gap)
 		_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		_label.add_theme_font_size_override("font_size", 11)
 		_label.add_theme_color_override("font_color", _color.lerp(Color.WHITE, 0.55))
@@ -240,6 +263,9 @@ func _process(delta: float) -> void:
 		var player := get_tree().get_first_node_in_group("player")
 		if player and player.has_method("get_interaction_target") and not UiGate.blocks_movement():
 			_is_target = player.get_interaction_target() == p
+		## Sırttaki beden: alt HUD "E · Bırak" yeter, bedenin üstünde ikinci etiket olmasın.
+		if p.has_method("is_carried") and bool(p.call("is_carried")):
+			_is_target = false
 		## Tür değişebilir (kilitli kapı açılınca kırmızı → krem).
 		var c: Color = COLORS.get(kind_for(p), COLORS[&"normal"])
 		if c != _color:

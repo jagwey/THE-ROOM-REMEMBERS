@@ -47,7 +47,7 @@ func _ready() -> void:
 	empty_label.add_theme_color_override("font_color", INK_SOFT)
 	UiTheme.apply_label(list_title, UiTheme.SPEAKER, true)
 	UiTheme.apply_label(detail_title, UiTheme.HINT, true)
-	detail_title.max_lines_visible = 4
+	detail_title.max_lines_visible = 2
 	detail_title.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	UiTheme.apply_label(detail_body, UiTheme.BODY, false)
 	detail_body.add_theme_constant_override("line_separation", 4)

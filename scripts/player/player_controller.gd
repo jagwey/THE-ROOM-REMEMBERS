@@ -71,6 +71,10 @@ var _push_ms: int = -10000
 const PUSH_STICKY_MS := 1200
 const PUSH_STICKY_RANGE := 64.0
 const PUSH_SLOW := 0.6
+## Beden sırtta: hafif yavaşlama (90 px boşluklar hâlâ atlanır: ~157 px/s × ~0.72 s).
+const CARRY_SLOW := 0.9
+## Sırtlanan beden (corpse.gd); null = elleri boş.
+var _carried: Node2D = null
 
 
 func _ready() -> void:
@@ -149,6 +153,14 @@ func note_push(n: Node2D) -> void:
 
 func is_pushing() -> bool:
 	return Time.get_ticks_msec() - _push_ms < 150
+
+
+func set_carrying(n: Node2D) -> void:
+	_carried = n
+
+
+func is_carrying() -> bool:
+	return _carried != null and is_instance_valid(_carried) and _carried.is_inside_tree()
 
 
 func _physics_process(delta: float) -> void:
@@ -235,6 +247,8 @@ func _physics_process(delta: float) -> void:
 			var target := axis.x * SPEED
 			if is_pushing() and signf(axis.x) == _facing:
 				target *= PUSH_SLOW
+			elif is_carrying():
+				target *= CARRY_SLOW
 			var rate := ACCELERATION if absf(axis.x) > 0.1 else FRICTION
 			if not on_floor:
 				rate *= 0.7
@@ -643,6 +657,10 @@ func _on_interact() -> void:
 	var journal := get_tree().get_first_node_in_group("journal_ui")
 	if journal and journal.visible:
 		return
+	## Beden sırttayken Etkileş önce onu bırakır (kapı/mühür için önce bedeni indir).
+	if is_carrying():
+		_carried.on_interact(self)
+		return
 	var target := get_interaction_target()
 	if target:
 		## Tekrar tetiklenme koruması: aynı hedefe 250 ms içinde ikinci kez basılmaz.
@@ -658,6 +676,9 @@ func _on_interact() -> void:
 
 
 func get_interaction_target() -> Node2D:
+	## Beden sırttayken tek hedef odur (etiket "Bırak").
+	if is_carrying():
+		return _carried
 	# Disabled rooms retain Area2D overlaps for a physics frame. Never interact with them.
 	var candidates: Array[Node2D] = []
 	var overlaps: Array = interact_area.get_overlapping_bodies()

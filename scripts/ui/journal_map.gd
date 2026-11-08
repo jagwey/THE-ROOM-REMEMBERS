@@ -4,15 +4,16 @@ extends Control
 ## Veri: GameState (rooms_visited, corpses, flags, evidence) + PuzzleManager. Her çizimde taze okunur.
 
 const INK := Color(0.239, 0.071, 0.125)
+const RegionCard := preload("res://scripts/ui/region_title_card.gd")
 const GOLD := Color(0.54, 0.35, 0.08)
 ## Bölge kimliği (oda id önekı) -> görünen ad, sıra, bölge mührü bulmacası.
 const REGIONS: Array = [
-	{"id": "awakening", "name": "Uyanış Kanadı", "seal": &"awakening_memory_code"},
-	{"id": "decay", "name": "Çürüme Koridorları", "seal": &"decay_vine_shortcut"},
-	{"id": "library", "name": "Hafıza Kütüphanesi", "seal": &"library_page_order"},
-	{"id": "experiment", "name": "Deney Alanı", "seal": &"experiment_authority"},
-	{"id": "mirrors", "name": "Aynalar Salonu", "seal": &"mirrors_unbroken"},
-	{"id": "core", "name": "Çekirdek Dairesi", "seal": &"core_seal"},
+	{"id": "awakening", "seal": &"awakening_memory_code"},
+	{"id": "decay", "seal": &"decay_vine_shortcut"},
+	{"id": "library", "seal": &"library_page_order"},
+	{"id": "experiment", "seal": &"experiment_authority"},
+	{"id": "mirrors", "seal": &"mirrors_unbroken"},
+	{"id": "core", "seal": &"core_seal"},
 ]
 ## Henüz sahnesi olmayabilecek gelecek odalar (yedek liste); asıl kaynak RoomManager.ROOM_TITLES_TR (30 oda).
 const FUTURE_ROOMS: PackedStringArray = [
@@ -31,7 +32,6 @@ var _rooms_by_region: Dictionary = {}
 
 
 func _ready() -> void:
-	anchor_right = 1.0
 	_collect_rooms()
 
 
@@ -127,7 +127,7 @@ func _draw() -> void:
 	var title_font: Font = UiTheme.font_bold if UiTheme.font_bold else _font()
 	while title_size > UiTheme.HINT and title_font.get_string_size("Harita & Mühürler", HORIZONTAL_ALIGNMENT_LEFT, -1, title_size).x > page_w - 44.0:
 		title_size -= 1
-	_text(Vector2(0, 0), "Harita & Mühürler", title_size, INK, true)
+	_text(Vector2(0, 5), "Harita & Mühürler", title_size, INK, true)
 	var shard1 := bool(flags.get("seal_shard_1", false))
 	var shard2 := bool(flags.get("seal_shard_2", false))
 	_diamond(Vector2(7, 37), 6.0, shard1, INK)
@@ -144,7 +144,7 @@ func _draw() -> void:
 	_text(Vector2(0, 50), "Kanıt %d" % ev_count, UiTheme.HINT, INK)
 	_text(Vector2(0, 68), "Kısayol %d" % shortcuts.size(), UiTheme.HINT, GOLD if shortcuts.size() > 0 else Color(INK, 0.55))
 	# Gösterge (sağ sayfa, kurdelenin solu)
-	var lx := right_x - 26.0
+	var lx := right_x + 6.0
 	draw_circle(Vector2(lx + 7, 11), 7.0, INK)
 	_text(Vector2(lx + 20, 3), "Oda", UiTheme.HINT, INK)
 	draw_circle(Vector2(lx + 7, 33), 7.0, Palette.CRIMSON)
@@ -162,8 +162,8 @@ func _draw() -> void:
 		var col := floori(i / 3.0)
 		var row := i % 3
 		# Kağıt alanı: sol sayfa ciltten (x ~ page_w-24) önce biter; sağ sayfa kurdele hizasından başlar ve çerçeveye taşmaz.
-		var bx := 0.0 if col == 0 else right_x - 32.0
-		var bw := page_w - 24.0 if col == 0 else page_w - 30.0
+		var bx := 0.0 if col == 0 else right_x + 4.0
+		var bw := page_w - 24.0 if col == 0 else page_w - 14.0
 		cell_rect[String(reg["id"])] = Rect2(bx, gy + row * (ch + vgap), bw, ch)
 	# Kısayol çizgileri (altın kesikli) — anahtardaki iki bölge adı bulunursa.
 	for key in shortcuts:
@@ -206,10 +206,18 @@ func _draw_region(reg: Dictionary, rect: Rect2, visited: Array, corpses_by_room:
 	draw_rect(rect, Color(INK, tone), false, 2.0)
 	for corner in [rect.position, Vector2(rect.end.x, rect.position.y), Vector2(rect.position.x, rect.end.y), rect.end]:
 		_diamond(corner, 3.0, true, Color(INK, tone))
-	_text(rect.position + Vector2(8, 3), String(reg["name"]), UiTheme.HINT, Color(INK, tone), any_seen)
-	# Bölge mührü (sağ üst): çözülmüşse dolu.
+	var rname := RegionCard.region_name(String(reg["id"]))
+	# Ad + mühür elması kutuya sığmalı: ad, elmas için sağda 24px boşluk kalana kadar küçülür.
+	var name_max := rect.size.x - 8.0 - 26.0
+	var name_size: int = UiTheme.HINT
+	var name_font: Font = UiTheme.font_bold if (any_seen and UiTheme.font_bold) else _font()
+	while name_size > 10 and name_font.get_string_size(rname, HORIZONTAL_ALIGNMENT_LEFT, -1, name_size).x + (4.0 if any_seen else 0.0) > name_max:
+		name_size -= 1
+	_text(rect.position + Vector2(8, 3), rname, name_size, Color(INK, tone), any_seen)
+	# Bölge mührü (sağ üst köşe): ad hiçbir zaman elmasa değmez.
 	var solved := PuzzleManager.is_solved(reg["seal"])
-	_diamond(rect.position + Vector2(rect.size.x - 12.0, 10.0), 4.5, solved, Color(Palette.CRIMSON, 1.0 if solved else 0.55))
+	var seal_x := rect.end.x - 12.0
+	_diamond(Vector2(seal_x, rect.position.y + 10.0), 4.5, solved, Color(Palette.CRIMSON, 1.0 if solved else 0.55))
 	# Oda düğümleri: zincir + daireler; cesetli oda crimson dolu, içinde sayı.
 	var n := maxi(1, rooms.size())
 	var left := rect.position.x + 22.0

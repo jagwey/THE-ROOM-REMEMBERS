@@ -132,7 +132,7 @@ func _say(entry: String) -> void:
 	var parts := entry.split("|", true, 1)
 	if parts.size() == 2:
 		var who: String = parts[0]
-		if who == "???" and shilda_is_named():
+		if who == "???":
 			who = "Shilda"
 		DialogueManager.say(who, parts[1])
 	else:

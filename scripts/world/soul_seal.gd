@@ -62,7 +62,10 @@ func receive_sword_hit(_from: Node, _dir: float, _combo: int) -> void:
 	if PuzzleManager.is_solved(puzzle_id) or _hint_done:
 		return
 	_hint_done = true
-	DialogueManager.whisper("Noroi", "Kılıç geçmiyor. Bu mühür bedeni değil, ruhu tanıyor.")
+	if bool(GameState.player_progress_knowledge.get("ability_soul_slash", false)):
+		DialogueManager.whisper("Noroi", "Kılıç geçmiyor. Ruh Kesimi'ni savur (Q / yıldız).")
+	else:
+		DialogueManager.whisper("Noroi", "Kılıç geçmiyor. Bu mühür ruhu tanıyor… o gücü henüz bilmiyorum. Yasak Kanat'ta olabilir.")
 
 
 func _open(animate: bool) -> void:

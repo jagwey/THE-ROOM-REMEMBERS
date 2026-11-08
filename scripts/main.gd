@@ -21,8 +21,8 @@ const ROOM_DEFS := {
 		"spawns": {"default": Vector2(80, 288), "from_seal": Vector2(80, 288), "from_weight": Vector2(1200, 288)}},
 	"decay_weight": {"node": "DecayWeight", "bounds": Rect2(0, 0, 960, 360), "checkpoint": Vector2(120, 288), "bg": "res://assets/backgrounds/decay",
 		"spawns": {"default": Vector2(120, 288), "from_vines": Vector2(80, 288), "from_garden": Vector2(880, 288)}},
-	"decay_garden": {"node": "DecayGarden", "bounds": Rect2(0, 0, 960, 360), "checkpoint": Vector2(200, 288), "bg": "res://assets/backgrounds/decay",
-		"spawns": {"default": Vector2(200, 288), "from_weight": Vector2(80, 288), "from_library": Vector2(880, 288)}},
+	"decay_garden": {"node": "DecayGarden", "bounds": Rect2(0, 0, 960, 360), "checkpoint": Vector2(130, 288), "bg": "res://assets/backgrounds/decay",
+		"spawns": {"default": Vector2(130, 288), "from_weight": Vector2(80, 288), "from_library": Vector2(880, 288)}},
 	"library_hall": {"node": "LibraryHall", "bounds": Rect2(0, 0, 960, 360), "checkpoint": Vector2(120, 288), "bg": "res://assets/backgrounds/library",
 		"spawns": {"default": Vector2(120, 288), "from_garden": Vector2(120, 288), "from_witness": Vector2(880, 288), "from_hall": Vector2(120, 288)}},
 	"library_witness": {"node": "LibraryWitness", "bounds": Rect2(0, 0, 960, 360), "checkpoint": Vector2(200, 288), "bg": "res://assets/backgrounds/library",
@@ -55,10 +55,10 @@ const ROOM_DEFS := {
 const SIDE_DOORS := {
 	"awakening": [{"x": 660.0, "to": "awakening_balcony"}],
 	"decay_vines": [{"x": 860.0, "to": "decay_catacombs"}],
-	"decay_garden": [{"x": 680.0, "to": "decay_shilda_wall"}],
+	"decay_garden": [{"x": 240.0, "to": "decay_shilda_wall"}],
 	"library_hall": [{"x": 800.0, "to": "library_upper_stacks"}],
 	"experiment_cells": [{"x": 720.0, "to": "experiment_quarantine"}],
-	"experiment_authority": [{"x": 720.0, "to": "experiment_core_conduit"}],
+	"experiment_authority": [{"x": 700.0, "to": "experiment_core_conduit"}],
 	"mirrors_reverse": [{"x": 720.0, "to": "mirrors_labyrinth"}],
 	"mirrors_unbroken": [{"x": 720.0, "to": "mirrors_shrine"}],
 	"core_threshold": [{"x": 720.0, "to": "core_memory_vault"}],
@@ -111,6 +111,7 @@ func _ready() -> void:
 		if SaveManager.has_save():
 			if SaveManager.load_game(false):
 				_continued = true
+	GameState.set_shilda_named(true) # Shilda baştan "Shilda" (eski kayıtlar dahil)
 	_register_rooms()
 	_add_side_doors()
 	if not _continued:

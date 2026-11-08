@@ -18,7 +18,12 @@ room_width = 960.0
 bg_region = "awakening"
 checkpoint = Vector2(120, 288)
 doors = [{"x": 40.0, "to": "awakening", "spawn": "from_awakening_balcony"}, {"x": 920.0, "to": "awakening_crypt", "spawn": "from_awakening_balcony", "req": "soul_seal_balcony", "msg": "Mor bir mühür kapıyı tutuyor. Kılıç değil… ruh gerek."}]
-platforms = PackedVector3Array(380.0, 248.0, 110.0, 520.0, 208.0, 120.0)
+platforms = PackedVector3Array(380.0, 248.0, 110.0, 410.0, 208.0, 120.0)
+
+[node name="Spawns" type="Node2D" parent="."]
+
+[node name="keeper_observe" type="Marker2D" parent="Spawns"]
+position = Vector2(700, 288)
 
 [node name="Interactive" type="Node2D" parent="."]
 
@@ -28,14 +33,14 @@ script = ExtResource("lore")
 lore_id = &"balcony_view"
 texture_path = "res://assets/props/telescope.png"
 sprite_scale = 0.9
-lines = PackedStringArray("Noroi|Kırık bir gözlem balkonu. Aşağıda… koca bir tesis.", "Noroi|Camların arkasında beyaz önlüklü biri, kalabalığa emir veriyor.", "Noroi|Yüzünü göremiyorum. Ama duruşu… tanıdık.", "???|Bütün tesisi bu balkondan izlerdin.")
+lines = PackedStringArray("Noroi|Kırık bir gözlem balkonu. Aşağıda… koca bir tesis.", "Noroi|Camların arkasında beyaz önlüklü biri, kalabalığa emir veriyor.", "Noroi|Yüzünü göremiyorum. Ama duruşu… tanıdık.", "Shilda|Bütün tesisi bu balkondan izlerdin.")
 evidence_title = "Gözlem Balkonu"
 evidence_body = "Balkondan tesisi izleyen bir yetkili. Duruşu bana benziyor. Bu balkon bir zamanlar benimdi."
 evidence_section = "izler"
 focus_zoom = true
 
 [node name="Photo" type="Area2D" parent="Interactive"]
-position = Vector2(560.0, 288.0)
+position = Vector2(590, 288.0)
 script = ExtResource("lore")
 lore_id = &"balcony_photo"
 texture_path = "res://assets/props/photograph.png"
@@ -45,6 +50,6 @@ evidence_body = "Fotoğrafta yanımdaki kişinin yüzü kazınmış. Notta: Sesi
 evidence_section = "notlar"
 
 [node name="SoulSeal" type="StaticBody2D" parent="Interactive"]
-position = Vector2(870.0, 288.0)
+position = Vector2(810, 288.0)
 script = ExtResource("soul")
 puzzle_id = &"soul_seal_balcony"

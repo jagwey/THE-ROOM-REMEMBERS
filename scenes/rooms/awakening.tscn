@@ -168,12 +168,12 @@ centered = true
 
 [node name="ExitDoor" type="Sprite2D" parent="Interactive"]
 texture_filter = 0
-position = Vector2(1240, 240)
+position = Vector2(1220, 240)
 texture = ExtResource("5")
 centered = true
 
 [node name="ExitPassage" type="Area2D" parent="Interactive"]
-position = Vector2(1240, 270)
+position = Vector2(1220, 270)
 collision_layer = 8
 collision_mask = 0
 monitoring = false
@@ -213,7 +213,7 @@ texture = ExtResource("26")
 centered = true
 
 [node name="DoorGate" type="StaticBody2D" parent="Interactive"]
-position = Vector2(1180, 248)
+position = Vector2(1090, 248)
 collision_layer = 1
 collision_mask = 0
 script = ExtResource("10")

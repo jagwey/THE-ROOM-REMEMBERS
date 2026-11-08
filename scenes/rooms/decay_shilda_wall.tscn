@@ -30,13 +30,13 @@ puzzle_id = &"decay_shilda_wall_broken"
 wall_path = NodePath("../CrackedWall")
 
 [node name="CrackedWall" type="StaticBody2D" parent="Interactive"]
-position = Vector2(1120.0, 288.0)
+position = Vector2(1000, 288.0)
 script = ExtResource("wall")
 wall_id = &"decay_shilda_wall"
 shortcut_flag = &"shortcut_decay_crypt"
 
 [node name="FlowerRoom" type="Area2D" parent="Interactive"]
-position = Vector2(1190.0, 288.0)
+position = Vector2(1120, 288.0)
 script = ExtResource("lore")
 lore_id = &"shilda_flowers"
 texture_path = "res://assets/props/red_flower.png"

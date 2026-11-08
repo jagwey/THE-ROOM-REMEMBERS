@@ -479,12 +479,10 @@ func _blip_profile(speaker: String) -> Array:
 	match speaker.strip_edges().to_lower():
 		"noroi":
 			return [520.0, 0.25, 0.045, 0.0]
-		"shilda":
+		"shilda", "???":
 			return [340.0, 0.5, 0.06, -0.08]
 		"arşivci", "arsivci":
 			return [230.0, 0.15, 0.07, 0.0]
-		"???":
-			return [180.0, 0.7, 0.07, 0.12]
 		_:
 			return [400.0, 0.0, 0.035, 0.0] ## sistem / anlatıcı
 

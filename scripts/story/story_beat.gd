@@ -336,6 +336,7 @@ func _open_mirror_choice() -> void:
 	var modal := GothicModalPanel.new()
 	modal.setup("Aynalar", Vector2(500, 190))
 	_choice_layer.add_child(modal)
+	modal.on_close = _answer_mirror.bind("Geri dön")
 	modal.add_label("Aynada çiçek solda. Gerçek kapı hangisi?", UiTheme.BODY)
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 6)

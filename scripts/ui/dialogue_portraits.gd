@@ -4,7 +4,6 @@ extends RefCounted
 const PATHS := {
 	&"noroi": "res://assets/portraits/portrait_noroi.png",
 	&"noroi_sad": "res://assets/portraits/portrait_noroi_sad.png",
-	&"bekci": "res://assets/portraits/portrait_bekci.png",
 	&"shilda": "res://assets/portraits/portrait_shilda.png",
 }
 ## Portre kutusu görünürken metin sütunundan düşülen genişlik (px).
@@ -14,14 +13,12 @@ static var _cache: Dictionary = {}
 
 
 ## Konuşmacı -> portre anahtarı; portresiz konuşmacı için &"".
-## "" / "Sistem" / "Kayıt" portresiz. "???" = isim öncesi Shilda (bekçi silüeti). Noroi: fısıltı veya yas bağlamında "sad".
+## "" / "Sistem" / "Kayıt" portresiz. Shilda her zaman portrait_shilda ("???" eski alias). Noroi: fısıltı veya yas bağlamında "sad".
 static func key_for(speaker: String, sad: bool = false) -> StringName:
 	match speaker.strip_edges():
 		"Noroi":
 			return &"noroi_sad" if sad else &"noroi"
-		"???":
-			return &"bekci"
-		"Shilda":
+		"???", "Shilda": ## "???" eski alias; Shilda her zaman aynı portre
 			return &"shilda"
 	return &""
 

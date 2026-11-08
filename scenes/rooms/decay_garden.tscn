@@ -38,14 +38,17 @@ script = ExtResource("6")
 room_id = &"decay_garden"
 region_id = &"decay"
 bounds = Rect2(0, 0, 960, 360)
-checkpoint = Vector2(200, 288)
+checkpoint = Vector2(130, 288)
 checkpoint_room = &"decay_garden"
 atmosphere_bg = "res://assets/backgrounds/decay"
 
 [node name="Spawns" type="Node2D" parent="."]
 
+[node name="keeper_observe" type="Marker2D" parent="Spawns"]
+position = Vector2(580, 288)
+
 [node name="default" type="Marker2D" parent="Spawns"]
-position = Vector2(200, 288)
+position = Vector2(130, 288)
 
 [node name="from_weight" type="Marker2D" parent="Spawns"]
 position = Vector2(80, 288)
@@ -138,7 +141,7 @@ target_spawn_id = &"from_garden"
 shape = SubResource("TransitionHit")
 
 [node name="FlowerInspect" type="Area2D" parent="Interactive"]
-position = Vector2(380, 276)
+position = Vector2(350, 276)
 collision_layer = 8
 collision_mask = 0
 monitoring = false
@@ -149,7 +152,7 @@ script = ExtResource("8")
 shape = SubResource("FlowerHit")
 
 [node name="ShildaGarden" type="Area2D" parent="Interactive"]
-position = Vector2(560, 268)
+position = Vector2(580, 268)
 collision_layer = 8
 collision_mask = 0
 monitoring = false
@@ -160,7 +163,7 @@ script = ExtResource("9")
 shape = SubResource("TransitionHit")
 
 [node name="ArchiveSeal" type="Area2D" parent="Interactive"]
-position = Vector2(780, 264)
+position = Vector2(700, 264)
 collision_layer = 8
 collision_mask = 0
 monitoring = false
@@ -175,7 +178,7 @@ texture_filter = 0
 centered = true
 
 [node name="ArchiveDoor" type="StaticBody2D" parent="Interactive"]
-position = Vector2(860, 268)
+position = Vector2(820, 268)
 collision_layer = 1
 collision_mask = 0
 script = ExtResource("11")

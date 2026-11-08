@@ -282,7 +282,8 @@ func _run_tier_1_feature_coverage() -> void:
 
 	# F18: Journal typography & tabs (M2)
 	var journal_code: String = _read_file_text("res://scripts/ui/journal_map.gd")
-	var journal_typo_ok: bool = journal_code.contains("anchor_right = 1.0") or journal_code.contains("autowrap_mode")
+	var journal_ui_code: String = _read_file_text("res://scripts/ui/journal_ui.gd")
+	var journal_typo_ok: bool = journal_code.contains("autowrap_mode") or journal_ui_code.contains("autowrap_mode")
 	record_check(1, 18, "Journal typography & tabs", journal_typo_ok, "journal title autowrap & tabs verified", false, "M2")
 
 	# F19: SealCode fullscreen dim & 3x4 keypad (M2)
@@ -387,9 +388,9 @@ func _run_tier_1_feature_coverage() -> void:
 	record_check(1, 31, "POCO X6 Pro 5G Android APK build & test", arm64_enabled and package_name_ok, "arm64 enabled=%s package name=%s" % [arm64_enabled, package_name_ok], false, "M4")
 
 	# F32: Versioning & export configuration (M5)
-	var godot_v145: bool = proj_cfg.contains('config/version="1.4.5"')
-	var preset_v145: bool = exp_presets.contains('version/name="1.4.5"') and exp_presets.contains('version/code=23')
-	record_check(1, 32, "Versioning & export configuration", godot_v145 and preset_v145, "version 1.4.5 code 23 verified", false, "M5")
+	var godot_v146: bool = proj_cfg.contains('config/version="1.4.6"')
+	var preset_v146: bool = exp_presets.contains('version/name="1.4.6"') and exp_presets.contains('version/code=24')
+	record_check(1, 32, "Versioning & export configuration", godot_v146 and preset_v146, "version 1.4.6 code 24 verified", false, "M5")
 
 	# F33: Git commit, tag, and GitHub Release (M5)
 	var git_clean: bool = FileAccess.file_exists("res://PROJECT.md") and FileAccess.file_exists("res://TEST_INFRA.md")

@@ -11,9 +11,8 @@ func _ready() -> void:
 	monitorable = true
 
 
-## Etkileşim etiketi: Shilda adını söyleyene dek "???".
 func get_interact_label() -> String:
-	return "Shilda" if GameState.is_shilda_named() else "???"
+	return "Shilda"
 
 
 func on_interact(_by: Node) -> void:

@@ -20,6 +20,11 @@ bg_region = "library"
 checkpoint = Vector2(120, 288)
 doors = [{"x": 40.0, "to": "library_upper_stacks", "spawn": "from_library_forbidden_wing"}]
 
+[node name="Spawns" type="Node2D" parent="."]
+
+[node name="keeper_observe" type="Marker2D" parent="Spawns"]
+position = Vector2(150, 288)
+
 [node name="Interactive" type="Node2D" parent="."]
 
 [node name="SoulSlash" type="Area2D" parent="Interactive"]

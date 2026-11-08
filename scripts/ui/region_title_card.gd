@@ -2,14 +2,20 @@ extends CanvasLayer
 ## Gotik Bölge Başlık Kartı HUD (Gothic Region Title Card HUD — F27)
 ## Oyuncu ilk kez bir ana bölgeye girdiğinde ekranın üstünde zarif bir gotik kart gösterilir ve discovery stinger çalar.
 
+## Bölge adları tek kaynak: kart başlığı (büyük harf), günlük haritası ve hedefler "name" alanını kullanır.
 const REGION_CARDS := {
-	"awakening": {"title": "UYANIŞ MAHMUZU", "sub": "İlk Hatıra"},
-	"decay": {"title": "ÇÜRÜME BAHÇESİ", "sub": "Zamanın Çürüttüğü Kökler"},
-	"library": {"title": "HAFIZA KÜTÜPHANESİ", "sub": "Yazılı Günahlar"},
-	"experiment": {"title": "YASAK LABORATUVAR", "sub": "Ruhun Parçalandığı Yer"},
-	"mirrors": {"title": "AYNALAR SALONU", "sub": "Ters Yansımalar"},
-	"core": {"title": "BELLEK ÇEKİRDEĞİ", "sub": "Son Karar"},
+	"awakening": {"name": "Uyanış Mahmuzu", "title": "UYANIŞ MAHMUZU", "sub": "İlk Hatıra"},
+	"decay": {"name": "Çürüme Bahçesi", "title": "ÇÜRÜME BAHÇESİ", "sub": "Zamanın Çürüttüğü Kökler"},
+	"library": {"name": "Hafıza Kütüphanesi", "title": "HAFIZA KÜTÜPHANESİ", "sub": "Yazılı Günahlar"},
+	"experiment": {"name": "Yasak Laboratuvar", "title": "YASAK LABORATUVAR", "sub": "Ruhun Parçalandığı Yer"},
+	"mirrors": {"name": "Aynalar Salonu", "title": "AYNALAR SALONU", "sub": "Ters Yansımalar"},
+	"core": {"name": "Bellek Çekirdeği", "title": "BELLEK ÇEKİRDEĞİ", "sub": "Son Karar"},
 }
+
+
+## Bölge kimliği -> görünen ad (günlük haritası vb.).
+static func region_name(region_id: String) -> String:
+	return String((REGION_CARDS.get(region_id, {}) as Dictionary).get("name", region_id.capitalize()))
 
 static var instance: Node = null
 
@@ -32,6 +38,9 @@ func _ready() -> void:
 	add_to_group("region_title_card")
 	layer = 28
 	_build_ui()
+	## Bölge değişince önceki bölgenin kartı hiçbir odada çıkmasın.
+	if not RoomManager.room_changed.is_connected(_on_room_changed):
+		RoomManager.room_changed.connect(_on_room_changed)
 
 
 func _build_ui() -> void:
@@ -52,7 +61,7 @@ func _build_ui() -> void:
 	# Koyu zemin: arkadaki dünya etiketleri ([E] Geç, prop adları) kartla çakışmasın.
 	var backing := ColorRect.new()
 	backing.name = "Backing"
-	backing.color = Color(0.07, 0.05, 0.09, 0.78)
+	backing.color = Color(0.07, 0.05, 0.09, 0.94)
 	backing.position = Vector2(-20, -6)
 	backing.size = Vector2(440, 74)
 	backing.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -117,6 +126,22 @@ static func is_showing() -> bool:
 		return false
 	var c: Control = instance.get("_container")
 	return c != null and c.modulate.a > 0.02
+
+
+## Oda/bölge değişti: eski sıra ve ekrandaki kart temizlenir (yeni bölge kartı hemen ardından gelir).
+func _on_room_changed(_from_room: StringName, to_room: StringName) -> void:
+	var to_region := String(to_room).get_slice("_", 0)
+	var keep: Array[String] = []
+	for q in _queue:
+		if q == to_region:
+			keep.append(q)
+	_queue = keep
+	if _current != "" and _current != to_region:
+		if _tween and _tween.is_valid():
+			_tween.kill()
+		if _container:
+			_container.modulate.a = 0.0
+		_current = ""
 
 
 func _is_gated() -> bool:

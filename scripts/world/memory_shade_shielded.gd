@@ -6,6 +6,8 @@ extends CharacterBody2D
 const SPEED := 35.0
 const GRAVITY := 900.0
 const AGGRO_RADIUS := 240.0
+const TURN_DELAY := 0.7
+var _turn_wait := 0.0
 
 @export var max_health: int = 3
 var health: int = 3
@@ -95,9 +97,16 @@ func _physics_process(delta: float) -> void:
 		if player and is_instance_valid(player):
 			var dist := global_position.distance_to(player.global_position)
 			if dist <= AGGRO_RADIUS:
-				_facing = signf(player.global_position.x - global_position.x)
-				if _facing == 0.0:
-					_facing = 1.0
+				## Ağır kalkan: oyuncu arkasına geçince hemen dönemez (TURN_DELAY) —
+				## Ruh Kesimi olmadan da arkadan vurma penceresi kalır.
+				var want := signf(player.global_position.x - global_position.x)
+				if want != 0.0 and want != _facing:
+					_turn_wait += delta
+					if _turn_wait >= TURN_DELAY:
+						_facing = want
+						_turn_wait = 0.0
+				else:
+					_turn_wait = 0.0
 				if sprite:
 					sprite.flip_h = _facing < 0.0
 					if sprite.sprite_frames and sprite.sprite_frames.has_animation("run") and sprite.animation != "run":
@@ -176,7 +185,10 @@ func _reflect_strike(attacker: Node, dir: float) -> void:
 
 	if not _hint_given:
 		_hint_given = true
-		DialogueManager.whisper("Noroi", "Kalkan kılıcı sektiriyor! Arkasına atıl veya Ruh Kesimi kullan.")
+		if bool(GameState.player_progress_knowledge.get("ability_soul_slash", false)):
+			DialogueManager.whisper("Noroi", "Kalkan kılıcı sektiriyor! Arkasına atıl ya da Ruh Kesimi savur.")
+		else:
+			DialogueManager.whisper("Noroi", "Kalkan kılıcı sektiriyor! Arkasına atıl, sonra arkadan vur.")
 
 
 func receive_soul_slash(attacker: Node) -> void:

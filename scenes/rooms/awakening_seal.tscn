@@ -155,7 +155,7 @@ required_puzzle = &"awakening_memory_code"
 shape = SubResource("TransitionHit")
 
 [node name="PressurePlate" type="Area2D" parent="Interactive"]
-position = Vector2(340, 300)
+position = Vector2(330, 300)
 collision_layer = 0
 collision_mask = 1
 script = ExtResource("7")
@@ -170,9 +170,9 @@ texture_filter = 0
 centered = true
 
 [node name="BloodThorn" type="Area2D" parent="Interactive"]
-position = Vector2(380, 290)
+position = Vector2(440, 290)
 script = ExtResource("blood_thorn")
-anchor_x = 340.0
+anchor_x = 330.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BloodThorn"]
 shape = SubResource("PlateShape")
@@ -212,7 +212,7 @@ texture_filter = 0
 centered = true
 
 [node name="EchoAlcove" type="Area2D" parent="Interactive"]
-position = Vector2(660, 268)
+position = Vector2(700, 268)
 collision_layer = 8
 collision_mask = 0
 monitoring = false

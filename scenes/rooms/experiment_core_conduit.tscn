@@ -39,7 +39,7 @@ texture_filter = 0
 centered = true
 
 [node name="ConduitLog" type="Area2D" parent="Interactive"]
-position = Vector2(860.0, 288.0)
+position = Vector2(920, 288.0)
 script = ExtResource("lore")
 lore_id = &"conduit_log"
 texture_path = "res://assets/props/memory_echo.png"

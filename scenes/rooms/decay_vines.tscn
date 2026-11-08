@@ -163,7 +163,7 @@ script = ExtResource("8")
 shape = SubResource("TransitionHit")
 
 [node name="ShortcutBlock" type="StaticBody2D" parent="Interactive"]
-position = Vector2(640, 248)
+position = Vector2(650, 248)
 collision_layer = 1
 collision_mask = 0
 script = ExtResource("7")

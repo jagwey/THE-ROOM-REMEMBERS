@@ -75,14 +75,10 @@ func _show_next() -> void:
 	_schedule_headless_auto()
 
 
-## Fısıltıda Shilda adı: isim öğrenilmeden "???", sonra "Shilda". Diğer konuşmacılar (Noroi, Bekçi...) korunur.
+## Shilda adı her zaman "Shilda" ("???" -> "Shilda"). Diğer konuşmacılar korunur.
 static func resolve_whisper_speaker(speaker: String, is_whisper: bool, shilda_named: bool) -> String:
-	if not is_whisper:
-		return speaker
-	if shilda_named and speaker == "???":
-		return "Shilda"
-	if not shilda_named and speaker == "Shilda":
-		return "???"
+	if speaker == "???":
+		return "Shilda" ## "???" artık yok: tüm Shilda satırları aynı isimlik/portre
 	return speaker
 
 

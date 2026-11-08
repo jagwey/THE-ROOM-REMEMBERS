@@ -33,6 +33,11 @@ size = Vector2(56, 36)
 script = ExtResource("5")
 room_id = &"core"
 
+[node name="Spawns" type="Node2D" parent="."]
+
+[node name="keeper_observe" type="Marker2D" parent="Spawns"]
+position = Vector2(800, 288)
+
 [node name="BackSealChamber" type="Area2D" parent="." groups=["room_door"]]
 position = Vector2(40, 268)
 collision_layer = 8
@@ -132,7 +137,7 @@ texture_filter = 0
 centered = true
 
 [node name="ChoiceTogether" type="Area2D" parent="."]
-position = Vector2(580, 288)
+position = Vector2(600, 288)
 collision_layer = 8
 collision_mask = 0
 monitoring = false
@@ -144,7 +149,7 @@ ending_kind = &"together"
 shape = SubResource("PadShape")
 
 [node name="ChoiceSever" type="Area2D" parent="."]
-position = Vector2(380, 288)
+position = Vector2(360, 288)
 collision_layer = 8
 collision_mask = 0
 monitoring = false

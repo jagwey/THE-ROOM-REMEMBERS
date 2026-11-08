@@ -31,7 +31,10 @@ func _physics_process(_delta: float) -> void:
 	var best := 9999.0
 	for c in get_tree().get_nodes_in_group("lantern_corpse"):
 		if c is Node2D and (c as Node2D).is_visible_in_tree():
-			best = minf(best, global_position.distance_to((c as Node2D).global_position))
+			## Semboller duvarda yüksekte, beden yerde: dikey fark ~110 px'e kadar sayılmaz
+			## (yoksa yerdeki fener asla yetişmezdi). Yatay mesafe belirleyici.
+			var d: Vector2 = (c as Node2D).global_position - global_position
+			best = minf(best, Vector2(d.x, maxf(0.0, absf(d.y) - 120.0)).length())
 	var a := clampf(1.0 - (best - reveal_radius * 0.6) / (reveal_radius * 0.4), 0.0, 1.0)
 	_label.modulate.a = lerpf(_label.modulate.a, a, 0.15)
 	if a > 0.8 and not _seen:

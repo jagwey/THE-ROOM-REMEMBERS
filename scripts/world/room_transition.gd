@@ -9,23 +9,8 @@ extends Area2D
 @export var locked_message: String = "Önce bu odanın hatırasını tamamlamalıyım."
 @export var door_title: String = ""
 
-const ROOM_TITLES := {
-	"awakening": "Uyanış", "awakening_passage": "Kırık Geçit",
-	"awakening_seal": "Mühür Eşiği", "decay_vines": "Sarmaşık Yolu",
-	"decay_weight": "Ağırlık Salonu", "decay_garden": "Solmuş Bahçe",
-	"library_hall": "Hafıza Kütüphanesi", "library_witness": "Üç Tanık",
-	"library_page": "Unutulmuş Sayfa", "experiment_cells": "Gözlem Hücreleri",
-	"experiment_circuit": "Yankı Devresi", "experiment_authority": "Yetki Masası",
-	"mirrors_reverse": "Ayna Geçidi", "mirrors_dual": "İki Yankı",
-	"mirrors_unbroken": "Kırılmayan Ayna", "core_threshold": "Son Eşik",
-	"core_seal_chamber": "Mühür Odası", "core": "Çekirdek",
-	"awakening_balcony": "Gözlem Balkonu", "awakening_crypt": "İlk Bedenler Mahzeni",
-	"decay_catacombs": "Kemik Mahzeni", "decay_shilda_wall": "Çatlak Duvar",
-	"library_upper_stacks": "Üst Raflar", "library_forbidden_wing": "Yasak Kanat",
-	"experiment_quarantine": "Karantina", "experiment_core_conduit": "Enerji Kanalı",
-	"mirrors_labyrinth": "Yansıma Labirenti", "mirrors_shrine": "Ayna Tapınağı",
-	"core_memory_vault": "Hafıza Kasası", "core_bloom_garden": "Çiçek Bahçesi",
-}
+## Oda adları tek kaynaktan: RoomManager.ROOM_TITLES_TR (HUD başlığı, hedef, harita, kapı etiketi).
+const ROOM_TITLES: Dictionary = preload("res://scripts/autoload/room_manager.gd").ROOM_TITLES_TR
 
 const LOCKED_VARIANTS := [
 	"Kapı mühürlenmiş.",
@@ -292,6 +277,15 @@ func on_interact(by: Node) -> void:
 		var idx := _locked_tries % 4
 		_locked_tries += 1
 		var msg: String = locked_message if idx == 0 else String(LOCKED_VARIANTS[idx - 1])
+		## Ruh mührü: yetenek yoksa "nerede bulunur", varsa "nasıl açılır" söylenir (genel varyantlar yanıltmasın).
+		if String(required_puzzle).begins_with("soul_seal"):
+			var has_slash := bool(GameState.player_progress_knowledge.get("ability_soul_slash", false))
+			if has_slash:
+				msg = "Mor mühür. Ruh Kesimi'ni savur (Q / yıldız düğmesi)."
+			elif idx % 2 == 0:
+				msg = "Mor bir mühür. Kılıç işlemez… ruhumla kesmeyi henüz bilmiyorum."
+			else:
+				msg = "Bu güç Yasak Kanat'ta saklı. Kütüphanede Arşivci'yi bul."
 		AudioManager.play_sfx(&"seal_key", -8.0, 0.55)
 		_shake_seal()
 		DialogueManager.say("Noroi", msg)
