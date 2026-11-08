@@ -50,7 +50,7 @@ var _catalog: Dictionary = {
 		"journal": {
 			"section": "izler",
 			"title": "Silme Emri",
-			"body": "Hafızamın silinmesini ben istedim. Shilda söz verdi: ben unutursam o hatırlayacak.",
+			"body": "Hafızamın silinmesi için bir imza atılmış; imza kazınmış. Shilda söz verdi: ben unutursam o hatırlayacak.",
 			"kind": "evidence",
 		},
 		"memory_code": "",

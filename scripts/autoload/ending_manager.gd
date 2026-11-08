@@ -20,7 +20,7 @@ const EPILOGUES := {
 			"Çekirdek, onu tutan son hafızayı kaybedince patladı.",
 			"…Gözlerin açılıyor. Yine yataktasın.",
 			"Yerde Shilda'nın cansız bedeni. Elinde kurumuş bir çiçek.",
-			"Duvarda kendi el yazın: “Şimdi kim hatırlayacak?”",
+			"Duvarda kazınmış bir el yazısı: “Şimdi kim hatırlayacak?”",
 		],
 	},
 	"good_trust_seal": {

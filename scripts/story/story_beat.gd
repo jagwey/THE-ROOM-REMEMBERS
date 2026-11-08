@@ -94,7 +94,7 @@ func _library_hall() -> void:
 
 	DialogueManager.say("Arşivci", "Hoş geldin Noroi. Her dönüşünde kendin için başka bir raf arıyorsun.")
 
-	DialogueManager.say("Arşivci", "Bir kayıtta kurtarıcısın, diğerinde kapıyı kilitleyen kişi. İkisi de aynı imzayı taşıyor.")
+	DialogueManager.say("Arşivci", "Bir kayıtta kurtarıcısın, diğerinde kapıyı kilitleyen kişi. Kayıtlar tutmuyor; imza kazınmış.")
 
 	DialogueManager.say("Noroi", "Hangisi doğru?")
 
@@ -194,11 +194,12 @@ func _experiment_circuit() -> void:
 
 func _experiment_authority() -> void:
 
-	DialogueManager.say("Kayıt", "Protokol yetkilisi: Noroi. Güvenlik görevlisi: Shilda. Acil kapatma talebi reddedildi.")
+	DialogueManager.say("Kayıt", "Protokol yetkilisi: ███ (kazınmış). Güvenlik görevlisi: Shilda. Acil kapatma talebi reddedildi.")
 
-	DialogueManager.say("Noroi", "Dışarı çıkmasın diye kapıyı ben kilitledim. İçeridekilerin sesleri burada kaldı.")
+	DialogueManager.say("Noroi", "Dışarı çıkmasın diye kapıyı biri kilitlemiş. İçeridekilerin sesleri burada kaldı.")
 
-	DialogueManager.say("Shilda", "Bunu taşıyamadığında benden seni unutturmamı istedin. Her dönüşünde aynı karar seni bekledi.")
+	DialogueManager.say("Shilda", "Seni unutturmam gerekti. Her dönüşünde aynı karar bekledi; ben yine de hatırladım.")
+	DialogueManager.say("Shilda", "Altmış sekiz yıl oldu. Kapı 1927'den beri kilitli. Sen 1995'te geldin.")
 	DialogueManager.say("Noroi", "Bu kez kendimden kaçmayacağım. Aynalar salonuna gidelim.")
 
 	var ok: bool = await DialogueManager.dialogue_finished
@@ -278,7 +279,7 @@ func _core_threshold() -> void:
 
 func _core_seal_chamber() -> void:
 
-	DialogueManager.say("Noroi", "Deney başladı. Kapıyı kapattım. Koruma mührü devreye girdi. Sonra unutmak istedim. Artık hiçbiri kayıp değil.")
+	DialogueManager.say("Noroi", "Deney başladı. Kapı kapandı. Koruma mührü devreye girdi. Silinen hafızalar burada kaldı. Artık hiçbiri kayıp değil.")
 
 	DialogueManager.say("Shilda", "Senin adına seçim yapmayacağım. Birlikte mühürlemek sesleri burada korur; bağı koparmak onları serbest bırakır.")
 	DialogueManager.say("Noroi", "Son kapının ardında solda bağı koparma, sağda birlikte mühürleme var. Önce sonucu okuyacağım, sonra onaylayacağım.")

@@ -34,10 +34,10 @@
 
 **THE ROOM REMEMBERS**, ölümün bir başarısızlık değil, **dünyayı değiştiren fiziksel ve anlatısal bir araç** olduğu karanlık gotik bir 2D aksiyon-bulmaca oyunudur.
 
-Oyuncu **Shiren** olarak ne adını ne de neden bu yıkık tesiste tutulduğunu bilerek uyanır. Her ölümde Shiren'in o yaşamdaki belleği silinir ve ilk yatağında yeniden gözlerini açar; ancak **oda hiçbir şeyi unutmaz**. Önceki yaşamlarından kalan kendi cansız bedenlerin odalarda fiziksel olarak kalmaya devam eder: üzerlerine basıp yüksek çıkıntılara zıplayabilir, onları ağır basınç plakalarının üstüne itebilir, son 3 saniyelik mor **Yankı Tekrarlarını (Echo Replay)** izleyerek ölüm anındaki sırları çözebilir ve **Bekçi Shilda**'nın bedenlerine bıraktığı kızıl ölüm çiçeklerinin ışığıyla karanlıkta gizlenen sembolleri ortaya çıkarabilirsin.
+Oyuncu **Noroi** olarak ne adını ne de neden bu yıkık tesiste tutulduğunu bilerek uyanır. Her ölümde Noroi'in o yaşamdaki belleği silinir ve ilk yatağında yeniden gözlerini açar; ancak **oda hiçbir şeyi unutmaz**. Önceki yaşamlarından kalan kendi cansız bedenlerin odalarda fiziksel olarak kalmaya devam eder: üzerlerine basıp yüksek çıkıntılara zıplayabilir, onları ağır basınç plakalarının üstüne itebilir, son 3 saniyelik mor **Yankı Tekrarlarını (Echo Replay)** izleyerek ölüm anındaki sırları çözebilir ve **Bekçi Shilda**'nın bedenlerine bıraktığı kızıl ölüm çiçeklerinin ışığıyla karanlıkta gizlenen sembolleri ortaya çıkarabilirsin.
 
 <p align="center">
-  <img src="media/readme/01-awakening.png" alt="Uyanış Odası — Shiren, Cep Saati ve Shilda" width="820" />
+  <img src="media/readme/01-awakening.png" alt="Uyanış Odası — Noroi, Cep Saati ve Shilda" width="820" />
 </p>
 
 ---
@@ -70,7 +70,7 @@ Depodaki tüm derlenmiş Android (`arm64-v8a`) APK sürümleri aktif olarak **[G
 
 | Görsel | Unsur | Rolü ve Mekanik İşlevi |
 | :---: | :--- | :--- |
-| <img src="assets/characters/shiren/frame_00.png" width="56" alt="Shiren" /> | **Shiren**<br/>*(Oyuncu)* | Her ölümde belleği sıfırlanan fakat bıraktığı izlerle gerçeğe yürüyen ana karakter. 3'lü kılıç kombosu, **Gölge Atılması (`ShadowDash`)** ve **Ruh Kesimi (`SoulSlash`)** yeteneklerini kullanır. |
+| <img src="assets/characters/noroi/frame_00.png" width="56" alt="Noroi" /> | **Noroi**<br/>*(Oyuncu)* | Her ölümde belleği sıfırlanan fakat bıraktığı izlerle gerçeğe yürüyen ana karakter. 3'lü kılıç kombosu, **Gölge Atılması (`ShadowDash`)** ve **Ruh Kesimi (`SoulSlash`)** yeteneklerini kullanır. |
 | <img src="assets/characters/keeper/frame_00.png" width="56" alt="Shilda / Bekçi" /> | **Shilda — Bekçi**<br/>*(The Keeper)* | Odanın hafızasını koruyan gizemli figür. Öldüğünde cesedinin başında yas tutar ve bir çiçek bırakır. Ona saldırmak ya da ona güvenmek oyunun sonunu doğrudan belirler. |
 | <img src="assets/props/body_echo.png" width="56" alt="Ceset ve Yankı" /> | **Önceki Bedenler**<br/>*(Corpse & Echo)* | Öldüğün noktada kalan fiziksel bedenin. İlk incelemede son 3 saniyelik mor **Yankı Tekrarını** oynatır; sonrasında **itilebilir ağırlık**, **üzerine çıkılabilir platform** ve **lanet süngeri** görevi görür. |
 | <img src="assets/props/red_flower.png" width="48" alt="Ölüm Çiçeği" /> | **Kızıl Ölüm Çiçeği**<br/>*(Mourning Flower)* | Shilda'nın yas tuttuğu bedenlere bıraktığı çiçek. Çiçekli bedenler (**Fener Ceset / Lantern Corpse**) karanlık odaları aydınlatır ve duvarlardaki gizli sembolleri görünür kılar. |
@@ -136,10 +136,10 @@ Oyun dünyası, birbirine ana koridorlar, mühürlü kapılar, yan odalar ve **�
 | Son Kodu | Başlık | Tetiklenme Koşulu |
 | :--- | :--- | :--- |
 | 🌟 **`GOOD`** | **Birlikte Çıkış** | Kütüphane ve Aynalar mühür parçalarını topla (`has_both_seal_fragments()`), gerçeği gör (`truth_seen`), Shilda'ya güven (`trusted_keeper`, ona hiç saldırma) ve Çekirdek'te **Kabul / Birlikte Çık** seçimini yap. |
-| 🚶 **`SOLO_EXIT`** | **Yalnız Çıkış** | Çekirdek'te çıkışı seç ancak iki mühür parçasından biri eksik olsun veya Shilda ile güven bağı kurulmamış olsun; Shiren tesisten yalnız çıkar, Shilda içeride kalır. |
-| 🏛️ **`WORLD`** | **Yeni Bekçi** | Çekirdek'te **Kal / Nöbeti Devral (`sacrifice`)** seçimini yap; Shilda özgür kalırken Shiren odanın yeni Bekçisi olur. |
+| 🚶 **`SOLO_EXIT`** | **Yalnız Çıkış** | Çekirdek'te çıkışı seç ancak iki mühür parçasından biri eksik olsun veya Shilda ile güven bağı kurulmamış olsun; Noroi tesisten yalnız çıkar, Shilda içeride kalır. |
+| 🏛️ **`WORLD`** | **Yeni Bekçi** | Çekirdek'te **Kal / Nöbeti Devral (`sacrifice`)** seçimini yap; Shilda özgür kalırken Noroi odanın yeni Bekçisi olur. |
 | 💥 **`BAD`** | **Çekirdek Çöküşü** | Çekirdek'te Shilda'ya saldır veya Çekirdek Kristalini zorla parçala; döngü şiddetle çöker ve oda sıfırlanır. |
-| 🩸 **`CURSE_TAKEOVER`** | **Lanet Ele Geçirmesi** | Çekirdek bölgesindeyken Lanet sayacının **%100**'e ulaşması; lanet Shiren'in bedenini kalıcı olarak ele geçirir. |
+| 🩸 **`CURSE_TAKEOVER`** | **Lanet Ele Geçirmesi** | Çekirdek bölgesindeyken Lanet sayacının **%100**'e ulaşması; lanet Noroi'in bedenini kalıcı olarak ele geçirir. |
 
 ---
 
@@ -208,7 +208,7 @@ THE-ROOM-REMEMBERS/
 ├── export_presets.cfg           # Android ARM64 APK dışa aktarma profili (com.torimon.theroomremembers)
 ├── assets/
 │   ├── backgrounds/             # 6 bölgenin çok katmanlı parallax arka planları (far, mid, front)
-│   ├── characters/              # Shiren, Keeper (Shilda) ve NPC animasyon kareleri & SpriteFrames
+│   ├── characters/              # Noroi, Keeper (Shilda) ve NPC animasyon kareleri & SpriteFrames
 │   ├── hud/ & panels/           # Gotik diyalog, günlük, envanter panelleri ve dokunmatik butonlar
 │   ├── icon/                    # Android adaptif ikon katmanları ve 192/512px uygulama ikonları
 │   ├── layers/ & props/         # Gotik kapılar, mühürler, cep saati, ölüm çiçeği, kristaller
@@ -216,7 +216,7 @@ THE-ROOM-REMEMBERS/
 ├── scenes/
 │   ├── main/main.tscn           # Kök sahne (WorldRoot, Player, FollowCamera, UI katmanları)
 │   ├── rooms/                   # 30 bağlı oda sahnesi (awakening, decay, library, experiment, mirrors, core)
-│   ├── player/ & keeper/        # Shiren ve Shilda sahneleri
+│   ├── player/ & keeper/        # Noroi ve Shilda sahneleri
 │   ├── world/                   # Fiziksel ceset, çatlak ayna ve Bellek Gölgesi (Memory Shade) sahneleri
 │   └── ui/                      # HUD, Günlük (Journal), Bölge Kartı, Lanet VFX ve Epilog sahneleri
 └── scripts/

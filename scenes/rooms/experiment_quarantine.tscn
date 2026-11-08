@@ -40,9 +40,9 @@ script = ExtResource("lore")
 lore_id = &"quarantine_cassette"
 texture_path = "res://assets/props/memory_echo.png"
 sprite_scale = 0.5
-lines = PackedStringArray("Noroi|Anı yankısı: “Denek 12 laneti emdi. Bedeni ölü ama sis çekildi.”", "Noroi|“Yetkili Noroi onayladı: ölüler paratoner olarak kullanılacak.”")
+lines = PackedStringArray("Noroi|Anı yankısı: “Denek 12 laneti emdi. Bedeni ölü ama sis çekildi.”", "Noroi|“Yetkili imza: ███ (kazınmış). Ölüler paratoner olarak kullanılacak.”")
 evidence_title = "Paratoner Raporu"
-evidence_body = "Ölü bedenler laneti emiyor. Bunu bir yöntem olarak onaylayan bendim."
+evidence_body = "Ölü bedenler laneti emiyor. Bunu yöntem olarak onaylayan imza kazınmış."
 evidence_section = "notlar"
 solve_puzzle = &"experiment_quarantine_done"
 
