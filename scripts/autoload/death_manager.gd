@@ -347,6 +347,7 @@ func _respawn() -> void:
 			if DialogueManager.is_open:
 				DialogueManager.clear()
 	CorpseManager.rebuild_world_corpses()
+	GameState.set_story_flag(&"first_death_completed")
 	SaveManager.save_game()
 	is_dying = false
 	_set_phase(Phase.ALIVE)

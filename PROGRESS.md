@@ -31,7 +31,8 @@ Dal: cursor/playable-story-flow-8e4e · Sürüm: v1.2.0 (versionCode 16)
 
 ## v3 hikâye revizyonu (spec 3.0, plan docs/superpowers/plans/v3-story-overhaul.md, SDD ledger .superpowers/sdd/v3-story-overhaul/progress.md)
 - [x] T1 lore/canon (2026-11-09, a985d0c): Noroi yazar/yetkili değil, X kazınmış, 1927/1995 ipuçları, Araştırma Yardımcısı S.; lore_canon_audit 0, release 111/0, e2e 50/0; pencereli kontrol edildi
-- [ ] T2 story flags + save v6 · T3 kayıt ayrımı · T4 Hafıza Mühürleri · T5 lanet bantları · T6 yatak respawn · T7 açılış/isim · T8 menüler · T9 tek final · T10 diyalog · T11 audit+test planı
+- [x] T2 story flags + save v6 (2026-11-09): `GameState.story_flags` API (set/has/clear + sinyal, 13 bayrak), SAVE_VERSION 6 + v≤5 göçü, kancalar: first_death_completed, first_corpse_discovered, first_archive_record_read, core_access_granted, dimension_origin/shilda_past (awakening_crypt defteri); `story_flags_audit` 0 hata
+- [ ] T3 kayıt ayrımı · T4 Hafıza Mühürleri · T5 lanet bantları · T6 yatak respawn · T7 açılış/isim · T8 menüler · T9 tek final · T10 diyalog · T11 audit+test planı
 
 ## Kalan
 - docs/gelistirme/ altındaki izlenmeyen log/zip dosyaları: .gitignore veya temizlik kararı bekliyor

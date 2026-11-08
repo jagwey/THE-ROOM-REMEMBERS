@@ -14,6 +14,7 @@ extends Area2D
 @export var solve_puzzle: StringName = &""
 @export var set_progress_key: String = "" ## player_progress_knowledge[key] = true
 @export var focus_zoom: bool = false
+@export var story_flag_ids: PackedStringArray = PackedStringArray() ## okununca GameState.set_story_flag
 
 var _busy: bool = false
 
@@ -116,6 +117,10 @@ func on_interact(_by: Node) -> void:
 		record_evidence("ev_%s" % String(lore_id), evidence_title, evidence_body, evidence_section)
 	if set_flag != &"":
 		GameState.set_world_flag(set_flag, true)
+	for sf in story_flag_ids:
+		GameState.set_story_flag(StringName(sf), true)
+	if String(RoomManager.get_active_room_id()).begins_with("library"):
+		GameState.set_story_flag(&"first_archive_record_read", true)
 	if solve_puzzle != &"":
 		PuzzleManager.mark_solved(solve_puzzle)
 	if set_progress_key != "":

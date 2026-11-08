@@ -193,6 +193,8 @@ func enter_room(room_id: StringName, spawn_id: StringName = &"default", apply_ro
 
 	GameState.character_current_life_knowledge["spawn_id"] = spawn_id
 	GameState.mark_room_visited(room_id)
+	if room_id == &"core_threshold":
+		GameState.set_story_flag(&"core_access_granted")
 
 	# F27: Gothic Region Title Cards & regions_visited
 	var region := String(room_id).get_slice("_", 0)

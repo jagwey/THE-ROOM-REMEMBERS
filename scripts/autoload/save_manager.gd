@@ -2,7 +2,7 @@ extends Node
 ## Kayıt — player + world kalıcı; character de yazılır (checkpoint için).
 
 var SAVE_PATH: String = "user://qa/torimon_save.json" if OS.get_environment("TORIMON_TEST") == "1" else "user://torimon_save.json"
-const SAVE_VERSION := 5
+const SAVE_VERSION := 6
 ## Yalnız test: yazma hatasını taklit eder (Kaydet ve Çık hata diyaloğu).
 var force_fail_for_test: bool = false
 
@@ -36,6 +36,7 @@ func start_new_game() -> void:
 	GameState.player_progress_knowledge = _new_progress.duplicate(true)
 	GameState.world_memory_state = _new_world.duplicate(true)
 	GameState.character_current_life_knowledge = _new_life.duplicate(true)
+	GameState.clear_story_flags()
 	GameState.session_loaded_from_save = false
 	GameState.hearts = GameState.max_hearts
 	PuzzleManager.sync_from_world()
@@ -80,6 +81,7 @@ func save_game() -> bool:
 		"player_progress_knowledge": GameState.player_progress_knowledge.duplicate(true),
 		"world_memory_state": _serialize_world(GameState.world_memory_state),
 		"character_current_life_knowledge": _serialize_life(GameState.character_current_life_knowledge),
+		"story_flags": _serialize_story_flags(GameState.story_flags),
 		"hearts": GameState.hearts,
 		"curse": CurseManager.curse if CurseManager else 0.0,
 	}
@@ -165,10 +167,13 @@ func load_game(apply_room: bool = true) -> bool:
 	GameState.world_memory_state = _deserialize_world(data.get("world_memory_state", {}))
 	GameState.character_current_life_knowledge = _deserialize_life(data.get("character_current_life_knowledge", {}))
 	GameState.session_loaded_from_save = true
+	GameState.story_flags = _deserialize_story_flags(data.get("story_flags", {}))
 	var ver := int(data.get("version", 0))
 	if ver > 0 and ver < SAVE_VERSION:
 		if ver < 5:
 			_migrate_to_v5_puzzles()
+		if ver < 6:
+			_migrate_to_v6_story_flags()
 	elif ver > SAVE_VERSION:
 		push_warning("Save version newer than game (%d > %d) — loading best-effort" % [ver, SAVE_VERSION])
 	GameState.hearts = clampi(int(data.get("hearts", GameState.max_hearts)), 1, GameState.max_hearts)
@@ -181,6 +186,22 @@ func load_game(apply_room: bool = true) -> bool:
 		CorpseManager.rebuild_world_corpses()
 	GameState.knowledge_changed.emit(&"world")
 	return true
+
+
+func _serialize_story_flags(flags: Dictionary) -> Dictionary:
+	var out := {}
+	for k in flags.keys():
+		out[String(k)] = bool(flags[k])
+	return out
+
+
+func _deserialize_story_flags(raw: Variant) -> Dictionary:
+	var out := {}
+	if typeof(raw) != TYPE_DICTIONARY:
+		return out
+	for k in (raw as Dictionary).keys():
+		out[StringName(str(k))] = bool(raw[k])
+	return out
 
 
 func _serialize_world(w: Dictionary) -> Dictionary:
@@ -261,3 +282,30 @@ func _migrate_to_v5_puzzles() -> void:
 		pz["awakening_weight"] = true
 	if bool(GameState.get_world_flag(&"awakening_crystal_cracked", false)):
 		pz["awakening_memory_code"] = true
+
+
+## v6: hikâye bayrakları eski durumdan en iyi çabayla türetilir; kaynak yoksa bayrak kurulmaz.
+func _migrate_to_v6_story_flags() -> void:
+	var pk: Dictionary = GameState.player_progress_knowledge
+	var visited: Array = pk.get("rooms_visited", [])
+	var corpses: Variant = GameState.world_memory_state.get("corpses", [])
+	if GameState.is_shilda_named():
+		_derive_flag(&"shilda_name_known")
+	if int(pk.get("deaths", 0)) > 0 or (corpses is Array and not (corpses as Array).is_empty()):
+		_derive_flag(&"first_death_completed")
+	if visited.has("core_threshold"):
+		_derive_flag(&"core_access_granted")
+	var pz: Variant = GameState.world_memory_state.get("puzzles", {})
+	if pz is Dictionary and (bool(pz.get("awakening_weight", false)) or bool(pz.get("awakening_memory_code", false))):
+		_derive_flag(&"intro_completed")
+	if bool(pk.get("first_corpse_line_seen", false)):
+		_derive_flag(&"first_corpse_discovered")
+	var seen: Array = pk.get("lore_seen", [])
+	if seen.has("crypt_ledger"):
+		_derive_flag(&"dimension_origin_discovered")
+		_derive_flag(&"shilda_past_discovered")
+
+
+func _derive_flag(id: StringName) -> void:
+	if not GameState.story_flags.has(id):
+		GameState.story_flags[id] = true

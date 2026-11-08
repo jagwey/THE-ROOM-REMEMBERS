@@ -44,6 +44,7 @@ lines = PackedStringArray("Noroi|Shilda'nın el yazısı: “Döngü 41. Yine un
 evidence_title = "Bekçinin Defteri"
 evidence_body = "Shilda her döngüyü saymış. Kapağında 1927 yazıyor; gerisi yanmış. Bir kenar notunu Araştırma Yardımcısı S. imzalamış."
 evidence_section = "notlar"
+story_flag_ids = PackedStringArray("dimension_origin_discovered", "shilda_past_discovered")
 
 [node name="CryptEcho" type="Area2D" parent="Interactive"]
 position = Vector2(780.0, 268.0)

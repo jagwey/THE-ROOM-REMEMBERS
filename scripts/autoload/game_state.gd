@@ -7,6 +7,7 @@ signal knowledge_changed(layer: StringName)
 signal room_changed(room_id: StringName)
 signal hearts_changed(current: int, maximum: int)
 signal world_flag_changed(flag: StringName, value: Variant)
+signal story_flag_changed(id: StringName, value: bool)
 
 const MAX_HEARTS := 3
 const DEFAULT_CHECKPOINT := Vector2(120, 280)
@@ -56,6 +57,15 @@ var world_memory_state: Dictionary = {
 	## Bulmaca çözümleri — string id -> bool (kalıcı).
 	"puzzles": {},
 }
+
+## Hikâye durumu bayrakları (v3, kalıcı): StringName -> bool. Kayıtta String anahtarlı yazılır.
+const STORY_FLAGS := [
+	&"intro_completed", &"first_shadow_seen", &"first_warning_heard", &"first_death_completed",
+	&"first_corpse_discovered", &"shilda_name_known", &"first_archive_record_read",
+	&"dimension_origin_discovered", &"shilda_past_discovered", &"core_access_granted",
+	&"final_seal_broken", &"x_revealed", &"game_completed",
+]
+var story_flags: Dictionary = {}
 
 var hearts: int = MAX_HEARTS
 var max_hearts: int = MAX_HEARTS
@@ -115,6 +125,25 @@ func set_world_flag(flag: StringName, value: Variant = true) -> void:
 	flags[String(flag)] = value
 	world_flag_changed.emit(flag, value)
 	knowledge_changed.emit(&"world")
+
+
+## Hikâye bayrağı yaz. Bilinmeyen id uyarı verir ama yine saklanır.
+func set_story_flag(id: StringName, value: bool = true) -> void:
+	if not STORY_FLAGS.has(id):
+		push_warning("Bilinmeyen hikâye bayrağı: %s" % String(id))
+	var changed := bool(story_flags.get(id, false)) != value or not story_flags.has(id)
+	story_flags[id] = value
+	if changed:
+		story_flag_changed.emit(id, value)
+
+
+func has_story_flag(id: StringName) -> bool:
+	return bool(story_flags.get(id, false))
+
+
+func clear_story_flags() -> void:
+	story_flags.clear()
+	knowledge_changed.emit(&"player")
 
 
 func get_world_flag(flag: StringName, default: Variant = false) -> Variant:

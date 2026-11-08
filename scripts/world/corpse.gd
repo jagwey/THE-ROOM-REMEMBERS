@@ -71,6 +71,7 @@ func on_interact(by: Node) -> void:
 		DialogueManager.advance()
 		return
 	## Oyunun ilk ceset karşılaşması: Noroi kendi bedenini tanır.
+	GameState.set_story_flag(&"first_corpse_discovered")
 	if not bool(GameState.player_progress_knowledge.get("first_corpse_line_seen", false)):
 		GameState.player_progress_knowledge["first_corpse_line_seen"] = true
 		DialogueManager.say("Noroi", "Bu... benim kıyafetlerim mi?")
