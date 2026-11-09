@@ -1,4 +1,4 @@
-[gd_scene load_steps=40 format=3 uid="uid://torimon_main"]
+[gd_scene load_steps=39 format=3 uid="uid://torimon_main"]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/rooms/awakening.tscn" id="2"]
@@ -8,7 +8,6 @@
 [ext_resource type="Script" path="res://scripts/camera/follow_camera.gd" id="6"]
 [ext_resource type="PackedScene" path="res://scenes/ui/journal.tscn" id="7"]
 [ext_resource type="PackedScene" path="res://scenes/ui/curse_vfx.tscn" id="8"]
-[ext_resource type="PackedScene" path="res://scenes/ui/ending.tscn" id="9"]
 [ext_resource type="PackedScene" path="res://scenes/rooms/core.tscn" id="10"]
 [ext_resource type="PackedScene" path="res://scenes/rooms/awakening_passage.tscn" id="11"]
 [ext_resource type="PackedScene" path="res://scenes/rooms/awakening_seal.tscn" id="12"]
@@ -179,8 +178,6 @@ script = ExtResource("6")
 [node name="Journal" parent="." instance=ExtResource("7")]
 
 [node name="CurseVFX" parent="." instance=ExtResource("8")]
-
-[node name="EndingUI" parent="." instance=ExtResource("9")]
 
 [node name="Audio" type="Node" parent="."]
 

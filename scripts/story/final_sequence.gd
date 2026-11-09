@@ -25,6 +25,7 @@ var _flash: ColorRect
 var _fade: ColorRect
 var _skip_waits: bool = false
 var _was_seen: bool = false
+var _skip_pressed: bool = false ## ui_cancel olayı geldi (olay tabanlı; kare kaçırmaz)
 
 
 static func _settings_path() -> String:
@@ -384,7 +385,7 @@ func _credits() -> void:
 	scroll.finished.connect(func() -> void: done[0] = true)
 	scroll.play(0.2 if fast else 26.0, 0.05 if fast else 1.0)
 	while not done[0]:
-		if _skip_allowed() and Input.is_action_just_pressed("ui_cancel"):
+		if _skip_requested():
 			break
 		await _tree.process_frame
 	scroll.stop()
@@ -416,6 +417,9 @@ func _build_overlay() -> void:
 	_overlay.layer = 95
 	_overlay.name = "FinalOverlay"
 	_scene.add_child(_overlay)
+	var listener := SkipListener.new()
+	listener.on_skip = func() -> void: _skip_pressed = true
+	_overlay.add_child(listener)
 	_flash = ColorRect.new()
 	_flash.color = Color(1, 1, 1, 0)
 	_flash.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -461,11 +465,25 @@ func _skip_allowed() -> bool:
 	return _was_seen and not fast
 
 
+## Atlama isteği (olay tabanlı). Yalnız izin varsa tüketilir.
+func _skip_requested() -> bool:
+	return _skip_allowed() and _skip_pressed
+
+
+## ui_cancel basışını olay olarak yakalar; polling'in kare arasında kaçırdığı basışları da görür.
+class SkipListener extends Node:
+	var on_skip: Callable
+
+	func _input(event: InputEvent) -> void:
+		if event.is_action_pressed("ui_cancel") and on_skip.is_valid():
+			on_skip.call()
+
+
 ## Zaman beklemesi; final daha önce tam izlendiyse ui_cancel ile hızlanır, ilk izleme atlanamaz.
 func _wait(sec: float) -> void:
 	var left := sec if not fast else minf(sec, 0.05)
 	while left > 0.0 and not _skip_waits:
-		if _skip_allowed() and Input.is_action_just_pressed("ui_cancel"):
+		if _skip_requested():
 			_skip_waits = true
 			break
 		var step := minf(left, 0.05)

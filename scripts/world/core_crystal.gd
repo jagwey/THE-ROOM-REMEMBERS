@@ -16,6 +16,10 @@ func _ready() -> void:
 func on_interact(_by: Node) -> void:
 	if EndingManager.current != EndingManager.Ending.NONE:
 		return
+	if GameState.has_story_flag(&"game_completed"):
+		DialogueManager.say("Noroi", "Kristal sustu. Burada artık söyleyeceği bir şey yok.")
+		await DialogueManager.dialogue_finished
+		return
 	if EndingManager.can_begin_final():
 		await EndingManager.trigger(EndingManager.Ending.PART_ONE)
 		return

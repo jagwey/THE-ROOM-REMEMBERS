@@ -4,6 +4,7 @@ extends SceneTree
 ## Calistir: TORIMON_TEST=1 godot --headless --path . -s res://scripts/dev/final_sequence_audit.gd
 var failures := 0
 var FS: GDScript
+var shown: Array = [] ## DialogueManager.line_shown kayitlari: [konusmaci, sayfa]
 
 
 func _initialize() -> void:
@@ -16,6 +17,39 @@ func check(ok: bool, label: String, detail: Variant = "") -> void:
 	print("FINAL ", "PASS " if ok else "FAIL ", label, " ", detail)
 	if not ok:
 		failures += 1
+
+
+## Gercekten gosterilen diyalog satirlari (sira korunarak) beklenen final satirlariyla eslesir.
+func _check_lines_in_order() -> void:
+	var expected: Array = [
+		["Shilda", "Ellerim..."], ["Noroi", "Shilda?"],
+		["Shilda", "Sanırım... sonunda bitti."], ["Noroi", "Gidelim."],
+		["???", "Demek sonunda başardınız."], ["Shilda", "Bu ses..."],
+		["Shilda", "Kurucu...?"], ["X", "Merhaba, Shilda."], ["X", "Biliyorum."],
+		["X", "Her şeyi kaydettim."], ["Noroi", "Bizi burada bıraktın."],
+		["X", "Bu bir deneydi."],
+		["X", "Şimdiye kadarki en başarılı deneklerim sizsiniz."],
+		["X", "İlk boyuttan çıkmanız beklediğimden uzun sürdü."],
+		["Shilda", "Noroi!"], ["X", "İhtiyacım olan şeyi aldım."],
+		["X", "Çünkü henüz işiniz bitmemişti."],
+		["Shilda", "Noroi... beni duyuyor musun?"]]
+	var at := 0
+	var missing: Array = []
+	var shilda_tag := "Shilda" if root.get_node("GameState").is_shilda_named() else "???"
+	for e in expected:
+		var found := false
+		while at < shown.size():
+			var s: Array = shown[at]
+			at += 1
+			var sp := shilda_tag if String(e[0]) == "Shilda" else String(e[0])
+			if String(s[1]) == String(e[1]) and String(s[0]) == sp:
+				found = true
+				break
+		if not found:
+			missing.append(e)
+			at = 0
+	check(missing.is_empty(), "displayed final lines match script in order", missing)
+	check(shown.size() >= expected.size(), "line count", shown.size())
 
 
 func _run() -> void:
@@ -55,9 +89,11 @@ func _run() -> void:
 	await process_frame
 	await create_timer(0.3).timeout
 	check(not FS.call("final_seen"), "final_seen false before first run")
+	dm.line_shown.connect(func(sp: String, tx: String) -> void: shown.append([sp, tx]))
 	await em.trigger(em.Ending.PART_ONE, true)
 	var r: Dictionary = FS.get("last_run")
 	check(r.get("flag_order", []) == ["final_seal_broken", "x_revealed", "game_completed"], "flag order", r.get("flag_order"))
+	_check_lines_in_order()
 	check(bool(r.get("human", false)), "Shilda human form shown")
 	check(bool(r.get("x_seen", false)), "X appeared")
 	check(int(r.get("domains", 0)) == 4, "4 domain screens", r.get("domains"))
@@ -70,5 +106,20 @@ func _run() -> void:
 	check(not gs.has_story_flag(&"final_seen"), "final_seen not a story flag")
 	check(em.current == em.Ending.NONE and em.last_ending == em.Ending.PART_ONE, "ending state reset, last kept")
 	check(gate.current_layer() != gate.Layer.CUTSCENE and not gate.blocks_movement(), "input released after final")
+	# Tamamlanmis kayitta kristal sessiz: final tekrar oynamaz
+	rm.enter_room(&"core", &"default", false)
+	await process_frame
+	await create_timer(0.3).timeout
+	dm.clear()
+	var crystal: Node = get_first_node_in_group("core_crystal")
+	var seen_before: int = (gs.player_progress_knowledge["endings_seen"] as Array).size()
+	var n_before := shown.size()
+	crystal.on_interact(null)
+	await create_timer(0.3).timeout
+	check(em.current == em.Ending.NONE, "crystal inert after game_completed (no ending)")
+	check(shown.size() > n_before and String(shown[n_before][1]).begins_with("Kristal sustu"),
+		"crystal shows short inert line", shown.slice(n_before))
+	check((gs.player_progress_knowledge["endings_seen"] as Array).size() == seen_before,
+		"no replay: endings_seen unchanged")
 	print("FINAL DONE failures=", failures)
 	quit(1 if failures > 0 else 0)

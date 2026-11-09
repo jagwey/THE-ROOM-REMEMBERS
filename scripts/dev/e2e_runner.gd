@@ -253,10 +253,9 @@ func _run_tier_1_feature_coverage() -> void:
 	var distinct_gate_flags: bool = gate_code.contains("TITLE") and gate_code.contains("PAUSE_MENU") and gate_code.contains("JOURNAL")
 	record_check(1, 12, "UiGate layer flags", distinct_gate_flags, "TITLE, PAUSE_MENU, JOURNAL flags separated", false, "M2")
 
-	# F13: EndingUI double touch skip (M2)
-	var ending_ui_code: String = _read_file_text("res://scripts/ui/ending_ui.gd")
-	var touch_filter_present: bool = ending_ui_code.contains("DEVICE_ID_EMULATION") or ending_ui_code.contains("is_echo")
-	record_check(1, 13, "EndingUI double touch skip", touch_filter_present, "touch / mouse emulation filtered", false, "M2")
+	# F13: tek final (v3) — eski EndingUI epilog ekranı kaldırıldı, FinalSequence var
+	var legacy_ending_gone: bool = not FileAccess.file_exists("res://scripts/ui/ending_ui.gd") and not FileAccess.file_exists("res://scenes/ui/ending.tscn")
+	record_check(1, 13, "Legacy EndingUI removed", legacy_ending_gone and FileAccess.file_exists("res://scripts/story/final_sequence.gd"), "single final via FinalSequence", false, "M2")
 
 	# F14: Save creation & state persistence (M2)
 	var save_code: String = _read_file_text("res://scripts/autoload/save_manager.gd")
