@@ -156,6 +156,30 @@ func _run() -> void:
 		ldoor.on_interact(player)
 		await _wait_transition(ldoor)
 		check(rm.get_active_room_id() == &"decay_vines", "unlocked door travels (%s)" % rm.get_active_room_id())
+	## 4) Gözlem Balkonu: mahzen tarafından girilince ruh mührü oyuncuyu hapsetmemeli.
+	gate.set_story(false)
+	check(not pm.is_solved(&"soul_seal_balcony"), "balcony soul seal starts closed")
+	rm.enter_room(&"awakening_balcony", &"from_awakening_crypt")
+	await create_timer(0.4).timeout
+	dm.clear()
+	gate.set_story(false)
+	var start_x := player.global_position.x
+	for i in 3:
+		await process_frame
+		await process_frame
+		Input.action_press(&"ui_left")
+		await create_timer(0.7).timeout
+		Input.action_release(&"ui_left")
+		dm.clear()
+		gate.set_story(false)
+	check(pm.is_solved(&"soul_seal_balcony"), "seal opens when approached from crypt side")
+	await process_frame
+	await process_frame
+	Input.action_press(&"ui_left")
+	await create_timer(1.5).timeout
+	Input.action_release(&"ui_left")
+	dm.clear()
+	check(player.global_position.x < 780.0, "player walks past the seal from crypt side (%.0f → %.0f)" % [start_x, player.global_position.x])
 	print("DOOR_AUDIT failures=", failures)
 	sm.delete_all_save_files()
 	quit(1 if failures else 0)

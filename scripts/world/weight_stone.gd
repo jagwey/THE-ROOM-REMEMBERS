@@ -55,7 +55,7 @@ func get_weight() -> int:
 
 
 func get_interact_label() -> String:
-	return "Taş"
+	return "Kefaret Taşı"
 
 
 ## Etkileş: taşı baktığın yöne bir adım it.

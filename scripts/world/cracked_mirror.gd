@@ -112,7 +112,7 @@ func on_interact(by: Node) -> void:
 func _open_travel_modal(destinations: Array) -> void:
 	if _panel == null:
 		_panel = GothicModalPanel.new()
-		_panel.setup("Çatlak Ayna — Hızlı Seyahat", Vector2(360, 220))
+		_panel.setup("Çatlak Bellek Aynası — Hızlı Seyahat", Vector2(360, 220))
 		add_child(_panel)
 		# UiGate kilidi görünürlüğe bağlı: düğme, Esc veya başka yoldan kapanınca bırakılır.
 		_panel.visibility_changed.connect(func(): UiGate.set_story(_panel.visible))

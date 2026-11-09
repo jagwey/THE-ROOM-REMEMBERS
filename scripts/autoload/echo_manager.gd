@@ -35,7 +35,7 @@ var _catalog: Dictionary = {
 		"journal": {
 			"section": "izler",
 			"title": "Yarığın sayısı",
-			"body": "Rüyada gördüm: 3 — 1 — 4. Karakter bilmiyor. Ben biliyorum.",
+			"body": "Rüyamda gördüm: 3 — 1 — 4. Aklım bilmiyor; ellerim biliyor.",
 			"kind": "evidence",
 		},
 		"memory_code": "314",

@@ -40,7 +40,7 @@ func _ready() -> void:
 		"journal": {
 			"section": "izler",
 			"title": "Tanık: Mühür",
-			"body": "Koruma mührü olaydan sonra etkinleşmiş.",
+			"body": "Koruma mührü olaydan sonra devreye girmiş.",
 			"kind": "evidence",
 		},
 		"memory_code": "",

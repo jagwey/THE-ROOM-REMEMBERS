@@ -36,7 +36,7 @@ title = "Gölge Atılması"
 texture_path = "res://assets/props/halo.png"
 tint = Color(0.6, 0.45, 0.9, 1)
 lines = PackedStringArray("Noroi|Sunakta bir gölge. Benim gölgem… ama benden önce hareket ediyor.", "Noroi|İçime çekiyorum. Bedenim hafifliyor.")
-tutorial = "X / Atıl: Gölge Atılması. Atılırken lanetli bariyerlerin ve Shilda'nın saldırılarının içinden hasar almadan geçersin."
+tutorial = "X / Atıl: Gölge Atılması. Atılırken lanetli bariyerlerden ve Shilda'nın saldırılarından hasar almadan geçersin."
 
 [node name="Barrier" type="StaticBody2D" parent="Interactive"]
 position = Vector2(560.0, 288.0)

@@ -30,7 +30,7 @@ func on_interact(_by: Node) -> void:
 		_add_evidence(
 			"ev_awakening_watch",
 			"Durmuş cep saati",
-			"Vitrindeki cam çatlak; mekanizma ilerlemiyor. Zaman burada dile gelmiyor.",
+			"Vitrindeki cam çatlak; mekanizma ilerlemiyor. Zaman burada işlemiyor.",
 			"evidence",
 			"notlar",
 		)

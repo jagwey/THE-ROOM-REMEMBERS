@@ -3,7 +3,7 @@ extends RefCounted
 ## HUD hedef metinleri — `GameState.get_current_objective()` ve oda kimliğiyle eşleşir.
 
 const _BY_ROOM: Dictionary = {
-	"awakening": "Saati incele, Shilda ile konuş; sağdaki geçidi bul.",
+	"awakening": "Saati incele, gölgeyle konuş; sağdaki geçidi bul.",
 	"awakening_passage": "Kırmızı yarıklardan sakın; yankıdaki kodu alıp sağa ilerle.",
 	"awakening_seal": "Plaka canlıyı tutmaz. Kan kristali… bedenin plakada kalsın; yankıdaki kodu mühre gir.",
 	"decay_vines": "Sarmaşık kolunu bul ve kısayolu aç.",

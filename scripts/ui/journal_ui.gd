@@ -210,7 +210,7 @@ func _highlight_tabs() -> void:
 func _append_world_traces(notes: Array) -> void:
 	var flags: Dictionary = GameState.world_memory_state.get("flags", {})
 	if bool(flags.get("awakening_trap_sprung", false)):
-		notes.append({"title": "Yarık", "body": "Zemin yalan söyledi. Dünya bunu hatırlıyor."})
+		notes.append({"title": "Yarık", "body": "Zemin yalan söyledi. Oda bunu hatırlıyor."})
 	if bool(flags.get("awakening_door_opened", false)):
 		notes.append({"title": "Ağırlık", "body": "Bir beden plakaya yetti. Yol açıldı."})
 	if bool(flags.get("awakening_crystal_cracked", false)):

@@ -38,7 +38,7 @@ npc_id = &"echo_regret"
 idle_anim = "echo_idle"
 walk_anim = "echo_walk"
 ghostly = true
-dialogue_sets = PackedStringArray("Yansıma|Ben otuzuncu sendim. Kapıyı kilitlediğimiz geceyi hatırlıyorum.;;Yansıma|İçeride kalanların bağırışlarını… sen hatırlamıyorsun. Şanslısın.", "Yansıma|Onun sesini kurtardık mı? Hayır. Çekirdek onu da yuttu.;;Yansıma|Geriye bir tek Shilda kaldı. O hiç unutmadı.")
+dialogue_sets = PackedStringArray("Yansıma|Ben otuzuncu sendim. Mühürlerin kapandığı günü hatırlıyorum.;;Yansıma|İçeride kalanların bağırışlarını… sen hatırlamıyorsun. Şanslısın.", "Yansıma|Çıkabildik mi? Hayır. Çekirdek bizi de yuttu.;;Yansıma|Geriye bir tek Shilda kaldı. O hiç unutmadı.")
 
 [node name="Shard" type="Area2D" parent="Interactive"]
 position = Vector2(1210, 288.0)
@@ -48,5 +48,5 @@ texture_path = "res://assets/layers/mirror_shards.png"
 sprite_scale = 0.35
 lines = PackedStringArray("Noroi|Kırık aynada kendi yüzüm… yaşlı. Gerçek yaşım bu mu?")
 evidence_title = "Gerçek Yüz"
-evidence_body = "Aynanın ardındaki yüzüm yaşlıydı. Yatak beni gençleştiriyor; zaman ise durmuyor."
+evidence_body = "Aynanın ardındaki yüzüm yaşlıydı. Bu yerde zaman benim bildiğim gibi akmıyor."
 evidence_section = "izler"

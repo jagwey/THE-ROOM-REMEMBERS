@@ -28,7 +28,7 @@ const LABEL_BY_SCRIPT := {
 	"blood_thorn.gd": "Kan Dikeni", "core_crystal.gd": "Çekirdek Kristali", "core_portal.gd": "Geçit",
 	"mirror_relay.gd": "Ayna", "reset_lever.gd": "Kol",
 	"vine_puzzle_lever.gd": "Kol", "vine_interact.gd": "Sarmaşık", "archive_door.gd": "Arşiv Kapısı",
-	"story_beat.gd": "Hatıra", "keeper_controller.gd": "Shilda", "cracked_mirror.gd": "Çatlak Ayna",
+	"story_beat.gd": "Hatıra", "keeper_controller.gd": "Shilda", "cracked_mirror.gd": "Çatlak Bellek Aynası",
 	"shilda_garden_trust.gd": "Shilda", "evidence_card.gd": "Kayıt", "ability_pickup.gd": "Sunak",
 }
 const LORE_LABEL_BY_TEXTURE := {

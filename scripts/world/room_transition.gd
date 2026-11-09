@@ -296,7 +296,7 @@ func on_interact(by: Node) -> void:
 	if target_room_id == &"core" and not EndingManager.has_both_shards():
 		if not bool(GameState.character_current_life_knowledge.get("warned_core_shards", false)):
 			GameState.character_current_life_knowledge["warned_core_shards"] = true
-			DialogueManager.say("Shilda", "Çekirdek açılacak… ama mühür parçaların eksik. İçeri girersen geri dönmen gerekecek.")
+			DialogueManager.say("Shilda", "Çekirdek açılacak… ama mühür parçaların eksik. Eksik girersen geri dönmek zorunda kalırsın.")
 			return
 	_travel(by)
 

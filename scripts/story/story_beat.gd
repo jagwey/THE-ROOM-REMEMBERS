@@ -94,7 +94,7 @@ func _library_hall() -> void:
 
 	DialogueManager.say("Arşivci", "Yine geldin, Noroi. Bu sefer hangi rafa bakacaksın?")
 
-	DialogueManager.say("Arşivci", "Bir kayıtta kurtarıcısın, ötekinde kapıyı kilitleyen. İmza kazınmış.")
+	DialogueManager.say("Arşivci", "Kayıtlar çelişiyor: biri kurtarıcı diyor, biri kapıyı kilitleyen. İmza kazınmış.")
 
 	DialogueManager.say("Noroi", "Hangisi doğru?")
 
@@ -108,7 +108,7 @@ func _library_hall() -> void:
 
 		return
 
-	_evidence("ev_catalog_conflict", "Çelişen kayıtlar", "İki tanıklık aynı anı farklı anlatıyor.", "open_question", "notlar")
+	_evidence("ev_catalog_conflict", "Kazınmış imzalar", "Yüzlerce kişi bu yere girmiş. Hepsinin kaydında imza kazınmış. Benimki en sonda: 1995.", "open_question", "notlar")
 
 	PuzzleManager.mark_solved(&"library_catalog")
 
@@ -177,7 +177,7 @@ func _experiment_cells() -> void:
 
 	PuzzleManager.mark_solved(&"experiment_cells_seen")
 
-	_evidence("ev_cells_demo", "Gözlem hücreleri", "Düzenek güvenli örnekle gösterildi.", "evidence", "notlar")
+	_evidence("ev_cells_demo", "Hatıra bağı", "İçimdeki lanet bir deneyden doğmuş. Bir patlamadan sonra bozulmuş ve gelen herkese tutunmuş.", "evidence", "notlar")
 
 	SaveManager.save_game()
 
@@ -210,9 +210,9 @@ func _experiment_authority() -> void:
 	DialogueManager.say("Shilda", "Çok fazla insan.")
 	DialogueManager.say("Noroi", "Hepsini tanıyor muydun?")
 	DialogueManager.say("Shilda", "Bazılarını tanıyacak kadar zamanım oldu.")
-	DialogueManager.say("Shilda", "Seni unutturmam gerekiyordu. Ben hatırlamayı seçtim.")
+	DialogueManager.say("Shilda", "Seni unutturmak istediler. Ben hatırlamayı seçtim.")
 	DialogueManager.say("Shilda", "Altmış sekiz yıl oldu. Kapı 1927'den beri kilitli. Sen 1995'te geldin.")
-	DialogueManager.say("Noroi", "Bu kez kendimden kaçmayacağım. Aynalar salonuna gidelim.")
+	DialogueManager.say("Noroi", "Bu kez kaçmayacağım. Aynalar salonuna gidelim.")
 
 	var ok: bool = await DialogueManager.dialogue_finished
 
@@ -256,11 +256,11 @@ func _mirrors_unbroken() -> void:
 	DialogueManager.say("Shilda", "…")
 	DialogueManager.say("Shilda", "Çünkü birinin onları hatırlaması gerekiyor.")
 
-	DialogueManager.say("Noroi", "Beni korumuyordun. Kararımı koruyordun.")
+	DialogueManager.say("Noroi", "Beni korumuyordun. Bir sırrı koruyordun.")
 
 	DialogueManager.say("Shilda", "İkisini ayırmayı unuttum.")
 
-	DialogueManager.say("Noroi", "Döngüyü sürdürmemi de seni affetmemi de isteyemezsin.")
+	DialogueManager.say("Noroi", "Döngüyü sürdürmemi de susmanı kabul etmemi de isteyemezsin.")
 	DialogueManager.say("Noroi", "Ama gerçeği saklamadan yanımda durabilirsin.")
 	DialogueManager.say("Shilda", "Çekirdekte son mühür var. Onu birlikte açacağız.")
 	DialogueManager.say("Noroi", "Artık gerçeği biliyorum. Sağdaki geçidi açıyorum.")
@@ -300,7 +300,7 @@ func _core_threshold() -> void:
 
 func _core_seal_chamber() -> void:
 
-	DialogueManager.say("Noroi", "Deney başladı. Kapı kapandı. Koruma mührü devreye girdi.")
+	DialogueManager.say("Kayıt", "Deney başladı. Kapı kapandı. Koruma mührü devreye girdi.")
 	DialogueManager.say("Noroi", "Silinen hafızalar burada kaldı. Hiçbiri kayıp değil artık.")
 
 	DialogueManager.say("Shilda", "Mührün bağları çekirdeğin başında. Ruh Kesiği onları kesebilir.")

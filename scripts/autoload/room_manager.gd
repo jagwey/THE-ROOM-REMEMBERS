@@ -25,7 +25,7 @@ const ROOM_TITLES_TR := {
 	"library_hall": "Hafıza Kütüphanesi", "library_witness": "Üç Tanık", "library_page": "Unutulmuş Sayfa",
 	"library_upper_stacks": "Üst Raflar", "library_forbidden_wing": "Yasak Kanat",
 	"experiment_cells": "Gözlem Hücreleri", "experiment_circuit": "Yankı Devresi", "experiment_authority": "Yetki Masası",
-	"experiment_quarantine": "Karantina", "experiment_core_conduit": "Enerji Kanalı",
+	"experiment_quarantine": "Kara Tecrit Mahzeni", "experiment_core_conduit": "Ruh Damarları Kanalı",
 	"mirrors_reverse": "Ayna Geçidi", "mirrors_dual": "İki Yankı", "mirrors_unbroken": "Kırılmayan Ayna",
 	"mirrors_labyrinth": "Yansıma Labirenti", "mirrors_shrine": "Ayna Tapınağı",
 	"core_threshold": "Son Eşik", "core_seal_chamber": "Mühür Odası", "core_memory_vault": "Hafıza Kasası",

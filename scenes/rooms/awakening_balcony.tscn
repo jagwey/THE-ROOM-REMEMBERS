@@ -17,7 +17,7 @@ region_id = &"awakening"
 room_width = 960.0
 bg_region = "awakening"
 checkpoint = Vector2(120, 288)
-doors = [{"x": 40.0, "to": "awakening", "spawn": "from_awakening_balcony"}, {"x": 920.0, "to": "awakening_crypt", "spawn": "from_awakening_balcony", "req": "soul_seal_balcony", "msg": "Mor bir mühür kapıyı tutuyor. Kılıç değil… ruh gerek."}]
+doors = [{"x": 40.0, "to": "awakening", "spawn": "from_awakening_balcony"}, {"x": 920.0, "to": "awakening_crypt", "spawn": "from_awakening_balcony", "req": "soul_seal_balcony", "msg": "Mor bir mühür kapıyı tutuyor. Buna kılıç değil, ruh gerek."}]
 platforms = PackedVector3Array(380.0, 248.0, 110.0, 410.0, 208.0, 120.0)
 
 [node name="Spawns" type="Node2D" parent="."]

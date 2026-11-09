@@ -51,4 +51,4 @@ position = Vector2(1200.0, 288.0)
 script = ExtResource("lore")
 lore_id = &"quarantine_photo"
 texture_path = "res://assets/props/photograph.png"
-lines = PackedStringArray("Noroi|Bir fotoğraf: Shilda, önlüklü, elinde bir çiçek. Yanında ben. Gülüyoruz.")
+lines = PackedStringArray("Noroi|Bir fotoğraf: önlüklü genç bir kadın, elinde bir çiçek. Arkasında silik bir harf: S.")

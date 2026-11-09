@@ -145,9 +145,9 @@ func _success_flow() -> void:
 	visible = false
 	UiGate.set_story(false)
 	DialogueManager.say("Noroi", "Kaydı sen mi sildin?")
-	DialogueManager.say("Shilda", "Hayır. Silmemi sen istedin.")
+	DialogueManager.say("Shilda", "Hayır. Sayfayı kazıyan ben değilim. Ben bir kopyasını sakladım.")
 	DialogueManager.say("Noroi", "O zaman neden sakladın?")
-	DialogueManager.say("Shilda", "Bir gün bunu yeniden sorarsın diye. Deneyin yetki kaydı sağdaki kapının ardında.")
+	DialogueManager.say("Shilda", "Biri gelip bunu soracak diye. Deneyin yetki kaydı sağdaki kapının ardında.")
 	var heard: bool = await DialogueManager.dialogue_finished
 	if heard:
 		PuzzleManager.mark_solved(&"library_page_order")
@@ -168,16 +168,16 @@ func _evidence_own_seal() -> void:
 		"id": eid,
 		"discovered": true,
 		"kind": "inference",
-		"title": "Kendi mührüm",
-		"body": "Kaydı silmemi istemişim. Shilda saklamış.",
+		"title": "Silinmiş sayfa",
+		"body": "Sayfayı biri kazımış. Shilda bir kopyasını saklamış.",
 		"section": "gunluk",
 	}
 	var notes: Array = GameState.player_progress_knowledge.get("journal_notes", [])
 	notes.append({
 		"evidence_id": eid,
 		"section": "gunluk",
-		"title": "Kendi mührüm",
-		"body": "Kaydı silmemi istemişim. Shilda saklamış.",
+		"title": "Silinmiş sayfa",
+		"body": "Sayfayı biri kazımış. Shilda bir kopyasını saklamış.",
 		"kind": "inference",
 	})
 	GameState.player_progress_knowledge["journal_notes"] = notes
