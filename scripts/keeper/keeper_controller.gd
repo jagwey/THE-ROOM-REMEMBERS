@@ -20,7 +20,9 @@ var _busy: bool = false
 var _block_enabled: bool = false
 var _approach_target: Vector2 = Vector2.ZERO
 var _intervening: bool = false
-var _mystery_done: bool = false
+var _shadow_beat_running: bool = false
+## Geç bölgelere gelindiğinde ad hâlâ söylenmediyse sessizce bilinir (konuşma atlandıysa takılma yok).
+const NAME_FALLBACK_PREFIXES := ["experiment", "mirrors", "core"]
 var _warn_counts: Dictionary = {}
 var _strikes: int = 0
 const STRIKES_TO_BAD := 3
@@ -94,13 +96,14 @@ func _ready() -> void:
 		GameState.room_changed.connect(_on_room_changed)
 	DeathManager.death_started.connect(_on_player_death_started)
 	DeathManager.rebirth_completed.connect(_on_player_reborn)
-	# Gizem beat: uzak silüet ile başla.
-	GameState.set_shilda_named(true) # açılıştan itibaren adı belli (eski kayıtlar dahil)
+	## Açılışta Shilda odada değil; ad söylenene dek kimliği "???" (GameState.keeper_speaker_name).
 	global_position = silhouette_position
 	modulate = Color(0.15, 0.12, 0.18, 0.85)
 	sprite.play("observe")
 	set_mode(Mode.OBSERVE)
-	call_deferred("_run_mystery_beat")
+	presence = "hidden"
+	visible = false
+	collision_layer = 0
 
 
 func _on_room_changed(room_id: StringName) -> void:
@@ -116,6 +119,14 @@ func place_for_room(room_id: StringName) -> void:
 		return
 	var rid := String(room_id)
 	var def: Dictionary = ROOM_PRESENCE.get(rid, {"mode": "hidden", "pos": Vector2(480, 280)})
+	## Uyanış odasında ilk ölümden önce Shilda yok.
+	if rid == "awakening" and not GameState.has_story_flag(&"first_death_completed"):
+		def = {"mode": "hidden", "pos": def["pos"]}
+	if not GameState.is_shilda_named():
+		for pre in NAME_FALLBACK_PREFIXES:
+			if rid.begins_with(pre):
+				GameState.set_shilda_named(true)
+				break
 	var pos: Vector2 = def["pos"]
 	var marker := _room_marker(room_id)
 	if marker:
@@ -124,8 +135,8 @@ func place_for_room(room_id: StringName) -> void:
 		end_encounter(false)
 	presence = String(def["mode"])
 	home_position = pos
-	if _busy and rid == "awakening" and not _mystery_done:
-		return ## gizem beat'i konumu kendisi yönetiyor
+	if _shadow_beat_running:
+		return ## siluet beat'i konumu kendisi yönetiyor
 	_busy = false
 	_intervening = false
 	_set_blocker(false)
@@ -137,8 +148,7 @@ func place_for_room(room_id: StringName) -> void:
 			visible = true
 			z_index = 0
 			collision_layer = _saved_layer
-			if _mystery_done or rid != "awakening":
-				modulate = Color(0.45, 0.4, 0.48, 0.75) if bool(GameState.player_progress_knowledge.get("keeper_withdrew", false)) else Color.WHITE
+			modulate = Color(0.45, 0.4, 0.48, 0.75) if bool(GameState.player_progress_knowledge.get("keeper_withdrew", false)) else Color.WHITE
 			_apply_bandage()
 			call_deferred("_maybe_bandage_line")
 		"silhouette":
@@ -149,6 +159,38 @@ func place_for_room(room_id: StringName) -> void:
 		_:
 			visible = false
 			collision_layer = 0
+	if rid == "awakening_passage" and not GameState.has_story_flag(&"first_shadow_seen"):
+		call_deferred("_run_shadow_beat")
+
+
+## İlk siluet beat'i (Kırık Geçit): oyuncu yaklaşınca "???" uyarır. Kilitlemez; diyalog kendiliğinden ilerler.
+func _run_shadow_beat() -> void:
+	if _shadow_beat_running or GameState.has_story_flag(&"first_shadow_seen") or is_defeated():
+		return
+	_shadow_beat_running = true
+	while _in_passage():
+		_player = get_tree().get_first_node_in_group("player") as Node2D
+		if is_instance_valid(_player) and not DialogueManager.is_open and not UiGate.blocks_movement() \
+				and not DeathManager.is_dying \
+				and absf(_player.global_position.x - global_position.x) < 560.0:
+			break
+		await get_tree().process_frame
+	if not _in_passage():
+		_shadow_beat_running = false
+		return
+	visible = true
+	GameState.set_story_flag(&"first_shadow_seen")
+	DialogueManager.whisper("???", "Dur.")
+	DialogueManager.say("Noroi", "Kim var orada?")
+	DialogueManager.whisper("???", "Oraya yaklaşma.")
+	await _await_dialogue_or_smoke()
+	GameState.set_story_flag(&"first_warning_heard")
+	SaveManager.save_game()
+	_shadow_beat_running = false
+
+
+func _in_passage() -> bool:
+	return RoomManager.get_active_room_id() == &"awakening_passage"
 
 
 func _room_marker(room_id: StringName) -> Marker2D:
@@ -425,46 +467,6 @@ func mourn_corpse(death_pos: Vector2, corpse_id: String) -> void:
 	place_for_room(RoomManager.get_active_room_id())
 
 
-func _run_mystery_beat() -> void:
-	if _mystery_done:
-		return
-	if bool(GameState.player_progress_knowledge.get("awakening_mystery_seen", false)):
-		# Meta: bir kez görüldüyse sessizce eve yerleş.
-		modulate = Color.WHITE
-		global_position = home_position
-		_mystery_done = true
-		return
-	_busy = true
-	var menu := get_tree().get_first_node_in_group("session_menu")
-	if menu and menu.has_method("is_title_open") and menu.is_title_open():
-		await menu.title_closed
-	elif UiGate.blocks_movement():
-		while UiGate.blocks_movement():
-			await get_tree().process_frame
-	await get_tree().create_timer(0.85).timeout
-	# Oda girişi diyaloğu bitsin.
-	if DialogueManager.is_open:
-		await DialogueManager.dialogue_finished
-	# Kısa beliriş (silüetten görünür forma)
-	var tw := create_tween()
-	tw.tween_property(self, "modulate", Color.WHITE, 0.55)
-	await tw.finished
-	GameState.set_shilda_named(true)
-	DialogueManager.whisper("Shilda", "Ben Shilda. Oraya gitme.")
-	DialogueManager.whisper("Shilda", "Yaklaşma.")
-	await DialogueManager.dialogue_finished
-	await get_tree().create_timer(0.25).timeout
-	# Gözlem konumuna çekil
-	var tw2 := create_tween()
-	tw2.tween_property(self, "global_position", home_position, 0.7)
-	await tw2.finished
-	GameState.player_progress_knowledge["awakening_mystery_seen"] = true
-	GameState.player_progress_knowledge["seen_keeper"] = true
-	_mystery_done = true
-	set_mode(Mode.OBSERVE)
-	_busy = false
-
-
 func _set_blocker(enabled: bool) -> void:
 	_block_enabled = enabled
 	if blocker_shape:
@@ -483,9 +485,9 @@ func can_interact() -> bool:
 	return mode != Mode.COMBAT
 
 
-## Etkileşim etiketi: Shilda her zaman adıyla ("???" yok).
+## Etkileşim etiketi: ad söylenene dek "???", sonra "Shilda".
 func get_interact_label() -> String:
-	return "Shilda"
+	return GameState.keeper_speaker_name()
 
 
 func on_interact(_by: Node) -> void:
@@ -496,24 +498,15 @@ func on_interact(_by: Node) -> void:
 	if _busy or DialogueManager.is_open:
 		DialogueManager.advance()
 		return
+	## İlk gerçek konuşma = isim sahnesi. Ad söylenene dek ilk etkileşim bunu tetikler.
+	if not GameState.is_shilda_named():
+		await _run_naming_scene()
+		return
 	var active_room := String(RoomManager.get_active_room_id())
 	if active_room == "awakening":
-		if not bool(GameState.player_progress_knowledge.get("shilda_talk_done", false)):
-			# Ad açılışta zaten söylendi; bu konuşma tanışmanın devamı.
-			DialogueManager.say("Shilda", "Noroi… yine mi?")
-			DialogueManager.say("Noroi", "Beni ismimle çağırdın. Bu oda beni tanıyor mu?")
-			DialogueManager.say("Shilda", "Bu oda seni tanıyor. Ben sadece hatırlatıyorum.")
-			await _await_dialogue_or_smoke()
-			GameState.player_progress_knowledge["shilda_talk_done"] = true
-			GameState.player_progress_knowledge["awakening_mystery_seen"] = true
-			GameState.player_progress_knowledge["seen_keeper"] = true
-			GameState.knowledge_changed.emit(&"player")
-			SaveManager.save_game()
-			return
-		else:
-			DialogueManager.say("Shilda", "İlk uyandığını sanıyorsun. Devam et.")
-			await _await_dialogue_or_smoke()
-			return
+		DialogueManager.say("Shilda", "İlk uyandığını sanıyorsun. Devam et.")
+		await _await_dialogue_or_smoke()
+		return
 	# İyi yol: hazırlık varsa güven teklifi
 	var st: Dictionary = EndingManager.prep_status()
 	if st["weight"] and st["code"] and st["echo"] and not st["trusted"]:
@@ -540,6 +533,32 @@ func on_interact(_by: Node) -> void:
 		_:
 			DialogueManager.say(GameState.keeper_speaker_name(), "…Seni izliyorum.")
 			DialogueManager.say(GameState.keeper_speaker_name(), "Henüz hatırlama.")
+
+
+## Isim sahnesi: "???" konusur; "Ben Noroi." satirindan itibaren ad bilinir, kart "Shilda" olur.
+func _run_naming_scene() -> void:
+	_busy = true
+	DialogueManager.say("Noroi", "Beni ne zamandır izliyorsun?")
+	DialogueManager.say("???", "Buraya geldiğinden beri.")
+	DialogueManager.say("Noroi", "Peki neden?")
+	DialogueManager.say("???", "Daha önce de birilerinin geldiğini gördüm.")
+	DialogueManager.say("Noroi", "Onlara ne oldu?")
+	DialogueManager.say("???", "Hiçbiri çıkamadı.")
+	DialogueManager.say("Noroi", "Bir adın var mı?")
+	DialogueManager.say("???", "Shilda.")
+	DialogueManager.say_with("Noroi", "Ben Noroi.", func(): GameState.set_shilda_named(true))
+	DialogueManager.say("Shilda", "Biliyorum.")
+	DialogueManager.say("Noroi", "Nereden?")
+	DialogueManager.say("Shilda", "Bunu sonra konuşalım.")
+	await _await_dialogue_or_smoke()
+	## Konuşma yarıda kapansa bile ad artık bilinir; takılma yok.
+	GameState.set_shilda_named(true)
+	GameState.player_progress_knowledge["shilda_talk_done"] = true
+	GameState.player_progress_knowledge["seen_keeper"] = true
+	GameState.player_progress_knowledge["awakening_mystery_seen"] = true
+	GameState.knowledge_changed.emit(&"player")
+	SaveManager.save_game()
+	_busy = false
 
 
 func receive_player_strike() -> void:

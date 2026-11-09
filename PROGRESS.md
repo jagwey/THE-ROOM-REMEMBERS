@@ -182,3 +182,9 @@ Dal: cursor/playable-story-flow-8e4e · Sürüm: v1.2.0 (versionCode 16)
 - Ruh Kesişi yokken onu isteyen metinler kapalı: campaign_objectives / room_transition / soul_seal yeteneğe göre metin seçer; kalkanlı gölge TURN_DELAY 0.7 → yetenek olmadan arkadan vurulabiliyor; blood_thorn `body_line/solved_line`.
 - QA: 17 headless audit rc=0 / 0 script error, e2e 50/50, release 110/0; pencereli 1920x1080 taşıma çekimi (masaüstü + dokunmatik) gözle kontrol edildi.
 - [x] Yayın v1.4.6 (versionCode 24, commit f2fcccc, dal claude/v1.4.1 push edildi): public `THE-ROOM-REMEMBERS-release` + private. APK Godot export-debug (scratchpad build46), sertifika SHA-256 16fd69… aynı. e2e versiyon kontrolü 1.4.6/24; README/PLAY_TR v1.4.6.
+
+## v3 hikaye Task 7 — Shilda "???" -> isim sahnesi (2026-11-09)
+- [x] Zorla `set_shilda_named(true)` kalktı (main.gd, keeper). Ad tek kaynak: `shilda_name_known` bayrağı (`is_shilda_named()` buna delege; eski anahtarlar göç eder). Ad bilinene dek tüm Shilda/??? satırları `???` kartı + siyah silüet portre (`shilda_unknown`); isimlik görseli "???" için kapalı.
+- [x] Açılış: göz açılır, Noroi "Burası neresi?" -> `intro_completed`. Cep saati: "Saat durmuş. Ama içeriden hâlâ ses geliyor." Shilda uyanış odasında yalnız `first_death_completed` sonrası.
+- [x] Kırık Geçit silüet beat'i (`first_shadow_seen`/`first_warning_heard`), ilk beden "Bu... benim kıyafetim." / "Bunu kim bıraktı?", isim sahnesi (Shilda ile ilk etkileşim; "Ben Noroi." satırında ad açılır). Ad hâlâ yoksa experiment_/mirrors_/core odalarında sessizce bilinir. Hedef "Gölgeyle konuş" yalnız ilk ölümden sonra.
+- Testler (TORIMON_TEST=1): ui_header_portrait 45/0, start_flow 31/0, interact 23/0, e2e 50/50, death_loop 110/0, memory_seal 100/0, release 111/0; pencereli 1920x1080 çekimler gözle kontrol edildi.

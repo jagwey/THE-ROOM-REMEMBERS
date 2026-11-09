@@ -136,10 +136,7 @@ static func shilda_is_named() -> bool:
 func _say(entry: String) -> void:
 	var parts := entry.split("|", true, 1)
 	if parts.size() == 2:
-		var who: String = parts[0]
-		if who == "???":
-			who = "Shilda"
-		DialogueManager.say(who, parts[1])
+		DialogueManager.say(parts[0], parts[1]) ## "Shilda"/"???" kartı DialogueManager çözer
 	else:
 		DialogueManager.say("Noroi", entry)
 

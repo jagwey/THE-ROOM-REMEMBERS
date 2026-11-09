@@ -239,7 +239,9 @@ func _run_tier_1_feature_coverage() -> void:
 	var keeper_code: String = _read_file_text("res://scripts/keeper/keeper_controller.gd")
 	var keeper_mourn_filtered: bool = keeper_code.contains("active_room_id") or keeper_code.contains("get_active_room_id")
 	var keeper_timing_ok: bool = keeper_code.contains("title") or keeper_code.contains("defeated")
-	record_check(1, 10, "Shilda spawn timing & corpse mourning", keeper_mourn_filtered and keeper_timing_ok, "mourn filtering=%s timing gate=%s" % [keeper_mourn_filtered, keeper_timing_ok], false, "M2")
+	## Task 7: ad zorla verilmez; kart "???" -> naming scene -> "Shilda".
+	var name_not_forced: bool = not _read_file_text("res://scripts/main.gd").contains("set_shilda_named") and keeper_code.contains("_run_naming_scene") and not keeper_code.contains("Ben Shilda.")
+	record_check(1, 10, "Shilda spawn timing & corpse mourning & naming not forced", keeper_mourn_filtered and keeper_timing_ok and name_not_forced, "mourn filtering=%s timing gate=%s name not forced=%s" % [keeper_mourn_filtered, keeper_timing_ok, name_not_forced], false, "M2")
 
 	# F11: Android renderer & audio effects (M2)
 	var proj_cfg: String = _read_file_text("res://project.godot")

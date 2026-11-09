@@ -67,7 +67,7 @@ static func _awakening_objective() -> String:
 	var steps: PackedStringArray = []
 	if not bool(k.get("pocket_watch_seen", false)):
 		steps.append("Saate bak")
-	if not GameState.is_shilda_named():
+	if GameState.has_story_flag(&"first_death_completed") and not GameState.is_shilda_named():
 		steps.append("Gölgeyle konuş")
 	if not PuzzleManager.is_solved(&"awakening_weight"):
 		steps.append("plakaya bas")

@@ -169,7 +169,7 @@ func _smooth_tex(path: String) -> Texture2D:
 
 func _skin_for(speaker: String) -> StringName:
 	var k: StringName = PortraitsLib.key_for(speaker)
-	if k == &"shilda":
+	if k == &"shilda" or k == &"shilda_unknown":
 		return &"shilda"
 	if k == &"noroi" or k == &"noroi_sad":
 		return &"noroi"
@@ -221,7 +221,8 @@ func _apply_dialogue_skin(speaker: String) -> void:
 ## Konuşmacı etiketi / isimlik / metin hizası: boş "ölü satır" kalmaz, metin alanı sabit yükseklikte.
 func _apply_dialogue_layout(speaker: String) -> void:
 	var narrator := _is_narrator(speaker)
-	var has_plate := _nameplate != null and _nameplate.texture != null and not narrator
+	## Isimlik görseli "Shilda" yazılı; ad bilinmeyen "???" için kullanılmaz (etiket "???" gösterir).
+	var has_plate := _nameplate != null and _nameplate.texture != null and not narrator and speaker != "???"
 	if _nameplate:
 		_nameplate.visible = has_plate
 	dialogue_speaker.visible = not narrator and not has_plate

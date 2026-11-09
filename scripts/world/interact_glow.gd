@@ -110,7 +110,7 @@ static func label_for(n: Node) -> String:
 		return ""
 	if n.has_method("get_interact_label"):
 		var il := String(n.get_interact_label())
-		return "Shilda" if il == "???" else il
+		return GameState.keeper_speaker_name() if il == "???" or il == "Shilda" else il
 	var f := _script_file(n)
 	if f == "lore_point.gd":
 		var tp := String(n.get("texture_path")).get_file().get_basename()

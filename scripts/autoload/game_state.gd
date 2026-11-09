@@ -207,31 +207,34 @@ func has_any_ability() -> bool:
 	return bool(player_progress_knowledge.get("ability_soul_slash", false)) 		or bool(player_progress_knowledge.get("ability_shadow_dash", false))
 
 
-## Shilda adını söyledi mi (söylemeden önce etkileşim etiketi "???").
-## TEK kaynak: player_progress_knowledge["shilda_named"]. Eski kayıtlardaki
-## shilda_named_partial / world flag "shilda_named" true ise burada göç ettirilir.
+## Shilda adını söyledi mi (söylemeden önce konuşmacı kartı "???").
+## TEK kaynak: story flag `shilda_name_known`. Eski kayıtlardaki
+## player_progress_knowledge["shilda_named"] / "shilda_named_partial" / world flag
+## "shilda_named" true ise burada bayrağa göç ettirilir.
 func is_shilda_named() -> bool:
-	if bool(player_progress_knowledge.get("shilda_named", false)):
+	if has_story_flag(&"shilda_name_known"):
 		return true
-	var legacy: bool = bool(player_progress_knowledge.get("shilda_named_partial", false))
+	var legacy: bool = bool(player_progress_knowledge.get("shilda_named", false)) 		or bool(player_progress_knowledge.get("shilda_named_partial", false))
 	var flags: Dictionary = world_memory_state.get("flags", {})
 	if legacy or bool(flags.get(&"shilda_named", flags.get("shilda_named", false))):
-		player_progress_knowledge["shilda_named"] = true
-		player_progress_knowledge.erase("shilda_named_partial")
-		flags.erase(&"shilda_named")
-		flags.erase("shilda_named")
+		_clear_legacy_shilda_named()
+		set_story_flag(&"shilda_name_known", true)
 		return true
 	return false
 
 
 func set_shilda_named(value: bool = true) -> void:
-	player_progress_knowledge["shilda_named"] = value
-	if value:
-		player_progress_knowledge.erase("shilda_named_partial")
-		var flags: Dictionary = world_memory_state.get("flags", {})
-		flags.erase(&"shilda_named")
-		flags.erase("shilda_named")
+	_clear_legacy_shilda_named()
+	set_story_flag(&"shilda_name_known", value)
 	knowledge_changed.emit(&"player")
+
+
+func _clear_legacy_shilda_named() -> void:
+	player_progress_knowledge["shilda_named"] = false
+	player_progress_knowledge.erase("shilda_named_partial")
+	var flags: Dictionary = world_memory_state.get("flags", {})
+	flags.erase(&"shilda_named")
+	flags.erase("shilda_named")
 
 
 ## Shilda'nın konuşmacı adı: isim öncesi "???", sonrası "Shilda".

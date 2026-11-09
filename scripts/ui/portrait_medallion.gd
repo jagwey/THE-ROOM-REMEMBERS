@@ -4,9 +4,11 @@ extends Control
 
 const SHADER_CODE := "shader_type canvas_item;
 uniform float vignette = 0.5;
+uniform vec3 tint = vec3(1.0);
 void fragment() {
 	vec4 c = texture(TEXTURE, UV);
 	float r = length(UV - vec2(0.5)) * 2.0;
+	c.rgb *= tint;
 	c.rgb *= 1.0 - smoothstep(0.5, 1.0, r) * vignette;
 	c.a *= 1.0 - smoothstep(0.95, 1.0, r);
 	COLOR = c;
@@ -58,6 +60,7 @@ func show_key(new_key: StringName, animate: bool) -> void:
 		visible = false
 		return
 	rect.texture = load("res://scripts/ui/dialogue_portraits.gd").texture_for(new_key)
+	(rect.material as ShaderMaterial).set_shader_parameter(&"tint", Vector3(0.05, 0.04, 0.09) if new_key == &"shilda_unknown" else Vector3.ONE)
 	visible = true
 	if not animate:
 		modulate.a = 1.0

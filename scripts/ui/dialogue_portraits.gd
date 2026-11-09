@@ -5,6 +5,8 @@ const PATHS := {
 	&"noroi": "res://assets/portraits/portrait_noroi.png",
 	&"noroi_sad": "res://assets/portraits/portrait_noroi_sad.png",
 	&"shilda": "res://assets/portraits/portrait_shilda.png",
+	## Adı bilinmeyen Shilda ("???"): aynı çizim, siluet olarak karartılır (portrait_medallion).
+	&"shilda_unknown": "res://assets/portraits/portrait_shilda.png",
 }
 ## Portre kutusu görünürken metin sütunundan düşülen genişlik (px).
 const TEXT_INSET := 78.0
@@ -13,12 +15,14 @@ static var _cache: Dictionary = {}
 
 
 ## Konuşmacı -> portre anahtarı; portresiz konuşmacı için &"".
-## "" / "Sistem" / "Kayıt" portresiz. Shilda her zaman portrait_shilda ("???" eski alias). Noroi: fısıltı veya yas bağlamında "sad".
+## "" / "Sistem" / "Kayıt" portresiz. "Shilda" portrait_shilda, "???" karartılmış siluet (shilda_unknown). Noroi: fısıltı veya yas bağlamında "sad".
 static func key_for(speaker: String, sad: bool = false) -> StringName:
 	match speaker.strip_edges():
 		"Noroi":
 			return &"noroi_sad" if sad else &"noroi"
-		"???", "Shilda": ## "???" eski alias; Shilda her zaman aynı portre
+		"???":
+			return &"shilda_unknown"
+		"Shilda":
 			return &"shilda"
 	return &""
 

@@ -46,7 +46,7 @@ func _run() -> void:
 	# Portre eşlemesi
 	check(Portraits.key_for("Noroi") == &"noroi" and Portraits.key_for("Sen") == &"", "noroi mapping; legacy Sen has no portrait")
 	check(Portraits.key_for("Noroi", true) == &"noroi_sad", "noroi sad mapping")
-	check(Portraits.key_for("???") == &"shilda" and Portraits.key_for("Bekçi") == &"", "??? legacy alias -> shilda portrait; Bekçi is no longer a speaker")
+	check(Portraits.key_for("???") == &"shilda_unknown" and Portraits.key_for("Bekçi") == &"", "??? -> silhouette portrait (shilda_unknown); Bekçi is no longer a speaker")
 	check(Portraits.key_for("") == &"" and Portraits.key_for("Sistem") == &"" and Portraits.key_for("Kayıt") == &"", "narrator/system speakers: no portrait")
 	check(Portraits.key_for("Shilda") == &"shilda", "shilda mapping")
 	check(Portraits.key_for("Arşivci") == &"" and Portraits.key_for("Kayıt") == &"" and Portraits.key_for("Çekirdek") == &"", "unknown speakers no portrait")
@@ -55,22 +55,25 @@ func _run() -> void:
 	# Fısıltı konuşmacısı
 	var dmc := root.get_node("DialogueManager")
 	check(dmc.resolve_whisper_speaker("Noroi", true, false) == "Noroi", "whisper keeps Noroi")
-	check(dmc.resolve_whisper_speaker("Shilda", true, false) == "Shilda", "Shilda whisper never masked")
-	check(dmc.resolve_whisper_speaker("???", true, true) == "Shilda" and dmc.resolve_whisper_speaker("???", false, false) == "Shilda", "legacy ??? -> Shilda")
+	check(dmc.resolve_whisper_speaker("Shilda", true, false) == "???" and dmc.resolve_whisper_speaker("Shilda", false, false) == "???", "unnamed: Shilda lines show ???")
+	check(dmc.resolve_whisper_speaker("???", true, true) == "Shilda" and dmc.resolve_whisper_speaker("Shilda", false, true) == "Shilda", "named: ??? and Shilda lines show Shilda")
+	check(dmc.resolve_whisper_speaker("???", false, false) == "???", "unnamed: ??? stays ???")
 	check(dmc.resolve_whisper_speaker("Noroi", true, true) == "Noroi", "named: Noroi whisper kept")
 	# Shilda adı: tek kaynak + göç + keeper_speaker_name
-	gs.player_progress_knowledge["shilda_named"] = false
-	gs.player_progress_knowledge.erase("shilda_named_partial")
-	check(not gs.is_shilda_named(), "unnamed flag false before start")
+	gs.set_shilda_named(false)
+	check(not gs.is_shilda_named() and not gs.has_story_flag(&"shilda_name_known"), "unnamed flag false before start")
 	gs.player_progress_knowledge["shilda_named_partial"] = true
-	check(gs.is_shilda_named() and gs.player_progress_knowledge.get("shilda_named", false) and not gs.player_progress_knowledge.has("shilda_named_partial"), "legacy partial key migrates to shilda_named")
-	gs.player_progress_knowledge["shilda_named"] = false
+	check(gs.is_shilda_named() and gs.has_story_flag(&"shilda_name_known") and not gs.player_progress_knowledge.has("shilda_named_partial") and not bool(gs.player_progress_knowledge.get("shilda_named", false)), "legacy partial key migrates to the shilda_name_known flag")
+	gs.set_shilda_named(false)
 	gs.set_world_flag(&"shilda_named", true)
-	check(gs.is_shilda_named() and not bool(gs.get_world_flag(&"shilda_named", false)), "legacy world flag migrates")
-	gs.player_progress_knowledge["shilda_named"] = false
+	check(gs.is_shilda_named() and gs.has_story_flag(&"shilda_name_known") and not bool(gs.get_world_flag(&"shilda_named", false)), "legacy world flag migrates")
+	gs.set_shilda_named(false)
 	gs.character_current_life_knowledge["room"] = &"awakening"
 	gs.player_progress_knowledge["pocket_watch_seen"] = false
-	check(("Gölgeyle konuş" in gs.get_current_objective()) and not ("Shilda" in gs.get_current_objective()), "room 1 objective hides name before reveal")
+	gs.clear_story_flags()
+	check(not ("Gölgeyle" in gs.get_current_objective()), "room 1 objective: no 'Gölgeyle konuş' before the first death (Shilda absent)")
+	gs.set_story_flag(&"first_death_completed")
+	check(("Gölgeyle konuş" in gs.get_current_objective()) and not ("Shilda" in gs.get_current_objective()), "after first death, unnamed: objective 'Gölgeyle konuş' without the name")
 	gs.set_shilda_named(true)
 	check(gs.keeper_speaker_name() == "Shilda" and not ("Gölgeyle" in gs.get_current_objective()), "named -> Shilda, objective step dropped")
 	gs.set_shilda_named(false)
@@ -85,14 +88,21 @@ func _run() -> void:
 	for _i in range(6):
 		dm2.advance()
 		await create_timer(0.05).timeout
-	check(gs.is_shilda_named() and seen_speakers.size() >= 3 and seen_speakers[0] == "Shilda" and seen_speakers[2] == "Shilda", "legacy ??? speaker resolves to Shilda, same plate throughout %s" % str(seen_speakers))
+	check(gs.is_shilda_named() and seen_speakers.size() >= 3 and seen_speakers[0] == "???" and seen_speakers[1] == "Noroi" and seen_speakers[2] == "Shilda", "card shows ??? until the naming line, then Shilda %s" % str(seen_speakers))
+	check(gs.keeper_speaker_name() == "Shilda", "after naming keeper_speaker_name is Shilda")
+	check(gs.is_shilda_named() == gs.has_story_flag(&"shilda_name_known"), "is_shilda_named and shilda_name_known are one truth")
+	var keeper_src := FileAccess.get_file_as_string("res://scripts/keeper/keeper_controller.gd")
+	var main_src2 := FileAccess.get_file_as_string("res://scripts/main.gd")
+	check(not ("set_shilda_named" in main_src2), "main.gd no longer forces the Shilda name")
+	check(keeper_src.count("set_shilda_named(true)") == 3 and not ("Ben Shilda." in keeper_src), "keeper only names via naming scene / safety / late-room fallback")
+	check("return GameState.keeper_speaker_name()" in keeper_src, "keeper interact label follows the speaker name")
 	dm2.clear()
 	gs.set_shilda_named(false)
 	# Konuşmacı sözleşmesi: tüm say/whisper ve oda lore satırları izinli kümeden
 	_speaker_contract_scan()
 	# Intro satırları portresiz
 	var main_src := FileAccess.get_file_as_string("res://scripts/main.gd")
-	var intro := main_src.substr(main_src.find("func _play_intro"), 1200)
+	var intro := main_src.substr(main_src.find("func _play_intro"), 1800)
 	var rx := RegEx.new()
 	rx.compile('say\\("([^"]*)", "(Gözlerin|Oda seni|…Yine)')
 	var intro_hits := rx.search_all(intro)
@@ -114,7 +124,7 @@ func _run() -> void:
 	quit(1 if failures else 0)
 
 
-const ALLOWED_SPEAKERS := ["", "Sistem", "Kayıt", "Shilda", "Noroi", "Arşivci", "Yansıma", "Ses", "Çekirdek", "GameState.keeper_speaker_name()"]
+const ALLOWED_SPEAKERS := ["", "???", "Sistem", "Kayıt", "Shilda", "Noroi", "Arşivci", "Yansıma", "Ses", "Çekirdek", "GameState.keeper_speaker_name()"]
 
 
 func _scan_files(dir: String, out: Array) -> void:

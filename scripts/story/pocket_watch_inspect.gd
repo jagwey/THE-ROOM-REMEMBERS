@@ -23,8 +23,7 @@ func on_interact(_by: Node) -> void:
 		return
 
 	_opening_hook()
-	DialogueManager.say("Noroi", "Camı çatlak. Akrep durmuş.")
-	DialogueManager.say("Noroi", "Saniye yok — ya hep bu an, ya hiç.")
+	DialogueManager.say("Noroi", "Saat durmuş. Ama içeriden hâlâ ses geliyor.")
 	await DialogueManager.dialogue_finished
 
 	if not bool(GameState.player_progress_knowledge.get("pocket_watch_seen", false)):

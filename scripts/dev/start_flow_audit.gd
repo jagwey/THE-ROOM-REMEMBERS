@@ -104,6 +104,13 @@ func _round(continued: bool) -> void:
 	check(not mrect.has_point(vp * 0.5), "[%s] Menü button does not cover screen center" % tag)
 	check(mrect.position.x > vp.x * 0.5 and mrect.position.y < vp.y * 0.25, "[%s] Menü button in top-right (%s)" % [tag, mrect.position])
 	check(get_first_node_in_group("player") != null, "[%s] player present" % tag)
+	if not continued:
+		var gsn := root.get_node("GameState")
+		var kp := get_first_node_in_group("keeper")
+		check(gsn.has_story_flag(&"intro_completed"), "[new] intro_completed set after the eye-open beat")
+		check(not gsn.is_shilda_named() and gsn.keeper_speaker_name() == "???", "[new] Shilda name unknown at start (card ???)")
+		check(kp == null or not kp.visible, "[new] Shilda is not in the awakening room at start")
+		check(gate.current_layer() == gate.Layer.NONE and not root.get_node("DialogueManager").is_open, "[new] player not blocked after the opening")
 
 
 ## Yeni Oyun: kayıt commit edilir ama sahne "Devam" değil taze girişle açılmalı.

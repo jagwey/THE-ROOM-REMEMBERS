@@ -133,6 +133,12 @@ func _run() -> void:
 		check(not dm.is_open, "combat Shilda opens no dialogue")
 		keeper.mode = keeper.Mode.OBSERVE
 		check(keeper.can_interact(), "calm Shilda → can talk")
+		var gsx := root.get_node("GameState")
+		gsx.set_shilda_named(false)
+		check(keeper.get_interact_label() == "???", "unnamed: Shilda interact label is ???")
+		gsx.set_shilda_named(true)
+		check(keeper.get_interact_label() == "Shilda", "named: Shilda interact label is Shilda")
+		gsx.set_shilda_named(false)
 		keeper.mode = old_mode
 	else:
 		check(false, "keeper node with can_interact found")

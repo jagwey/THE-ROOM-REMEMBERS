@@ -112,7 +112,6 @@ func _ready() -> void:
 		if SaveManager.has_save():
 			if SaveManager.load_game(false):
 				_continued = true
-	GameState.set_shilda_named(true) # Shilda baştan "Shilda" (eski kayıtlar dahil)
 	_register_rooms()
 	_add_side_doors()
 	if not _continued:
@@ -163,7 +162,13 @@ func _play_intro() -> void:
 	if not _continued:
 		DialogueManager.say("", "Gözlerin açılıyor.")
 		DialogueManager.say("", "Oda seni hatırlıyor. Sen henüz bilmiyorsun.")
-		DialogueManager.say("Noroi", "…Burası neresi?")
+		DialogueManager.say("Noroi", "Burası neresi?")
+		await DialogueManager.dialogue_finished
+		if not is_inside_tree():
+			return
+		GameState.set_story_flag(&"intro_completed")
+		GameState.player_progress_knowledge["awakening_mystery_seen"] = true
+		return
 	else:
 		DialogueManager.say("", "…Yine buradasın.")
 		DialogueManager.say("Noroi", "Bir şey unuttum. Oda unutmamış.")
