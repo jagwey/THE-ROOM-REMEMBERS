@@ -155,7 +155,13 @@ func discover_seal(room_id: StringName) -> void:
 
 
 func clear_story_flags() -> void:
+	var cleared: Array = []
+	for k in story_flags.keys():
+		if bool(story_flags[k]):
+			cleared.append(StringName(String(k)))
 	story_flags.clear()
+	for id in cleared:
+		story_flag_changed.emit(id, false)
 	knowledge_changed.emit(&"player")
 
 

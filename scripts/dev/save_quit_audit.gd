@@ -157,6 +157,41 @@ func _run() -> void:
 	check(not death.is_dying, "death loop finished (%.1fs)" % t)
 	check(not (state.character_current_life_knowledge as Dictionary).has("resume"), "death clears resume (respawn at bed)")
 	check(absf(player.global_position.x - death.REBIRTH_BED.x) < 40.0, "respawn at rebirth bed (not the quit position)")
+	## 6) Güvensiz Kaydet ve Çık (yakında düşman): oyuncu konumu değil son checkpoint kaydedilir.
+	var cp_before: Vector2 = state.get_checkpoint()
+	player.global_position = cp_before + Vector2(220, 0)
+	## Geniş boşluk: pit merkezi 400px uzakta olsa da kenara 96px içindeyse tehlikeli (gerçek genişlik).
+	var pit := Area2D.new()
+	pit.add_to_group("pit")
+	var pcs := CollisionShape2D.new()
+	var prect := RectangleShape2D.new()
+	prect.size = Vector2(700, 24)
+	pcs.shape = prect
+	pit.add_child(pcs)
+	current_scene.add_child(pit)
+	pit.global_position = Vector2(player.global_position.x + 400.0, 352.0)
+	check(player._near_pit(pit) and player._near_hazard(), "wide pit: near its edge (center 400px away) counts as near hazard")
+	pit.global_position = Vector2(player.global_position.x + 700.0, 352.0)
+	check(not player._near_pit(pit), "wide pit: >96px from edge is not near hazard")
+	pit.queue_free()
+	var foe := Node2D.new()
+	foe.add_to_group("enemy")
+	current_scene.add_child(foe)
+	foe.global_position = player.global_position + Vector2(40, 0)
+	menu = _menu()
+	check(menu._safe_quit_spot().is_empty(), "unsafe spot (enemy within 120px) -> _safe_quit_spot empty")
+	root.get_node("DialogueManager").clear()
+	var unsafe_pos := player.global_position
+	menu._save_and_exit()
+	var usaved: Variant = sm._read_save(sm.SAVE_PATH)
+	check(usaved != null and (usaved as Dictionary).get("commit_reason", "") == "save_and_quit", "unsafe Save & Quit still commits (reason save_and_quit)")
+	var ulife: Dictionary = (usaved as Dictionary).get("character_current_life_knowledge", {})
+	var ucp: Dictionary = ulife.get("checkpoint", {})
+	check(absf(float(ucp.get("x", -1.0)) - cp_before.x) < 1.0 and absf(float(ucp.get("x", -1.0)) - unsafe_pos.x) > 100.0, "unsafe Save & Quit stores last checkpoint, not player position (cp %s)" % str(ucp))
+	await process_frame
+	await process_frame
+	await create_timer(0.3).timeout
+	check(_menu().is_title_open(), "unsafe Save & Quit returns to title")
 	print("SAVEQUIT_AUDIT failures=", failures)
 	sm.delete_all_save_files()
 	quit(1 if failures else 0)

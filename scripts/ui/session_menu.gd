@@ -279,11 +279,13 @@ func _safe_quit_spot() -> Dictionary:
 		return {}
 	for e in get_tree().get_nodes_in_group("enemy"):
 		var en := e as Node2D
-		if en and is_instance_valid(en) and en.is_visible_in_tree() 				and en.global_position.distance_to(player.global_position) <= 120.0:
+		if en and is_instance_valid(en) and en.is_visible_in_tree() \
+				and en.global_position.distance_to(player.global_position) <= 120.0:
 			return {}
 	for k in get_tree().get_nodes_in_group("keeper"):
 		var kn := k as Node2D
-		if kn and is_instance_valid(kn) and kn.is_visible_in_tree() and int(kn.get("mode")) in [2, 5] 				and kn.global_position.distance_to(player.global_position) <= 320.0:
+		if kn and is_instance_valid(kn) and kn.is_visible_in_tree() and int(kn.get("mode")) in [2, 5] \
+				and kn.global_position.distance_to(player.global_position) <= 320.0:
 			return {}
 	return {"pos": player.global_position, "room": RoomManager.get_active_room_id()}
 

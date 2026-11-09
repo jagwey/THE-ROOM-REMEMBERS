@@ -136,14 +136,27 @@ func _on_curse_stagger() -> void:
 
 
 func _near_hazard() -> bool:
-	for grp in [&"curse_cloud", &"blood_thorn", &"pit"]:
+	for grp in [&"curse_cloud", &"blood_thorn"]:
 		for n in get_tree().get_nodes_in_group(grp):
 			if n is Node2D and (n as Node2D).global_position.distance_to(global_position) < 96.0:
 				return true
+	for n in get_tree().get_nodes_in_group(&"pit"):
+		if n is Node2D and (n as Node2D).is_visible_in_tree() and _near_pit(n as Node2D):
+			return true
 	var keeper := get_tree().get_first_node_in_group("keeper")
 	if keeper != null and "mode" in keeper and int(keeper.mode) in [keeper.Mode.COMBAT, keeper.Mode.INTERVENE]:
 		return true
 	return false
+
+
+## Boşluğun (pit) merkezi değil gerçek genişliği: kenarlardan 96 px içinde (yatay), dikeyde 192 px içinde.
+func _near_pit(pit: Node2D) -> bool:
+	var half_w := 0.0
+	for c in pit.get_children():
+		var cs := c as CollisionShape2D
+		if cs and cs.shape is RectangleShape2D:
+			half_w = maxf(half_w, (cs.shape as RectangleShape2D).size.x * 0.5)
+	return absf(pit.global_position.x - global_position.x) < half_w + 96.0 			and absf(pit.global_position.y - global_position.y) < 192.0
 
 
 func _on_death_started(_reason: StringName) -> void:

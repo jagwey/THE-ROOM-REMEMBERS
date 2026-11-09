@@ -434,6 +434,16 @@ func _migrate_to_v6_story_flags() -> void:
 	var pz: Variant = GameState.world_memory_state.get("puzzles", {})
 	if pz is Dictionary and (bool(pz.get("awakening_weight", false)) or bool(pz.get("awakening_memory_code", false))):
 		_derive_flag(&"intro_completed")
+	## Uyanış ve Kırık Geçit'in ötesine geçmiş eski kayıt: giriş + gölge/uyarı sahneleri yaşanmış sayılır.
+	var past_start := false
+	for rid in visited:
+		if String(rid) != "awakening" and String(rid) != "awakening_passage":
+			past_start = true
+	if past_start or bool(pk.get("awakening_mystery_seen", false)) or bool(pk.get("pocket_watch_seen", false)):
+		_derive_flag(&"intro_completed")
+	if past_start:
+		_derive_flag(&"first_shadow_seen")
+		_derive_flag(&"first_warning_heard")
 	if bool(pk.get("first_corpse_line_seen", false)):
 		_derive_flag(&"first_corpse_discovered")
 	var seen: Array = pk.get("lore_seen", [])

@@ -45,8 +45,11 @@ func _run() -> void:
 	check(not gs.has_story_flag(&"x_revealed"), "explicit false stored")
 	gs.set_story_flag(&"made_up_flag")
 	check(gs.has_story_flag(&"made_up_flag"), "unknown id still stored (warning only)")
+	gs.story_flags = {&"first_shadow_seen": true, &"x_revealed": false}
+	seen.clear()
 	gs.clear_story_flags()
 	check(gs.story_flags.is_empty(), "clear_story_flags empties")
+	check(seen.size() == 1 and seen[0][0] == &"first_shadow_seen" and seen[0][1] == false, "clear_story_flags emits story_flag_changed(false) once per set (true) flag")
 
 	## Kaydet-yükle turu
 	gs.set_story_flag(&"first_warning_heard")
@@ -79,6 +82,27 @@ func _run() -> void:
 		check(gs.has_story_flag(id), "v5 migration derives %s" % String(id))
 	check(not gs.has_story_flag(&"game_completed") and not gs.has_story_flag(&"final_seal_broken"), "v5 migration leaves underivable flags unset")
 	check(gs.player_progress_knowledge.has("deaths") and gs.world_memory_state.has("flags") and gs.world_memory_state.has("traces"), "v5 migration keeps safe defaults")
+
+	## Eski kayıt: intro_completed var ama yeni bayraklar yok -> oynanmış kayıt mantıklı yüklenir
+	var old_mid := {
+		"version": 5,
+		"player_progress_knowledge": {"deaths": 0, "rooms_visited": ["awakening", "awakening_passage", "balcony"], "awakening_mystery_seen": true},
+		"world_memory_state": {},
+		"character_current_life_knowledge": {},
+		"hearts": 3,
+	}
+	_write(path, JSON.stringify(old_mid))
+	gs.world_memory_state = sm._new_world.duplicate(true)
+	gs.clear_story_flags()
+	check(sm.load_committed(false), "old past-passage save loads")
+	check(gs.has_story_flag(&"intro_completed") and gs.has_story_flag(&"first_shadow_seen") and gs.has_story_flag(&"first_warning_heard"), "old past-passage save derives intro/shadow/warning flags")
+	check(not gs.has_story_flag(&"shilda_name_known") and not gs.is_shilda_named(), "old save without naming stays ??? ")
+	var old_start := {"version": 5, "player_progress_knowledge": {"rooms_visited": ["awakening"]}, "hearts": 3}
+	_write(path, JSON.stringify(old_start))
+	gs.world_memory_state = sm._new_world.duplicate(true)
+	gs.clear_story_flags()
+	check(sm.load_committed(false), "old awakening-only save loads")
+	check(not gs.has_story_flag(&"intro_completed"), "awakening-only old save: intro not derived")
 
 	## Bare v5 (sources absent) -> nothing derived, no error
 	_write(path, JSON.stringify({"version": 4, "player_progress_knowledge": {}, "hearts": 3}))
