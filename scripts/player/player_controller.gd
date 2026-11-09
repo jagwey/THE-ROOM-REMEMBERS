@@ -125,11 +125,22 @@ func _bind_curse_vfx() -> void:
 func _on_curse_stagger() -> void:
 	if UiGate.pauses_world_threats():
 		return
+	## Hafif takılma: havadayken veya tehlikeye yakınken asla (oyuncuyu tuzağa düşürmesin).
+	if not is_on_floor() or _near_hazard():
+		return
 	if _state == &"dash":
 		_exit_shadow_dash()
-	_stagger_timer = 0.35
+	_stagger_timer = 0.18
 	if sprite.sprite_frames and sprite.sprite_frames.has_animation("hurt"):
 		sprite.play("hurt")
+
+
+func _near_hazard() -> bool:
+	for grp in [&"curse_cloud", &"blood_thorn"]:
+		for n in get_tree().get_nodes_in_group(grp):
+			if n is Node2D and (n as Node2D).global_position.distance_to(global_position) < 96.0:
+				return true
+	return false
 
 
 func _on_death_started(_reason: StringName) -> void:

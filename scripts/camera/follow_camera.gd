@@ -46,7 +46,7 @@ func _ready() -> void:
 	get_viewport().size_changed.connect(_on_viewport_resized)
 	EchoManager.echo_started.connect(func(_id): zoom_to(ZOOM_FOCUS))
 	EchoManager.echo_finished.connect(func(_id): reset_zoom())
-	CurseManager.curse_stage_changed.connect(func(st: int): if st > 0: add_trauma(0.15 + 0.1 * float(st)))
+	CurseManager.band_changed.connect(func(b: int): if b > 0: add_trauma(0.15 + 0.1 * float(b)))
 	_apply_limits()
 
 

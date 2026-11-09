@@ -52,6 +52,7 @@ func start_new_game() -> void:
 	GameState.character_current_life_knowledge = _new_life.duplicate(true)
 	GameState.clear_story_flags()
 	GameState.reset_discovered_seals()
+	GameState.possession_count = 0
 	GameState.session_loaded_from_save = false
 	GameState.hearts = GameState.max_hearts
 	PuzzleManager.sync_from_world()
@@ -125,6 +126,7 @@ func _build_data() -> Dictionary:
 		"character_current_life_knowledge": _serialize_life(GameState.character_current_life_knowledge),
 		"story_flags": _serialize_story_flags(GameState.story_flags),
 		"discovered_seals": _serialize_seals(GameState.discovered_seals),
+		"possession_count": GameState.possession_count,
 		"hearts": GameState.hearts,
 		"curse": CurseManager.curse if CurseManager else 0.0,
 	}
@@ -277,6 +279,8 @@ func _apply_data(data: Dictionary, apply_room: bool) -> bool:
 	GameState.session_loaded_from_save = true
 	GameState.story_flags = _deserialize_story_flags(data.get("story_flags", {}))
 	GameState.discovered_seals = _deserialize_seals(data.get("discovered_seals", null))
+	## Sayaç yalnız artar: load_committed (lanet geri yüklemesi) eski dosyadaki düşük değerle sıfırlamasın.
+	GameState.possession_count = maxi(GameState.possession_count, int(data.get("possession_count", 0)))
 	var ver := int(data.get("version", 0))
 	if ver > 0 and ver < SAVE_VERSION:
 		if ver < 5:
@@ -288,8 +292,7 @@ func _apply_data(data: Dictionary, apply_room: bool) -> bool:
 	GameState.hearts = clampi(int(data.get("hearts", GameState.max_hearts)), 1, GameState.max_hearts)
 	GameState.hearts_changed.emit(GameState.hearts, GameState.max_hearts)
 	if data.has("curse") and CurseManager:
-		CurseManager.curse = float(data.get("curse", 0.0))
-		CurseManager.curse_changed.emit(CurseManager.curse)
+		CurseManager.restore_curse(float(data.get("curse", 0.0)))
 	PuzzleManager.sync_from_world()
 	if apply_room:
 		CorpseManager.rebuild_world_corpses()

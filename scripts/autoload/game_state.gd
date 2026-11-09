@@ -68,6 +68,8 @@ const STORY_FLAGS := [
 var story_flags: Dictionary = {}
 ## Etkinleştirilmiş Hafıza Mühürleri (oda id). Uyanış mührü her zaman açıktır.
 var discovered_seals: Array[StringName] = [&"awakening"]
+## Lanet ele geçirilme sayısı (kalıcı; ilk sekans uzun, tekrarlar kısa). Kayıt yüklemesi onu düşürmez (bkz. SaveManager._apply_data).
+var possession_count: int = 0
 
 var hearts: int = MAX_HEARTS
 var max_hearts: int = MAX_HEARTS

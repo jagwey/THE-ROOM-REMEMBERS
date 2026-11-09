@@ -1,5 +1,6 @@
 extends CanvasLayer
-## Erken: gizli. Belirtiler: kırmızı halo, hafif warp, stagger sinyali. Geç: küçük mühür.
+## Bantlar (CurseManager): 0–49 yok; 50–69 kırmızı ton + fısıltı + mühür; 70–89 kenar damarları + ara sıra hafif takılma;
+## 90–99 güçlü nabız + kalp atışı. Geç: küçük mühür.
 ## Fısıltı ortam bildirimi — modal diyalogla çakışmaz; eski tween iptal edilir.
 
 signal stagger_pulse
@@ -19,6 +20,7 @@ var _vignette: ColorRect
 var _vig_mat: ShaderMaterial
 var _vig_t: float = 0.0
 var _vig_smooth: float = 0.0
+var _hb_clock: float = 0.0
 
 const VIGNETTE_SHADER := """
 shader_type canvas_item;
@@ -86,7 +88,6 @@ func _ready() -> void:
 	whisper_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_build_vignette()
 	CurseManager.curse_changed.connect(_on_curse)
-	CurseManager.curse_stage_changed.connect(_on_stage)
 	CurseManager.curse_whisper.connect(_on_whisper)
 	_on_curse(CurseManager.curse)
 
@@ -97,16 +98,22 @@ func _process(delta: float) -> void:
 	_pulse += delta
 	var c := CurseManager.curse
 	var t := c / CurseManager.CURSE_MAX
-	_update_vignette(delta, t)
-	var wobble := 0.02 * t * sin(_pulse * (2.0 + t * 4.0))
-	veil.color.a = clampf(t * 0.28 + wobble, 0.0, 0.45)
-	halo.modulate.a = clampf(t * 0.55, 0.0, 0.7)
-	halo.rotation = sin(_pulse * 0.7) * 0.08 * t
-	halo.scale = Vector2.ONE * (1.0 + 0.15 * t + 0.05 * sin(_pulse * 3.0))
+	var band := CurseManager.band
+	## Bant 0'da ton yok; 50'den itibaren 0..1 şiddet.
+	var sev := clampf((c - CurseManager.BAND_FIRST_SIGNS) / (CurseManager.CURSE_MAX - CurseManager.BAND_FIRST_SIGNS), 0.0, 1.0)
+	_update_vignette(delta, t, _band_intensity(c))
+	var wobble := 0.02 * sev * sin(_pulse * (2.0 + t * 4.0))
+	veil.color.a = clampf(sev * 0.32 + wobble if band > 0 else 0.0, 0.0, 0.45)
+	halo.modulate.a = clampf(sev * 0.6 if band > 0 else 0.0, 0.0, 0.7)
+	halo.rotation = sin(_pulse * 0.7) * 0.08 * sev
+	halo.scale = Vector2.ONE * (1.0 + 0.15 * sev + 0.05 * sin(_pulse * 3.0))
 	_stagger_cd = maxf(0.0, _stagger_cd - delta)
-	if t >= 0.5 and _stagger_cd <= 0.0 and sin(_pulse * 1.3) > 0.92:
-		_stagger_cd = 2.4
+	## Takılma yalnız 70+ ve seyrek (kritik bantta biraz sık); oyuncu tarafı tehlike/havada ise yok sayar.
+	if band >= CurseManager.Band.DANGER and _stagger_cd <= 0.0 and sin(_pulse * 1.3) > 0.92:
+		_stagger_cd = 3.0 if band == CurseManager.Band.CRITICAL else 4.5
 		stagger_pulse.emit()
+	if band == CurseManager.Band.CRITICAL:
+		_heartbeat_sfx(delta, t)
 	seal.visible = CurseManager.visible_meter
 	if seal.visible:
 		seal.modulate = Color(0.9, 0.35, 0.4, 0.35 + t * 0.55)
@@ -116,12 +123,28 @@ func _process(delta: float) -> void:
 
 
 func _on_curse(value: float) -> void:
-	if value >= 55.0:
+	if value >= CurseManager.BAND_FIRST_SIGNS:
 		CurseManager.unlock_indicator()
 
 
-func _on_stage(_stage: int) -> void:
-	pass
+## Kenar damarı yoğunluğu banda göre: 0–49 yok, 50–69 hafif, 70–89 belirgin, 90+ güçlü.
+func _band_intensity(c: float) -> float:
+	match CurseManager.band_for(c):
+		CurseManager.Band.FIRST_SIGNS:
+			return lerpf(0.14, 0.3, (c - 50.0) / 20.0)
+		CurseManager.Band.DANGER:
+			return lerpf(0.45, 0.7, (c - 70.0) / 20.0)
+		CurseManager.Band.CRITICAL:
+			return lerpf(0.85, 1.0, clampf((c - 90.0) / 10.0, 0.0, 1.0))
+	return 0.0
+
+
+func _heartbeat_sfx(delta: float, t: float) -> void:
+	_hb_clock += delta
+	var period := 60.0 / (56.0 + 64.0 * t)
+	if _hb_clock >= period:
+		_hb_clock = 0.0
+		AudioManager.play_sfx(&"clock_tick", -9.0, 0.55)
 
 
 func _on_whisper(text: String) -> void:
@@ -169,9 +192,8 @@ func _build_vignette() -> void:
 	move_child(_vignette, 0)
 
 
-func _update_vignette(delta: float, t: float) -> void:
+func _update_vignette(delta: float, t: float, target: float) -> void:
 	_vig_t += delta
-	var target := pow(clampf(t, 0.0, 1.0), 1.15)
 	_vig_smooth = move_toward(_vig_smooth, target, delta * 0.5)
 	if _vig_smooth < 0.01:
 		_vignette.visible = false

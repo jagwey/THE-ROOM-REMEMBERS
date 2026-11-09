@@ -34,7 +34,8 @@ Dal: cursor/playable-story-flow-8e4e · Sürüm: v1.2.0 (versionCode 16)
 - [x] T2 story flags + save v6 (2026-11-09): `GameState.story_flags` API (set/has/clear + sinyal, 13 bayrak), SAVE_VERSION 6 + v≤5 göçü, kancalar: first_death_completed, first_corpse_discovered, first_archive_record_read, core_access_granted, dimension_origin/shilda_past (awakening_crypt defteri); `story_flags_audit` 0 hata
 - [x] T3 kayıt ayrımı (2026-11-09): committed (`SAVE_PATH`, yalnız `commit_save(reason, pos, room)`) + resume (`*_resume.json`, `save_game`/`save_resume_point`), `save_serial` ile Devam Et = yenisi, `load_committed()` resume'ü siler; `save_split_audit` 0 hata
 - [x] T4 Hafıza Mühürleri (2026-11-09): 12 ana odada `memory_seal_point` (commit_save + banner + `discovered_seals` iki dosyada, güvenlik kapısı, Mühürler arası geçiş modalı, `seal_<oda>` spawn); `memory_seal_audit` 0 hata, release 111/0, e2e 50/0; pencereli kontrol edildi
-- [ ] T5 lanet bantları · T6 yatak respawn · T7 açılış/isim · T8 menüler · T9 tek final · T10 diyalog · T11 audit+test planı
+- [x] T5 lanet bantları + ele geçirilme (2026-11-09): bantlar 0-49/50-69/70-89/90-99 (`set_curse`, `get_band`, `band_changed`), 100'de ölüm yerine `PossessionOverlay` (ilk ~4.5 sn, tekrar ~2 sn + girdiyle atlama, `GameState.possession_count` iki kayıtta kalıcı) → `load_committed()` + güvenli konum, lanet ≤25; DeathManager/ceset/yatak/final yok; `curse_reload_audit` + `death_loop_audit` güncel; pencereli 1920x1080 kontrol edildi
+- [ ] T6 yatak respawn · T7 açılış/isim · T8 menüler · T9 tek final · T10 diyalog · T11 audit+test planı
 
 ## Kalan
 - docs/gelistirme/ altındaki izlenmeyen log/zip dosyaları: .gitignore veya temizlik kararı bekliyor

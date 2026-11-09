@@ -116,17 +116,27 @@ func _run() -> void:
 	keeper.start_encounter(&"shilda_wall")
 	check(keeper.mode != keeper.Mode.COMBAT, "defeated keeper never restarts combat")
 	state.set_world_flag(&"keeper_defeated", false)
-	## Lanet ele geçirmesi: ceset yok, ruh yok, yine de doğuş.
+	## Lanet ele geçirmesi (v3): ölüm yolundan geçmez; ceset/ruh/yatak yok, final değil, committed kayda döner.
+	var curse := root.get_node("CurseManager")
+	var sm := root.get_node("SaveManager")
 	var c_before: int = (state.world_memory_state["corpses"] as Array).size()
 	var tr_before: int = (state.world_memory_state["traces"] as Array).size()
+	var deaths_pre: int = int(state.player_progress_knowledge.get("deaths", 0))
+	var fdc_pre: bool = state.has_story_flag(&"first_death_completed")
+	sm.commit_save(&"audit")
 	phases.clear()
-	death.request_death(&"curse")
+	curse.add_curse(500.0)
+	check(curse.possessing and not death.is_dying, "possession starts without the death path")
 	var t1 := Time.get_ticks_msec()
-	while death.is_dying and Time.get_ticks_msec() - t1 < 15000:
+	while curse.possessing and Time.get_ticks_msec() - t1 < 20000:
 		await process_frame
-	check(not death.is_dying, "possession rebirth completes")
+	check(not curse.possessing and not death.is_dying, "possession completes")
 	check((state.world_memory_state["corpses"] as Array).size() == c_before and (state.world_memory_state["traces"] as Array).size() == tr_before, "possession leaves no corpse")
-	check(not phases.has(2), "possession has no soul release")
+	check(phases.is_empty(), "possession never enters a death phase (no soul/bed)")
+	check(int(state.player_progress_knowledge.get("deaths", 0)) == deaths_pre, "possession does not count as a death")
+	check(state.has_story_flag(&"first_death_completed") == fdc_pre, "possession does not fire first_death_completed")
+	check(curse.curse <= 30.0 and root.get_node("EndingManager").current == root.get_node("EndingManager").Ending.NONE, "curse safe and no ending after possession")
+	sm.delete_all_save_files()
 	dm.clear()
 	print("DEATH_AUDIT failures=", failures)
 	quit(1 if failures else 0)

@@ -1,114 +1,162 @@
 extends Node
-## Lanet — erken HUD yok; VFX/fısıltı. 100% → fail life (checkpoint), full reset yok.
+## Lanet — bantlar: 0–49 kontrol, 50–69 ilk belirtiler, 70–89 tehlike, 90–99 kritik.
+## 100 → ölüm DEĞİL: ele geçirilme sekansı, ardından son committed kayıt yüklenir (ceset/ruh/yatak yok, final değil).
 
 signal curse_changed(value: float)
-signal curse_failed_life
-signal curse_stage_changed(stage: int)
+signal band_changed(band: int)
 signal curse_whisper(text: String)
+signal possession_started
+signal possession_finished
+
+enum Band { CONTROL, FIRST_SIGNS, DANGER, CRITICAL }
+
+const CURSE_MAX := 100.0
+const BAND_FIRST_SIGNS := 50.0
+const BAND_DANGER := 70.0
+const BAND_CRITICAL := 90.0
+## Ele geçirilmeden sonra lanet bu değeri aşamaz (asla kritik banda dönmez).
+const POSSESSION_SAFE_CURSE := 25.0
+const PossessionOverlay := preload("res://scripts/ui/possession_overlay.gd")
 
 var curse: float = 0.0
-const CURSE_MAX := 100.0
-var visible_meter: bool = false ## erken: kapalı; geç: küçük mühür
-var stage: int = 0 ## 0–3
-var _failing: bool = false
+var visible_meter: bool = false ## 50+ görüldüyse küçük mühür açık kalır
+var band: int = Band.CONTROL
+var possessing: bool = false
+
+
+static func band_for(value: float) -> int:
+	if value >= BAND_CRITICAL:
+		return Band.CRITICAL
+	if value >= BAND_DANGER:
+		return Band.DANGER
+	if value >= BAND_FIRST_SIGNS:
+		return Band.FIRST_SIGNS
+	return Band.CONTROL
+
+
+func get_band() -> int:
+	return band
 
 
 func add_curse(amount: float, reason: StringName = &"") -> void:
-	if amount <= 0.0 or _failing:
+	if amount <= 0.0 or possessing:
 		return
-	var prev := curse
-	curse = clampf(curse + amount, 0.0, CURSE_MAX)
-	curse_changed.emit(curse)
 	if reason != &"":
 		var touched: Array = GameState.world_memory_state["forbidden_touched"]
 		var key := String(reason)
 		if not touched.has(key):
 			touched.append(key)
-	_update_stage(prev)
-	# Geç oyun: küçük gösterge
-	if curse >= 55.0:
-		visible_meter = true
-	if curse >= CURSE_MAX:
-		_fail_life()
+	set_curse(curse + amount)
 
 
 func clear_curse(amount: float) -> void:
-	if amount <= 0.0 or _failing:
+	if amount <= 0.0 or possessing:
+		return
+	set_curse(curse - amount)
+
+
+## Lanet değerini ayarla (0–100). 100'e ulaşırsa ele geçirilme başlar.
+func set_curse(value: float) -> void:
+	if possessing:
 		return
 	var prev := curse
-	curse = clampf(curse - amount, 0.0, CURSE_MAX)
+	curse = clampf(value, 0.0, CURSE_MAX)
 	curse_changed.emit(curse)
-	_update_stage(prev)
+	_update_band(prev)
+	if curse >= BAND_FIRST_SIGNS:
+		visible_meter = true
+	if curse >= CURSE_MAX:
+		_begin_possession()
 
 
-func _update_stage(prev: float) -> void:
-	var new_stage := 0
-	if curse >= 75.0:
-		new_stage = 3
-	elif curse >= 50.0:
-		new_stage = 2
-	elif curse >= 25.0:
-		new_stage = 1
-	if new_stage != stage:
-		stage = new_stage
-		curse_stage_changed.emit(stage)
-		match stage:
-			1:
-				curse_whisper.emit("…kulaklarında uğultu.")
-			2:
-				curse_whisper.emit("Kırmızı… her yerde.")
-			3:
-				curse_whisper.emit("Dayanamıyorum—")
-			_:
-				pass
-	# Eşik geçiş fısıltıları
+## Kayıt yüklemesi: değer ele geçirilmeyi tetiklemez (en çok 99), bant sessizce eşitlenir.
+func restore_curse(value: float) -> void:
+	curse = clampf(value, 0.0, CURSE_MAX - 1.0)
+	curse_changed.emit(curse)
+	var new_band := band_for(curse)
+	if new_band != band:
+		band = new_band
+		band_changed.emit(band)
+
+
+func _update_band(prev: float) -> void:
+	var new_band := band_for(curse)
+	if new_band != band:
+		var old := band
+		band = new_band
+		band_changed.emit(band)
+		if band > old:
+			match band:
+				Band.FIRST_SIGNS:
+					curse_whisper.emit("…kulaklarında uğultu.")
+				Band.DANGER:
+					curse_whisper.emit("Kırmızı… her yerde.")
+				Band.CRITICAL:
+					curse_whisper.emit("Dayanamıyorum—")
 	if prev < 40.0 and curse >= 40.0:
 		curse_whisper.emit("Bir şey… içimde büyüyor.")
 
 
-func _fail_life() -> void:
-	if _failing:
+func _begin_possession() -> void:
+	## Ölüm/final sırasında ele geçirme başlamaz; lanet 99'da tutulur.
+	if DeathManager.is_dying or EndingManager.current != EndingManager.Ending.NONE:
+		curse = CURSE_MAX - 1.0
+		curse_changed.emit(curse)
 		return
-	_failing = true
-	curse_failed_life.emit()
+	possessing = true
+	possession_started.emit()
 	DialogueManager.clear()
-	var reason: StringName = &"curse"
-	var keeper := get_tree().get_first_node_in_group("keeper")
-	if keeper and keeper.has_method("can_mercy_kill") and keeper.can_mercy_kill():
-		## Shilda yakında: Noroi'yi Çekirdek'e kaptırmamak için kendisi öldürür.
-		await keeper.mercy_kill()
-		reason = &"mercy"
-	else:
-		## Tam ele geçirilme: kısa sahne; kalıcı bulmacalar silinmez, son güvenli kayıttan dönülür.
-		DialogueManager.whisper("Çekirdek", "Gel… bana gel.")
-		DialogueManager.whisper("Noroi", "Bu… benim sesim değil—")
-		var player := get_tree().get_first_node_in_group("player") as Node2D
-		if player:
-			var tw := player.create_tween()
-			tw.tween_property(player, "modulate", Color(1.6, 0.2, 0.3, 1.0), 0.5)
-		GameState.player_progress_knowledge["possession_seen"] = true
-		await get_tree().create_timer(0.35 if DisplayServer.get_name() == "headless" else 1.2).timeout
-		if DialogueManager.is_open:
-			DialogueManager.clear()
-	curse = 0.0
-	stage = 0
-	visible_meter = false
-	curse_changed.emit(curse)
-	curse_stage_changed.emit(stage)
-	# Full reset YOK — dünya kalır.
-	DeathManager.request_death(reason, false)
-	await DeathManager.rebirth_completed
-	_failing = false
+	var repeat: bool = GameState.possession_count > 0
+	GameState.possession_count += 1
+	UiGate.set_cutscene(true)
+	var scene := get_tree().current_scene
+	var overlay: CanvasLayer = PossessionOverlay.new()
+	scene.add_child(overlay)
+	var player := get_tree().get_first_node_in_group("player") as Node2D
+	var tint: Tween = null
+	if player:
+		tint = player.create_tween()
+		tint.tween_property(player, "modulate", Color(1.6, 0.2, 0.3, 1.0), 0.6)
+	await overlay.play(repeat)
+	if tint and tint.is_valid():
+		tint.kill() ## atlamada tint, yeniden doğan oyuncuyu kırmızı bırakmasın
+	_reload_committed()
+	await overlay.finish(repeat)
+	UiGate.set_cutscene(false)
+	possessing = false
+	possession_finished.emit()
+
+
+## Son committed kayda dön: oda + güvenli konum; dünya ve hikâye durumu committed hale gelir.
+func _reload_committed() -> void:
+	var loaded := SaveManager.load_committed()
+	var life: Dictionary = GameState.character_current_life_knowledge
+	var room := StringName(str(life.get("checkpoint_room", life.get("room", &"awakening"))))
+	var has_pos := loaded and life.has("checkpoint")
+	if RoomManager.has_room(room):
+		RoomManager.enter_room(room, &"checkpoint" if has_pos else &"default", false)
+	var player := get_tree().get_first_node_in_group("player") as Node2D
+	if player and player.has_method("respawn_at"):
+		var pos: Vector2 = player.global_position if RoomManager.has_room(room) else GameState.get_checkpoint()
+		player.respawn_at(pos)
+	var cam := get_tree().get_first_node_in_group("follow_camera")
+	if cam and cam.has_method("snap_to_target"):
+		cam.snap_to_target()
+	restore_curse(minf(curse, POSSESSION_SAFE_CURSE))
+	CorpseManager.rebuild_world_corpses()
+	## Sayaç ve yeni durum diske yazılsın (resume dosyası, committed'a dokunmaz).
+	SaveManager.save_game()
 
 
 func reset_for_new_life() -> void:
 	curse = 0.0
-	stage = 0
-	# Gösterge: meta olarak en az bir kez 55+ gördüyse açık kalabilir
+	if band != Band.CONTROL:
+		band = Band.CONTROL
+		band_changed.emit(band)
+	# Gösterge: meta olarak en az bir kez 50+ gördüyse açık kalabilir
 	if not bool(GameState.player_progress_knowledge.get("curse_indicator_seen", false)):
 		visible_meter = false
 	curse_changed.emit(curse)
-	curse_stage_changed.emit(stage)
 
 
 func unlock_indicator() -> void:
