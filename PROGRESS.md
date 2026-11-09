@@ -189,3 +189,10 @@ Dal: cursor/playable-story-flow-8e4e · Sürüm: v1.2.0 (versionCode 16)
 - [x] Kırık Geçit silüet beat'i (`first_shadow_seen`/`first_warning_heard`), ilk beden "Bu... benim kıyafetim." / "Bunu kim bıraktı?", isim sahnesi (Shilda ile ilk etkileşim; "Ben Noroi." satırında ad açılır). Geç odada (mirrors_/core, Shilda present) ad hâlâ yoksa isim sahnesi bir kez otomatik oynar; sessiz isim yalnız Shilda gizliyse (core_final) son çare. Hedef "Gölgeyle konuş" yalnız ilk ölümden sonra.
 - Testler (TORIMON_TEST=1): ui_header_portrait 45/0, start_flow 31/0, interact 23/0, e2e 50/50, death_loop 110/0, memory_seal 100/0, release 111/0; pencereli 1920x1080 çekimler gözle kontrol edildi.
 - [x] Fix round 1: siluet beat'i oda değişiminde iptal (yerleşimi engellemez), story_beat zorla isim kalktı, `keeper_naming_audit.gd` eklendi (keeper_naming 20/0, ui_header 46/0, diğerleri aynı).
+
+## v3 hikaye Task 8 — Menüler: Jenerik + duraklatma + onaylar (2026-11-09)
+- [x] Başlık: Yeni Oyun / Devam Et / Ayarlar / Jenerik / Oyundan Çık (güncelleme düğmesi korundu). Kayıt yoksa Devam Et pasif; kayıt varken Yeni Oyun onayı ("Kayıtlı ilerlemen silinecek..."; Evet/Vazgeç). Nasıl Oynanır sayfası kalktı (slot yok).
+- [x] Jenerik: kayan gotik sayfa (`scripts/ui/credits_data.gd`, Task 9 ile ortak; yalnız README'nin desteklediği satırlar, uydurma kişi yok). Başlıkta "Son Hafıza" kartı Türkçe oda adı gösterir (`_room_display_name`).
+- [x] Duraklatma: Devam Et / Ayarlar (mevcut ses/müzik/tam ekran/joystick/titreşim kontrolleri, alt sayfa) / Kaydet ve Çık / Ana Menüye Dön; "Yeni oyun" yok. Kaydet ve Çık onayı -> `commit_save(&"save_and_quit")` -> başlığa (uygulama kapanmaz). Ana Menüye Dön onayı -> commit yok, `SaveManager.discard_resume()` ile resume dosyası silinir, Devam Et son commit'li kaydı yükler.
+- [x] `grab_focus` !is_inside_tree hataları giderildi (korumalı ertelenmiş `_focus`).
+- Testler (TORIMON_TEST=1): save_quit 34/0, start_flow 46/0, ui_header_portrait 0 fail, interact 0 fail, release 111/0; pencereli 1920x1080 `t8_*.png` çekimleri gözle kontrol edildi.

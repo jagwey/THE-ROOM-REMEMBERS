@@ -15,8 +15,12 @@ var _layers: Array[TextureRect] = []
 var _title: Label
 var _pages: Dictionary = {} ## StringName -> VBoxContainer
 var _page: StringName = &"main"
-var _start_button: Button
-var _new_button: Button
+var _start_button: Button ## Devam Et
+var _new_button: Button ## Yeni Oyun
+var _has_save: bool = false
+var _credits_panel: GothicModalPanel
+var _credits_scroll: ScrollContainer
+var _credits_tween: Tween
 var _vol_button: Button
 var _music_button: Button
 var _joy_button: Button
@@ -36,8 +40,8 @@ func _ready() -> void:
 
 func open(has_save: bool) -> void:
 	_closing = false
-	_start_button.text = "Devam Et" if has_save else "Başla"
-	_new_button.visible = has_save
+	_has_save = has_save
+	_start_button.disabled = not has_save
 	_refresh_card()
 	_refresh_settings()
 	_show_page(&"main")
@@ -60,6 +64,9 @@ func close(then: Callable) -> void:
 
 ## Android geri / Esc: alt sayfadaysa ana sayfaya döner. true = olay tüketildi.
 func back() -> bool:
+	if _credits_panel != null and _credits_panel.visible:
+		_close_credits()
+		return true
 	if _page != &"main":
 		_click()
 		_show_page(&"main")
@@ -178,7 +185,7 @@ func _build_layout() -> void:
 	row.add_child(column)
 	_build_main_page(column)
 	_build_settings_page(column)
-	_build_help_page(column)
+	_build_credits_panel()
 	_build_confirm_page(column)
 
 	row.add_child(_build_card())
@@ -233,10 +240,11 @@ func _page_label(parent: Control, text: String, size: int = UiTheme.HINT, bold: 
 
 func _build_main_page(parent: Control) -> void:
 	var p := _new_page(parent, &"main")
-	_start_button = _button(p, "Başla", func(): start_requested.emit())
-	_new_button = _button(p, "Yeni Oyun", func(): _show_page(&"confirm"))
+	## Sıra sabit: Yeni Oyun / Devam Et / Ayarlar / Jenerik / Oyundan Çık.
+	_new_button = _button(p, "Yeni Oyun", _on_new_pressed)
+	_start_button = _button(p, "Devam Et", func(): start_requested.emit())
 	_button(p, "Ayarlar", func(): _show_page(&"settings"))
-	_button(p, "Nasıl Oynanır", func(): _show_page(&"help"))
+	_button(p, "Jenerik", _open_credits)
 	_button(p, "Oyundan Çık", func(): _show_page(&"quit_confirm"))
 	## Yeni sürüm varsa (UpdateChecker, public release repo) görünür.
 	_update_button = _button(p, "Güncelleme Var", func(): UpdateChecker.open_download())
@@ -248,6 +256,14 @@ func _build_main_page(parent: Control) -> void:
 
 
 var _update_button: Button
+
+
+## Kayıt varsa onay sayfası (eski kayıt istemeden silinmez); yoksa doğrudan yeni oyun.
+func _on_new_pressed() -> void:
+	if _has_save:
+		_show_page(&"confirm")
+	else:
+		new_game_requested.emit()
 
 
 func _on_update_available(version: String, _url: String) -> void:
@@ -273,24 +289,11 @@ func _build_settings_page(parent: Control) -> void:
 	_button(p, "< Geri", func(): _show_page(&"main"))
 
 
-func _build_help_page(parent: Control) -> void:
-	var p := _new_page(parent, &"help")
-	_page_label(p, "NASIL OYNANIR", UiTheme.BODY, true)
-	var controls := ""
-	if MobileInputManager.is_touch_ui():
-		controls = "Sol joystick: yürü\nSağ düğmeler: zıpla · etkileş · saldır · atıl · yankı\nSağ üst: günlük ve menü"
-	else:
-		controls = "A/D: yürü · W/Space: zıpla\nE: etkileş · Z: saldır · X: atıl\nQ: yankı · I: günlük · Esc: menü"
-	_page_label(p, controls, 13)
-	_page_label(p, "Ölmek son değil: bedenin odada kalır ve bulmacaları çözmene yardım eder.", 12).add_theme_color_override("font_color", Palette.PALE_LILAC)
-	_button(p, "< Geri", func(): _show_page(&"main"))
-
-
 func _build_confirm_page(parent: Control) -> void:
 	var p := _new_page(parent, &"confirm")
 	_page_label(p, "YENİ OYUN", UiTheme.BODY, true)
-	_page_label(p, "Tüm ilerleme silinecek. Oda yine de hatırlayabilir…", 13)
-	_button(p, "Evet, Sıfırdan Başla", func(): new_game_requested.emit())
+	_page_label(p, "Kayıtlı ilerlemen silinecek. Yeni oyuna başlamak istiyor musun?", 13)
+	_button(p, "Evet", func(): new_game_requested.emit())
 	_button(p, "Vazgeç", func(): _show_page(&"main"))
 	## Yalnız başlıktaki "Oyundan Çık" uygulamayı kapatır — onaylı.
 	var q := _new_page(parent, &"quit_confirm")
@@ -298,6 +301,74 @@ func _build_confirm_page(parent: Control) -> void:
 	_page_label(q, "Oyundan çıkmak istediğine emin misin?", 13)
 	_button(q, "Vazgeç", func(): _show_page(&"main"))
 	_button(q, "Çıkış Yap", func(): quit_requested.emit())
+
+
+## Jenerik: gotik panel içinde yavaşça kayan metin (içerik CreditsData'da).
+func _build_credits_panel() -> void:
+	_credits_panel = GothicModalPanel.new()
+	_credits_panel.setup("JENERİK", Vector2(420, 300), &"menu", 0.7)
+	add_child(_credits_panel)
+	_credits_scroll = ScrollContainer.new()
+	_credits_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_credits_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_credits_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	_credits_panel.body.add_child(_credits_scroll)
+	var box := VBoxContainer.new()
+	box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	box.add_theme_constant_override("separation", 4)
+	_credits_scroll.add_child(box)
+	var lead := Control.new() ## metin alttan girsin
+	lead.custom_minimum_size.y = 150
+	box.add_child(lead)
+	var t := Label.new()
+	t.text = CreditsData.TITLE
+	t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	UiTheme.apply_outlined(t, 22, true)
+	box.add_child(t)
+	_credits_line(box, CreditsData.TAGLINE, UiTheme.HINT, false, Palette.PALE_LILAC)
+	for s in CreditsData.SECTIONS:
+		_credits_line(box, "", 8, false, Palette.IVORY)
+		if String(s["head"]) != "":
+			_credits_line(box, String(s["head"]).to_upper(), UiTheme.HINT, true, Palette.CRIMSON.lightened(0.35))
+		for l in s["lines"]:
+			_credits_line(box, String(l), UiTheme.BODY, false, Palette.IVORY)
+	var tail := Control.new()
+	tail.custom_minimum_size.y = 90
+	box.add_child(tail)
+	_credits_panel.add_button("< Geri", func():
+		_click()
+		_close_credits())
+	_credits_panel.hide()
+
+
+func _credits_line(parent: Control, text: String, size: int, bold: bool, color: Color) -> void:
+	var l := Label.new()
+	l.text = text
+	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	UiTheme.apply_outlined(l, size, bold, color)
+	parent.add_child(l)
+
+
+func _open_credits() -> void:
+	move_child(_credits_panel, -1)
+	_credits_scroll.scroll_vertical = 0
+	_credits_panel.show()
+	_credits_panel.body.get_child(_credits_panel.body.get_child_count() - 1).grab_focus.call_deferred()
+	if _credits_tween != null:
+		_credits_tween.kill()
+	_credits_tween = create_tween()
+	_credits_tween.tween_interval(0.8)
+	_credits_tween.tween_method(func(v: float):
+		var bar := _credits_scroll.get_v_scroll_bar()
+		_credits_scroll.scroll_vertical = int(v * maxf(0.0, bar.max_value - bar.page)), 0.0, 1.0, 30.0)
+
+
+func _close_credits() -> void:
+	if _credits_tween != null:
+		_credits_tween.kill()
+	_credits_panel.hide()
+	_show_page(&"main")
 
 
 func _build_card() -> Control:
@@ -328,7 +399,7 @@ func _show_page(id: StringName) -> void:
 
 func _focus_first(page: Control) -> void:
 	for c in page.get_children():
-		if c is Button and (c as Button).visible:
+		if c is Button and (c as Button).visible and not (c as Button).disabled:
 			(c as Button).grab_focus()
 			return
 
@@ -354,7 +425,7 @@ func _refresh_card() -> void:
 	var rid := String(gs.character_current_life_knowledge.get("room", &"awakening"))
 	var titles: Dictionary = RoomTransitionScript.ROOM_TITLES
 	_card_line("SON HAFIZA", UiTheme.BODY, true, Palette.IVORY)
-	_card_line(String(titles.get(rid, rid.capitalize())), 15, true, Color(1.0, 0.82, 0.5))
+	_card_line(_room_display_name(rid), 15, true, Color(1.0, 0.82, 0.5))
 	_card_line("Keşif: %d / %d oda" % [visited.size(), titles.size()], 13, false, Palette.IVORY)
 	_card_line("Ölüm: %d · Can: %d/%d" % [int(gs.player_progress_knowledge.get("deaths", 0)), gs.hearts, gs.max_hearts], 13, false, Palette.IVORY)
 	var endings: Array = gs.player_progress_knowledge.get("endings_seen", [])
@@ -363,6 +434,13 @@ func _refresh_card() -> void:
 	var obj := gs.get_current_objective()
 	if not obj.is_empty():
 		_card_line("Hedef: " + obj, 12, false, Palette.PALE_LILAC)
+
+
+## HUD ile aynı Türkçe kaynak (RoomManager.ROOM_TITLES_TR). Bilinmeyen kimlik İngilizce sızmasın diye "Uyanış"a düşer.
+func _room_display_name(rid: String) -> String:
+	var titles: Dictionary = RoomTransitionScript.ROOM_TITLES
+	var key := rid.strip_edges().to_lower().replace(" ", "_")
+	return String(titles.get(key, titles.get("awakening", "Uyanış")))
 
 
 func _card_line(text: String, size: int, bold: bool, color: Color) -> void:

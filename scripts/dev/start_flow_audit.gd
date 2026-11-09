@@ -42,6 +42,7 @@ func _round(continued: bool) -> void:
 	check(menu != null and menu.is_title_open(), "[%s] title open at boot" % tag)
 	check(gate.current_layer() == gate.Layer.TITLE, "[%s] gate TITLE at boot" % tag)
 	var ts = menu._title_screen
+	_title_checks(ts, tag, continued)
 	ts.start_requested.emit()
 	await create_timer(0.6).timeout
 	check(not menu.is_title_open(), "[%s] title closed after Başla" % tag)
@@ -111,6 +112,34 @@ func _round(continued: bool) -> void:
 		check(not gsn.is_shilda_named() and gsn.keeper_speaker_name() == "???", "[new] Shilda name unknown at start (card ???)")
 		check(kp == null or not kp.visible, "[new] Shilda is not in the awakening room at start")
 		check(gate.current_layer() == gate.Layer.NONE and not root.get_node("DialogueManager").is_open, "[new] player not blocked after the opening")
+
+
+## Başlık ana sayfa: düğme sırası, Devam Et durumu, Yeni Oyun onayı, Jenerik sayfası.
+func _title_checks(ts: Control, tag: String, has_save: bool) -> void:
+	var texts := []
+	for b in (ts._pages[&"main"] as Control).get_children():
+		if b is Button and (b as Button).visible:
+			texts.append((b as Button).text)
+	check(texts == ["Yeni Oyun", "Devam Et", "Ayarlar", "Jenerik", "Oyundan Çık"], "[%s] title buttons in order %s" % [tag, str(texts)])
+	check(ts._start_button.disabled == (not has_save), "[%s] Devam Et disabled iff no save (disabled=%s)" % [tag, ts._start_button.disabled])
+	check(ts._new_button.visible, "[%s] Yeni Oyun always visible" % tag)
+	if has_save:
+		ts._new_button.pressed.emit()
+		var ct := ""
+		var ctexts := []
+		for c in (ts._pages[&"confirm"] as Control).get_children():
+			if c is Label and (c as Label).text.begins_with("Kayıtlı"):
+				ct = (c as Label).text
+			elif c is Button:
+				ctexts.append((c as Button).text)
+		check(ts._page == &"confirm", "[%s] Yeni Oyun with save opens confirmation" % tag)
+		check(ct == "Kayıtlı ilerlemen silinecek. Yeni oyuna başlamak istiyor musun?", "[%s] new game confirm text (%s)" % [tag, ct])
+		check(ctexts == ["Evet", "Vazgeç"], "[%s] new game confirm buttons %s" % [tag, str(ctexts)])
+		ts._show_page(&"main")
+	ts._open_credits()
+	check(ts._credits_panel.visible, "[%s] Jenerik opens credits panel" % tag)
+	check(CreditsData.as_text().contains("Bir Jagwey Studio oyunu") and CreditsData.as_text().contains("THE ROOM REMEMBERS"), "[%s] credits content present" % tag)
+	check(ts.back() and not ts._credits_panel.visible, "[%s] back closes credits" % tag)
 
 
 ## Yeni Oyun: kayıt commit edilir ama sahne "Devam" değil taze girişle açılmalı.

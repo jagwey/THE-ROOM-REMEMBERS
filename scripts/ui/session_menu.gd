@@ -15,10 +15,12 @@ static var _force_title: bool = false
 var _panel: GothicModalPanel
 var _title_screen: Control
 var _menu_button: Button
-var _confirm: bool = false
-var _new_button: Button
 var _continue_button: Button
-var _quit_button: Button
+var _settings_button: Button
+var _quit_button: Button ## Kaydet ve Çık
+var _main_menu_button: Button ## Ana Menüye Dön
+var _main_box: VBoxContainer
+var _settings_box: VBoxContainer
 var _joy_button: Button
 var _fs_button: Button
 var _haptics_button: Button
@@ -64,23 +66,33 @@ func _ready() -> void:
 	UiGate.gate_changed.connect(_on_gate_changed)
 	_panel = GothicModalPanel.new()
 	## Dokunmatikte yardım metni ve tam ekran düğmesi yok — panel kısalır.
-	_panel.setup("THE ROOM REMEMBERS", Vector2(420, 284 if MobileInputManager.is_touch_ui() else 336))
+	_panel.setup("THE ROOM REMEMBERS", Vector2(420, 232 if MobileInputManager.is_touch_ui() else 292))
 	add_child(_panel)
 	_subtitle = _panel.add_label("Sen unutursun. Oda hatırlar.", UiTheme.HINT)
 	_subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_help_label = _panel.add_label("A/D: yürü · W/Space: zıpla · E: etkileş/devam\nX: atıl · Z: saldır · Q: yankı/ruh yeteneği\nI: günlük · Esc: menü", UiTheme.HINT)
-	_continue_button = _panel.add_button("Devam et", close_menu)
-	_new_button = _panel.add_button("Yeni oyun", _new_game)
+	## Duraklatma menüsü sırası: Devam Et / Ayarlar / Kaydet ve Çık / Ana Menüye Dön.
+	_main_box = VBoxContainer.new()
+	_main_box.add_theme_constant_override("separation", 6)
+	_panel.body.add_child(_main_box)
+	_continue_button = _panel.add_button("Devam Et", close_menu, _main_box)
+	_settings_button = _panel.add_button("Ayarlar", func(): _show_pause_page(true), _main_box)
+	_quit_button = _panel.add_button("Kaydet ve Çık", _on_quit_button, _main_box)
+	_main_menu_button = _panel.add_button("Ana Menüye Dön", request_main_menu, _main_box)
+	## Ayarlar alt sayfası (var olan ses/müzik/tam ekran/joystick/titreşim düğmeleri; yeni sistem yok).
+	_settings_box = VBoxContainer.new()
+	_settings_box.add_theme_constant_override("separation", 6)
+	_panel.body.add_child(_settings_box)
 	var audio_row := HBoxContainer.new()
 	audio_row.add_theme_constant_override("separation", 6)
-	_panel.body.add_child(audio_row)
+	_settings_box.add_child(audio_row)
 	_vol_button = _panel.add_button("", _cycle_volume, audio_row)
 	_vol_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_music_button = _panel.add_button("", _toggle_music, audio_row)
 	_music_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 6)
-	_panel.body.add_child(row)
+	_settings_box.add_child(row)
 	_fs_button = _panel.add_button("Tam ekran (F11)", toggle_fullscreen, row)
 	_fs_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_fs_button.visible = not OS.has_feature("mobile")
@@ -88,7 +100,8 @@ func _ready() -> void:
 	_joy_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_haptics_button = _panel.add_button("", _toggle_haptics, row)
 	_haptics_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_quit_button = _panel.add_button("Kaydet ve Çık", _on_quit_button)
+	_panel.add_button("< Geri", func(): _show_pause_page(false), _settings_box)
+	_settings_box.hide()
 	_refresh_settings_buttons()
 	_panel.hide()
 	_build_confirm()
@@ -134,13 +147,27 @@ func _open_title() -> void:
 
 func _refresh_mode() -> void:
 	_subtitle.visible = _title_mode
-	_help_label.visible = not _title_mode and not MobileInputManager.is_touch_ui()
-	_continue_button.text = ("Devam et" if _had_save else "Başla") if _title_mode else "Devam et"
-	_new_button.visible = _had_save or not _title_mode
-	_new_button.text = "Yeni oyun"
-	_quit_button.text = "Oyundan Çık" if _title_mode else "Kaydet ve Çık"
-	_confirm = false
+	_help_label.visible = not _title_mode and not MobileInputManager.is_touch_ui() and not _settings_box.visible
 	_refresh_settings_buttons()
+
+
+## Duraklatma menüsü: ana düğmeler <-> ayarlar alt sayfası.
+func _show_pause_page(settings: bool) -> void:
+	_main_box.visible = not settings
+	_settings_box.visible = settings
+	_help_label.visible = not settings and not MobileInputManager.is_touch_ui()
+	_subtitle.visible = _title_mode and not settings
+	_focus(_vol_button if settings else _settings_button)
+
+
+## Düğüm ağaçta ve görünürken odaklar (sahne yeniden yüklenirken/gizliyken grab_focus hatası vermesin).
+func _focus(b: Control) -> void:
+	_do_focus.call_deferred(b)
+
+
+func _do_focus(b: Control) -> void:
+	if is_instance_valid(b) and b.is_inside_tree() and b.is_visible_in_tree():
+		b.grab_focus()
 
 
 ## Android geri tuşu: menü açıksa kapat, oyun sırasında menüyü aç. Başlıkta yanlışlıkla çıkmayı önler.
@@ -192,31 +219,42 @@ func _show_confirm(title: String, text: String, ok_text: String, action: Callabl
 	move_child(_confirm_panel, -1) ## her şeyin (başlık dahil) üstünde
 	_confirm_panel.show()
 	MobileInputManager.clear_held_inputs()
-	_confirm_ok.grab_focus.call_deferred()
+	_focus(_confirm_ok)
 
 
 func _close_confirm() -> void:
 	_confirm_panel.hide()
 	if _panel.visible and _continue_button:
-		_continue_button.grab_focus.call_deferred()
+		_focus(_continue_button)
 
 
 func _on_quit_button() -> void:
-	if _title_mode:
-		_show_confirm("Çıkış", "Oyundan çıkmak istediğine emin misin?", "Çıkış Yap", _quit_app)
-	else:
-		request_save_and_exit()
+	request_save_and_exit()
 
 
-## Duraklatma menüsü: onay → kayıt (doğrulanır) → ana menü. Uygulama KAPANMAZ.
+## Duraklatma menüsü: onay -> committed kayıt -> ana menü. Uygulama KAPANMAZ.
+## commit_save en yeni save_serial'ı alır; Devam Et (load_game, en yüksek serial) bu committed durumu yükler.
 func request_save_and_exit() -> void:
-	_show_confirm("Emin misin?", "İlerlemen kaydedilecek ve ana menüye dönülecek.", "Kaydet ve Çık", _save_and_exit)
+	_show_confirm("Emin misin?", "İlerlemen kaydedilecek ve ana menüye döneceksin. Emin misin?", "Kaydet ve Çık", _save_and_exit)
 
 
 func _save_and_exit() -> void:
-	if not SaveManager.save_resume_point():
+	if not SaveManager.commit_save(&"save_and_quit"):
 		_show_confirm("Kayıt başarısız", "Kayıt başarısız. Tekrar denemek ister misin?", "Tekrar Dene", _save_and_exit)
 		return
+	_confirm_panel.hide()
+	return_to_title()
+
+
+## Ana Menüye Dön: kayıt YAZMAZ. Kaydedilmemiş ilerleme gider; başlıkta Devam Et son committed kaydı yükler.
+func request_main_menu() -> void:
+	_show_confirm("Emin misin?", "Kaydedilmemiş ilerleme kaybolacak. Ana menüye dönmek istiyor musun?", "Ana Menüye Dön", _main_menu_no_save)
+
+
+## Resume dosyası uygulama-kapanış güvenliği içindi; burada silinmezse (daha yeni serial ile) Devam Et
+## kaydedilmemiş ilerlemeyi geri getirirdi. Bu yüzden önce discard_resume(), sonra sahne yeniden kurulur.
+func _main_menu_no_save() -> void:
+	SaveManager.discard_resume()
 	_confirm_panel.hide()
 	return_to_title()
 
@@ -226,6 +264,7 @@ func return_to_title() -> void:
 	_force_title = true
 	_title_shown = false
 	_panel.hide()
+	UiGate.set_pause_menu(false)
 	DialogueManager.clear()
 	UiGate.set_story(false)
 	UiGate.set_journal(false)
@@ -357,10 +396,13 @@ func open_menu() -> void:
 		return
 	_title_mode = false
 	_panel.dim.color.a = 0.78
+	_main_box.show()
+	_settings_box.hide()
 	_panel.show()
 	UiGate.set_pause_menu(true)
 	MobileInputManager.clear_held_inputs()
 	_refresh_mode()
+	_focus(_continue_button)
 
 func close_menu() -> void:
 	var was_title := _title_mode
@@ -372,15 +414,6 @@ func close_menu() -> void:
 	MobileInputManager.clear_held_inputs()
 	if was_title:
 		title_closed.emit()
-
-func _new_game() -> void:
-	if not _confirm:
-		_confirm = true
-		_new_button.text = "Sıfırdan başlamak için tekrar bas"
-		return
-	close_menu()
-	SaveManager.start_new_game()
-
 
 ## Başlıktan onaylı yeni oyun (onay title_screen'de alındı).
 func _start_fresh() -> void:

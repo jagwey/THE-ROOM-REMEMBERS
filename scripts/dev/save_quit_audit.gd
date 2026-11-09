@@ -1,6 +1,7 @@
 extends SceneTree
-## Kaydet ve Çık: onay → kayıt doğrulanır → ANA MENÜ (uygulama kapanmaz) → Devam Et kaydedilen
-## konumdan başlar. Kayıt hatası → "Tekrar Dene". Ölüm ise yine yatak noktasına döner (resume silinir).
+## Kaydet ve Çık: onay → commit_save → ANA MENÜ (uygulama kapanmaz) → Devam Et committed durumu yükler.
+## Ana Menüye Dön: kayıt yazmaz, resume silinir, Devam Et committed kaydı yükler. Düğme sırası/metinler kontrol edilir.
+## Kayıt hatası → "Tekrar Dene". Ölüm yatak noktasına döner (resume silinir).
 ## Çalıştır: TORIMON_TEST=1 godot --headless --path . -s res://scripts/dev/save_quit_audit.gd
 var failures := 0
 var _quit_called := false
@@ -48,21 +49,38 @@ func _run() -> void:
 	gate.set_story(false)
 	menu.open_menu()
 	check(menu._panel.visible, "pause menu opens")
-	check(menu._quit_button.text == "Kaydet ve Çık", "pause button text 'Kaydet ve Çık' (%s)" % menu._quit_button.text)
-	## Menüde "Ana Menüye Dön" kopyası olmamalı.
-	var dup := 0
+	var order := []
+	for b in menu._main_box.get_children():
+		order.append((b as Button).text)
+	check(order == ["Devam Et", "Ayarlar", "Kaydet ve Çık", "Ana Menüye Dön"], "pause buttons in order %s" % str(order))
+	var yeni := 0
 	for b in menu._panel.find_children("*", "Button", true, false):
-		if "Ana Men" in (b as Button).text:
-			dup += 1
-	check(dup == 0, "no duplicate 'Ana Menüye Dön' button")
+		if "Yeni" in (b as Button).text:
+			yeni += 1
+	check(yeni == 0, "no 'Yeni oyun' button in pause menu")
+	## Ayarlar: var olan ayar düğmeleri alt sayfada, Geri ana sayfaya döner.
+	menu._settings_button.pressed.emit()
+	check(menu._settings_box.visible and not menu._main_box.visible, "Ayarlar opens settings sub-page")
+	check(menu._vol_button.is_visible_in_tree() and menu._music_button.is_visible_in_tree(), "settings page shows volume + music")
+	menu._show_pause_page(false)
+	check(menu._main_box.visible and not menu._settings_box.visible, "Geri returns to main pause page")
 	## 1) Onay → Vazgeç: hiçbir şey olmaz.
 	menu._quit_button.pressed.emit()
 	check(menu.is_confirm_open(), "confirm dialog opens")
-	check(menu._confirm_panel.title_label.text == "Emin misin?", "confirm title")
-	check(menu._confirm_text.text == "İlerlemen kaydedilecek ve ana menüye dönülecek.", "confirm text")
+	check(menu._confirm_text.text == "İlerlemen kaydedilecek ve ana menüye döneceksin. Emin misin?", "confirm text (%s)" % menu._confirm_text.text)
 	check(menu._confirm_ok.text == "Kaydet ve Çık", "confirm ok button")
+	var cancel_texts := []
+	for b in menu._confirm_ok.get_parent().get_children():
+		cancel_texts.append((b as Button).text)
+	check(cancel_texts == ["Vazgeç", "Kaydet ve Çık"], "confirm buttons %s" % str(cancel_texts))
 	menu._close_confirm()
 	check(not menu.is_confirm_open() and menu._panel.visible, "Vazgeç keeps game + menu")
+	## Ana Menüye Dön onay metni.
+	menu._main_menu_button.pressed.emit()
+	check(menu.is_confirm_open() and menu._confirm_text.text == "Kaydedilmemiş ilerleme kaybolacak. Ana menüye dönmek istiyor musun?", "main menu confirm text (%s)" % menu._confirm_text.text)
+	check(menu._confirm_ok.text == "Ana Menüye Dön", "main menu confirm ok button")
+	menu._close_confirm()
+	check(not menu.is_confirm_open() and current_scene.get_node_or_null("Player") == player, "main menu Vazgeç changes nothing")
 	## 2) Kayıt hatası → Tekrar Dene diyaloğu.
 	sm.force_fail_for_test = true
 	menu._quit_button.pressed.emit()
@@ -75,19 +93,20 @@ func _run() -> void:
 	OS.set_environment("TORIMON_FRESH", "") ## yeniden yüklemede kayıttan devam
 	var old_scene := current_scene
 	menu._confirm_ok.pressed.emit()
-	var saved: Variant = sm._read_save(sm.resume_path())
-	check(saved != null and (saved["character_current_life_knowledge"] as Dictionary).has("resume"), "save verified with resume point")
+	var saved: Variant = sm._read_save(sm.SAVE_PATH)
+	check(saved != null and (saved as Dictionary).get("commit_reason", "") == "save_and_quit", "committed save written with reason save_and_quit")
+	var committed_serial := int((saved as Dictionary).get("save_serial", 0))
 	await process_frame
 	await process_frame
 	await create_timer(0.3).timeout
 	check(current_scene != null and current_scene != old_scene, "scene rebuilt (returned to title, app still running)")
 	menu = _menu()
 	check(menu.is_title_open(), "title screen open after Save & Quit")
-	check(menu._title_screen._start_button.text == "Devam Et", "title shows 'Devam Et'")
+	check(menu._title_screen._start_button.text == "Devam Et" and not menu._title_screen._start_button.disabled, "title Devam Et enabled")
 	player = current_scene.get_node("Player")
-	check(rm.get_active_room_id() == &"awakening", "continue room = saved room")
-	check(player.global_position.distance_to(saved_pos) < 6.0, "continue at saved position (%s vs %s)" % [player.global_position, saved_pos])
-	check(not (state.character_current_life_knowledge as Dictionary).has("resume"), "resume point consumed once")
+	check(rm.get_active_room_id() == &"awakening", "continue room = committed room")
+	check(player.global_position.distance_to(state.get_checkpoint()) < 40.0, "continue at committed safe position (%s vs %s)" % [player.global_position, state.get_checkpoint()])
+	check(int(sm._serial_of(sm._read_save(sm.SAVE_PATH))) >= committed_serial, "committed serial intact")
 	## Başlıktaki çıkış onaylı sayfa.
 	var ts: Control = menu._title_screen
 	ts._show_page(&"quit_confirm")
@@ -100,6 +119,26 @@ func _run() -> void:
 	ts.start_requested.emit()
 	await create_timer(0.6).timeout
 	check(not menu.is_title_open(), "Devam Et closes title")
+	## 4b) Ana Menüye Dön: kaydedilmemiş ilerleme gider, Devam Et committed kaydı yükler.
+	var committed_deaths := int(state.player_progress_knowledge.get("deaths", 0))
+	state.player_progress_knowledge["deaths"] = committed_deaths + 7
+	sm.save_resume_point() ## daha yeni serial'lı resume
+	check(FileAccess.file_exists(sm.resume_path()), "resume file exists before Ana Menüye Dön")
+	root.get_node("DialogueManager").clear()
+	menu.open_menu()
+	menu._main_menu_button.pressed.emit()
+	menu._confirm_ok.pressed.emit()
+	await process_frame
+	await process_frame
+	await create_timer(0.3).timeout
+	menu = _menu()
+	check(menu.is_title_open(), "title open after Ana Menüye Dön")
+	check(not FileAccess.file_exists(sm.resume_path()), "resume invalidated by Ana Menüye Dön")
+	check(int(state.player_progress_knowledge.get("deaths", -1)) == committed_deaths, "Devam Et state = committed (deaths %d)" % int(state.player_progress_knowledge.get("deaths", -1)))
+	ts = menu._title_screen
+	ts.start_requested.emit()
+	await create_timer(0.6).timeout
+	player = current_scene.get_node("Player")
 	## 5) Ölüm: resume değil yatak/checkpoint.
 	sm.save_resume_point()
 	check((state.character_current_life_knowledge as Dictionary).has("resume"), "resume written again")

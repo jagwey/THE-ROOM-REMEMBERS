@@ -202,6 +202,12 @@ func consume_fresh_start() -> bool:
 	return v
 
 
+## Ana Menüye Dön: kaydedilmemiş ilerleme (resume) atılır; Devam Et committed kaydı yükler.
+func discard_resume() -> void:
+	_delete_resume_files()
+	GameState.character_current_life_knowledge.erase("resume")
+
+
 func _delete_resume_files() -> void:
 	var rp := resume_path()
 	for suffix in ["", ".bak", ".prev", ".tmp"]:
