@@ -99,7 +99,7 @@ Verifies cross-system synergy:
 ### 3.4 Tier 4: Real-World Scenarios & Full Game Progression
 End-to-end scenario validation:
 - **Awakening to Core Progression**: Traversal through Awakening, Decay, Library, Experiment, Mirrors, to Core.
-- **Good Ending Shard Sequence**: Obtaining both `seal_shard_1` and `seal_shard_2`, entering Core, receiving Shilda guidance, and completing Good Trust Seal.
+- **Single Final Sequence (v3)**: Obtaining both `seal_shard_1` and `seal_shard_2` plus the Soul Slash, entering Core, receiving Shilda guidance, and playing `FinalSequence` through END OF PART I and credits (`final_sequence_audit.gd`).
 - **Death Loop & Corpse Accumulation**: Player dying on hazards, safely placing corpse platform, and using it to overcome obstacle.
 - **Complete Mobile Session Simulation**: Simulating POCO X6 Pro 5G environment (Sensor Landscape, Safe Area, Touch controls, Haptics toggle, System Back navigation).
 
@@ -117,11 +117,11 @@ End-to-end scenario validation:
 | 6 | Corpse push raycasts & safe floor | M1 | R1 P1-5 | T1, T2, T4 | `corpse.gd`, `corpse_manager.gd` | Pushing corpse checks wall/hazard raycasts; hazard deaths place corpse at last safe floor position (`player._safe_floor_pos`). |
 | 7 | EchoAltar transition cleanup & passive doors | M1 | R1 P1-3, P1-4 | T1, T3 | `echo_altar.gd`, `built_room.gd` | Room exit cleans up altar recording/playback signals. Re-entering passive room does not re-enable door collision. |
 | 8 | Audio worker thread & ambient triggers | M2 | R1 P0-3 | T1 | `audio_manager.gd` | `_sem.post()` called on enqueue. Save continuation and room entry trigger region ambient track. Title screen plays title ambience. |
-| 9 | Core room exit & good ending guidance | M2 | R1 P0-5 | T1, T4 | `scenes/rooms/core.tscn`, `ending_manager.gd` | `core.tscn` contains exit door leading to `core_seal_chamber` (`Vector2(880, 288)`). Choice pads have visual runes. Missing shards trigger Shilda warning. |
+| 9 | Core room exit & final guidance | M2 | R1 P0-5 | T1, T4 | `scenes/rooms/core.tscn`, `ending_manager.gd` | `core.tscn` contains exit door leading to `core_seal_chamber` (`Vector2(880, 288)`). v3: choice pads removed. Missing shards trigger Shilda warning. |
 | 10 | Shilda spawn timing & corpse mourning | M2 | R1 P0-6, P0-7 | T1 | `keeper_controller.gd`, `room_manager.gd` | Shilda never spawns in wrong rooms or after defeat. Intro mystery deferred until title closes. Mourning filters corpses by active room ID. |
 | 11 | Android renderer & audio effects | M2 | R1 P0-8 | T1 | `project.godot`, `audio_manager.gd` | `project.godot` specifies `renderer/rendering_method.mobile="gl_compatibility"`. Audio buses consolidate reverb. |
 | 12 | UiGate layer flags | M2 | R1 P1-6 | T1, T2 | `ui_gate.gd` | Distinct flags for `TITLE`, `PAUSE_MENU`, `JOURNAL`. Setting one does not bleed input or clear another layer inappropriately. |
-| 13 | EndingUI double touch skip | M2 | R1 P1-7 | T1, T2 | `ending_ui.gd` | Rejects `event.device == InputEvent.DEVICE_ID_EMULATION` mouse events following touch; prevents double-skipping text lines. |
+| 13 | Final skip input (was EndingUI double touch skip) | M2 | R1 P1-7 | T1, T2 | `final_sequence.gd` | v3: `ending_ui.gd` removed. `SkipListener` is event-based, consumes ui_cancel (no pause menu), and skipping is only allowed after `final_seen`. |
 | 14 | Save creation & state persistence | M2 | R1 P1-8, P1-9, P1-10 | T1, T3 | `save_manager.gd`, `game_state.gd` | No save created on title defocus. Curse level persisted across save/load. `Engine.time_scale` reset to 1.0. Stale `.prev` files deleted on new game. |
 | 15 | Puzzle hints & room inheritance | M2 | R1 P1-11, P1-12 | T1 | `awakening_room.gd`, `experiment_core_conduit.gd` | `awakening_room.gd` inherits from `room_atmosphere.gd`. Conduit puzzle timer is `3.8s`. Library witness hints reconciled with page puzzle. |
 | 16 | Door transition labels | M2 | R1 P2-1 | T1, T2 | `room_transition.gd` | Transition labels horizontally centered and clamped within room bounds (`[32.0, room_width - 32.0]`). |
@@ -138,7 +138,7 @@ End-to-end scenario validation:
 | 27 | Gothic Region Title Cards | M3 | R2 Feel | T1, T3 | `room_manager.gd`, `hud_controller.gd` | First entry to each of the 6 regions triggers `HudController.show_region_title(region)` and plays audio stinger `&"discovery"`. |
 | 28 | Cracked Mirror fast travel | M3 | R2 Feel | T1, T3 | `cracked_mirror.gd`, `room_manager.gd` | Discovered mirrors recorded in `world_memory_state["unlocked_mirrors"]`. Interaction opens travel menu and navigates between hubs. |
 | 29 | Dev audit updates | M4 | R3 Audits | T1 | `scripts/dev/*_audit.gd` | `door_audit.gd` verifies `z_index >= 1`. `release_audit.gd` verifies layer 8, core exit, save overwrite. `controls_audit.gd` verifies push, corpses, echo twin. |
-| 30 | Headless test suite & smoke test | M4 | R3 Tests | T1, T4 | `main.gd`, `scripts/dev/` | `_headless_faz67_smoke` sets `seal_shard_1` and `seal_shard_2`, executing all ending paths with 0 errors. |
+| 30 | Headless test suite & smoke test | M4 | R3 Tests | T1, T4 | `main.gd`, `scripts/dev/` | `_headless_faz67_smoke` sets `seal_shard_1` and `seal_shard_2`, executing the single v3 final path (`FinalSequence`, END OF PART I) with 0 errors. |
 | 31 | POCO X6 Pro 5G Android APK build & test | M4 | R3 Android | T1, T4 | `export_presets.cfg`, ADB | Android build configuration validated. APK installs to `QC59AM55BMCIEUHQ` with `permissions/vibrate=true`. |
 | 32 | Versioning & export configuration | M5 | R4 Version | T1 | `project.godot`, `export_presets.cfg` | `config/version="1.3.0"`, `preset.0.options.version/code=17`, `version/name="1.3.0"`. |
 | 33 | Git commit, tag, and GitHub Release | M5 | R4 Release | T1, T4 | Git / GitHub CLI | Clean working tree, tag `v1.3.0`, GitHub Release draft with APK binary attachment. |

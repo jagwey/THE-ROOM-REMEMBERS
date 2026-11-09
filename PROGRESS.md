@@ -221,3 +221,11 @@ Dal: cursor/playable-story-flow-8e4e · Sürüm: v1.2.0 (versionCode 16)
 - [x] Diyalog (ab0c046): giriş satırı, çekirdek evre konuşması, bölgeye göre yasak uyarı, devre/ikili oda satırları karakterde.
 - Testler (TORIMON_TEST=1): release 111/0, death_loop 0, curse_reload 0, save_quit 0, story_flags 0, start_flow 0, final_sequence 0, lore_canon 291 satır/0, interact 0, e2e 50/50, faz67 smoke exit 0 (curse_possession=true).
 - Not: keeper `is_defeated`/`_hide_defeated` stubları main.gd smoke/audit referansı yüzünden kaldı. story_flags_audit "current_scene is null" hatası önceden var.
+
+## v3 hikaye Task 11b — Test altyapısı, tam audit koşusu, ekran turu (2026-11-09)
+- [x] `Run-Audit.ps1`: 23 dev audit + e2e_runner + faz67 smoke izole kopyada (TORIMON_TEST=1); ikinci import geçişi, kök dosyalar (export_presets/PROJECT/TEST_*) kopyalanır, `-IncludeLegacy` opsiyonel; PASS/FAIL regex düzeltildi.
+- [x] `docs/gelistirme/v3-test-plan.md`: spec §36 -> audit haritası + "Otomatik KAPSANMAYAN" listesi.
+- [x] Düzeltmeler: `final_sequence.gd` SkipListener `set_input_as_handled()`; `ui_header_portrait_audit.gd` giriş satırı regex'i (11a sonrası bayat); PROJECT/TEST_INFRA/TEST_READY eski ending metinleri v3 tek finale güncellendi.
+- Testler (Run-Audit, 25 dev audit + e2e): hepsi geçti, 0 fail (e2e 50/50, release 111, death_loop 110, memory_seal 100, curse_reload 67, final_sequence 27, start_flow 46, faz67 exit 0).
+- Ekran turu 1920x1080 (scratchpad qa/tour/shots, qa/shots): title_settings, newgame_intro, seal_*, curse_band50/90/possession_mid, bed_1/2/3, t7_*, t9_*; gözle kontrol edildi. Rapor: `.superpowers/sdd/v3-story-overhaul/task-11b-report.md` (git-ignored).
+- Not: eski `audit.gd` `seal` senaryosu AUDIT_TIMEOUT (v0.10.1 öncesi, varsayılan koşudan çıkarıldı). Run-Audit düzeltmesi 3'ten fazla deneme aldı (farklı sorun sınıfları).

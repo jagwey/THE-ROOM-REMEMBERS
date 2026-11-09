@@ -477,6 +477,7 @@ class SkipListener extends Node:
 	func _input(event: InputEvent) -> void:
 		if event.is_action_pressed("ui_cancel") and on_skip.is_valid():
 			on_skip.call()
+			get_viewport().set_input_as_handled() ## Esc duraklatma menüsünü de açmasın
 
 
 ## Zaman beklemesi; final daha önce tam izlendiyse ui_cancel ile hızlanır, ilk izleme atlanamaz.

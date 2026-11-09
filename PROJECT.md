@@ -6,7 +6,7 @@
   - `scripts/autoload/`: `GameState`, `RoomManager`, `CurseManager`, `AudioManager`, `SaveManager`, `EndingManager`, `MobileInputManager`.
   - `scripts/player/`: `player_controller.gd`, `soul_slash_wave.gd`.
   - `scripts/world/`: `room_transition.gd`, `weight_stone.gd`, `corpse.gd`, `echo_altar.gd`, `echo_twin.gd`, `keeper_controller.gd`, `memory_shade_walking.gd`, `memory_shade_shielded.gd`, `cracked_mirror.gd`.
-  - `scripts/ui/`: `session_menu.gd`, `journal_map.gd`, `ending_ui.gd`, `ui_gate.gd`, `code_seal_base.gd`, `region_title_card.gd`.
+  - `scripts/ui/`: `session_menu.gd`, `journal_map.gd`, `ui_gate.gd`, `credits_scroll.gd`, `code_seal_base.gd`, `region_title_card.gd`.
   - `scripts/dev/`: `door_audit.gd`, `release_audit.gd`, `controls_audit.gd`, `save_robust_audit.gd`, `death_loop_audit.gd`, `e2e_runner.gd`.
   - `scenes/rooms/`: 30 room scenes (`core.tscn`, `core_seal_chamber.tscn`, `decay_weight.tscn`, `awakening_room.tscn`, etc.).
 
@@ -21,11 +21,11 @@
 | 6 | Corpse push raycasts & safe floor | Add raycast collision checks to corpse push and record hazard death corpses at safe floor | M1 | R1 P1-5 |
 | 7 | EchoAltar transition cleanup & passive doors | Disconnect altar signals on room transition and fix passive door layer persistence | M1 | R1 P1-3, P1-4 |
 | 8 | Audio worker thread & ambient triggers | Ensure `_sem.post()` on task enqueue, eliminate main thread synthesis hitches, trigger ambient audio on save continuation and title screen | M2 | R1 P0-3 |
-| 9 | Core room exit & good ending guidance | Add exit door on left of `core.tscn` to `core_seal_chamber` (`Vector2(880, 288)`), visual runes on choice pads, Shilda warning | M2 | R1 P0-5 |
+| 9 | Core room exit & final guidance | Add exit door on left of `core.tscn` to `core_seal_chamber` (`Vector2(880, 288)`); v3: choice pads removed, single final (`FinalSequence`, END OF PART I), Shilda warning | M2 | R1 P0-5 |
 | 10 | Shilda spawn timing & corpse mourning | Prevent Shilda in wrong rooms / after defeat, defer mystery beat until title closes, mourn by active room ID | M2 | R1 P0-6, P0-7 |
 | 11 | Android renderer & audio effects | Set `renderer/rendering_method.mobile="gl_compatibility"`, optimize particles, consolidate reverb | M2 | R1 P0-8 |
 | 12 | UiGate layer flags | Separate `UiGate` layer flags (`TITLE`, `PAUSE_MENU`, `JOURNAL`) to eliminate input bleed | M2 | R1 P1-6 |
-| 13 | EndingUI double touch skip | Filter touch / mouse emulation double events in `ending_ui.gd` | M2 | R1 P1-7 |
+| 13 | Final skip input (was EndingUI double touch skip) | v3: `ending_ui.gd` deleted; final skip is event-based `SkipListener` in `final_sequence.gd` (ui_cancel only after `final_seen`) | M2 | R1 P1-7 |
 | 14 | Save creation & state persistence | Prevent premature save on defocus, persist curse level, reset `time_scale = 1.0`, delete stale `.prev` | M2 | R1 P1-8, P1-9, P1-10 |
 | 15 | Puzzle hints & room inheritance | Reconcile library witness hints, conduit timing (3.8s), inherit `awakening_room.gd` from `room_atmosphere.gd` | M2 | R1 P1-11, P1-12 |
 | 16 | Door transition labels | Center door labels horizontally and clamp within room bounds | M2 | R1 P2-1 |
@@ -51,7 +51,7 @@
 | # | Name | Scope | Dependencies | Status |
 |---|------|-------|-------------|--------|
 | M1 | Physics & Core Systems Bugfixes | Features 1–7 (Weight stone, Door z-index, Windows save overwrite, ShadowDash mask, Sword attack offset, Corpse raycasts, EchoAltar cleanup) | none | DONE |
-| M2 | Audio, Scene Flow & UI/Mobile Bugfixes | Features 8–21 (Audio worker & ambience, Core exit & good ending, Shilda timing/mourning, Mobile renderer & orientation, UiGate, EndingUI, Journal, SealCode, Mobile UI hints) | M1 | IN_PROGRESS |
+| M2 | Audio, Scene Flow & UI/Mobile Bugfixes | Features 8–21 (Audio worker & ambience, Core exit & final guidance, Shilda timing/mourning, Mobile renderer & orientation, UiGate, FinalSequence, Journal, SealCode, Mobile UI hints) | M1 | IN_PROGRESS |
 | M3 | Combat & Emergent Mechanics | Features 22–28 (Walking & Shielded Shades, Corpse one-way platforming, Echo attack/skill replay, Mobile haptics & settings toggle, Region title cards, Cracked mirror fast travel) | M1 | DONE |
 | M4 | Audits, Tests & POCO X6 Pro Deployment | Features 29–31 (Update door_audit, release_audit, controls_audit, fix main.gd smoke test, build Android APK, install & verify via ADB on POCO X6 Pro 5G) | M1, M2, M3 | PLANNED |
 | M5 | Versioning & GitHub v1.3.0 Release | Features 32–33 (project.godot & export_presets versioning, git commit, tag v1.3.0, GitHub release creation with APK artifact) | M4 | PLANNED |

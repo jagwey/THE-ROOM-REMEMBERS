@@ -74,11 +74,11 @@ The individual dev audit scripts under `scripts/dev/` have been updated in accor
 | **F06** | Corpse push raycasts & safe floor | M1 | T1, T4 | FAIL | `corpse.gd` has wall raycast check; player records `_safe_floor_pos` on floor |
 | **F07** | EchoAltar transition cleanup & passive doors | M1 | T1, T3 | **PASS** | Altar signal cleanup on room transition and inactive room collision isolation |
 | **F08** | Audio worker thread & ambient triggers | M2 | T1 | FAIL | `AudioManager._sem.post()` on enqueue and ambient audio trigger on save continuation |
-| **F09** | Core room exit & good ending guidance | M2 | T1, T4 | FAIL | `core.tscn` contains exit door leading back to `core_seal_chamber` |
+| **F09** | Core room exit & final guidance | M2 | T1, T4 | FAIL | `core.tscn` contains exit door leading back to `core_seal_chamber` |
 | **F10** | Shilda spawn timing & corpse mourning | M2 | T1 | **PASS** | Shilda mourning filters corpses by active room ID; timing prevents early spawn |
 | **F11** | Android renderer & audio effects | M2 | T1 | **PASS** | `renderer/rendering_method.mobile="gl_compatibility"` configured |
 | **F12** | UiGate layer flags | M2 | T1, T2 | FAIL | `TITLE`, `PAUSE_MENU`, `JOURNAL` separate flags to eliminate input bleed |
-| **F13** | EndingUI double touch skip | M2 | T1, T2 | FAIL | Filters `DEVICE_ID_EMULATION` mouse events after touch |
+| **F13** | Final skip input (was EndingUI double touch skip) | M2 | T1, T2 | FAIL | v3: `ending_ui.gd` removed; event-based `SkipListener` in `final_sequence.gd` |
 | **F14** | Save creation & state persistence | M2 | T1, T3 | FAIL | Curse persisted across save/load, `time_scale = 1.0` reset, stale `.prev` deleted |
 | **F15** | Puzzle hints & room inheritance | M2 | T1 | FAIL | `awakening_room.gd` inherits `room_atmosphere.gd`; conduit timing is 3.8s |
 | **F16** | Door transition labels | M2 | T1 | **PASS** | Centered horizontally and clamped within room bounds |
@@ -95,7 +95,7 @@ The individual dev audit scripts under `scripts/dev/` have been updated in accor
 | **F27** | Gothic Region Title Cards | M3 | T1, T3 | FAIL | Title card HUD stinger triggered on first entry to each of 6 regions |
 | **F28** | Cracked Mirror fast travel | M3 | T1 | PENDING | Discovered cracked mirrors act as fast-travel anchors between hubs |
 | **F29** | Dev audit updates | M4 | T1 | **PASS** | `door_audit.gd`, `release_audit.gd`, and `controls_audit.gd` contain v1.3.0 assertions |
-| **F30** | Headless test suite & smoke test | M4 | T1, T4 | FAIL | `_headless_faz67_smoke` sets `seal_shard_1` and `seal_shard_2` before good ending |
+| **F30** | Headless test suite & smoke test | M4 | T1, T4 | FAIL | `_headless_faz67_smoke` sets `seal_shard_1` and `seal_shard_2` before the single v3 final (`FinalSequence`) |
 | **F31** | POCO X6 Pro 5G Android APK build & test | M4 | T1, T4 | **PASS** | `export_presets.cfg` arm64 enabled and package name verified |
 | **F32** | Versioning & export configuration | M5 | T1 | FAIL | `project.godot` version="1.3.0"; `export_presets.cfg` versionCode=17, name="1.3.0" |
 | **F33** | Git commit, tag, and GitHub Release | M5 | T1 | **PASS** | Clean tree and required documentation structure verified |
@@ -107,7 +107,7 @@ The individual dev audit scripts under `scripts/dev/` have been updated in accor
 1. **`save_manager.gd:118` GDScript Parse Warning-as-Error**:
    - `var verify := _read_save(SAVE_PATH)` caused compilation failure because Godot 4.7 treats inferring from Variant as an error. Escalated to worker/orchestrator; resolved by typing as `var verify: Variant = _read_save(...)`.
 2. **`main.gd:262` Smoke Test Good Ending Hang**:
-   - `_headless_faz67_smoke()` fails to set `seal_shard_1` and `seal_shard_2`, causing `EndingManager.can_attempt_good_seal()` to return false. The smoke test then falls into an unhandled dialogue branch on `crystal.on_interact()` and hangs in headless execution. Must be resolved as part of Feature 30.
+   - `_headless_faz67_smoke()` fails to set `seal_shard_1` and `seal_shard_2`, causing `EndingManager.can_begin_final()` (v3; was `can_attempt_good_seal()`) to return false. The smoke test then falls into an unhandled dialogue branch on `crystal.on_interact()` and hangs in headless execution. Must be resolved as part of Feature 30.
 3. **`player_controller.gd:616` Duplicate Method**:
    - Previously had duplicate declaration of `is_dashing()`. Resolved during M1 worker integration.
 
