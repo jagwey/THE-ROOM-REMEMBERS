@@ -36,7 +36,7 @@ Dal: cursor/playable-story-flow-8e4e · Sürüm: v1.2.0 (versionCode 16)
 - [x] T4 Hafıza Mühürleri (2026-11-09): 12 ana odada `memory_seal_point` (commit_save + banner + `discovered_seals` iki dosyada, güvenlik kapısı, Mühürler arası geçiş modalı, `seal_<oda>` spawn); `memory_seal_audit` 0 hata, release 111/0, e2e 50/0; pencereli kontrol edildi
 - [x] T5 lanet bantları + ele geçirilme (2026-11-09): bantlar 0-49/50-69/70-89/90-99 (`set_curse`, `get_band`, `band_changed`), 100'de ölüm yerine `PossessionOverlay` (ilk ~4.5 sn, tekrar ~2 sn + girdiyle atlama, `GameState.possession_count` iki kayıtta kalıcı) → `load_committed()` + güvenli konum, lanet ≤25; DeathManager/ceset/yatak/final yok; `curse_reload_audit` + `death_loop_audit` güncel; pencereli 1920x1080 kontrol edildi
 - [x] T6 yatak respawn (2026-11-09): normal ölüm her zaman `awakening` / `rebirth_bed` (120,280) (`DeathManager.REBIRTH_*`), oda checkpoint'i yalnız lanet yeniden yükleme/mühür yolculuğu için kaldı; ceset uzak odada, dünya kalır, committed `save_serial` değişmez; `death_loop_audit` genişletildi; pencereli kontrol edildi
-- [ ] T7 açılış/isim · T8 menüler · T9 tek final · T10 diyalog · T11 audit+test planı
+- [x] T7 açılış/isim · T8 menüler · T9 tek final · T10 diyalog · T11 audit+test planı (ayrıntı aşağıdaki bölümlerde)
 
 ## Kalan
 - docs/gelistirme/ altındaki izlenmeyen log/zip dosyaları: .gitignore veya temizlik kararı bekliyor
@@ -229,3 +229,10 @@ Dal: cursor/playable-story-flow-8e4e · Sürüm: v1.2.0 (versionCode 16)
 - Testler (Run-Audit, 25 dev audit + e2e): hepsi geçti, 0 fail (e2e 50/50, release 111, death_loop 110, memory_seal 100, curse_reload 67, final_sequence 27, start_flow 46, faz67 exit 0).
 - Ekran turu 1920x1080 (scratchpad qa/tour/shots, qa/shots): title_settings, newgame_intro, seal_*, curse_band50/90/possession_mid, bed_1/2/3, t7_*, t9_*; gözle kontrol edildi. Rapor: `.superpowers/sdd/v3-story-overhaul/task-11b-report.md` (git-ignored).
 - Not: eski `audit.gd` `seal` senaryosu AUDIT_TIMEOUT (v0.10.1 öncesi, varsayılan koşudan çıkarıldı). Run-Audit düzeltmesi 3'ten fazla deneme aldı (farklı sorun sınıfları).
+
+## v3 hikaye — Final branch review + düzeltme (2026-11-09)
+- [x] Opus final review: 0 Critical / 2 Important / 8 Minor.
+- [x] Düzeltme e221a4e: X'in gizli repliği ayrı `X?` token'ı ile "???" (Shilda'ya çözülmez, portre yok, nötr blip); ele geçirilme sırasında `request_death`/`damage` no-op; `load_committed()` başarısızsa uyarı + güvenli konum; `_finish` session_menu yoksa sahne yeniden yüklenir; ölü `possession` dalları silindi. Re-review: APPROVED.
+- Testler (TORIMON_TEST=1): final_sequence 32/0, curse_reload 84/0, death_loop 110/0, release 111/0, lore_canon 7/0, e2e 50/50, faz67 exit 0. Pencereli 1920x1080: X repliği "???", portre yok — gözle kontrol edildi.
+- Park (küçük): `CurseManager.possessing` yeni oyunda/yüklemede sıfırlanmıyor (ulaşılabilir yol yok); M2 hata yolu odaya yeniden girmiyor; M5 fallback `reset_registry` atlıyor; README/TEST_READY F13 satırı, `.bak` yorumu, ölü `UiGate.Layer.ENDING`.
+- Durum: v3 planı tamam, yerel commit'ler `claude/v1.4.1` üzerinde. Push/release YAPILMADI. Cihaz (Android) testi yapılmadı.
