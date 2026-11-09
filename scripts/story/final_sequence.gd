@@ -72,7 +72,7 @@ func play(tree: SceneTree, fast_mode: bool = false) -> void:
 		["Noroi", "Gidelim."],
 	])
 	await _wait(0.8)
-	await _say([["???", "Demek sonunda başardınız."]])
+	await _say([[DialogueManager.UNKNOWN_VOICE, "Demek sonunda başardınız."]])
 	await _say([["Shilda", "Bu ses..."]])
 	await _x_enters()
 	await _say([
@@ -408,6 +408,12 @@ func _finish() -> void:
 	if menu != null and menu.has_method("return_to_title"):
 		last_run["title_requested"] = true
 		menu.return_to_title()
+		return
+	## Başlık yolu yoksa siyah örtü tek başına kalmasın: örtüyü kaldır, sahneyi baştan yükle.
+	last_run["title_requested"] = true
+	if _overlay != null and is_instance_valid(_overlay):
+		_overlay.queue_free()
+	_tree.reload_current_scene()
 
 
 # --- Yardımcılar -------------------------------------------------------------------------

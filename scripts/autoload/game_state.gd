@@ -172,7 +172,7 @@ func get_world_flag(flag: StringName, default: Variant = false) -> Variant:
 
 func damage(amount: int = 1) -> void:
 	## Ölüm akışında (ruh/yas/doğuş) hasar yok: yenilenen can geri düşmesin.
-	if DeathManager.is_dying:
+	if DeathManager.is_dying or CurseManager.possessing:
 		return
 	hearts = maxi(0, hearts - amount)
 	hearts_changed.emit(hearts, max_hearts)

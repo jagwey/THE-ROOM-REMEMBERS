@@ -4,6 +4,7 @@ extends SceneTree
 ## Calistir: TORIMON_TEST=1 godot --headless --path . -s res://scripts/dev/final_sequence_audit.gd
 var failures := 0
 var FS: GDScript
+const UNKNOWN := "X?" ## DialogueManager.UNKNOWN_VOICE
 var shown: Array = [] ## DialogueManager.line_shown kayitlari: [konusmaci, sayfa]
 
 
@@ -24,7 +25,7 @@ func _check_lines_in_order() -> void:
 	var expected: Array = [
 		["Shilda", "Ellerim..."], ["Noroi", "Shilda?"],
 		["Shilda", "Sanırım... sonunda bitti."], ["Noroi", "Gidelim."],
-		["???", "Demek sonunda başardınız."], ["Shilda", "Bu ses..."],
+		[UNKNOWN, "Demek sonunda başardınız."], ["Shilda", "Bu ses..."],
 		["Shilda", "Kurucu...?"], ["X", "Merhaba, Shilda."], ["X", "Biliyorum."],
 		["X", "Her şeyi kaydettim."], ["Noroi", "Bizi burada bıraktın."],
 		["X", "Bu bir deneydi."],
@@ -36,6 +37,17 @@ func _check_lines_in_order() -> void:
 	var at := 0
 	var missing: Array = []
 	var shilda_tag := "Shilda" if root.get_node("GameState").is_shilda_named() else "???"
+	## X'in gizli sesi: Shilda adı bilinse de "Shilda" olmaz; kartta "???" görünür.
+	var dm_node: Node = root.get_node("DialogueManager")
+	var hidden_voice := false
+	var hidden_as_shilda := false
+	for s in shown:
+		if String(s[1]) == "Demek sonunda başardınız.":
+			hidden_voice = dm_node.display_speaker(String(s[0])) == "???"
+			hidden_as_shilda = String(s[0]) == "Shilda"
+	check(hidden_voice and not hidden_as_shilda, "X hidden line displays ??? (not Shilda), shilda_named=%s" % str(root.get_node("GameState").is_shilda_named()))
+	var portraits: GDScript = load("res://scripts/ui/dialogue_portraits.gd")
+	check(portraits.key_for(dm_node.UNKNOWN_VOICE) == &"", "X hidden voice has no Shilda portrait")
 	for e in expected:
 		var found := false
 		while at < shown.size():
@@ -84,6 +96,12 @@ func _run() -> void:
 	gs.set_world_flag(&"seal_shard_2", true)
 	check(not em.can_begin_final(), "final locked without Soul Slash")
 	gs.player_progress_knowledge["ability_soul_slash"] = true
+	## Gerçek oyunda çekirdeğe gelindiğinde Shilda adlıdır: son bu durumda sınanır.
+	gs.set_shilda_named(true)
+	check(gs.is_shilda_named(), "Shilda named for final run")
+	check(dm.resolve_whisper_speaker("???", false, true) == "Shilda" and dm.resolve_whisper_speaker("Shilda", false, true) == "Shilda",
+		"resolver still names Shilda's own lines")
+	check(dm.resolve_whisper_speaker(UNKNOWN, false, true) == UNKNOWN, "resolver passes X hidden voice through")
 	check(em.can_begin_final(), "final open with all prerequisites")
 	rm.enter_room(&"core", &"default", false)
 	await process_frame

@@ -129,7 +129,23 @@ func _begin_possession() -> void:
 
 ## Son committed kayda dön: oda + güvenli konum; dünya ve hikâye durumu committed hale gelir.
 func _reload_committed() -> void:
-	SaveManager.load_committed()
+	if not SaveManager.load_committed():
+		## Committed kayıt okunamadı: canlı durum korunur, oyuncu güvenli konuma döner.
+		push_warning("CurseManager: committed save yüklenemedi; canlı durum korunuyor.")
+		var live_player := get_tree().get_first_node_in_group("player") as Node2D
+		if live_player and live_player.has_method("respawn_at"):
+			var safe_pos: Vector2 = GameState.get_checkpoint()
+			if live_player.has_method("get_last_safe_floor_pos"):
+				var floor_pos: Vector2 = live_player.get_last_safe_floor_pos()
+				if floor_pos != Vector2.ZERO:
+					safe_pos = floor_pos
+			live_player.respawn_at(safe_pos)
+		var live_cam := get_tree().get_first_node_in_group("follow_camera")
+		if live_cam and live_cam.has_method("snap_to_target"):
+			live_cam.snap_to_target()
+		restore_curse(minf(curse, POSSESSION_SAFE_CURSE))
+		SaveManager.save_game()
+		return
 	var life: Dictionary = GameState.character_current_life_knowledge
 	var room := StringName(str(life.get("checkpoint_room", life.get("room", &"awakening"))))
 	## Committed kayıt yoksa da mevcut checkpoint konumu kullanılır (oda varsayılanı değil).

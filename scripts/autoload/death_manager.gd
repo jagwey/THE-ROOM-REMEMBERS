@@ -33,13 +33,12 @@ func phase_name() -> String:
 
 
 func request_death(reason: StringName = &"unknown", full_reset: bool = false) -> void:
-	if is_dying or EndingManager.current != EndingManager.Ending.NONE:
+	## Lanet ele geçirmesi sürerken ölüm başlamaz (çukur/hasar yarışı; ceset + yatak oluşmaz).
+	if is_dying or CurseManager.possessing or EndingManager.current != EndingManager.Ending.NONE:
 		return
 	is_dying = true
 	_set_phase(Phase.DYING)
 	cinematic = not bool(GameState.player_progress_knowledge.get("first_death_seen", false))
-	## Lanet ele geçirmesi ölümden ayrıdır: ceset, yas ve ruh yok.
-	var possession := reason == &"curse"
 	death_started.emit(reason)
 	MobileInputManager.vibrate(45)
 
@@ -57,9 +56,7 @@ func request_death(reason: StringName = &"unknown", full_reset: bool = false) ->
 	GameState.player_progress_knowledge["first_death_seen"] = true
 
 	# Ceset dünya hafızasına — karakter bilgisi henüz sıfırlanmadan konum alınır.
-	var corpse_id := ""
-	if not possession:
-		corpse_id = CorpseManager.record_corpse_at(death_pos, reason)
+	var corpse_id := CorpseManager.record_corpse_at(death_pos, reason)
 
 	GameState.reset_character_life()
 	CurseManager.reset_for_new_life()
@@ -74,19 +71,18 @@ func request_death(reason: StringName = &"unknown", full_reset: bool = false) ->
 	## DYING: beden çöker (ilk ölüm daha uzun).
 	await _wait(1.1 if cinematic else 0.55)
 
-	if not possession:
-		## SOUL_RELEASE: beden ceset olarak kalır, ruh yükselir; kamera ruhu izler.
-		_set_phase(Phase.SOUL_RELEASE)
-		if player:
-			player.visible = false
-		_spawn_soul(death_pos)
-		await _rise_soul(1.5 if cinematic else 0.7)
-		# Bekçi yas: çiçek bırakabilir (öldürmez). Ruh bu sırada bedenin üstünde bekler.
-		var keeper := get_tree().get_first_node_in_group("keeper")
-		if keeper and keeper.has_method("mourn_corpse"):
-			await keeper.mourn_corpse(death_pos, corpse_id)
-		if DialogueManager.is_open:
-			DialogueManager.clear()
+	## SOUL_RELEASE: beden ceset olarak kalır, ruh yükselir; kamera ruhu izler.
+	_set_phase(Phase.SOUL_RELEASE)
+	if player:
+		player.visible = false
+	_spawn_soul(death_pos)
+	await _rise_soul(1.5 if cinematic else 0.7)
+	# Bekçi yas: çiçek bırakabilir (öldürmez). Ruh bu sırada bedenin üstünde bekler.
+	var keeper := get_tree().get_first_node_in_group("keeper")
+	if keeper and keeper.has_method("mourn_corpse"):
+		await keeper.mourn_corpse(death_pos, corpse_id)
+	if DialogueManager.is_open:
+		DialogueManager.clear()
 
 	await _respawn()
 

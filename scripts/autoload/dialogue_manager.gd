@@ -75,6 +75,15 @@ func _show_next() -> void:
 	_schedule_headless_auto()
 
 
+## X'in gizli sesi (final): Shilda'ya çözülmez, portresiz; kartta "???" görünür.
+const UNKNOWN_VOICE := "X?"
+
+
+## Konuşmacı belirtecinin ekranda görünen adı.
+static func display_speaker(speaker: String) -> String:
+	return "???" if speaker == UNKNOWN_VOICE else speaker
+
+
 ## Shilda'nın kartı: isim öğrenilene dek "???", sonra "Shilda". Satır yazarları
 ## "Shilda|..." yazmaya devam eder; burada çözülür. Diğer konuşmacılar korunur.
 static func resolve_whisper_speaker(speaker: String, _is_whisper: bool, shilda_named: bool) -> String:

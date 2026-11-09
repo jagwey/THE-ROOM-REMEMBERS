@@ -458,6 +458,10 @@ func _run_tier_2_boundary_corner() -> void:
 		min_clamped = cm.curse >= 0.0
 	record_check(2, 4, "T2-03 Curse boundary clamping [0.0, 100.0]", max_clamped and min_clamped, "max clamped=%s min clamped=%s" % [max_clamped, min_clamped])
 
+	# T2-03 curse 100'e vurup ele geçirmeyi başlatır; hasar ele geçirme sürerken yok sayılır, bitmesini bekle.
+	var t_poss := Time.get_ticks_msec()
+	while cm.possessing and Time.get_ticks_msec() - t_poss < 20000:
+		await process_frame
 	# T2-04: Player hazard damage cooldown & underflow protection
 	gs.hearts = 3
 	var h0: int = int(gs.hearts)

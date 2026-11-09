@@ -170,10 +170,31 @@ func _run() -> void:
 	_assert_a(seal_pos, corpses_a, deaths_a, fdc_a, "possession 3 (skipped)")
 	check(gs.possession_count == 3, "possession_count == 3", gs.possession_count)
 
+	## 5b) Ele geçirme sırasında ölüm/hasar (çukur yarışı) yok sayılır: ceset, yatak, ölüm sayacı yok.
+	await dirty_b.call()
+	await _wait(0.2)
+	dm.clear()
+	var hearts_before: int = gs.hearts
+	curse.set_curse(100.0)
+	var tw := Time.get_ticks_msec()
+	while not curse.possessing and Time.get_ticks_msec() - tw < 3000:
+		await process_frame
+	check(curse.possessing, "5b: possession started")
+	death.request_death(&"hazard")
+	gs.damage(gs.hearts + 5)
+	check(not death.is_dying and phases.is_empty(), "5b: request_death ignored during possession", phases)
+	check(gs.hearts == hearts_before, "5b: damage ignored during possession", gs.hearts)
+	var t5 := Time.get_ticks_msec()
+	while curse.possessing and Time.get_ticks_msec() - t5 < 20000:
+		await process_frame
+	await _wait(0.2)
+	_assert_a(seal_pos, corpses_a, deaths_a, fdc_a, "possession 5b (death+damage during)")
+	check(gs.possession_count == 4, "5b: possession_count == 4", gs.possession_count)
+
 	## 6) Yeniden başlatma benzetimi: sayaç kayıt dosyasından geri gelir.
 	gs.possession_count = 0
 	check(sm.load_game(false), "load_game after restart-like reset")
-	check(gs.possession_count == 3, "possession_count restored from save after restart", gs.possession_count)
+	check(gs.possession_count == 4, "possession_count restored from save after restart", gs.possession_count)
 
 	## 7) 100 kayda yazılmış olsa bile yükleme ele geçirme tetiklemez.
 	curse.restore_curse(100.0)

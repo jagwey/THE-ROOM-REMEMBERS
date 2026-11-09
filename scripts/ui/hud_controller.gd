@@ -468,10 +468,10 @@ func _on_dialogue_page(speaker: String, text: String, page_index: int, page_coun
 		font = ThemeDB.fallback_font
 	if fsize <= 0:
 		fsize = UiTheme.SPEAKER
-	var shown := speaker
+	var shown := DialogueManager.display_speaker(speaker)
 	while shown.length() > 1 and font.get_string_size(shown, HORIZONTAL_ALIGNMENT_LEFT, -1, fsize).x > max_w:
 		shown = shown.substr(0, shown.length() - 1)
-	if shown != speaker:
+	if shown != DialogueManager.display_speaker(speaker):
 		if shown.length() > 1:
 			shown = shown.substr(0, shown.length() - 1) + "…"
 		else:
