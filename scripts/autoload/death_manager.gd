@@ -220,7 +220,9 @@ func _rise_soul(sec: float) -> void:
 
 
 ## Ruh yatağa süzülür. Oda farklıysa söner, odaya geçilir ve yatağın üstünde yeniden belirir.
-func _soul_to_bed(cp: Vector2, cp_room: StringName) -> void:
+func _soul_to_bed() -> void:
+	var cp := REBIRTH_BED
+	var cp_room := REBIRTH_ROOM
 	_set_phase(Phase.SOUL_TRANSITION)
 	var above := cp + Vector2(0, -38)
 	var same_room := cp_room == RoomManager.get_active_room_id() or not RoomManager.has_room(cp_room)
@@ -311,14 +313,11 @@ func _free_soul() -> void:
 func _respawn() -> void:
 	var player := get_tree().get_first_node_in_group("player")
 	var cp: Vector2 = REBIRTH_BED
-	var cp_room: StringName = REBIRTH_ROOM
 	if is_instance_valid(_soul):
-		await _soul_to_bed(cp, cp_room)
-	elif RoomManager.has_room(cp_room):
+		await _soul_to_bed()
+	elif RoomManager.has_room(REBIRTH_ROOM):
 		_set_phase(Phase.SOUL_TRANSITION)
-		RoomManager.enter_room(cp_room, REBIRTH_SPAWN, false)
-	elif cp_room != RoomManager.get_active_room_id():
-		_set_phase(Phase.SOUL_TRANSITION)
+		RoomManager.enter_room(REBIRTH_ROOM, REBIRTH_SPAWN, false)
 
 	## RESPAWNING: mühür parlar, ruh bedene iner, Noroi uyanır.
 	_set_phase(Phase.RESPAWNING)

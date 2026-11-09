@@ -127,6 +127,7 @@ func _run() -> void:
 	puz.mark_solved(&"decay_vine_shortcut")
 	state.set_world_flag(&"audit_door_open", true)
 	state.set_checkpoint(Vector2(777, 288), &"decay_garden") ## eski oda checkpoint'i artık karar vermemeli
+	state.set_story_flag(&"first_death_completed", false) ## aşağıdaki kontrol gerçekten sınasın
 	sm.commit_save(&"audit")
 	var serial_before := _committed_serial(sm)
 	var saves_before := FileAccess.get_modified_time(sm.SAVE_PATH)
@@ -157,7 +158,7 @@ func _run() -> void:
 	check(found, "corpse node exists in far room")
 	check(puz.is_solved(&"decay_vine_shortcut") and state.world_memory_state["flags"].get("audit_door_open", false), "puzzles and doors persist")
 	check(_committed_serial(sm) == serial_before and FileAccess.get_modified_time(sm.SAVE_PATH) == saves_before, "committed save untouched by normal death", "%d" % serial_before)
-	check(state.has_story_flag(&"first_death_completed"), "first_death_completed set after respawn")
+	check(state.has_story_flag(&"first_death_completed"), "first_death_completed set after the far death respawn (was cleared before)")
 	rm.enter_room(&"awakening", &"rebirth_bed", false)
 	await create_timer(0.2).timeout
 	var seal := current_scene.find_child("MemorySeal", true, false)
@@ -172,7 +173,9 @@ func _run() -> void:
 	var c_before: int = (state.world_memory_state["corpses"] as Array).size()
 	var tr_before: int = (state.world_memory_state["traces"] as Array).size()
 	var deaths_pre: int = int(state.player_progress_knowledge.get("deaths", 0))
+	state.set_story_flag(&"first_death_completed", false)
 	var fdc_pre: bool = state.has_story_flag(&"first_death_completed")
+	check(not fdc_pre, "first_death_completed cleared before possession (assert meaningful)")
 	sm.commit_save(&"audit")
 	phases.clear()
 	curse.add_curse(500.0)

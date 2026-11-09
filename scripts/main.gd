@@ -225,15 +225,14 @@ func _headless_faz67_smoke() -> void:
 	var deaths_before := int(GameState.player_progress_knowledge["deaths"])
 	print("SMOKE_CURSE")
 	CurseManager.add_curse(100.0, &"smoke_curse")
-	var curse_fail_ok := false
-	if DeathManager.is_dying:
-		await DeathManager.rebirth_completed
-		curse_fail_ok = int(GameState.player_progress_knowledge["deaths"]) > deaths_before
-	else:
-		## Fail-life tetiklenmediyse yine de sayacı doğrula
-		await get_tree().create_timer(0.5).timeout
-		curse_fail_ok = int(GameState.player_progress_knowledge["deaths"]) > deaths_before
-	print("SMOKE_CURSE_DONE fail=", curse_fail_ok)
+	## v3: lanet dolunca ölüm değil ele geçirme; committed kayda döner, ölüm sayılmaz.
+	var possession_started := CurseManager.possessing
+	var waited := 0.0
+	while CurseManager.possessing and waited < 20.0:
+		await get_tree().create_timer(0.25).timeout
+		waited += 0.25
+	var curse_fail_ok: bool = possession_started and not CurseManager.possessing 			and not DeathManager.is_dying 			and int(GameState.player_progress_knowledge["deaths"]) == deaths_before
+	print("SMOKE_CURSE_DONE possession=", curse_fail_ok)
 	var world_kept := GameState.world_memory_state.has("flags")
 
 	## Tek final: Shilda öldürülemez, sonra BÖLÜM I SONU dizisi (hızlı)
@@ -255,7 +254,7 @@ func _headless_faz67_smoke() -> void:
 	await EndingManager.trigger(EndingManager.Ending.PART_ONE, true)
 	var good_ok := EndingManager.last_ending == EndingManager.Ending.PART_ONE and GameState.has_story_flag(&"final_seal_broken") and GameState.has_story_flag(&"x_revealed") and GameState.has_story_flag(&"game_completed")
 	print("SMOKE_FINAL_DONE ", good_ok)
-	var msg := "FAZ67_SMOKE ok curse_fail=%s world=%s bad=%s good=%s rooms=%s indicator=%s" % [
+	var msg := "FAZ67_SMOKE ok curse_possession=%s world=%s bad=%s good=%s rooms=%s indicator=%s" % [
 		str(curse_fail_ok),
 		str(world_kept),
 		str(bad_ok),

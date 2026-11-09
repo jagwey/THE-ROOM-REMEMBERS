@@ -121,12 +121,14 @@ func _run() -> void:
 	var seal_pos: Vector2 = rm._rooms[&"library_hall"].spawns[&"seal_library_hall"]
 	player.global_position = seal_pos
 	gs.set_story_flag(&"first_warning_heard")
+	gs.set_story_flag(&"first_death_completed", false) ## ele geçirme bunu ASLA açmamalı: assert gerçekten sınasın
 	gs.set_world_flag(&"audit_marker_b", false)
 	curse.set_curse(20.0)
 	check(sm.commit_save(&"audit_a", seal_pos, &"library_hall"), "commit A")
 	var corpses_a: int = (gs.world_memory_state["corpses"] as Array).size()
 	var deaths_a: int = int(gs.player_progress_knowledge.get("deaths", 0))
 	var fdc_a: bool = gs.has_story_flag(&"first_death_completed")
+	check(not fdc_a, "first_death_completed unset before possessions (assert below is meaningful)")
 
 	var dirty_b := func() -> void:
 		rm.enter_room(&"decay_garden", &"default")
