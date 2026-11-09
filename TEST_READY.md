@@ -106,7 +106,7 @@ The individual dev audit scripts under `scripts/dev/` have been updated in accor
 
 1. **`save_manager.gd:118` GDScript Parse Warning-as-Error**:
    - `var verify := _read_save(SAVE_PATH)` caused compilation failure because Godot 4.7 treats inferring from Variant as an error. Escalated to worker/orchestrator; resolved by typing as `var verify: Variant = _read_save(...)`.
-2. **`main.gd:262` Smoke Test Final Hang (fixed in v3)**:
+2. **`main.gd:262` Smoke Test Final Hang (historical; current status in docs/gelistirme/v3-test-plan.md)**:
    - `_headless_faz67_smoke()` fails to set `seal_shard_1` and `seal_shard_2`, causing `EndingManager.can_begin_final()` (v3; was `can_attempt_good_seal()`) to return false. The smoke test then falls into an unhandled dialogue branch on `crystal.on_interact()` and hangs in headless execution. Must be resolved as part of Feature 30.
 3. **`player_controller.gd:616` Duplicate Method**:
    - Previously had duplicate declaration of `is_dashing()`. Resolved during M1 worker integration.

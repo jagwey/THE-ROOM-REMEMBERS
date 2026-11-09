@@ -217,7 +217,7 @@ THE-ROOM-REMEMBERS/
 │   ├── rooms/                   # 30 bağlı oda sahnesi (awakening, decay, library, experiment, mirrors, core)
 │   ├── player/ & keeper/        # Noroi ve Shilda sahneleri
 │   ├── world/                   # Fiziksel ceset, çatlak ayna ve Bellek Gölgesi (Memory Shade) sahneleri
-│   └── ui/                      # HUD, Günlük (Journal), Bölge Kartı, Lanet VFX ve Epilog sahneleri
+│   └── ui/                      # HUD, Günlük (Journal), Bölge Kartı, Lanet VFX sahneleri (final: scripts/story/final_sequence.gd)
 └── scripts/
     ├── autoload/                # 14 küresel sistem yöneticisi (GameState, RoomManager, SaveManager vb.)
     ├── player/                  # player_controller.gd, soul_slash_wave.gd
