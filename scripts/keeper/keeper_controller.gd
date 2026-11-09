@@ -21,7 +21,11 @@ var _block_enabled: bool = false
 var _approach_target: Vector2 = Vector2.ZERO
 var _intervening: bool = false
 var _shadow_beat_running: bool = false
-## Geç bölgelere gelindiğinde ad hâlâ söylenmediyse sessizce bilinir (konuşma atlandıysa takılma yok).
+## Oda her değiştiğinde artar; bekleyen siluet beat'i / otomatik isim sahnesi eski nesil ise kendini iptal eder.
+var _beat_gen: int = 0
+var _auto_naming_running: bool = false
+## Geç bölgelerde Shilda "present" ise ve ad hâlâ bilinmiyorsa isim sahnesi bir kez otomatik oynar.
+## Sahne hiç çalışamıyorsa (ör. doğrudan core_final yüklemesi: Shilda gizli) son çare sessiz isimlendirme.
 const NAME_FALLBACK_PREFIXES := ["experiment", "mirrors", "core"]
 var _warn_counts: Dictionary = {}
 var _strikes: int = 0
@@ -117,16 +121,22 @@ func place_for_room(room_id: StringName) -> void:
 	if is_defeated():
 		_hide_defeated()
 		return
+	## Oda değişimi: bekleyen siluet beat'i / otomatik isim sahnesi iptal; yerleşimi asla engellemez.
+	_beat_gen += 1
+	_shadow_beat_running = false
+	_auto_naming_running = false
 	var rid := String(room_id)
 	var def: Dictionary = ROOM_PRESENCE.get(rid, {"mode": "hidden", "pos": Vector2(480, 280)})
 	## Uyanış odasında ilk ölümden önce Shilda yok.
 	if rid == "awakening" and not GameState.has_story_flag(&"first_death_completed"):
 		def = {"mode": "hidden", "pos": def["pos"]}
-	if not GameState.is_shilda_named():
-		for pre in NAME_FALLBACK_PREFIXES:
-			if rid.begins_with(pre):
-				GameState.set_shilda_named(true)
-				break
+	var late_room := false
+	for pre in NAME_FALLBACK_PREFIXES:
+		if rid.begins_with(pre):
+			late_room = true
+			break
+	if late_room and not GameState.is_shilda_named() and String(def["mode"]) == "hidden":
+		GameState.set_shilda_named(true) ## son çare: sahne bu odada oynatılamaz
 	var pos: Vector2 = def["pos"]
 	var marker := _room_marker(room_id)
 	if marker:
@@ -135,8 +145,6 @@ func place_for_room(room_id: StringName) -> void:
 		end_encounter(false)
 	presence = String(def["mode"])
 	home_position = pos
-	if _shadow_beat_running:
-		return ## siluet beat'i konumu kendisi yönetiyor
 	_busy = false
 	_intervening = false
 	_set_blocker(false)
@@ -161,6 +169,24 @@ func place_for_room(room_id: StringName) -> void:
 			collision_layer = 0
 	if rid == "awakening_passage" and not GameState.has_story_flag(&"first_shadow_seen"):
 		call_deferred("_run_shadow_beat")
+	elif late_room and presence == "present" and not GameState.is_shilda_named():
+		call_deferred("_run_auto_naming_scene", rid)
+
+
+## Geç bölgede ad hâlâ bilinmiyorsa, Shilda ilk kez "present" olduğunda §17 isim sahnesi otomatik (bir kez).
+func _run_auto_naming_scene(rid: String) -> void:
+	if _auto_naming_running or GameState.is_shilda_named():
+		return
+	_auto_naming_running = true
+	var gen := _beat_gen
+	await get_tree().create_timer(1.0).timeout
+	while gen == _beat_gen and (DialogueManager.is_open or _busy or UiGate.blocks_movement() or DeathManager.is_dying):
+		await get_tree().process_frame
+	if gen != _beat_gen:
+		return ## oda değişti; sahne sonraki "present" odada denenir
+	_auto_naming_running = false
+	if not GameState.is_shilda_named() and String(RoomManager.get_active_room_id()) == rid and not is_defeated():
+		await _run_naming_scene()
 
 
 ## İlk siluet beat'i (Kırık Geçit): oyuncu yaklaşınca "???" uyarır. Kilitlemez; diyalog kendiliğinden ilerler.
@@ -168,16 +194,16 @@ func _run_shadow_beat() -> void:
 	if _shadow_beat_running or GameState.has_story_flag(&"first_shadow_seen") or is_defeated():
 		return
 	_shadow_beat_running = true
-	while _in_passage():
+	var gen := _beat_gen
+	while gen == _beat_gen and _in_passage():
 		_player = get_tree().get_first_node_in_group("player") as Node2D
 		if is_instance_valid(_player) and not DialogueManager.is_open and not UiGate.blocks_movement() \
 				and not DeathManager.is_dying \
 				and absf(_player.global_position.x - global_position.x) < 560.0:
 			break
 		await get_tree().process_frame
-	if not _in_passage():
-		_shadow_beat_running = false
-		return
+	if gen != _beat_gen or not _in_passage():
+		return ## oda değişti: place_for_room temizledi, yerleşime dokunma
 	visible = true
 	GameState.set_story_flag(&"first_shadow_seen")
 	DialogueManager.whisper("???", "Dur.")
@@ -186,7 +212,8 @@ func _run_shadow_beat() -> void:
 	await _await_dialogue_or_smoke()
 	GameState.set_story_flag(&"first_warning_heard")
 	SaveManager.save_game()
-	_shadow_beat_running = false
+	if gen == _beat_gen:
+		_shadow_beat_running = false
 
 
 func _in_passage() -> bool:
@@ -538,6 +565,20 @@ func on_interact(_by: Node) -> void:
 ## Isim sahnesi: "???" konusur; "Ben Noroi." satirindan itibaren ad bilinir, kart "Shilda" olur.
 func _run_naming_scene() -> void:
 	_busy = true
+	_queue_naming_lines()
+	await _await_dialogue_or_smoke()
+	## Konuşma yarıda kapansa bile ad artık bilinir; takılma yok.
+	GameState.set_shilda_named(true)
+	GameState.player_progress_knowledge["shilda_talk_done"] = true
+	GameState.player_progress_knowledge["seen_keeper"] = true
+	GameState.player_progress_knowledge["awakening_mystery_seen"] = true
+	GameState.knowledge_changed.emit(&"player")
+	SaveManager.save_game()
+	_busy = false
+
+
+## §17 satırları (denetim bunu doğrudan kuyruğa alıp satır satır ilerletir).
+func _queue_naming_lines() -> void:
 	DialogueManager.say("Noroi", "Beni ne zamandır izliyorsun?")
 	DialogueManager.say("???", "Buraya geldiğinden beri.")
 	DialogueManager.say("Noroi", "Peki neden?")
@@ -550,15 +591,6 @@ func _run_naming_scene() -> void:
 	DialogueManager.say("Shilda", "Biliyorum.")
 	DialogueManager.say("Noroi", "Nereden?")
 	DialogueManager.say("Shilda", "Bunu sonra konuşalım.")
-	await _await_dialogue_or_smoke()
-	## Konuşma yarıda kapansa bile ad artık bilinir; takılma yok.
-	GameState.set_shilda_named(true)
-	GameState.player_progress_knowledge["shilda_talk_done"] = true
-	GameState.player_progress_knowledge["seen_keeper"] = true
-	GameState.player_progress_knowledge["awakening_mystery_seen"] = true
-	GameState.knowledge_changed.emit(&"player")
-	SaveManager.save_game()
-	_busy = false
 
 
 func receive_player_strike() -> void:

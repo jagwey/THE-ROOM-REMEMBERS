@@ -137,6 +137,8 @@ func _setup_textures() -> void:
 const DIALOGUE_SKINS := {
 	&"default": ["res://assets/panels/dialogue_skins/dialogue_default.png", ""],
 	&"shilda": ["res://assets/panels/dialogue_skins/dialogue_warning.png", "res://assets/panels/dialogue_skins/name_shilda.png"],
+	## Ad bilinmeyen Shilda: aynı çerçeve/isimlik, plakada "???" yazılı.
+	&"shilda_unknown": ["res://assets/panels/dialogue_skins/dialogue_warning.png", "res://assets/panels/dialogue_skins/name_unknown.png"],
 	&"noroi": ["res://assets/panels/dialogue_skins/dialogue_memory.png", "res://assets/panels/dialogue_skins/name_noroi.png"],
 }
 ## Panel boyutu (çerçeve görselleri ~3.27:1; 540x165 oranı korur, esneme <%1).
@@ -169,7 +171,9 @@ func _smooth_tex(path: String) -> Texture2D:
 
 func _skin_for(speaker: String) -> StringName:
 	var k: StringName = PortraitsLib.key_for(speaker)
-	if k == &"shilda" or k == &"shilda_unknown":
+	if k == &"shilda_unknown":
+		return &"shilda_unknown"
+	if k == &"shilda":
 		return &"shilda"
 	if k == &"noroi" or k == &"noroi_sad":
 		return &"noroi"
@@ -221,8 +225,7 @@ func _apply_dialogue_skin(speaker: String) -> void:
 ## Konuşmacı etiketi / isimlik / metin hizası: boş "ölü satır" kalmaz, metin alanı sabit yükseklikte.
 func _apply_dialogue_layout(speaker: String) -> void:
 	var narrator := _is_narrator(speaker)
-	## Isimlik görseli "Shilda" yazılı; ad bilinmeyen "???" için kullanılmaz (etiket "???" gösterir).
-	var has_plate := _nameplate != null and _nameplate.texture != null and not narrator and speaker != "???"
+	var has_plate := _nameplate != null and _nameplate.texture != null and not narrator
 	if _nameplate:
 		_nameplate.visible = has_plate
 	dialogue_speaker.visible = not narrator and not has_plate

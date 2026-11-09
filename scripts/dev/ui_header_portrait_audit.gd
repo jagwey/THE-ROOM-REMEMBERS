@@ -94,7 +94,13 @@ func _run() -> void:
 	var keeper_src := FileAccess.get_file_as_string("res://scripts/keeper/keeper_controller.gd")
 	var main_src2 := FileAccess.get_file_as_string("res://scripts/main.gd")
 	check(not ("set_shilda_named" in main_src2), "main.gd no longer forces the Shilda name")
-	check(keeper_src.count("set_shilda_named(true)") == 3 and not ("Ben Shilda." in keeper_src), "keeper only names via naming scene / safety / late-room fallback")
+	var naming_funcs := _funcs_calling(keeper_src, "set_shilda_named(true)")
+	var funcs_ok := not naming_funcs.is_empty()
+	for fn in naming_funcs:
+		if not (fn in ["place_for_room", "_queue_naming_lines", "_run_naming_scene"]):
+			funcs_ok = false
+	check(funcs_ok and not ("Ben Shilda." in keeper_src), "keeper names only in the naming scene / hidden-late-room fallback %s" % str(naming_funcs))
+	check(not ("set_shilda_named" in FileAccess.get_file_as_string("res://scripts/story/story_beat.gd")), "story_beat.gd no longer names Shilda unconditionally")
 	check("return GameState.keeper_speaker_name()" in keeper_src, "keeper interact label follows the speaker name")
 	dm2.clear()
 	gs.set_shilda_named(false)
@@ -125,6 +131,19 @@ func _run() -> void:
 
 
 const ALLOWED_SPEAKERS := ["", "???", "Sistem", "Kayıt", "Shilda", "Noroi", "Arşivci", "Yansıma", "Ses", "Çekirdek", "GameState.keeper_speaker_name()"]
+
+
+## Verilen alt dizgeyi içeren fonksiyon adları (üst düzey func satırına göre).
+func _funcs_calling(src: String, needle: String) -> Array:
+	var out: Array = []
+	var cur := ""
+	for line in src.split("
+"):
+		if line.begins_with("func ") or line.begins_with("static func "):
+			cur = line.substr(line.find("func ") + 5).split("(")[0].strip_edges()
+		elif needle in line and not line.strip_edges().begins_with("#") and cur != "" and not out.has(cur):
+			out.append(cur)
+	return out
 
 
 func _scan_files(dir: String, out: Array) -> void:

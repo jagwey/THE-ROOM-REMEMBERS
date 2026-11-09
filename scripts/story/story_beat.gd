@@ -252,8 +252,6 @@ func _mirrors_unbroken() -> void:
 
 		return
 
-	GameState.set_shilda_named(true)
-
 	GameState.player_progress_knowledge["truth_seen"] = true
 
 	PuzzleManager.mark_solved(&"mirrors_unbroken")
