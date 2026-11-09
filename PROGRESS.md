@@ -248,4 +248,4 @@ Dal: cursor/playable-story-flow-8e4e · Sürüm: v1.2.0 (versionCode 16)
 - Testler (TORIMON_TEST=1): Run-Audit 25/0; build kopyasında e2e 50/50. Pencereli 1920x1080 diyalog görüntüleri gözle kontrol edildi.
 - Sürüm 1.5.1 / versionCode 29 (a2a215c); APK `TheRoomRemembers-1.5.1-android-arm64.apk` (34,2 MB, imza 16fd6975…). Yayın: public release (latest) + private v1.5.1. `origin/main` = `origin/claude/v1.4.1` = a2a215c.
 - Dal temizliği: cursor/*, android_live_playtest, generate_claude_prompt_fixes, adoring/token-usage, claude/v1.4-fixes (yerel+remote), origin/claude/story-x silindi. Ana checkout artık `main`'de.
-- Kalan: `claude/story-x`, `claude/nice-wing-cae9b1`, `claude/serene-mccarthy-047690` yerel dalları eski oturum worktree'lerine bağlı (benzersiz commit yok; serene'de 74 commitlenmemiş dosya, aktarıldı). Eski stash 1c54526 (project.godot wip) duruyor. Cihaz testi yapılmadı.
+- Temizlik: eski oturum dalları (story-x, nice-wing, serene), worktree'leri ve eski stash 1c54526 silindi; yerel+remote yalnız `main` ve `claude/v1.4.1`. Cihaz testi yapılmadı.
