@@ -11,6 +11,10 @@ enum Phase { ALIVE, DYING, SOUL_RELEASE, SOUL_TRANSITION, RESPAWNING }
 
 const SOUL_COLOR := Color(0.88, 0.82, 1.0, 0.62)
 const SOUL_GLOW := Color(0.72, 0.55, 1.0, 0.38)
+## Normal ölümde Noroi her zaman Uyanış odasındaki yatakta doğar (oda checkpoint'i karar vermez).
+const REBIRTH_ROOM := &"awakening"
+const REBIRTH_SPAWN := &"rebirth_bed"
+const REBIRTH_BED := Vector2(120, 280)
 
 var is_dying: bool = false
 var phase: int = Phase.ALIVE
@@ -229,13 +233,13 @@ func _soul_to_bed(cp: Vector2, cp_room: StringName) -> void:
 				.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 			await tw.finished
 		if RoomManager.has_room(cp_room):
-			RoomManager.enter_room(cp_room, &"checkpoint", false)
+			RoomManager.enter_room(cp_room, REBIRTH_SPAWN, false)
 		return
 	if is_instance_valid(_soul):
 		var tw2 := _soul.create_tween()
 		tw2.tween_property(_soul, "modulate:a", 0.0, _d(0.35))
 		await tw2.finished
-	RoomManager.enter_room(cp_room, &"checkpoint", false)
+	RoomManager.enter_room(cp_room, REBIRTH_SPAWN, false)
 	var player := get_tree().get_first_node_in_group("player") as Node2D
 	if player:
 		player.global_position = cp
@@ -306,13 +310,13 @@ func _free_soul() -> void:
 
 func _respawn() -> void:
 	var player := get_tree().get_first_node_in_group("player")
-	var cp: Vector2 = GameState.get_checkpoint()
-	var cp_room: StringName = GameState.character_current_life_knowledge.get("checkpoint_room", &"awakening")
+	var cp: Vector2 = REBIRTH_BED
+	var cp_room: StringName = REBIRTH_ROOM
 	if is_instance_valid(_soul):
 		await _soul_to_bed(cp, cp_room)
 	elif RoomManager.has_room(cp_room):
 		_set_phase(Phase.SOUL_TRANSITION)
-		RoomManager.enter_room(cp_room, &"checkpoint", false)
+		RoomManager.enter_room(cp_room, REBIRTH_SPAWN, false)
 	elif cp_room != RoomManager.get_active_room_id():
 		_set_phase(Phase.SOUL_TRANSITION)
 

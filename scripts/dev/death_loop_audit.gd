@@ -14,10 +14,18 @@ func _initialize() -> void:
 	call_deferred("_run")
 
 
-func check(ok: bool, label: String) -> void:
-	print("DEATH ", "PASS " if ok else "FAIL ", label)
+func check(ok: bool, label: String, detail: Variant = "") -> void:
+	print("DEATH ", "PASS " if ok else "FAIL ", label, " ", detail)
 	if not ok:
 		failures += 1
+
+
+func _committed_serial(sm: Node) -> int:
+	var f := FileAccess.open(sm.SAVE_PATH, FileAccess.READ)
+	if f == null:
+		return -1
+	var d: Variant = JSON.parse_string(f.get_as_text())
+	return int((d as Dictionary).get("save_serial", -1)) if d is Dictionary else -1
 
 
 func _run() -> void:
@@ -44,6 +52,7 @@ func _run() -> void:
 	var gate_layers: Array = []
 	gate.gate_changed.connect(func(l: int) -> void: gate_layers.append(l))
 	var cam := get_first_node_in_group("follow_camera")
+	var sm := root.get_node("SaveManager")
 	for i in LOOPS:
 		rm.enter_room(&"decay_shilda_wall", &"default")
 		await create_timer(0.15).timeout
@@ -116,9 +125,53 @@ func _run() -> void:
 	keeper.start_encounter(&"shilda_wall")
 	check(keeper.mode != keeper.Mode.COMBAT, "defeated keeper never restarts combat")
 	state.set_world_flag(&"keeper_defeated", false)
+	## Normal ölüm (v3): uzak odada ölüm -> Uyanış yatağında doğuş; ceset uzak odada; dünya kalır; committed kayıt dokunulmaz.
+	var puz := root.get_node("PuzzleManager")
+	puz.mark_solved(&"decay_vine_shortcut")
+	state.set_world_flag(&"audit_door_open", true)
+	state.set_checkpoint(Vector2(777, 288), &"decay_garden") ## eski oda checkpoint'i artık karar vermemeli
+	sm.commit_save(&"audit")
+	var serial_before := _committed_serial(sm)
+	var saves_before := FileAccess.get_modified_time(sm.SAVE_PATH)
+	rm.enter_room(&"decay_garden", &"default", false)
+	await create_timer(0.2).timeout
+	dm.clear()
+	player.global_position = Vector2(420, 288)
+	var far_pos: Vector2 = player.global_position
+	state.damage(99)
+	var t2 := Time.get_ticks_msec()
+	while death.is_dying and Time.get_ticks_msec() - t2 < 25000:
+		await process_frame
+	await create_timer(0.2).timeout
+	dm.clear()
+	check(not death.is_dying and rm.get_active_room_id() == &"awakening", "far death respawns in awakening", str(rm.get_active_room_id()))
+	check(absf(player.global_position.x - death.REBIRTH_BED.x) < 6.0 and absf(player.global_position.y - death.REBIRTH_BED.y) < 14.0, "respawn at rebirth bed", str(player.global_position))
+	var corpses_far: Array = state.world_memory_state["corpses"]
+	check(corpses_far.size() > 0 and String((corpses_far[corpses_far.size() - 1] as Dictionary).get("room", "")) == "decay_garden", "new corpse recorded in far room (list is capped)")
+	var far_corpse: Dictionary = corpses_far[corpses_far.size() - 1] if corpses_far.size() > 0 else {}
+	check(String(far_corpse.get("room", "")) == "decay_garden", "corpse stays in far room", str(far_corpse.get("room", "?")))
+	rm.enter_room(&"decay_garden", &"default", false)
+	await create_timer(0.2).timeout
+	dm.clear()
+	var found := false
+	for n in get_nodes_in_group("corpse"):
+		if String(n.corpse_id) == String(far_corpse.get("id", "?")):
+			found = true
+	check(found, "corpse node exists in far room")
+	check(puz.is_solved(&"decay_vine_shortcut") and state.world_memory_state["flags"].get("audit_door_open", false), "puzzles and doors persist")
+	check(_committed_serial(sm) == serial_before and FileAccess.get_modified_time(sm.SAVE_PATH) == saves_before, "committed save untouched by normal death", "%d" % serial_before)
+	check(state.has_story_flag(&"first_death_completed"), "first_death_completed set after respawn")
+	rm.enter_room(&"awakening", &"rebirth_bed", false)
+	await create_timer(0.2).timeout
+	var seal := current_scene.find_child("MemorySeal", true, false)
+	check(seal != null and absf(seal.global_position.x - death.REBIRTH_BED.x) < 500.0 and absf(seal.global_position.x - death.REBIRTH_BED.x) > 40.0, "awakening seal near bed")
+	var blocked := false
+	var space: PhysicsDirectSpaceState2D = current_scene.get_world_2d().direct_space_state
+	var q := PhysicsRayQueryParameters2D.create(death.REBIRTH_BED + Vector2(0, -20), Vector2(seal.global_position.x, death.REBIRTH_BED.y - 20), 1)
+	blocked = not space.intersect_ray(q).is_empty()
+	check(not blocked, "no wall between bed and awakening seal")
 	## Lanet ele geçirmesi (v3): ölüm yolundan geçmez; ceset/ruh/yatak yok, final değil, committed kayda döner.
 	var curse := root.get_node("CurseManager")
-	var sm := root.get_node("SaveManager")
 	var c_before: int = (state.world_memory_state["corpses"] as Array).size()
 	var tr_before: int = (state.world_memory_state["traces"] as Array).size()
 	var deaths_pre: int = int(state.player_progress_knowledge.get("deaths", 0))
