@@ -72,13 +72,17 @@ try {
         $text = Get-Content -LiteralPath $log -Raw
         $pass = ([regex]::Matches($text, '\bPASS\b')).Count
         $fail = ([regex]::Matches($text, '\bFAIL\b')).Count
-        $devRecords += [pscustomobject]@{ audit = $a; exit_code = $code; pass_lines = $pass; fail_lines = $fail; passed = ($code -eq 0) }
+        $devRecords += [pscustomobject]@{ audit = $a; exit_code = $code; pass_lines = $pass; fail_lines = $fail; passed = ($code -eq 0 -and $fail -eq 0) }
     }
     # e2e ve faz67 smoke
     $env:TORIMON_FORCE_TITLE = $null
     $e2eLog = Join-Path $output 'dev_e2e.log'
     & $engine --headless --path $work --script 'res://scripts/dev/e2e_runner.gd' *> $e2eLog
-    $devRecords += [pscustomobject]@{ audit = 'e2e_runner'; exit_code = $LASTEXITCODE; pass_lines = ([regex]::Matches((Get-Content -LiteralPath $e2eLog -Raw), '\bPASS\b')).Count; fail_lines = ([regex]::Matches((Get-Content -LiteralPath $e2eLog -Raw), '\bFAIL\b')).Count; passed = ($LASTEXITCODE -eq 0) }
+    $e2eCode = $LASTEXITCODE
+    $e2eText = Get-Content -LiteralPath $e2eLog -Raw
+    $e2ePass = ([regex]::Matches($e2eText, '\bPASS\b')).Count
+    $e2eFail = ([regex]::Matches($e2eText, '\bFAIL\b')).Count
+    $devRecords += [pscustomobject]@{ audit = 'e2e_runner'; exit_code = $e2eCode; pass_lines = $e2ePass; fail_lines = $e2eFail; passed = ($e2eCode -eq 0 -and $e2eFail -eq 0) }
     $env:TORIMON_SMOKE = '1'
     $smokeLog = Join-Path $output 'dev_smoke.log'
     & $engine --headless --path $work *> $smokeLog

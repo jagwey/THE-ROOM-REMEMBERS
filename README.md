@@ -19,7 +19,7 @@
   <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.4.8"><img src="https://img.shields.io/badge/Son_S%C3%BCr%C3%BCm_(APK)-v1.4.8-8B0000?style=for-the-badge&logo=android&logoColor=white" alt="Latest Release v1.4.8" /></a>
   <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS/releases"><img src="https://img.shields.io/badge/T%C3%BCm_S%C3%BCr%C3%BCmler-9_Aktif_Paket-5c1d3d?style=for-the-badge&logo=github" alt="All Releases" /></a>
   <a href="https://godotengine.org/"><img src="https://img.shields.io/badge/Godot_Engine-4.7.2-478CBF?style=for-the-badge&logo=godotengine&logoColor=white" alt="Godot 4.7.2" /></a>
-  <img src="https://img.shields.io/badge/D%C3%BCnya-6_B%C3%B6lge_%C2%B7_30_Oda_%C2%B7_5_Son-2b1838?style=for-the-badge" alt="World Scope" />
+  <img src="https://img.shields.io/badge/D%C3%BCnya-6_B%C3%B6lge_%C2%B7_30_Oda_%C2%B7_B%C3%B6l%C3%BCm_I-2b1838?style=for-the-badge" alt="World Scope" />
 </p>
 
 ---
@@ -75,7 +75,7 @@ Depodaki tüm derlenmiş Android (`arm64-v8a`) APK sürümleri aktif olarak **[G
 | <img src="assets/props/body_echo.png" width="56" alt="Ceset ve Yankı" /> | **Önceki Bedenler**<br/>*(Corpse & Echo)* | Öldüğün noktada kalan fiziksel bedenin. İlk incelemede son 3 saniyelik mor **Yankı Tekrarını** oynatır; sonrasında **itilebilir ağırlık**, **üzerine çıkılabilir platform** ve **lanet süngeri** görevi görür. |
 | <img src="assets/props/red_flower.png" width="48" alt="Ölüm Çiçeği" /> | **Kızıl Ölüm Çiçeği**<br/>*(Mourning Flower)* | Shilda'nın yas tuttuğu bedenlere bıraktığı çiçek. Çiçekli bedenler (**Fener Ceset / Lantern Corpse**) karanlık odaları aydınlatır ve duvarlardaki gizli sembolleri görünür kılar. |
 | <img src="assets/props/pocket_watch.png" width="48" alt="Cep Saati" /> | **Durmuş Cep Saati**<br/>*(Pocket Watch)* | Uyanış odasındaki ilk kanıt. Kapağının içindeki kazıntı ve durduğu saat (`3:14`), hem ilk bellek mührünün anahtarıdır hem de Shilda ile olan geçmişin ilk izidir. |
-| <img src="assets/layers/core_crystal.png" width="56" alt="Çekirdek Kristali" /> | **Bellek Çekirdeği & Mühürler**<br/>*(Core Crystal)* | Tesisin kalbindeki kristal düzenek. Odalardaki 4 haneli hafıza mühürlerini (`314`, `251`, `418`, `729`) ve iki ana mühür parçasını birleştirerek son seçime ulaşılır. |
+| <img src="assets/layers/core_crystal.png" width="56" alt="Çekirdek Kristali" /> | **Bellek Çekirdeği & Mühürler**<br/>*(Core Crystal)* | Tesisin kalbindeki kristal düzenek. Odalardaki 4 haneli hafıza mühürlerini (`314`, `251`, `418`, `729`) ve iki ana mühür parçasını birleştirerek son mühür kırılır. |
 
 ---
 
@@ -94,7 +94,7 @@ Oyun, her ölümde neyin silinip neyin kalacağını katı bir mimariyle ayırı
 ### 3. Savaş Sistemi, Yetenekler ve Lanet / Berraklık Dengesi
 * **3'lü Kılıç Kombosu & Hitstop:** Yakın dövüş saldırıları kıvılcım, ekran sarsıntısı ve mikro-hitstop ile desteklenir. 3. kombo darbesiyle (`finisher`) yok edilen **Yürüyen Bellek Gölgeleri (`Walking Memory Shade`)**, oyuncunun lanetini **%10 temizleyen Berraklık Zerresi (`Memory Mote`)** düşürür.
 * **Kalkanlı Bellek Gölgeleri (`Shielded Memory Shade`):** Önden gelen normal kılıç darbelerini geri yansıtır. Kalkanlarını kırmak için **Ruh Kesimi (`SoulSlash`)** dalgası göndermek veya **Gölge Atılması (`ShadowDash`)** ile içlerinden geçip arkalarından vurmak gerekir.
-* **Lanet Sayacı (`CurseManager`):** Lanetli dikenler, bulutlar ve mühürler oyuncunun lanet oranını artırır. Lanet **%80**'i geçtiğinde ekran vinyeti daralır ve harekette istemsiz kaymalar (`curse drift`) başlar; **%100** olduğunda beden lanet tarafından ele geçirilir (`Possession` — ceset bırakmadan yeniden doğuş veya Çekirdek'te *Lanet Ele Geçirmesi* finali).
+* **Lanet Sayacı (`CurseManager`):** Lanetli dikenler, bulutlar ve mühürler oyuncunun lanet oranını artırır. Lanet dört bantta ilerler: **%50**'den itibaren ilk işaretler ve fısıltılar, **%70**'te ekran kenarında damarlar ve tökezlemeler, **%90**'da güçlü nabız (hâlâ kurtulunabilir). **%100** olduğunda beden lanet tarafından ele geçirilir (`Possession`): ceset bırakılmaz, oyun son kayıt noktasından yeniden yüklenir. Bu bir son değildir.
 
 <p align="center">
   <img src="media/readme/03-dialogue.png" alt="Gotik Diyalog Çerçevesi" width="400" />
@@ -115,7 +115,7 @@ Oyun dünyası, birbirine ana koridorlar, mühürlü kapılar, yan odalar ve **�
 | **III. HAFIZA KÜTÜPHANESİ**<br/>*(`library`)* | <img src="assets/backgrounds/library/far.png" width="220" alt="Hafıza Kütüphanesi" /> | **Odalar:** `Kütüphane Girişi`, `Üst Raflar`, `Kayıp Sayfa Odası`, `Yasak Kanat`, `Tanık Odası`<br/>**Odak:** Yırtık sayfa sıralama bulmacası, **Ruh Kesimi (`SoulSlash`)** yeteneğinin kazanılması, `251` mührü ve ilk mühür parçası (`seal_fragment_library`). |
 | **IV. YASAK LABORATUVAR**<br/>*(`experiment`)* | <img src="assets/backgrounds/experiment/far.png" width="220" alt="Yasak Laboratuvar" /> | **Odalar:** `Deney Hücreleri`, `Karantina Koğuşu`, `Yankı Devresi`, `Otorite Kayıt Odası`, `Çekirdek İletkeni`<br/>**Odak:** `EchoAltar` & `EchoTwin` ile eşzamanlı devre bulmacaları, zehirli lanet bulutları, `418` mührü ve deney kayıtları. |
 | **V. AYNALAR SALONU**<br/>*(`mirrors`)* | <img src="assets/backgrounds/mirrors/far.png" width="220" alt="Aynalar Salonu" /> | **Odalar:** `Ters Yansıma`, `Ayna Labirenti`, `Ayna Tapınağı`, `İkili Ayna`, `Kırılmamış Ayna`<br/>**Odak:** **Gölge Atılması (`ShadowDash`)** yeteneğinin kazanılması, kalkanlı Bellek Gölgeleri, `729` mührü ve ikinci mühür parçası (`seal_fragment_mirrors`). |
-| **VI. BELLEK ÇEKİRDEĞİ**<br/>*(`core`)* | <img src="assets/backgrounds/core/far.png" width="220" alt="Bellek Çekirdeği" /> | **Odalar:** `Çekirdek Eşiği`, `Mühür Odası`, `Bellek Mahzeni`, `Çiçeklenme Bahçesi`, `Çekirdek`<br/>**Odak:** İki mühür parçasının birleştirilmesi, geçmişin tam hakikati (`truth_seen`) ve 5 farklı sona açılan son seçim. |
+| **VI. BELLEK ÇEKİRDEĞİ**<br/>*(`core`)* | <img src="assets/backgrounds/core/far.png" width="220" alt="Bellek Çekirdeği" /> | **Odalar:** `Çekirdek Eşiği`, `Mühür Odası`, `Bellek Mahzeni`, `Çiçeklenme Bahçesi`, `Çekirdek`<br/>**Odak:** İki mühür parçasının birleştirilmesi, geçmişin tam hakikati (`truth_seen`) ve Shilda ile birlikte kırılan son mühür. |
 
 <p align="center">
   <img src="media/readme/02-passage.png" alt="Kırık Geçit Koridoru" width="400" />
@@ -129,17 +129,16 @@ Oyun dünyası, birbirine ana koridorlar, mühürlü kapılar, yan odalar ve **�
 
 ---
 
-## 🎭 Beş Farklı Son (Endings)
+## 🎭 Final: Bölüm I Sonu (END OF PART I)
 
-`EndingManager` (`scripts/autoload/ending_manager.gd`), oyuncunun oyun boyunca topladığı kanıtlara, Shilda'ya karşı tavrına ve Çekirdek'teki seçimine göre **5 farklı epilog** sunar:
+`EndingManager` (`scripts/autoload/ending_manager.gd`) yalnız iki durum tutar: `NONE` ve `PART_ONE`. Oyunda **tek bir final** vardır ve `scripts/story/final_sequence.gd` tarafından oynatılır:
 
-| Son Kodu | Başlık | Tetiklenme Koşulu |
-| :--- | :--- | :--- |
-| 🌟 **`GOOD`** | **Birlikte Çıkış** | Kütüphane ve Aynalar mühür parçalarını topla (`has_both_seal_fragments()`), gerçeği gör (`truth_seen`), Shilda'ya güven (`trusted_keeper`, ona hiç saldırma) ve Çekirdek'te **Kabul / Birlikte Çık** seçimini yap. |
-| 🚶 **`SOLO_EXIT`** | **Yalnız Çıkış** | Çekirdek'te çıkışı seç ancak iki mühür parçasından biri eksik olsun veya Shilda ile güven bağı kurulmamış olsun; Noroi tesisten yalnız çıkar, Shilda içeride kalır. |
-| 🏛️ **`WORLD`** | **Yeni Bekçi** | Çekirdek'te **Kal / Nöbeti Devral (`sacrifice`)** seçimini yap; Shilda özgür kalırken Noroi odanın yeni Bekçisi olur. |
-| 💥 **`BAD`** | **Çekirdek Çöküşü** | Çekirdek'te Shilda'ya saldır veya Çekirdek Kristalini zorla parçala; döngü şiddetle çöker ve oda sıfırlanır. |
-| 🩸 **`CURSE_TAKEOVER`** | **Lanet Ele Geçirmesi** | Çekirdek bölgesindeyken Lanet sayacının **%100**'e ulaşması; lanet Noroi'in bedenini kalıcı olarak ele geçirir. |
+1. İki mühür parçası birleştirilir, gerçek görülür (`truth_seen`) ve son mühür Shilda ile birlikte kırılır.
+2. Mühür kırılınca Shilda insan hâline döner; ardından X ortaya çıkar.
+3. **EXPERIMENTAL DOMAIN 01–04** panelleri açılır; X çekirdek parçasını alır ve bir portal açılır.
+4. Karanlıkta bir ses: *"Noroi... beni duyuyor musun?"* → **END OF PART I** → jenerik.
+
+Final bir kez tamamlandıktan sonra Çekirdek Kristali susar; final tekrar oynatılamaz. Lanetin %100'e ulaşması bir son değildir: oyun son kayıt noktasından yeniden yüklenir.
 
 ---
 
@@ -159,7 +158,7 @@ flowchart TD
         CuM["CurseManager<br/>(Lanet %0-100 & Berraklık)"]
         PM["PuzzleManager<br/>(Bayraklar & Mühür Durumu)"]
         EM["EchoManager<br/>(Yankılar & Yetenek Kilidi)"]
-        EndM["EndingManager<br/>(5 Final Koşul Çözücü)"]
+        EndM["EndingManager<br/>(Tek Final: Bölüm I Sonu)"]
         SM["SaveManager<br/>(Atomik JSON + .bak/.prev)"]
         DiaM["DialogueManager<br/>(Kuyruk & Fısıltı Sistemi)"]
         UG["UiGate<br/>(Katman Kilidi: STORY/JOURNAL/SEAL/MENU)"]
