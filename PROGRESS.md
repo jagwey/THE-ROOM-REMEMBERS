@@ -212,3 +212,12 @@ Dal: cursor/playable-story-flow-8e4e · Sürüm: v1.2.0 (versionCode 16)
 - [x] Uzun satırlar kısaltıldı/bölündü (story_beat, keeper_controller, page_order_puzzle, core_memory_vault.tscn); eski iki-yol final metni temizlendi. `Shilda|` etiketleri korundu, echo_manager değişmedi.
 - [x] `lore_canon_audit`: satır uzunluğu kontrolü (>90 uyarı listesi, >120 fail). Önce en uzun 142 (4 satır >120), sonra 88 (0 >90, 289 satır).
 - Testler (TORIMON_TEST=1): lore_canon 289 satır/0 fail, interact 0 fail, e2e 50/50, release 111/0, ui_header_portrait 0 fail. Ekran görüntüleri: scratchpad qa/shots t10_stage1/stage4/stage5/longest.png, taşma yok.
+
+## v3 hikaye Task 11a — Park edilen 19 bulgu temizliği (2026-11-09)
+- [x] Kayıt/durum (125fdd0): clear_story_flags sinyal yayar; v6 göçü eski kayıttan intro/gölge/uyarı türetir; güvensiz Kaydet ve Çık audit; çukur gerçek-ölçü tehlike kontrolü.
+- [x] Ölüm/lanet (7f662a4): `_soul_to_bed()` argümansız, ölü dal silindi; death_loop/curse_reload `first_death_completed` anlamlı assert; smoke ele geçirilme bekler.
+- [x] Final (78442ea): ölü EndingUI (kod+sahne+uid) silindi; tamamlanmış oyunda inert kristal satırı; atlama olay tabanlı (`SkipListener`); final audit 18 satır sırası; CLAUDE.md tek final.
+- [x] Menüler (1208bf2): başlık Ayarlar'a Nasıl Oynanır bloğu + Titreşim (yalnız mobil/dokunmatik), Tam Ekran dokunmatikte gizli.
+- [x] Diyalog (ab0c046): giriş satırı, çekirdek evre konuşması, bölgeye göre yasak uyarı, devre/ikili oda satırları karakterde.
+- Testler (TORIMON_TEST=1): release 111/0, death_loop 0, curse_reload 0, save_quit 0, story_flags 0, start_flow 0, final_sequence 0, lore_canon 291 satır/0, interact 0, e2e 50/50, faz67 smoke exit 0 (curse_possession=true).
+- Not: keeper `is_defeated`/`_hide_defeated` stubları main.gd smoke/audit referansı yüzünden kaldı. story_flags_audit "current_scene is null" hatası önceden var.
