@@ -23,6 +23,7 @@ var _credits_scroll: CreditsScroll
 var _vol_button: Button
 var _music_button: Button
 var _joy_button: Button
+var _haptics_button: Button
 var _fs_button: Button
 var _card_box: VBoxContainer
 var _t: float = 0.0
@@ -274,17 +275,28 @@ func _on_update_available(version: String, _url: String) -> void:
 func _build_settings_page(parent: Control) -> void:
 	var p := _new_page(parent, &"settings")
 	_page_label(p, "AYARLAR", UiTheme.BODY, true)
-	_vol_button = _button(p, "", func():
+	if menu != null:
+		_page_label(p, menu.how_to_play_text(), 9)
+	var audio_row := HBoxContainer.new()
+	audio_row.add_theme_constant_override("separation", 6)
+	p.add_child(audio_row)
+	_vol_button = _button(audio_row, "", func():
 		menu._cycle_volume()
 		_refresh_settings())
-	_music_button = _button(p, "", func():
+	_vol_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_music_button = _button(audio_row, "", func():
 		menu._toggle_music()
 		_refresh_settings())
+	_music_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_joy_button = _button(p, "", func():
 		menu._toggle_joystick_mode()
 		_refresh_settings())
+	_haptics_button = _button(p, "", func():
+		menu._toggle_haptics()
+		_refresh_settings())
+	_haptics_button.visible = OS.has_feature("mobile") or MobileInputManager.is_touch_ui()
 	_fs_button = _button(p, "Tam Ekran (F11)", func(): menu.toggle_fullscreen())
-	_fs_button.visible = not OS.has_feature("mobile")
+	_fs_button.visible = not OS.has_feature("mobile") and not MobileInputManager.is_touch_ui()
 	_button(p, "< Geri", func(): _show_page(&"main"))
 
 
@@ -368,6 +380,7 @@ func _refresh_settings() -> void:
 	_vol_button.text = menu._vol_text()
 	_music_button.text = menu._music_text()
 	_joy_button.text = menu._joy_text()
+	_haptics_button.text = menu._haptics_text()
 
 
 func _refresh_card() -> void:

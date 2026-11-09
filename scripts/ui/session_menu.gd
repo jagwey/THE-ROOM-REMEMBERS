@@ -85,17 +85,8 @@ func _ready() -> void:
 	_settings_box = VBoxContainer.new()
 	_settings_box.add_theme_constant_override("separation", 6)
 	_panel.body.add_child(_settings_box)
-	var help_txt := ""
-	if MobileInputManager.is_touch_ui():
-		help_txt = "NASIL OYNANIR
-Sol joystick: yürü · Sağ düğmeler: zıpla, etkileş, saldır, atıl, yankı · Sağ üst: günlük ve menü"
-	else:
-		help_txt = "NASIL OYNANIR
-A/D: yürü · W/Space: zıpla · E: etkileş · Z: saldır · X: atıl · Q: yankı · I: günlük · Esc: menü"
-	help_txt += "
-Ölmek son değil: bedenin odada kalır ve bulmacaları çözmene yardım eder."
 	_settings_help = Label.new()
-	_settings_help.text = help_txt
+	_settings_help.text = how_to_play_text()
 	_settings_help.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_settings_help.add_theme_font_size_override("font_size", 8)
 	_settings_help.add_theme_color_override("font_color", Palette.PALE_LILAC)
@@ -130,6 +121,21 @@ A/D: yürü · W/Space: zıpla · E: etkileş · Z: saldır · X: atıl · Q: ya
 	add_child(_title_screen)
 	if _should_show_title():
 		_open_title()
+
+
+## "Nasıl Oynanır" bloğu: duraklatma ve başlık Ayarlar sayfaları ortak kullanır.
+func how_to_play_text() -> String:
+	var t := "NASIL OYNANIR
+"
+	if MobileInputManager.is_touch_ui():
+		t += "Sol joystick: yürü · Sağ düğmeler: zıpla, etkileş, saldır, atıl, yankı"
+		t += " · Sağ üst: günlük ve menü"
+	else:
+		t += "A/D: yürü · W/Space: zıpla · E: etkileş · Z: saldır · X: atıl"
+		t += " · Q: yankı · I: günlük · Esc: menü"
+	t += "
+Ölmek son değil: bedenin odada kalır ve bulmacaları çözmene yardım eder."
+	return t
 
 
 func _should_show_title() -> bool:
