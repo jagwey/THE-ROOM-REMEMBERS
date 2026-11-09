@@ -123,6 +123,18 @@ func _run() -> void:
 				bad.append(str(n.name))
 		check(bad.is_empty(), "seal clear of hazards/doors in %s" % rid, bad)
 		check(seal.global_position.y >= 270.0 and seal.global_position.x > 150.0, "seal on floor in %s" % rid, seal.global_position)
+		var crowd: Array = []
+		var foes: Array = []
+		for n in rt.find_children("*", "Node2D", true, false):
+			if n == seal:
+				continue
+			var d := (n as Node2D).global_position.distance_to(seal.global_position)
+			if n.has_method("on_interact") and d < 80.0:
+				crowd.append("%s@%d" % [n.name, int(d)])
+			if n.is_in_group("enemy") and d < 160.0:
+				foes.append("%s@%d" % [n.name, int(d)])
+		check(crowd.is_empty(), "no other interactable within 80px in %s" % rid, crowd)
+		check(foes.is_empty(), "no enemy spawn within 160px in %s" % rid, foes)
 
 	## 2) Etkilesim commit eder (Uyanis).
 	rm.enter_room(&"awakening", &"default")
@@ -163,6 +175,40 @@ func _run() -> void:
 	check(a_seal._is_danger(), "dialogue blocks seal")
 	dm.clear()
 	await _wait(0.05)
+	var ksrc := GDScript.new()
+	ksrc.source_code = "extends Node2D
+var mode := 5
+"
+	ksrc.reload()
+	var keeper_fake := Node2D.new()
+	keeper_fake.set_script(ksrc)
+	keeper_fake.add_to_group("keeper")
+	current_scene.add_child(keeper_fake)
+	keeper_fake.global_position = player.global_position + Vector2(200, 0)
+	check(a_seal._is_danger(), "keeper in COMBAT blocks seal")
+	keeper_fake.set("mode", 2)
+	check(a_seal._is_danger(), "keeper in INTERVENE blocks seal")
+	keeper_fake.set("mode", 0)
+	check(not a_seal._is_danger(), "keeper in OBSERVE does not block seal")
+	keeper_fake.queue_free()
+	await _wait(0.05)
+
+	## Banner / bolge karti cakismaz (ikisi ayni anda tetiklenir).
+	var card_cls = load("res://scripts/ui/region_title_card.gd")
+	card_cls.show_region_title("library")
+	await _wait(0.1)
+	a_seal.on_interact(player)
+	await _wait(0.7)
+	var card_ok: bool = card_cls.is_showing()
+	var card_rect := Rect2()
+	var banner_rect := Rect2()
+	if card_cls.instance != null:
+		card_rect = (card_cls.instance.get("_container") as Control).get_node("Backing").get_global_rect()
+	var banners := get_nodes_in_group("seal_banner")
+	if banners.size() == 1:
+		banner_rect = (banners[0].get_node("BannerBox/Backing") as Control).get_global_rect()
+	check(card_ok and banner_rect.size.x > 0.0 and not card_rect.intersects(banner_rect), "seal banner does not overlap region card", [card_rect, banner_rect])
+	dm.clear()
 
 	## 3) Yeni muhur: kesif listesi, her iki dosyada.
 	rm.enter_room(&"decay_garden", &"default")
@@ -184,6 +230,7 @@ func _run() -> void:
 	await _wait(0.1)
 	check(_serial(path) > s3, "re-activation still commits")
 	check(is_instance_valid(g_seal._travel_layer), "re-activation offers travel list")
+	check(get_first_node_in_group("seal_travel_modal") != null, "travel modal flagged so player interact is blocked")
 	g_seal._close_travel()
 	await _wait(0.05)
 	check(not is_instance_valid(g_seal._travel_layer) and root.get_node("UiGate").current_layer() == 0, "Kapat closes list and releases gate")
@@ -193,6 +240,7 @@ func _run() -> void:
 	await _wait(0.3)
 	check(rm.get_active_room_id() == &"awakening", "fast travel lands in awakening", rm.get_active_room_id())
 	check(player.global_position.distance_to(a_seal.global_position) < 8.0 and player.global_position.y < 330.0, "fast travel on floor at seal", player.global_position)
+	check(gs.get_checkpoint().distance_to(a_seal.global_position) < 1.0 and gs.character_current_life_knowledge.get("checkpoint_room", &"") == &"awakening", "checkpoint after travel equals seal spawn", gs.get_checkpoint())
 
 	## 6) commit -> oda degistir -> load_committed -> muhur konumu.
 	rm.enter_room(&"library_hall", &"default")

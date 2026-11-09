@@ -54,9 +54,9 @@ set_progress_key = "truth_fragment_conduit"
 [node name="Spawns" type="Node2D" parent="."]
 
 [node name="seal_experiment_core_conduit" type="Marker2D" parent="Spawns"]
-position = Vector2(280, 288)
+position = Vector2(650, 288)
 
 [node name="MemorySeal" type="Area2D" parent="Interactive"]
-position = Vector2(280, 288)
+position = Vector2(650, 288)
 script = ExtResource("memory_seal_pt")
 room_id = &"experiment_core_conduit"

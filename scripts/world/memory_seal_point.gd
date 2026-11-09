@@ -5,6 +5,11 @@ extends Area2D
 const ENEMY_RANGE := 120.0
 const SEAL_GROUP := &"memory_seal_point"
 const TRAVEL_LAYER := 30
+const SealBanner := preload("res://scripts/ui/seal_banner.gd")
+const TRAVEL_GROUP := &"seal_travel_modal"
+## Keeper.Mode değerleri (keeper_controller.gd): INTERVENE=2, COMBAT=5. Bu modlarda Shilda tehlikedir.
+const KEEPER_DANGER_MODES := [2, 5]
+const KEEPER_RANGE := 320.0
 
 @export var room_id: StringName = &""
 
@@ -80,6 +85,10 @@ func _is_danger() -> bool:
 		if en and is_instance_valid(en) and en.is_visible_in_tree() \
 				and en.global_position.distance_to(player.global_position) <= ENEMY_RANGE:
 			return true
+	for k in get_tree().get_nodes_in_group("keeper"):
+		var kn := k as Node2D
+		if kn and is_instance_valid(kn) and kn.is_visible_in_tree() and int(kn.get("mode")) in KEEPER_DANGER_MODES 				and kn.global_position.distance_to(player.global_position) <= KEEPER_RANGE:
+			return true
 	return false
 
 
@@ -95,13 +104,16 @@ func on_interact(_by: Node = null) -> void:
 		DialogueManager.say("Noroi", "Tehlike varken mühür tepki vermiyor.")
 		return
 	var was_known := GameState.discovered_seals.has(room_id)
+	# Mühür kayda girmeden keşfedilmiş sayılmaz: önce listeye ekle (dosyaya yazılsın), yazma başarısızsa geri al.
 	GameState.discover_seal(room_id)
 	var ok := SaveManager.commit_save(&"memory_seal", _spawn_position(), room_id)
+	if not ok:
+		if not was_known:
+			GameState.discovered_seals.erase(room_id)
+		SealBanner.show_banner("MÜHÜR YAZILAMADI", "Kayıt yapılamadı, tekrar dene.")
+		return
 	_glow = 1.0
 	AudioManager.play_sfx(&"seal_open")
-	if not ok:
-		return
-	var SealBanner := load("res://scripts/ui/seal_banner.gd")
 	SealBanner.show_banner("HAFIZA MÜHÜRLENDİ", "Kayıt noktası etkinleştirildi.")
 	if was_known and _other_seals().size() > 0:
 		_open_travel()
@@ -118,6 +130,7 @@ func _other_seals() -> Array[StringName]:
 func _open_travel() -> void:
 	_travel_layer = CanvasLayer.new()
 	_travel_layer.layer = TRAVEL_LAYER
+	_travel_layer.add_to_group(TRAVEL_GROUP)
 	get_tree().current_scene.add_child(_travel_layer)
 	var rows := _other_seals()
 	var modal := GothicModalPanel.new()
@@ -142,4 +155,9 @@ func _close_travel() -> void:
 
 func _travel_to(target: StringName) -> void:
 	_close_travel()
-	RoomManager.enter_room(target, StringName("seal_%s" % String(target)))
+	var spawn_id := StringName("seal_%s" % String(target))
+	RoomManager.enter_room(target, spawn_id)
+	# enter_room oda varsayılanını checkpoint yapar; geçişten sonra canlı checkpoint mührün kendisi olsun.
+	var spawns: Dictionary = RoomManager._rooms[target].spawns
+	if spawns.has(spawn_id):
+		GameState.set_checkpoint(spawns[spawn_id] as Vector2, target)

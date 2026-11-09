@@ -651,6 +651,9 @@ func _on_interact() -> void:
 		return
 	if UiGate.current_layer() == UiGate.Layer.ENDING:
 		return
+	## Mühürler arası geçiş açıkken E, yakındaki başka etkileşimi tetiklemesin.
+	if get_tree().get_first_node_in_group("seal_travel_modal") != null:
+		return
 	if DialogueManager.is_open:
 		DialogueManager.advance()
 		return

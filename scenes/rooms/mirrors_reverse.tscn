@@ -313,9 +313,9 @@ polygon = PackedVector2Array(0, 320, 960, 320, 960, 360, 0, 360)
 color = Color(0.08, 0.06, 0.1, 1)
 
 [node name="seal_mirrors_reverse" type="Marker2D" parent="Spawns"]
-position = Vector2(360, 288)
+position = Vector2(195, 288)
 
 [node name="MemorySeal" type="Area2D" parent="Interactive"]
-position = Vector2(360, 288)
+position = Vector2(195, 288)
 script = ExtResource("memory_seal_pt")
 room_id = &"mirrors_reverse"

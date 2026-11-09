@@ -31,6 +31,7 @@ var _queue: Array[String] = []
 var _current := ""
 ## Kart, üst-orta oda başlığının (y 6..38) ve sol üst hedef/ipucunun (y 40..96) altında durur.
 const CARD_Y := 112.0
+const TitleCardStyle := preload("res://scripts/ui/title_card_style.gd")
 
 
 func _ready() -> void:
@@ -59,47 +60,11 @@ func _build_ui() -> void:
 	add_child(_container)
 
 	# Koyu zemin: arkadaki dünya etiketleri ([E] Geç, prop adları) kartla çakışmasın.
-	var backing := ColorRect.new()
-	backing.name = "Backing"
-	backing.color = Color(0.07, 0.05, 0.09, 0.94)
-	backing.position = Vector2(-20, -6)
-	backing.size = Vector2(440, 74)
-	backing.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_container.add_child(backing)
-
-	_top_line = ColorRect.new()
-	_top_line.color = Color(Palette.PALE_LILAC.r, Palette.PALE_LILAC.g, Palette.PALE_LILAC.b, 0.45)
-	_top_line.position = Vector2(20, 0)
-	_top_line.size = Vector2(360, 1)
-	_top_line.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_container.add_child(_top_line)
-
-	var vbox := VBoxContainer.new()
-	vbox.position = Vector2(0, 4)
-	vbox.size = Vector2(400, 52)
-	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
-	vbox.add_theme_constant_override("separation", 2)
-	vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_container.add_child(vbox)
-
-	_title_label = Label.new()
-	_title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_title_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	UiTheme.apply_outlined(_title_label, UiTheme.TITLE, true, Palette.IVORY)
-	vbox.add_child(_title_label)
-
-	_sub_label = Label.new()
-	_sub_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_sub_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	UiTheme.apply_outlined(_sub_label, UiTheme.HINT, false, Palette.PALE_LILAC)
-	vbox.add_child(_sub_label)
-
-	_bottom_line = ColorRect.new()
-	_bottom_line.color = Color(Palette.PALE_LILAC.r, Palette.PALE_LILAC.g, Palette.PALE_LILAC.b, 0.45)
-	_bottom_line.position = Vector2(20, 60)
-	_bottom_line.size = Vector2(360, 1)
-	_bottom_line.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_container.add_child(_bottom_line)
+	var parts := TitleCardStyle.build(_container, 400.0, 60.0, Color(Palette.PALE_LILAC.r, Palette.PALE_LILAC.g, Palette.PALE_LILAC.b, 0.45))
+	_top_line = parts["top_line"]
+	_bottom_line = parts["bottom_line"]
+	_title_label = parts["title"]
+	_sub_label = parts["sub"]
 
 
 static func show_region_title(region_name: String) -> void:

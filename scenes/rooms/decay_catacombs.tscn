@@ -120,9 +120,9 @@ set_progress_key = "truth_fragment_lockdown"
 [node name="Spawns" type="Node2D" parent="."]
 
 [node name="seal_decay_catacombs" type="Marker2D" parent="Spawns"]
-position = Vector2(300, 288)
+position = Vector2(480, 288)
 
 [node name="MemorySeal" type="Area2D" parent="Interactive"]
-position = Vector2(300, 288)
+position = Vector2(480, 288)
 script = ExtResource("memory_seal_pt")
 room_id = &"decay_catacombs"
