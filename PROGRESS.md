@@ -242,3 +242,10 @@ Dal: cursor/playable-story-flow-8e4e · Sürüm: v1.2.0 (versionCode 16)
 - Sürüm 1.5.0 / versionCode 28 (9818bf2); e2e 50/50 (sürüm kontrolü dahil). `origin/claude/v1.4.1` ve `origin/main` → 9818bf2 (fast-forward).
 - APK `TheRoomRemembers-1.5.0-android-arm64.apk` (34,2 MB, debug imza SHA-256 16fd6975…, öncekilerle aynı).
 - Yayın: public `jagwey/THE-ROOM-REMEMBERS-release` v1.5.0 (latest) + private `jagwey/THE-ROOM-REMEMBERS` v1.5.0.
+
+## Entegrasyon + Release v1.5.1 (2026-11-09)
+- story-x (v1.4.9 metin cilası) ve serene (gotik terimler) v3 kanonuna göre aktarıldı (9b5547e). X adı/isim ifşası, Tanık I/II/III, çoklu final, eksik prop ipuçları v3 ile çeliştiği için atlandı; Noroi suçluluk itirafları temizlendi; `HIKAYE_KANON.md` silindi.
+- Testler (TORIMON_TEST=1): Run-Audit 25/0; build kopyasında e2e 50/50. Pencereli 1920x1080 diyalog görüntüleri gözle kontrol edildi.
+- Sürüm 1.5.1 / versionCode 29 (a2a215c); APK `TheRoomRemembers-1.5.1-android-arm64.apk` (34,2 MB, imza 16fd6975…). Yayın: public release (latest) + private v1.5.1. `origin/main` = `origin/claude/v1.4.1` = a2a215c.
+- Dal temizliği: cursor/*, android_live_playtest, generate_claude_prompt_fixes, adoring/token-usage, claude/v1.4-fixes (yerel+remote), origin/claude/story-x silindi. Ana checkout artık `main`'de.
+- Kalan: `claude/story-x`, `claude/nice-wing-cae9b1`, `claude/serene-mccarthy-047690` yerel dalları eski oturum worktree'lerine bağlı (benzersiz commit yok; serene'de 74 commitlenmemiş dosya, aktarıldı). Eski stash 1c54526 (project.godot wip) duruyor. Cihaz testi yapılmadı.
