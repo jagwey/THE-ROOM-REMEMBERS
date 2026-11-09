@@ -4,8 +4,8 @@ extends CanvasLayer
 ## İlk sekans ~4.5 sn; tekrarlar ~2 sn ve (kısa bir tutma süresinden sonra) herhangi bir girdiyle atlanır.
 
 const TitleCardStyle := preload("res://scripts/ui/title_card_style.gd")
-const FIRST_DURATION := 4.5
-const REPEAT_DURATION := 2.0
+const FIRST_DURATION := 3.8 ## + 0.7 sn çıkış solması ≈ 4.5 sn toplam
+const REPEAT_DURATION := 1.7 ## + 0.3 sn çıkış ≈ 2 sn
 const SKIP_GRACE := 0.25
 const CARD_W := 560.0
 const CARD_H := 84.0

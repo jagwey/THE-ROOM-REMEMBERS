@@ -103,8 +103,8 @@ func _process(delta: float) -> void:
 	var sev := clampf((c - CurseManager.BAND_FIRST_SIGNS) / (CurseManager.CURSE_MAX - CurseManager.BAND_FIRST_SIGNS), 0.0, 1.0)
 	_update_vignette(delta, t, _band_intensity(c))
 	var wobble := 0.02 * sev * sin(_pulse * (2.0 + t * 4.0))
-	veil.color.a = clampf(sev * 0.32 + wobble if band > 0 else 0.0, 0.0, 0.45)
-	halo.modulate.a = clampf(sev * 0.6 if band > 0 else 0.0, 0.0, 0.7)
+	veil.color.a = clampf(0.14 + sev * 0.24 + wobble if band > 0 else 0.0, 0.0, 0.45) ## band 50 girişinde bile belirgin kırmızı ton
+	halo.modulate.a = clampf(0.32 + sev * 0.38 if band > 0 else 0.0, 0.0, 0.7)
 	halo.rotation = sin(_pulse * 0.7) * 0.08 * sev
 	halo.scale = Vector2.ONE * (1.0 + 0.15 * sev + 0.05 * sin(_pulse * 3.0))
 	_stagger_cd = maxf(0.0, _stagger_cd - delta)
@@ -139,6 +139,7 @@ func _band_intensity(c: float) -> float:
 	return 0.0
 
 
+## TODO(audio): clock_tick yer tutucu; gerçek kalp atışı sesiyle değiştir.
 func _heartbeat_sfx(delta: float, t: float) -> void:
 	_hb_clock += delta
 	var period := 60.0 / (56.0 + 64.0 * t)

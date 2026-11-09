@@ -129,12 +129,12 @@ func _begin_possession() -> void:
 
 ## Son committed kayda dön: oda + güvenli konum; dünya ve hikâye durumu committed hale gelir.
 func _reload_committed() -> void:
-	var loaded := SaveManager.load_committed()
+	SaveManager.load_committed()
 	var life: Dictionary = GameState.character_current_life_knowledge
 	var room := StringName(str(life.get("checkpoint_room", life.get("room", &"awakening"))))
-	var has_pos := loaded and life.has("checkpoint")
+	## Committed kayıt yoksa da mevcut checkpoint konumu kullanılır (oda varsayılanı değil).
 	if RoomManager.has_room(room):
-		RoomManager.enter_room(room, &"checkpoint" if has_pos else &"default", false)
+		RoomManager.enter_room(room, &"checkpoint", false)
 	var player := get_tree().get_first_node_in_group("player") as Node2D
 	if player and player.has_method("respawn_at"):
 		var pos: Vector2 = player.global_position if RoomManager.has_room(room) else GameState.get_checkpoint()

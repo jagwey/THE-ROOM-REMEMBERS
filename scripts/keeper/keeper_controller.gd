@@ -664,39 +664,6 @@ func _maybe_bandage_line() -> void:
 	DialogueManager.say("Shilda", "Ama sen bunu yaptığını bile hatırlamıyorsun.")
 
 
-# --- Merhamet ölümü (lanet %100) -----------------------------------------------------
-
-func can_mercy_kill() -> bool:
-	if _player == null:
-		_player = get_tree().get_first_node_in_group("player") as Node2D
-	if _player == null or EndingManager.current != EndingManager.Ending.NONE:
-		return false
-	return visible and presence != "hidden" and global_position.distance_to(_player.global_position) < 420.0
-
-
-func mercy_kill() -> void:
-	_busy = true
-	presence = "present"
-	visible = true
-	z_index = 1
-	modulate = Color.WHITE
-	_face_player()
-	var tw := create_tween()
-	tw.tween_property(self, "global_position:x", _player.global_position.x - 30.0 * signf(_player.global_position.x - global_position.x), 0.25)
-	await tw.finished
-	if sprite.sprite_frames.has_animation("attack"):
-		sprite.play("attack")
-	DialogueManager.whisper("Shilda", "Seni Çekirdek'e teslim etmeyeceğim.")
-	DialogueManager.whisper("Shilda", "Uyu… ve unut.")
-	await _await_dialogue_or_smoke()
-	var cam := get_tree().get_first_node_in_group("follow_camera")
-	if cam and cam.has_method("add_trauma"):
-		cam.add_trauma(0.7)
-	_sfx(&"keeper_claw")
-	GameState.player_progress_knowledge["mercy_kill_seen"] = true
-	_busy = false
-
-
 # --- Savaş karşılaşması: pençe + atılma + çatlak duvar ------------------------------------
 
 func start_encounter(encounter_id: StringName) -> void:

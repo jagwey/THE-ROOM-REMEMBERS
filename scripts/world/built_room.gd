@@ -125,6 +125,7 @@ func _build_floor() -> void:
 	for g in floor_gaps:
 		var pit := Area2D.new()
 		pit.name = "Pit%d" % int(g.x)
+		pit.add_to_group("pit")
 		pit.collision_layer = 0
 		pit.collision_mask = 2
 		pit.position = Vector2((g.x + g.y) * 0.5, 352)

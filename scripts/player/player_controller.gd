@@ -136,10 +136,13 @@ func _on_curse_stagger() -> void:
 
 
 func _near_hazard() -> bool:
-	for grp in [&"curse_cloud", &"blood_thorn"]:
+	for grp in [&"curse_cloud", &"blood_thorn", &"pit"]:
 		for n in get_tree().get_nodes_in_group(grp):
 			if n is Node2D and (n as Node2D).global_position.distance_to(global_position) < 96.0:
 				return true
+	var keeper := get_tree().get_first_node_in_group("keeper")
+	if keeper != null and "mode" in keeper and int(keeper.mode) in [keeper.Mode.COMBAT, keeper.Mode.INTERVENE]:
+		return true
 	return false
 
 
