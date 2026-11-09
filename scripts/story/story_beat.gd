@@ -189,9 +189,9 @@ func _experiment_circuit() -> void:
 
 		return
 
-	DialogueManager.say("Shilda", "Üstte “Yankıyı başlat”a bas. Silüet anahtara varınca sekiz saniyen var.")
+	DialogueManager.say("Shilda", "Yankın anahtara varana dek devre sende. Sekiz saniye.")
 
-	DialogueManager.say("Shilda", "“Devremi aç”a bas. Kaçırırsan ceza yok, yeniden dene.")
+	DialogueManager.say("Shilda", "Kaçırırsan yeniden dene. Bu oda affeder.")
 
 	var ok: bool = await DialogueManager.dialogue_finished
 
@@ -243,8 +243,8 @@ func _mirrors_dual() -> void:
 	if PuzzleManager.is_solved(&"mirrors_dual"):
 		DialogueManager.say("Noroi", "İki iz birleşti. Yol açık.")
 		return
-	DialogueManager.say("Shilda", "Yankın bu anahtarı altı saniye tutar.")
-	DialogueManager.say("Shilda", "Konuşma bitince sağdaki kristale git. Süre dolarsa yeniden başlat, ceza yok.")
+	DialogueManager.say("Shilda", "Yankın bu anahtarı altı saniye tutar. Sağdaki kristale yetiş.")
+	DialogueManager.say("Shilda", "Yetişemezsen yeniden dene. Bu oda affeder.")
 	var ok: bool = await DialogueManager.dialogue_finished
 	if not ok:
 		return

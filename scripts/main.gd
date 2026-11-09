@@ -158,7 +158,7 @@ func _play_intro() -> void:
 		return
 	if not _continued:
 		DialogueManager.say("", "Gözlerin açılıyor.")
-		DialogueManager.say("", "Oda seni hatırlıyor. Sen henüz bilmiyorsun.")
+		DialogueManager.say("", "Taşlar soğuk. Biri seni izliyor.")
 		DialogueManager.say("Noroi", "Burası neresi?")
 		await DialogueManager.dialogue_finished
 		if not is_inside_tree():

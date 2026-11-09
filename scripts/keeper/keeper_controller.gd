@@ -374,11 +374,26 @@ func on_trigger_zone(zone_id: StringName, _body: Node) -> void:
 		_do_intervene(zone_id)
 
 
+## Yasak bölge uyarısı bölgeye göre kısa varyant alır (aşama tonu: mesafeli -> ortak amaç).
+func _warn_lines(zone_id: StringName) -> Array:
+	if zone_id == &"forbidden":
+		var room := String(RoomManager.get_active_room_id())
+		if room.begins_with("library"):
+			return ["Oraya girme.", "Merak etmen yetmez."]
+		if room.begins_with("experiment"):
+			return ["Orası seni tutar.", "Geri gel."]
+		if room.begins_with("mirrors"):
+			return ["Yalnız girme.", "Beni bekle."]
+		if room.begins_with("core"):
+			return ["Birlikte gireceğiz.", "Önce hazırlan."]
+	return _zone_lines.get(zone_id, {}).get("warn", ["Yaklaşma."])
+
+
 func _do_warn(zone_id: StringName) -> void:
 	_busy = true
 	set_mode(Mode.WARN)
 	CurseManager.add_curse(6.0, zone_id)
-	var lines: Array = _zone_lines.get(zone_id, {}).get("warn", ["Yaklaşma."])
+	var lines: Array = _warn_lines(zone_id)
 	for line in lines:
 		DialogueManager.whisper(GameState.keeper_speaker_name(), String(line))
 	_show_hint(String(lines[0]))
@@ -577,8 +592,9 @@ func _queue_stage_talk(room: String) -> void:
 		DialogueManager.say("Noroi", "Neden?")
 		DialogueManager.say("Shilda", "Bazıları kendini orada bıraktı.")
 	elif room.begins_with("core"):
-		DialogueManager.say("Noroi", "Buradan birlikte çıkacağız.")
-		DialogueManager.say("Shilda", "Bunu söyleyen ilk kişi değilsin.")
+		DialogueManager.say("Shilda", "Sona yaklaştık.")
+		DialogueManager.say("Noroi", "Korkuyor musun?")
+		DialogueManager.say("Shilda", "Evet. Ama bu sefer yalnız değilim.")
 	else:
 		DialogueManager.say("Shilda", "Buradan uzak dur.")
 		DialogueManager.say("Noroi", "Neden?")
