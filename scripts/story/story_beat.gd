@@ -92,13 +92,15 @@ func on_interact(_by: Node) -> void:
 
 func _library_hall() -> void:
 
-	DialogueManager.say("Arşivci", "Hoş geldin Noroi. Her dönüşünde kendin için başka bir raf arıyorsun.")
+	DialogueManager.say("Arşivci", "Yine geldin, Noroi. Bu sefer hangi rafa bakacaksın?")
 
-	DialogueManager.say("Arşivci", "Bir kayıtta kurtarıcısın, diğerinde kapıyı kilitleyen kişi. Kayıtlar tutmuyor; imza kazınmış.")
+	DialogueManager.say("Arşivci", "Bir kayıtta kurtarıcısın, ötekinde kapıyı kilitleyen. İmza kazınmış.")
 
 	DialogueManager.say("Noroi", "Hangisi doğru?")
 
-	DialogueManager.say("Arşivci", "Sağdaki odada saat, çiçek ve mühür var. Üçünü de dinle; ortadaki kayıtta tanıkları karşılaştır. Sıra, kayıp sayfayı açacak.")
+	DialogueManager.say("Arşivci", "Sağdaki odada saat, çiçek ve mühür var. Üçünü de dinle.")
+
+	DialogueManager.say("Arşivci", "Sonra ortadaki kayıtta karşılaştır. Sıra, kayıp sayfayı açar.")
 
 	var ok: bool = await DialogueManager.dialogue_finished
 
@@ -132,7 +134,8 @@ func _library_witness() -> void:
 
 	if ev.has("ev_witness_clock") and ev.has("ev_witness_flower") and ev.has("ev_witness_seal"):
 
-		DialogueManager.say("Noroi", "Deney önce başladı. Kapı sonra kapandı. Koruma mührü en son çalıştı. Mühür felaketi başlatmamış, içeride tutmuş.")
+		DialogueManager.say("Noroi", "Deney önce başladı, kapı sonra kapandı. Mühür en son çalışmış.")
+		DialogueManager.say("Noroi", "Felaketi mühür başlatmamış. İçeride tutmuş.")
 		var understood: bool = await DialogueManager.dialogue_finished
 		if not understood:
 			return
@@ -158,11 +161,13 @@ func _library_page() -> void:
 
 func _experiment_cells() -> void:
 
-	DialogueManager.say("Kayıt", "Hatıra koruma deneyi. Amaç: kaybedilen kişilerin seslerini muhafaza etmek.")
+	DialogueManager.say("Kayıt", "Hatıra koruma deneyi. Amaç: kaybedilenlerin seslerini saklamak.")
 
-	DialogueManager.say("Noroi", "Biri unutulmak istenmiş. Bu yüzden mi burası böyle?")
-	DialogueManager.say("Shilda", "O önce tek bir sesi saklamak istedi. Sonra hiçbir kaybın son olmamasını. Hatıralar bedenlerden ayrılıp odada birikti.")
-	DialogueManager.say("Shilda", "Şimdi kimseyi feda etmeyeceğiz. Sağdaki devrede eski yankı bir anahtarı tutacak. Noroi diğerini açacak.")
+	DialogueManager.say("Noroi", "Biri sesleri kaybetmek istememiş. Burası bu yüzden mi böyle?")
+	DialogueManager.say("Shilda", "O önce tek bir sesi saklamak istedi. Sonra kimseyi kaybetmek istemedi.")
+	DialogueManager.say("Shilda", "Hatıralar bedenlerden ayrılıp odada birikti.")
+	DialogueManager.say("Shilda", "Kimseyi feda etmeyeceğiz. Sağdaki devrede yankın bir anahtarı tutacak.")
+	DialogueManager.say("Shilda", "Sen de diğerini açacaksın.")
 
 	var ok: bool = await DialogueManager.dialogue_finished
 
@@ -184,7 +189,9 @@ func _experiment_circuit() -> void:
 
 		return
 
-	DialogueManager.say("Shilda", "Üstte Yankıyı başlat düğmesine bas. Silüet anahtara ulaşınca sekiz saniyen var: Devremi aç düğmesine bas. Başaramazsan ceza yok; yeniden dene.")
+	DialogueManager.say("Shilda", "Üstte “Yankıyı başlat”a bas. Silüet anahtara varınca sekiz saniyen var.")
+
+	DialogueManager.say("Shilda", "“Devremi aç”a bas. Kaçırırsan ceza yok, yeniden dene.")
 
 	var ok: bool = await DialogueManager.dialogue_finished
 
@@ -194,11 +201,16 @@ func _experiment_circuit() -> void:
 
 func _experiment_authority() -> void:
 
-	DialogueManager.say("Kayıt", "Protokol yetkilisi: ███ (kazınmış). Güvenlik görevlisi: Shilda. Acil kapatma talebi reddedildi.")
+	DialogueManager.say("Kayıt", "Protokol yetkilisi: ███ (kazınmış). Güvenlik görevlisi: Shilda.")
+	DialogueManager.say("Kayıt", "Acil kapatma talebi reddedildi.")
 
-	DialogueManager.say("Noroi", "Dışarı çıkmasın diye kapıyı biri kilitlemiş. İçeridekilerin sesleri burada kaldı.")
+	DialogueManager.say("Noroi", "Biri kapıyı kimse çıkmasın diye kilitlemiş. Sesler içeride kalmış.")
 
-	DialogueManager.say("Shilda", "Seni unutturmam gerekti. Her dönüşünde aynı karar bekledi; ben yine de hatırladım.")
+	DialogueManager.say("Noroi", "Benden önce kimler vardı?")
+	DialogueManager.say("Shilda", "Çok fazla insan.")
+	DialogueManager.say("Noroi", "Hepsini tanıyor muydun?")
+	DialogueManager.say("Shilda", "Bazılarını tanıyacak kadar zamanım oldu.")
+	DialogueManager.say("Shilda", "Seni unutturmam gerekiyordu. Ben hatırlamayı seçtim.")
 	DialogueManager.say("Shilda", "Altmış sekiz yıl oldu. Kapı 1927'den beri kilitli. Sen 1995'te geldin.")
 	DialogueManager.say("Noroi", "Bu kez kendimden kaçmayacağım. Aynalar salonuna gidelim.")
 
@@ -220,7 +232,8 @@ func _mirrors_reverse() -> void:
 	if PuzzleManager.is_solved(&"mirrors_reverse"):
 		DialogueManager.say("Noroi", "Aynadaki sol, gerçekte sağ. Geçit açık.")
 		return
-	DialogueManager.say("Noroi", "Aynada çiçek soldaki kapıda. Karşımdaki yansıma yönleri ters gösteriyor. Gerçek kapı hangisi?")
+	DialogueManager.say("Noroi", "Aynada çiçek soldaki kapıda. Yansıma yönleri ters gösteriyor.")
+	DialogueManager.say("Noroi", "Gerçek kapı hangisi?")
 	var ok: bool = await DialogueManager.dialogue_finished
 	if not ok:
 		return
@@ -230,7 +243,8 @@ func _mirrors_dual() -> void:
 	if PuzzleManager.is_solved(&"mirrors_dual"):
 		DialogueManager.say("Noroi", "İki iz birleşti. Yol açık.")
 		return
-	DialogueManager.say("Shilda", "Yankın bu anahtarı altı saniye tutabilir. Konuşma bitince sağdaki kristale yürü ve etkileş. Süre biterse burada yeniden başlat; ceza yok.")
+	DialogueManager.say("Shilda", "Yankın bu anahtarı altı saniye tutar.")
+	DialogueManager.say("Shilda", "Konuşma bitince sağdaki kristale git. Süre dolarsa yeniden başlat, ceza yok.")
 	var ok: bool = await DialogueManager.dialogue_finished
 	if not ok:
 		return
@@ -238,13 +252,18 @@ func _mirrors_dual() -> void:
 
 func _mirrors_unbroken() -> void:
 
+	DialogueManager.say("Noroi", "Neden her seferinde çiçek bırakıyorsun?")
+	DialogueManager.say("Shilda", "…")
+	DialogueManager.say("Shilda", "Çünkü birinin onları hatırlaması gerekiyor.")
+
 	DialogueManager.say("Noroi", "Beni korumuyordun. Kararımı koruyordun.")
 
 	DialogueManager.say("Shilda", "İkisini ayırmayı unuttum.")
 
-	DialogueManager.say("Noroi", "Döngüyü sürdürmemi de, seni affetmemi de isteyemezsin. Ama gerçeği saklamadan yanımda durabilirsin.")
-	DialogueManager.say("Shilda", "Çekirdekte iki yol var. Sesleri birlikte mühürler, bekçiliği paylaşırız. Ya da bağı koparır, hatıraları serbest bırakırız.")
-	DialogueManager.say("Noroi", "İkisini de anlayarak seçeceğim. Sağdaki geçidi aç.")
+	DialogueManager.say("Noroi", "Döngüyü sürdürmemi de seni affetmemi de isteyemezsin.")
+	DialogueManager.say("Noroi", "Ama gerçeği saklamadan yanımda durabilirsin.")
+	DialogueManager.say("Shilda", "Çekirdekte son mühür var. Onu birlikte açacağız.")
+	DialogueManager.say("Noroi", "Artık gerçeği biliyorum. Sağdaki geçidi açıyorum.")
 
 	var ok: bool = await DialogueManager.dialogue_finished
 
@@ -262,7 +281,11 @@ func _mirrors_unbroken() -> void:
 
 func _core_threshold() -> void:
 
-	DialogueManager.say("Shilda", "Saat sıralamayı, çiçek kaybı, anahtar izni, mühür sorumluluğu gösterdi. Artık kapı senden bir can istemiyor.")
+	DialogueManager.say("Noroi", "Buradan birlikte çıkacağız.")
+	DialogueManager.say("Shilda", "Bunu söyleyen ilk kişi değilsin.")
+	DialogueManager.say("Noroi", "Biliyorum.")
+	DialogueManager.say("Shilda", "Hayır. Henüz bilmiyorsun.")
+	DialogueManager.say("Shilda", "Yine de kapı artık senden bir can istemiyor.")
 	DialogueManager.say("Noroi", "Öğrendiklerimi yanıma aldım. Son mühür odasında kayıtları birleştireceğim.")
 
 	var ok: bool = await DialogueManager.dialogue_finished
@@ -277,7 +300,8 @@ func _core_threshold() -> void:
 
 func _core_seal_chamber() -> void:
 
-	DialogueManager.say("Noroi", "Deney başladı. Kapı kapandı. Koruma mührü devreye girdi. Silinen hafızalar burada kaldı. Artık hiçbiri kayıp değil.")
+	DialogueManager.say("Noroi", "Deney başladı. Kapı kapandı. Koruma mührü devreye girdi.")
+	DialogueManager.say("Noroi", "Silinen hafızalar burada kaldı. Hiçbiri kayıp değil artık.")
 
 	DialogueManager.say("Shilda", "Mührün bağları çekirdeğin başında. Ruh Kesiği onları kesebilir.")
 	DialogueManager.say("Noroi", "Hazırım. Kristale dokunduğumda bitecek.")

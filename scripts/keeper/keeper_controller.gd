@@ -71,11 +71,11 @@ const REBIRTH_GRACE := 2.0
 signal encounter_finished(encounter_id: StringName)
 var _zone_lines: Dictionary = {
 	&"forbidden": {
-		"warn": ["Yaklaşma.", "O mühür… senin değil."],
+		"warn": ["Buradan uzak dur.", "Orası güvenli değil."],
 		"intervene": ["Dur.", "Oraya gitme."],
 	},
 	&"exit": {
-		"warn": ["Oraya gitme.", "Kapı henüz seni istemiyor."],
+		"warn": ["Oraya gitme.", "Çıkış henüz sana kapalı."],
 		"intervene": ["Geri dön.", "Henüz değil."],
 	},
 	&"curse": {
@@ -531,7 +531,7 @@ func on_interact(_by: Node) -> void:
 		return
 	var active_room := String(RoomManager.get_active_room_id())
 	if active_room == "awakening":
-		DialogueManager.say("Shilda", "İlk uyandığını sanıyorsun. Devam et.")
+		_queue_stage_talk(active_room)
 		await _await_dialogue_or_smoke()
 		return
 	# İyi yol: hazırlık varsa güven teklifi
@@ -550,7 +550,7 @@ func on_interact(_by: Node) -> void:
 		return
 	match mode:
 		Mode.WARN:
-			DialogueManager.say(GameState.keeper_speaker_name(), "Söyledim… yaklaşma.")
+			DialogueManager.say(GameState.keeper_speaker_name(), "Söyledim, yaklaşma.")
 		Mode.INTERVENE:
 			DialogueManager.say(GameState.keeper_speaker_name(), "Geri dön.")
 		Mode.MOURNING:
@@ -558,8 +558,31 @@ func on_interact(_by: Node) -> void:
 		Mode.INTIMACY:
 			DialogueManager.say(GameState.keeper_speaker_name(), "Yanındayım.")
 		_:
-			DialogueManager.say(GameState.keeper_speaker_name(), "…Seni izliyorum.")
-			DialogueManager.say(GameState.keeper_speaker_name(), "Henüz hatırlama.")
+			_queue_stage_talk(active_room)
+
+
+## §19 asama konusmasi: bolgeye gore Shilda sozu (1 Mesafeli, 2 Merak, 3 Guven, 4 Aci, 5 Ortak amac).
+func _queue_stage_talk(room: String) -> void:
+	if room.begins_with("library"):
+		DialogueManager.say("Noroi", "Beni neden takip ediyorsun?")
+		DialogueManager.say("Shilda", "Seni takip etmiyorum.")
+		DialogueManager.say("Noroi", "O zaman neden sürekli karşıma çıkıyorsun?")
+		DialogueManager.say("Shilda", "Çünkü sürekli tehlikeli yerlere giriyorsun.")
+	elif room.begins_with("experiment"):
+		DialogueManager.say("Shilda", "Burada kimse uzun kalamadı.")
+		DialogueManager.say("Noroi", "Sen kaldın.")
+		DialogueManager.say("Shilda", "Başka seçeneğim yoktu.")
+	elif room.begins_with("mirrors"):
+		DialogueManager.say("Shilda", "Aynalara uzun bakma.")
+		DialogueManager.say("Noroi", "Neden?")
+		DialogueManager.say("Shilda", "Bazıları kendini orada bıraktı.")
+	elif room.begins_with("core"):
+		DialogueManager.say("Noroi", "Buradan birlikte çıkacağız.")
+		DialogueManager.say("Shilda", "Bunu söyleyen ilk kişi değilsin.")
+	else:
+		DialogueManager.say("Shilda", "Buradan uzak dur.")
+		DialogueManager.say("Noroi", "Neden?")
+		DialogueManager.say("Shilda", "Çünkü orası güvenli değil.")
 
 
 ## Isim sahnesi: "???" konusur; "Ben Noroi." satirindan itibaren ad bilinir, kart "Shilda" olur.
@@ -630,7 +653,7 @@ func receive_player_strike() -> void:
 		if not in_core:
 			## İlk bölgeler: ilişki kırılır; oyun bitmez. Onarım mümkün.
 			DialogueManager.say(GameState.keeper_speaker_name(), "…Yeter.")
-			DialogueManager.say(GameState.keeper_speaker_name(), "Bir gün bunu yeniden sorarsın diye… geri çekiliyorum.")
+			DialogueManager.say(GameState.keeper_speaker_name(), "Geri çekiliyorum. Hazır olunca yine sorarsın.")
 			await _await_dialogue_or_smoke()
 			GameState.player_progress_knowledge["trusted_keeper"] = false
 			GameState.player_progress_knowledge["keeper_hurt"] = true
@@ -702,8 +725,8 @@ func _maybe_bandage_line() -> void:
 	if not is_present() or DialogueManager.is_open:
 		return
 	GameState.world_memory_state["keeper_bandage_line_pending"] = false
-	DialogueManager.say("Shilda", "Yaran hâlâ sızlıyor…")
-	DialogueManager.say("Shilda", "Ama sen bunu yaptığını bile hatırlamıyorsun.")
+	DialogueManager.say("Shilda", "Vurduğun yer hâlâ sızlıyor.")
+	DialogueManager.say("Shilda", "Sen unuttun. Ben unutmadım.")
 
 
 # --- Savaş karşılaşması: pençe + atılma + çatlak duvar ------------------------------------

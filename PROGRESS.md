@@ -206,3 +206,9 @@ Dal: cursor/playable-story-flow-8e4e · Sürüm: v1.2.0 (versionCode 16)
 - [x] `scripts/dev/final_sequence_audit.gd` eklendi; death_loop/controls/e2e eski son API'sinden `can_begin_final`/vuruş-ölümsüzlüğe taşındı.
 - Testler (TORIMON_TEST=1): final_sequence 22/0, release 111/0, e2e 50/50, death_loop 109/0, curse_reload 66/0, save_quit 38/0, start_flow 46/0, lore_canon 5/0, story_flags 27/0, controls 32/0; pencereli 1920x1080 `t9_*.png` (shilda_human, x_reveal, domain, end_of_part_i, credits) gözle kontrol edildi.
 - Not: `TORIMON_SMOKE=1` faz67 smoke curse_fail=false (Task 5 sonrası ölüm yerine ele geçirilme; Task 9 öncesinden kalan), final kısmı good=true.
+
+## v3 hikaye Task 10 — Diyalog cilası: Shilda evreleri, §18 kuralları (2026-11-09)
+- [x] Bölge-evre: 1 Mesafeli uyanış/çürüme, 2 Merak kütüphane, 3 Güven deney, 4 Acı aynalar, 5 Ortak amaç çekirdek. `keeper_controller.gd` `_queue_stage_talk(room)` Shilda sakin konuşmasını odaya göre seçer; §19 örnek satırları `story_beat.gd` içinde (deney "Benden önce kimler vardı?", aynalar çiçek değişimi, çekirdek "Buradan birlikte çıkacağız.").
+- [x] Uzun satırlar kısaltıldı/bölündü (story_beat, keeper_controller, page_order_puzzle, core_memory_vault.tscn); eski iki-yol final metni temizlendi. `Shilda|` etiketleri korundu, echo_manager değişmedi.
+- [x] `lore_canon_audit`: satır uzunluğu kontrolü (>90 uyarı listesi, >120 fail). Önce en uzun 142 (4 satır >120), sonra 88 (0 >90, 289 satır).
+- Testler (TORIMON_TEST=1): lore_canon 289 satır/0 fail, interact 0 fail, e2e 50/50, release 111/0, ui_header_portrait 0 fail. Ekran görüntüleri: scratchpad qa/shots t10_stage1/stage4/stage5/longest.png, taşma yok.

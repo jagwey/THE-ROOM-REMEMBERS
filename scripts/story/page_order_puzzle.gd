@@ -60,7 +60,7 @@ func open_puzzle() -> void:
 	if not has_node("Panel"):
 		_build_ui()
 	if not PuzzleManager.is_solved(&"library_witnesses"):
-		DialogueManager.say("Noroi", "Sayfayı kurmadan önce saat, çiçek ve mührü dinlemeliyim. Sonra ortadaki kaydı karşılaştırmalıyım.")
+		DialogueManager.say("Noroi", "Önce saat, çiçek ve mührü dinlemeliyim. Sonra ortadaki kaydı karşılaştıracağım.")
 		return
 	visible = true
 	UiGate.set_story(true)

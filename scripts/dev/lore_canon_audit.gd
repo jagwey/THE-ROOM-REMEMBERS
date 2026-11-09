@@ -13,6 +13,9 @@ const FORBIDDEN: Array[String] = [
 	"düzene katkıda", "burayı kurdum", "sesi saklamak istedin",
 ]
 const REQUIRED: Array[String] = ["1927", "1995", "Araştırma Yardımcısı S."]
+## Diyalog satiri uzunlugu (konusmaci etiketi haric): > WARN uyari listesi, > FAIL hata.
+const LINE_WARN := 90
+const LINE_FAIL := 120
 
 
 func _initialize() -> void:
@@ -71,5 +74,39 @@ func _run() -> void:
 				break
 		check(found, "present: %s" % req)
 
+	_check_line_lengths(texts)
 	print("LORE failures=%d" % failures)
 	quit(failures)
+
+
+## "Konusmaci|metin" sabitleri (;; ile bolunmus setler dahil) ve say/whisper cagrilari.
+func _check_line_lengths(texts: Dictionary) -> void:
+	var tagged := RegEx.create_from_string(r'"([^"|\n]{1,24})\|([^"\n]*)"')
+	var called := RegEx.create_from_string(r'(?:say|whisper|say_with)\(\s*(?:"[^"]*"|[\w\.\(\)]+)\s*,\s*"([^"\n]+)"')
+	var total := 0
+	var longest := 0
+	var warns: Array[String] = []
+	var fails := 0
+	for p in texts:
+		if (p as String).begins_with("res://scripts/dev/"):
+			continue
+		var t: String = texts[p]
+		var found: Array[String] = []
+		for m in tagged.search_all(t):
+			for seg in (m.get_string(2) as String).split(";;"):
+				found.append(seg.get_slice("|", 1) if seg.contains("|") else seg)
+		for m in called.search_all(t):
+			found.append(m.get_string(1))
+		for line in found:
+			total += 1
+			longest = maxi(longest, line.length())
+			if line.length() > LINE_FAIL:
+				fails += 1
+				print("LORE FAIL line>%d (%d) %s: %s" % [LINE_FAIL, line.length(), p, line])
+			elif line.length() > LINE_WARN:
+				warns.append("%d %s: %s" % [line.length(), p, line])
+	for w in warns:
+		print("LORE WARN line>%d %s" % [LINE_WARN, w])
+	print("LORE lines=%d longest=%d warn=%d fail=%d" % [total, longest, warns.size(), fails])
+	check(total > 100, "dialogue lines scanned (%d)" % total)
+	check(fails == 0, "no dialogue line > %d chars" % LINE_FAIL)
