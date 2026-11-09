@@ -235,4 +235,10 @@ Dal: cursor/playable-story-flow-8e4e · Sürüm: v1.2.0 (versionCode 16)
 - [x] Düzeltme e221a4e: X'in gizli repliği ayrı `X?` token'ı ile "???" (Shilda'ya çözülmez, portre yok, nötr blip); ele geçirilme sırasında `request_death`/`damage` no-op; `load_committed()` başarısızsa uyarı + güvenli konum; `_finish` session_menu yoksa sahne yeniden yüklenir; ölü `possession` dalları silindi. Re-review: APPROVED.
 - Testler (TORIMON_TEST=1): final_sequence 32/0, curse_reload 84/0, death_loop 110/0, release 111/0, lore_canon 7/0, e2e 50/50, faz67 exit 0. Pencereli 1920x1080: X repliği "???", portre yok — gözle kontrol edildi.
 - Park (küçük): `CurseManager.possessing` yeni oyunda/yüklemede sıfırlanmıyor (ulaşılabilir yol yok); M2 hata yolu odaya yeniden girmiyor; M5 fallback `reset_registry` atlıyor; README/TEST_READY F13 satırı, `.bak` yorumu, ölü `UiGate.Layer.ENDING`.
-- Durum: v3 planı tamam, yerel commit'ler `claude/v1.4.1` üzerinde. Push/release YAPILMADI. Cihaz (Android) testi yapılmadı.
+- Durum: v3 planı tamam. Cihaz (Android) testi yapılmadı.
+
+## Release v1.5.0 (2026-11-09)
+- `claude/story-x` (v1.4.9) `-s ours` ile birleştirildi (73d44cf): v3 metni onu geçersiz kılıyor; story-x'in Türkçe metin cilası taşınmadı.
+- Sürüm 1.5.0 / versionCode 28 (9818bf2); e2e 50/50 (sürüm kontrolü dahil). `origin/claude/v1.4.1` ve `origin/main` → 9818bf2 (fast-forward).
+- APK `TheRoomRemembers-1.5.0-android-arm64.apk` (34,2 MB, debug imza SHA-256 16fd6975…, öncekilerle aynı).
+- Yayın: public `jagwey/THE-ROOM-REMEMBERS-release` v1.5.0 (latest) + private `jagwey/THE-ROOM-REMEMBERS` v1.5.0.
