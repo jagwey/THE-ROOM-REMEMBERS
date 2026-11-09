@@ -62,6 +62,7 @@ func _run() -> void:
 	menu._settings_button.pressed.emit()
 	check(menu._settings_box.visible and not menu._main_box.visible, "Ayarlar opens settings sub-page")
 	check(menu._vol_button.is_visible_in_tree() and menu._music_button.is_visible_in_tree(), "settings page shows volume + music")
+	check(menu._settings_help.is_visible_in_tree() and "NASIL OYNANIR" in menu._settings_help.text and "Ölmek son değil" in menu._settings_help.text, "settings page shows Nasıl Oynanır + death line")
 	menu._show_pause_page(false)
 	check(menu._main_box.visible and not menu._settings_box.visible, "Geri returns to main pause page")
 	## 1) Onay → Vazgeç: hiçbir şey olmaz.
@@ -69,6 +70,8 @@ func _run() -> void:
 	check(menu.is_confirm_open(), "confirm dialog opens")
 	check(menu._confirm_text.text == "İlerlemen kaydedilecek ve ana menüye döneceksin. Emin misin?", "confirm text (%s)" % menu._confirm_text.text)
 	check(menu._confirm_ok.text == "Kaydet ve Çık", "confirm ok button")
+	check(menu._confirm_panel.title_label.text == "Kaydet ve Çık", "save&quit confirm title (%s)" % menu._confirm_panel.title_label.text)
+	check(player.is_on_floor(), "player grounded before Save & Quit (safe case)")
 	var cancel_texts := []
 	for b in menu._confirm_ok.get_parent().get_children():
 		cancel_texts.append((b as Button).text)
@@ -79,6 +82,7 @@ func _run() -> void:
 	menu._main_menu_button.pressed.emit()
 	check(menu.is_confirm_open() and menu._confirm_text.text == "Kaydedilmemiş ilerleme kaybolacak. Ana menüye dönmek istiyor musun?", "main menu confirm text (%s)" % menu._confirm_text.text)
 	check(menu._confirm_ok.text == "Ana Menüye Dön", "main menu confirm ok button")
+	check(menu._confirm_panel.title_label.text == "Ana Menü", "main menu confirm title")
 	menu._close_confirm()
 	check(not menu.is_confirm_open() and current_scene.get_node_or_null("Player") == player, "main menu Vazgeç changes nothing")
 	## 2) Kayıt hatası → Tekrar Dene diyaloğu.
@@ -105,7 +109,7 @@ func _run() -> void:
 	check(menu._title_screen._start_button.text == "Devam Et" and not menu._title_screen._start_button.disabled, "title Devam Et enabled")
 	player = current_scene.get_node("Player")
 	check(rm.get_active_room_id() == &"awakening", "continue room = committed room")
-	check(player.global_position.distance_to(state.get_checkpoint()) < 40.0, "continue at committed safe position (%s vs %s)" % [player.global_position, state.get_checkpoint()])
+	check(player.global_position.distance_to(saved_pos) < 12.0, "Devam Et restores same position after safe Save & Quit (%s vs %s)" % [player.global_position, saved_pos])
 	check(int(sm._serial_of(sm._read_save(sm.SAVE_PATH))) >= committed_serial, "committed serial intact")
 	## Başlıktaki çıkış onaylı sayfa.
 	var ts: Control = menu._title_screen
@@ -152,7 +156,7 @@ func _run() -> void:
 		root.get_node("DialogueManager").clear()
 	check(not death.is_dying, "death loop finished (%.1fs)" % t)
 	check(not (state.character_current_life_knowledge as Dictionary).has("resume"), "death clears resume (respawn at bed)")
-	check(player.global_position.distance_to(state.get_checkpoint()) < 40.0, "respawn near checkpoint")
+	check(absf(player.global_position.x - death.REBIRTH_BED.x) < 40.0, "respawn at rebirth bed (not the quit position)")
 	print("SAVEQUIT_AUDIT failures=", failures)
 	sm.delete_all_save_files()
 	quit(1 if failures else 0)

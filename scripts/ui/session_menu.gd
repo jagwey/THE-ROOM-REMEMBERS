@@ -7,6 +7,7 @@ signal title_closed
 const SETTINGS_PATH := "user://settings.cfg"
 const VOLUME_STEPS: Array[float] = [1.0, 0.75, 0.5, 0.25, 0.0]
 const TitleScreenScript := preload("res://scripts/ui/title_screen.gd")
+const RoomTransitionScript := preload("res://scripts/world/room_transition.gd")
 
 static var _title_shown: bool = false
 ## Kaydet ve Çık sonrası sahne yeniden yüklenince başlık (test ortamında da) açılır.
@@ -27,6 +28,7 @@ var _haptics_button: Button
 var _vol_button: Button
 var _music_button: Button
 var _help_label: Label
+var _settings_help: Label
 var _subtitle: Label
 var _title_mode: bool = false
 var _had_save: bool = false
@@ -83,6 +85,21 @@ func _ready() -> void:
 	_settings_box = VBoxContainer.new()
 	_settings_box.add_theme_constant_override("separation", 6)
 	_panel.body.add_child(_settings_box)
+	var help_txt := ""
+	if MobileInputManager.is_touch_ui():
+		help_txt = "NASIL OYNANIR
+Sol joystick: yürü · Sağ düğmeler: zıpla, etkileş, saldır, atıl, yankı · Sağ üst: günlük ve menü"
+	else:
+		help_txt = "NASIL OYNANIR
+A/D: yürü · W/Space: zıpla · E: etkileş · Z: saldır · X: atıl · Q: yankı · I: günlük · Esc: menü"
+	help_txt += "
+Ölmek son değil: bedenin odada kalır ve bulmacaları çözmene yardım eder."
+	_settings_help = Label.new()
+	_settings_help.text = help_txt
+	_settings_help.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_settings_help.add_theme_font_size_override("font_size", 8)
+	_settings_help.add_theme_color_override("font_color", Palette.PALE_LILAC)
+	_settings_box.add_child(_settings_help)
 	var audio_row := HBoxContainer.new()
 	audio_row.add_theme_constant_override("separation", 6)
 	_settings_box.add_child(audio_row)
@@ -235,20 +252,46 @@ func _on_quit_button() -> void:
 ## Duraklatma menüsü: onay -> committed kayıt -> ana menü. Uygulama KAPANMAZ.
 ## commit_save en yeni save_serial'ı alır; Devam Et (load_game, en yüksek serial) bu committed durumu yükler.
 func request_save_and_exit() -> void:
-	_show_confirm("Emin misin?", "İlerlemen kaydedilecek ve ana menüye döneceksin. Emin misin?", "Kaydet ve Çık", _save_and_exit)
+	_show_confirm("Kaydet ve Çık", "İlerlemen kaydedilecek ve ana menüye döneceksin. Emin misin?", "Kaydet ve Çık", _save_and_exit)
 
 
 func _save_and_exit() -> void:
-	if not SaveManager.commit_save(&"save_and_quit"):
+	var safe := _safe_quit_spot()
+	var ok: bool
+	if safe.is_empty():
+		ok = SaveManager.commit_save(&"save_and_quit") ## güvenli değil: son checkpoint
+	else:
+		ok = SaveManager.commit_save(&"save_and_quit", safe["pos"], safe["room"])
+	if not ok:
 		_show_confirm("Kayıt başarısız", "Kayıt başarısız. Tekrar denemek ister misin?", "Tekrar Dene", _save_and_exit)
 		return
 	_confirm_panel.hide()
 	return_to_title()
 
 
+## Güvenliyse oyuncunun konumu + aktif oda; değilse boş (checkpoint'e düşülür). memory_seal_point ile aynı mantık.
+func _safe_quit_spot() -> Dictionary:
+	var player := get_tree().get_first_node_in_group("player") as CharacterBody2D
+	if player == null or not is_instance_valid(player) or not player.is_on_floor():
+		return {}
+	if DeathManager.is_dying or DialogueManager.is_open or RoomTransitionScript.is_transitioning():
+		return {}
+	if player.has_method("_near_hazard") and player.call("_near_hazard"):
+		return {}
+	for e in get_tree().get_nodes_in_group("enemy"):
+		var en := e as Node2D
+		if en and is_instance_valid(en) and en.is_visible_in_tree() 				and en.global_position.distance_to(player.global_position) <= 120.0:
+			return {}
+	for k in get_tree().get_nodes_in_group("keeper"):
+		var kn := k as Node2D
+		if kn and is_instance_valid(kn) and kn.is_visible_in_tree() and int(kn.get("mode")) in [2, 5] 				and kn.global_position.distance_to(player.global_position) <= 320.0:
+			return {}
+	return {"pos": player.global_position, "room": RoomManager.get_active_room_id()}
+
+
 ## Ana Menüye Dön: kayıt YAZMAZ. Kaydedilmemiş ilerleme gider; başlıkta Devam Et son committed kaydı yükler.
 func request_main_menu() -> void:
-	_show_confirm("Emin misin?", "Kaydedilmemiş ilerleme kaybolacak. Ana menüye dönmek istiyor musun?", "Ana Menüye Dön", _main_menu_no_save)
+	_show_confirm("Ana Menü", "Kaydedilmemiş ilerleme kaybolacak. Ana menüye dönmek istiyor musun?", "Ana Menüye Dön", _main_menu_no_save)
 
 
 ## Resume dosyası uygulama-kapanış güvenliği içindi; burada silinmezse (daha yeni serial ile) Devam Et
