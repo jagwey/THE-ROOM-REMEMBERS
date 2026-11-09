@@ -128,7 +128,6 @@ A/D: yürü · W/Space: zıpla · E: etkileş · Z: saldır · X: atıl · Q: ya
 	_title_screen.new_game_requested.connect(func(): _title_screen.close(_start_fresh))
 	_title_screen.quit_requested.connect(_quit_app)
 	add_child(_title_screen)
-	EndingManager.epilogue_finished.connect(open_menu)
 	if _should_show_title():
 		_open_title()
 

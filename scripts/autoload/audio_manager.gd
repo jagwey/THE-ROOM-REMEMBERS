@@ -427,15 +427,9 @@ func _on_curse_changed(value: float) -> void:
 		_prioritize("curse", &"curse", &"curse")
 
 
-func _on_ending(ending_id: StringName) -> void:
-	var s := String(ending_id).to_lower()
-	if s.contains("sever"):
-		stinger(&"ending_sever")
-	elif s.contains("good") or s.contains("true") or s.contains("free") or s.contains("release"):
-		stinger(&"ending_good")
-	else:
-		stinger(&"ending_bad")
-
+func _on_ending(_ending_id: StringName) -> void:
+	## Tek final (BÖLÜM I SONU): iyi son damgası.
+	stinger(&"ending_good")
 
 # --- per-frame -----------------------------------------------------------
 

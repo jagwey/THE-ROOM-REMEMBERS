@@ -147,10 +147,11 @@ func _mechanics(player: CharacterBody2D, state: Node, dm: Node) -> void:
 	state.player_progress_knowledge["echoes_seen"].append("qa_echo")
 	state.set_world_flag(&"seal_shard_1", false)
 	state.set_world_flag(&"seal_shard_2", false)
-	check(not em.can_attempt_good_seal(), "good seal locked without both shards")
+	state.player_progress_knowledge["ability_soul_slash"] = true
+	check(not em.can_begin_final(), "final locked without both shards")
 	state.set_world_flag(&"seal_shard_1", true)
 	state.set_world_flag(&"seal_shard_2", true)
-	check(em.can_attempt_good_seal(), "good seal open with both shards")
+	check(em.can_begin_final(), "final open with both shards + soul slash")
 	# Bulmacayı tutan ceset silinmez
 	var corpses: Array = state.world_memory_state["corpses"]
 	corpses.clear()

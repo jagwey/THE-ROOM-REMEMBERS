@@ -1,5 +1,5 @@
 extends Area2D
-## Çekirdek kristal — bilgi. Seçim yan zeminde.
+## Çekirdek kristal — hazırsa tek finali (BÖLÜM I SONU) başlatır; değilse eksikleri söyler.
 
 
 func _ready() -> void:
@@ -16,25 +16,16 @@ func _ready() -> void:
 func on_interact(_by: Node) -> void:
 	if EndingManager.current != EndingManager.Ending.NONE:
 		return
+	if EndingManager.can_begin_final():
+		await EndingManager.trigger(EndingManager.Ending.PART_ONE)
+		return
 	CurseManager.add_curse(8.0, &"core_adjacent")
 	var st: Dictionary = EndingManager.prep_status()
-	var cg := EndingManager.can_attempt_good_seal()
-	var cs := EndingManager.can_attempt_sever()
-	if not cg and not cs:
-		DialogueManager.say("Noroi", "Çekirdek uğultulu… eksikler var.")
-		if not st["weight"]:
-			DialogueManager.say("", "Ağırlık yolu kapalı.")
-		if not st["code"]:
-			DialogueManager.say("", "Sayı henüz senin değil.")
-		if not st["echo"]:
-			DialogueManager.say("", "Yankı yok.")
-		if not st["trusted"]:
-			DialogueManager.say("", "Shilda'ya güvenmedin.")
-		if not st["truth"]:
-			DialogueManager.say("", "Gerçeği henüz görmedin.")
-		DialogueManager.say("Noroi", "Sadece konuşmak yetmez.")
-		await DialogueManager.dialogue_finished
-		return
-	DialogueManager.say("Shilda", "Sağda birlikte mühürleme, solda bağı koparma.")
-	DialogueManager.say("Noroi", "Yanlış zemine dokunursam geri dönemem.")
+	DialogueManager.say("Noroi", "Çekirdek uğultulu… mühür hâlâ sağlam.")
+	if not PuzzleManager.is_solved(&"core_seal"):
+		DialogueManager.say("", "Mühür odasındaki bağlar henüz çözülmedi.")
+	if not st["shards"]:
+		DialogueManager.say("", "İki mühür parçası da gerekiyor.")
+	if not st["slash"]:
+		DialogueManager.say("", "Bağları kesecek güç henüz uyanmadı: Ruh Kesiği.")
 	await DialogueManager.dialogue_finished

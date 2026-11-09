@@ -279,8 +279,8 @@ func _core_seal_chamber() -> void:
 
 	DialogueManager.say("Noroi", "Deney başladı. Kapı kapandı. Koruma mührü devreye girdi. Silinen hafızalar burada kaldı. Artık hiçbiri kayıp değil.")
 
-	DialogueManager.say("Shilda", "Senin adına seçim yapmayacağım. Birlikte mühürlemek sesleri burada korur; bağı koparmak onları serbest bırakır.")
-	DialogueManager.say("Noroi", "Son kapının ardında solda bağı koparma, sağda birlikte mühürleme var. Önce sonucu okuyacağım, sonra onaylayacağım.")
+	DialogueManager.say("Shilda", "Mührün bağları çekirdeğin başında. Ruh Kesiği onları kesebilir.")
+	DialogueManager.say("Noroi", "Hazırım. Kristale dokunduğumda bitecek.")
 
 	var ok: bool = await DialogueManager.dialogue_finished
 

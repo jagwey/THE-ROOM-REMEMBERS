@@ -1,72 +1,30 @@
 extends Node
-## Finaller — birlikte mühürleme / bağı koparma. Erken 3 vuruş son değil.
-## Epilog sonrası giriş kilidi kalmasın.
+## Tek final: BÖLÜM I SONU. Mühür kırılır, Shilda insan formuna döner, X belirir (FinalSequence).
+## Seçim/ölüm finali yok; Shilda öldürülemez. Dizi bitince giriş kilidi kalmaz.
 
 signal ending_reached(ending_id: StringName)
-signal epilogue_finished
 
-enum Ending { NONE, BAD_KILL_KEEPER, GOOD_TRUST_SEAL, SEVER_BOND }
+enum Ending { NONE, PART_ONE }
 
 var current: Ending = Ending.NONE
-## Son tetiklenen final — epilog sonrası current sıfırlansa da smoke/UI doğrulayabilsin.
+## Son tetiklenen final — dizi sonrası current sıfırlansa da smoke/UI doğrulayabilsin.
 var last_ending: Ending = Ending.NONE
 var _locked: bool = false
 
-const EPILOGUES := {
-	"bad_kill_keeper": {
-		"title": "DÖNGÜ",
-		"lines": [
-			"Shilda yere düştü. Çiçekler bir anda soldu.",
-			"Çekirdek, onu tutan son hafızayı kaybedince patladı.",
-			"…Gözlerin açılıyor. Yine yataktasın.",
-			"Yerde Shilda'nın cansız bedeni. Elinde kurumuş bir çiçek.",
-			"Duvarda kazınmış bir el yazısı: “Şimdi kim hatırlayacak?”",
-		],
-	},
-	"good_trust_seal": {
-		"title": "BENİ HATIRLA",
-		"lines": [
-			"İki mühür parçası birleşti. Çekirdek son kez nabız attı… ve sustu.",
-			"Shilda: Beni hatırlıyor musun?",
-			"Noroi: Hayır…",
-			"Noroi: Ama seni yeniden tanıyabilirim.",
-			"Kilitli kapı açıldı. İkiniz birlikte dışarı yürüdünüz.",
-			"“Beni unuttun. Ben seni hiç unutmadım.”",
-		],
-	},
-	"sever_bond": {
-		"title": "BAĞI KOPARMA",
-		"lines": [
-			"Çekirdekle olan bağı kopardın. Döngü sona erdi.",
-			"Bütün anılar geri döndü: deney, kilit, bağırışlar, onun sesi.",
-			"Shilda gülümsedi: Ben buranın son bekçisiyim. Git.",
-			"Odanın kapısında durdu; sen geçmişin bütün yüküyle tek başına yürüdün.",
-			"Bu kez unutmadın. Hiçbir şeyi.",
-		],
-	},
-}
+
+## Final için: çekirdek mührü çözülmüş, iki mühür parçası toplanmış, Ruh Kesiği açık.
+func can_begin_final() -> bool:
+	return PuzzleManager.is_solved(&"core_seal") and has_both_shards() and has_soul_slash()
 
 
-func can_attempt_good_seal() -> bool:
-	if bool(GameState.get_world_flag(&"keeper_defeated", false)):
-		return false
-	var code := PuzzleManager.is_solved(&"awakening_memory_code")
-	var echo := bool(GameState.player_progress_knowledge.get("echoes_seen", []).size() > 0)
-	var truth := bool(GameState.player_progress_knowledge.get("truth_seen", false))
-	# Trust can be repaired in the final conversation; a missed optional garden
-	# conversation must never make the last room impossible to finish.
-	return code and echo and truth and PuzzleManager.is_solved(&"core_seal") and has_both_shards()
+## Ruh Kesiği (mührü kıran güç). Oyuncu henüz yoksa world flag'e bakılır.
+func has_soul_slash() -> bool:
+	return bool(GameState.player_progress_knowledge.get("ability_soul_slash", false))
 
 
-## İyi son için iki mühür parçası (Yasak Kanat + Ayna Tapınağı) gerekir.
+## İki mühür parçası (Yasak Kanat + Ayna Tapınağı) çekirdek mührü için gerekir.
 func has_both_shards() -> bool:
 	return bool(GameState.get_world_flag(&"seal_shard_1", false)) and bool(GameState.get_world_flag(&"seal_shard_2", false))
-
-
-func can_attempt_sever() -> bool:
-	## Bilinçli seçim — gerçeği görmüş olmalı; yanlış dokunuşla değil.
-	return bool(GameState.player_progress_knowledge.get("truth_seen", false)) \
-		and PuzzleManager.is_solved(&"core_seal")
 
 
 func prep_status() -> Dictionary:
@@ -77,6 +35,7 @@ func prep_status() -> Dictionary:
 		"trusted": bool(GameState.player_progress_knowledge.get("trusted_keeper", false)),
 		"truth": bool(GameState.player_progress_knowledge.get("truth_seen", false)),
 		"shards": has_both_shards(),
+		"slash": has_soul_slash(),
 	}
 
 
@@ -85,50 +44,21 @@ func reset_for_smoke() -> void:
 	current = Ending.NONE
 	last_ending = Ending.NONE
 	UiGate.set_ending(false)
-	var ui := get_tree().get_first_node_in_group("ending_ui")
-	if ui and ui.has_method("force_finish"):
-		ui.force_finish()
 
 
-func trigger(ending: Ending) -> void:
+## Tek final. FinalSequence sahneyi oynatır; bitince kilit açılır (return_to_title sahneyi zaten yeniler).
+func trigger(ending: Ending, fast: bool = false) -> void:
 	if _locked or ending == Ending.NONE:
 		return
 	_locked = true
 	current = ending
 	last_ending = ending
-	var id: StringName
-	match ending:
-		Ending.BAD_KILL_KEEPER:
-			id = &"bad_kill_keeper"
-		Ending.GOOD_TRUST_SEAL:
-			id = &"good_trust_seal"
-		Ending.SEVER_BOND:
-			id = &"sever_bond"
-		_:
-			push_error("EndingManager.trigger: unhandled " + str(ending))
-			id = &"unknown"
+	var id: StringName = &"part_one"
 	var seen: Array = GameState.player_progress_knowledge["endings_seen"]
 	if not seen.has(String(id)):
 		seen.append(String(id))
-	GameState.set_world_flag(StringName("ending_%s" % String(id)), true)
-	SaveManager.save_game()
 	ending_reached.emit(id)
-	await _show_epilogue(String(id))
-	## Epilog bitti — kilidi aç; menü/yeni oyun mümkün
+	await FinalSequence.new().play(get_tree(), fast)
 	_locked = false
 	current = Ending.NONE
 	UiGate.set_ending(false)
-	epilogue_finished.emit()
-
-
-func _show_epilogue(id: String) -> void:
-	var ui := get_tree().get_first_node_in_group("ending_ui")
-	var data: Dictionary = EPILOGUES.get(id, {"title": "Son", "lines": ["…"]})
-	if ui and ui.has_method("play_epilogue"):
-		await ui.play_epilogue(String(data.get("title", "Son")), data.get("lines", []))
-	else:
-		DialogueManager.clear()
-		DialogueManager.say(String(data.get("title", "Son")), "…")
-		for line in data.get("lines", []):
-			DialogueManager.say("", String(line))
-		await DialogueManager.dialogue_closed

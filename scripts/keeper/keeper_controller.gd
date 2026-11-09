@@ -595,7 +595,7 @@ func _queue_naming_lines() -> void:
 
 func receive_player_strike() -> void:
 	## Erken saldırı = ilişki olayı. Kalıcı son yalnız Çekirdek bölgesinde.
-	if EndingManager.current != EndingManager.Ending.NONE or is_defeated():
+	if EndingManager.current != EndingManager.Ending.NONE:
 		return
 	## Aynı anda ölüm: önce oyuncunun ölümü çözülür, ölürken vuruş sayılmaz.
 	if DeathManager.is_dying:
@@ -640,27 +640,18 @@ func receive_player_strike() -> void:
 			_strikes = 0 ## onarım için sıfırla
 			SaveManager.save_game()
 			return
-		## Shilda düştü: AI hemen durur, kalıcı işaretlenir (iyi son kapanır, tekrar doğmaz).
-		_abort_combat()
-		set_mode(Mode.OBSERVE)
-		_busy = true
-		collision_mask = 0
-		collision_layer = 0
-		GameState.set_world_flag(&"keeper_defeated", true)
-		SaveManager.save_game()
-		DialogueManager.say(GameState.keeper_speaker_name(), "…Öyle olsun.")
-		await _await_dialogue_or_smoke()
-		modulate = Color(0.4, 0.35, 0.4, 0.6)
-		## Oyuncu aynı anda öldüyse önce yeniden doğuş biter, sonra son (deterministik sıra).
-		if DeathManager.is_dying:
-			await DeathManager.rebirth_completed
-		await EndingManager.trigger(EndingManager.Ending.BAD_KILL_KEEPER)
+		## Çekirdekte Shilda düşmez: vuruş savuşturulur (öldürülemez).
+	_strikes = 0
+	_flash(Color(1.5, 1.4, 1.6, 1))
+	DialogueManager.say(GameState.keeper_speaker_name(), "…Beni durduramazsın. Ben de seni durdurmayacağım.")
+	await _await_dialogue_or_smoke()
 
 
 # --- Sargı hafızası ---------------------------------------------------------------
 
 func is_defeated() -> bool:
-	return bool(GameState.get_world_flag(&"keeper_defeated", false))
+	## Shilda öldürülemez (v3). Eski çağrılar için sabit false.
+	return false
 
 
 func _hide_defeated() -> void:

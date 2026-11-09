@@ -19,8 +19,7 @@ var _start_button: Button ## Devam Et
 var _new_button: Button ## Yeni Oyun
 var _has_save: bool = false
 var _credits_panel: GothicModalPanel
-var _credits_scroll: ScrollContainer
-var _credits_tween: Tween
+var _credits_scroll: CreditsScroll
 var _vol_button: Button
 var _music_button: Button
 var _joy_button: Button
@@ -308,46 +307,12 @@ func _build_credits_panel() -> void:
 	_credits_panel = GothicModalPanel.new()
 	_credits_panel.setup("JENERİK", Vector2(420, 300), &"menu", 0.7)
 	add_child(_credits_panel)
-	_credits_scroll = ScrollContainer.new()
-	_credits_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_credits_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	_credits_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	_credits_scroll = CreditsScroll.new()
 	_credits_panel.body.add_child(_credits_scroll)
-	var box := VBoxContainer.new()
-	box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	box.add_theme_constant_override("separation", 4)
-	_credits_scroll.add_child(box)
-	var lead := Control.new() ## metin alttan girsin
-	lead.custom_minimum_size.y = 150
-	box.add_child(lead)
-	var t := Label.new()
-	t.text = CreditsData.TITLE
-	t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	UiTheme.apply_outlined(t, 22, true)
-	box.add_child(t)
-	_credits_line(box, CreditsData.TAGLINE, UiTheme.HINT, false, Palette.PALE_LILAC)
-	for s in CreditsData.SECTIONS:
-		_credits_line(box, "", 8, false, Palette.IVORY)
-		if String(s["head"]) != "":
-			_credits_line(box, String(s["head"]).to_upper(), UiTheme.HINT, true, Palette.CRIMSON.lightened(0.35))
-		for l in s["lines"]:
-			_credits_line(box, String(l), UiTheme.BODY, false, Palette.IVORY)
-	var tail := Control.new()
-	tail.custom_minimum_size.y = 90
-	box.add_child(tail)
 	_credits_panel.add_button("< Geri", func():
 		_click()
 		_close_credits())
 	_credits_panel.hide()
-
-
-func _credits_line(parent: Control, text: String, size: int, bold: bool, color: Color) -> void:
-	var l := Label.new()
-	l.text = text
-	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	UiTheme.apply_outlined(l, size, bold, color)
-	parent.add_child(l)
 
 
 func _open_credits() -> void:
@@ -355,18 +320,11 @@ func _open_credits() -> void:
 	_credits_scroll.scroll_vertical = 0
 	_credits_panel.show()
 	_credits_panel.body.get_child(_credits_panel.body.get_child_count() - 1).grab_focus.call_deferred()
-	if _credits_tween != null:
-		_credits_tween.kill()
-	_credits_tween = create_tween()
-	_credits_tween.tween_interval(0.8)
-	_credits_tween.tween_method(func(v: float):
-		var bar := _credits_scroll.get_v_scroll_bar()
-		_credits_scroll.scroll_vertical = int(v * maxf(0.0, bar.max_value - bar.page)), 0.0, 1.0, 30.0)
+	_credits_scroll.play(30.0)
 
 
 func _close_credits() -> void:
-	if _credits_tween != null:
-		_credits_tween.kill()
+	_credits_scroll.stop()
 	_credits_panel.hide()
 	_show_page(&"main")
 

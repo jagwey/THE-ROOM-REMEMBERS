@@ -232,7 +232,7 @@ func _run_tier_1_feature_coverage() -> void:
 	var core_scene_text: String = _read_file_text("res://scenes/rooms/core.tscn")
 	var has_core_exit: bool = core_scene_text.contains("core_seal_chamber") or core_scene_text.contains("room_transition")
 	var em: Node = root.get_node_or_null("EndingManager")
-	var em_shards_req: bool = em != null and em.has_method("can_attempt_good_seal")
+	var em_shards_req: bool = em != null and em.has_method("can_begin_final")
 	record_check(1, 9, "Core room exit & good ending guidance", has_core_exit and em_shards_req, "core exit=%s ending guidance=%s" % [has_core_exit, em_shards_req], false, "M2")
 
 	# F10: Shilda spawn timing & corpse mourning (M2)
@@ -611,12 +611,13 @@ func _run_tier_4_scenarios() -> void:
 	pm.mark_solved(&"core_seal")
 	gs.player_progress_knowledge["truth_seen"] = true
 	gs.player_progress_knowledge["echoes_seen"] = ["qa_echo"]
+	gs.player_progress_knowledge["ability_soul_slash"] = true
 	gs.set_world_flag(&"seal_shard_1", false)
 	gs.set_world_flag(&"seal_shard_2", false)
-	var locked_without_shards: bool = not em.can_attempt_good_seal()
+	var locked_without_shards: bool = not em.can_begin_final()
 	gs.set_world_flag(&"seal_shard_1", true)
 	gs.set_world_flag(&"seal_shard_2", true)
-	var open_with_both_shards: bool = em.can_attempt_good_seal()
+	var open_with_both_shards: bool = em.can_begin_final()
 	record_check(4, 9, "T4-01 Good Ending seal prerequisite chain", locked_without_shards and open_with_both_shards, "locked without shards=%s open with both=%s" % [locked_without_shards, open_with_both_shards])
 
 	# T4-02: Death loop corpse placement at safe floor

@@ -26,7 +26,7 @@ const LABEL_BY_SCRIPT := {
 	"echo_point.gd": "Yankı", "echo_interactable.gd": "Yankı", "awakening_seal_echo_recall.gd": "Yankı Nişi",
 	"echo_altar.gd": "Yankı Sunağı", "echo_switch.gd": "Yankı Anahtarı", "code_seal_base.gd": "Mühür",
 	"blood_thorn.gd": "Kan Dikeni", "core_crystal.gd": "Çekirdek Kristali", "core_portal.gd": "Geçit",
-	"core_choice_pad.gd": "Seçim Zemini", "mirror_relay.gd": "Ayna", "reset_lever.gd": "Kol",
+	"mirror_relay.gd": "Ayna", "reset_lever.gd": "Kol",
 	"vine_puzzle_lever.gd": "Kol", "vine_interact.gd": "Sarmaşık", "archive_door.gd": "Arşiv Kapısı",
 	"story_beat.gd": "Hatıra", "keeper_controller.gd": "Shilda", "cracked_mirror.gd": "Çatlak Ayna",
 	"shilda_garden_trust.gd": "Shilda", "evidence_card.gd": "Kayıt", "ability_pickup.gd": "Sunak",

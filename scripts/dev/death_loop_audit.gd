@@ -117,14 +117,11 @@ func _run() -> void:
 		check(cnode.get_node_or_null("EchoReplay") != null, "echo replay ghost spawned")
 		await create_timer(trail.size() * 0.1 + 1.5).timeout
 		check(cnode.get_node_or_null("EchoReplay") == null, "echo replay ghost freed")
-	## Shilda yenilgisi: kalıcı işaret, iyi son kapalı, yas yok.
-	state.set_world_flag(&"keeper_defeated", true)
-	keeper.place_for_room(rm.get_active_room_id())
-	check(not keeper.visible and keeper.collision_layer == 0, "defeated keeper hidden")
-	check(not root.get_node("EndingManager").can_attempt_good_seal(), "good ending closed after keeper defeat")
-	keeper.start_encounter(&"shilda_wall")
-	check(keeper.mode != keeper.Mode.COMBAT, "defeated keeper never restarts combat")
-	state.set_world_flag(&"keeper_defeated", false)
+	## Shilda öldürülemez (v3): vuruş öldürmez, is_defeated daima false.
+	for i in 4:
+		keeper.receive_player_strike()
+	check(not keeper.is_defeated(), "keeper cannot be defeated by strikes")
+	check(not bool(state.get_world_flag(&"keeper_defeated", false)), "no keeper_defeated flag after strikes")
 	## Normal ölüm (v3): uzak odada ölüm -> Uyanış yatağında doğuş; ceset uzak odada; dünya kalır; committed kayıt dokunulmaz.
 	var puz := root.get_node("PuzzleManager")
 	puz.mark_solved(&"decay_vine_shortcut")

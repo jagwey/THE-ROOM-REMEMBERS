@@ -197,3 +197,12 @@ Dal: cursor/playable-story-flow-8e4e · Sürüm: v1.2.0 (versionCode 16)
 - [x] `grab_focus` !is_inside_tree hataları giderildi (korumalı ertelenmiş `_focus`).
 - Testler (TORIMON_TEST=1): save_quit 34/0, start_flow 46/0, ui_header_portrait 0 fail, interact 0 fail, release 111/0; pencereli 1920x1080 `t8_*.png` çekimleri gözle kontrol edildi.
 - [x] Task 8 fix round 1: Nasıl Oynanır bloğu (dokunmatik/masaüstü) duraklatma Ayarlar sayfasında; onay başlıkları "Kaydet ve Çık"/"Ana Menü"; Kaydet ve Çık güvenliyse oyuncu konumunu korur (aksi checkpoint); dokunmatik çekimler kontrol edildi. save_quit 38/0, start_flow 0 fail.
+
+## v3 hikaye Task 9 — Tek final: Bölüm I Sonu + jenerik (2026-11-09)
+- [x] `EndingManager` enum yalnız {NONE, PART_ONE}; BAD_KILL_KEEPER / SEVER_BOND / GOOD_TRUST_SEAL, epilog ve `can_attempt_*` silindi. `can_begin_final()` = core_seal + iki mühür parçası + Ruh Kesiği.
+- [x] Shilda öldürülemez: vuruşta geri çekilir/engeller (`is_defeated()` hep false). `core_choice_pad.gd` ve core.tscn'deki iki pad kaldırıldı; core_choice izi yok.
+- [x] `scripts/story/final_sequence.gd`: Ruh Kesiği mührü kırar (`final_seal_broken`), Shilda insan formu (YER TUTUCU tint+hale), §31/§32 satırları, X belirir (`x_revealed`, YER TUTUCU siluet `final_x_actor.gd`), 4 DOMAIN ekranı, çekirdek parçası çekilir, portal, "Noroi... beni duyuyor musun?", THE ROOM REMEMBERS / END OF PART I, jenerik, `game_completed` + `commit_save(&"final")` + başlığa dönüş. Girdi kilitli; satırlar yalnız `final_seen` (settings) sonrası atlanabilir.
+- [x] Jenerik ortak: `scripts/ui/credits_scroll.gd` (başlık ekranı Jenerik sayfası + final aynı bileşen, `CreditsData`). main.gd `_headless_faz67_smoke` tek finale güncellendi.
+- [x] `scripts/dev/final_sequence_audit.gd` eklendi; death_loop/controls/e2e eski son API'sinden `can_begin_final`/vuruş-ölümsüzlüğe taşındı.
+- Testler (TORIMON_TEST=1): final_sequence 22/0, release 111/0, e2e 50/50, death_loop 109/0, curse_reload 66/0, save_quit 38/0, start_flow 46/0, lore_canon 5/0, story_flags 27/0, controls 32/0; pencereli 1920x1080 `t9_*.png` (shilda_human, x_reveal, domain, end_of_part_i, credits) gözle kontrol edildi.
+- Not: `TORIMON_SMOKE=1` faz67 smoke curse_fail=false (Task 5 sonrası ölüm yerine ele geçirilme; Task 9 öncesinden kalan), final kısmı good=true.

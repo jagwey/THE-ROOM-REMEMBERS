@@ -131,10 +131,7 @@ func _ready() -> void:
 		var reg := StringName(s if cut < 0 else s.substr(0, cut))
 		AudioManager.play_region_ambient(reg)
 		if keeper:
-			if bool(GameState.get_world_flag(&"keeper_defeated", false)):
-				keeper.visible = false
-			else:
-				keeper.place_for_room(start_room)
+			keeper.place_for_room(start_room)
 	else:
 		RoomManager.apply_initial_room(start_room, start_spawn, true)
 
@@ -239,9 +236,9 @@ func _headless_faz67_smoke() -> void:
 	print("SMOKE_CURSE_DONE fail=", curse_fail_ok)
 	var world_kept := GameState.world_memory_state.has("flags")
 
-	## Bad ending yalnız core'da
+	## Tek final: Shilda öldürülemez, sonra BÖLÜM I SONU dizisi (hızlı)
 	EndingManager.reset_for_smoke()
-	print("SMOKE_BAD")
+	print("SMOKE_FINAL")
 	RoomManager.enter_room(&"core", &"default")
 	if keeper:
 		keeper.visible = true
@@ -250,41 +247,14 @@ func _headless_faz67_smoke() -> void:
 	if keeper and keeper.has_method("receive_player_strike"):
 		for i in 3:
 			await keeper.receive_player_strike()
-			if EndingManager.last_ending == EndingManager.Ending.BAD_KILL_KEEPER \
-					or EndingManager.current == EndingManager.Ending.BAD_KILL_KEEPER:
-				break
-			await get_tree().create_timer(0.1).timeout
-	if EndingManager.last_ending != EndingManager.Ending.BAD_KILL_KEEPER:
-		## Epilog/UI takılırsa doğrudan tetikle
-		await EndingManager.trigger(EndingManager.Ending.BAD_KILL_KEEPER)
-	await get_tree().create_timer(0.2).timeout
-	var bad_ok := EndingManager.last_ending == EndingManager.Ending.BAD_KILL_KEEPER
-	print("SMOKE_BAD_DONE ", bad_ok)
-
-	EndingManager.reset_for_smoke()
-	PuzzleManager.mark_solved(&"awakening_weight")
-	PuzzleManager.mark_solved(&"awakening_memory_code")
-	PuzzleManager.mark_solved(&"mirrors_unbroken")
+	var bad_ok: bool = (not keeper.is_defeated()) if keeper else true
 	PuzzleManager.mark_solved(&"core_seal")
-	GameState.player_progress_knowledge["echoes_seen"] = ["awakening_rift_echo"]
-	GameState.player_progress_knowledge["trusted_keeper"] = true
-	GameState.player_progress_knowledge["truth_seen"] = true
-	GameState.set_world_flag(&"awakening_door_opened", true)
 	GameState.set_world_flag(&"seal_shard_1", true)
 	GameState.set_world_flag(&"seal_shard_2", true)
-	print("SMOKE_GOOD")
-	enter_core()
-	await get_tree().create_timer(0.2).timeout
-	## Doğrudan final tetikle — kristal diyalog zinciri headless'ta takılabiliyor
-	if EndingManager.can_attempt_good_seal():
-		await EndingManager.trigger(EndingManager.Ending.GOOD_TRUST_SEAL)
-	else:
-		var crystal := get_tree().get_first_node_in_group("core_crystal")
-		if crystal and crystal.has_method("on_interact"):
-			await crystal.on_interact(player)
-	await get_tree().create_timer(0.3).timeout
-	var good_ok := EndingManager.last_ending == EndingManager.Ending.GOOD_TRUST_SEAL
-	print("SMOKE_GOOD_DONE ", good_ok)
+	GameState.player_progress_knowledge["ability_soul_slash"] = true
+	await EndingManager.trigger(EndingManager.Ending.PART_ONE, true)
+	var good_ok := EndingManager.last_ending == EndingManager.Ending.PART_ONE and GameState.has_story_flag(&"final_seal_broken") and GameState.has_story_flag(&"x_revealed") and GameState.has_story_flag(&"game_completed")
+	print("SMOKE_FINAL_DONE ", good_ok)
 	var msg := "FAZ67_SMOKE ok curse_fail=%s world=%s bad=%s good=%s rooms=%s indicator=%s" % [
 		str(curse_fail_ok),
 		str(world_kept),
