@@ -11,7 +11,6 @@
 [ext_resource type="Script" path="res://scripts/world/pressure_plate.gd" id="9"]
 [ext_resource type="Script" path="res://scripts/world/gate_blocker.gd" id="10"]
 [ext_resource type="Script" path="res://scripts/world/memory_seal.gd" id="11"]
-[ext_resource type="Script" path="res://scripts/world/core_portal.gd" id="12"]
 [ext_resource type="Texture2D" path="res://assets/layers/candlestick.png" id="14"]
 [ext_resource type="Texture2D" path="res://assets/layers/vines.png" id="15"]
 [ext_resource type="Texture2D" path="res://assets/layers/rubble.png" id="16"]
@@ -27,6 +26,8 @@
 
 [ext_resource type="Texture2D" path="res://assets/tiles/tile_00.png" id="walk_tile"]
 [ext_resource type="Script" path="res://scripts/world/memory_seal_point.gd" id="memory_seal_pt"]
+[ext_resource type="Script" path="res://scripts/world/weight_stone.gd" id="weight_stone_script"]
+[ext_resource type="Texture2D" path="res://assets/props/weight_stone.png" id="weight_stone_tex"]
 
 [sub_resource type="RectangleShape2D" id="Floor"]
 size = Vector2(1320, 48)
@@ -54,6 +55,9 @@ size = Vector2(36, 36)
 
 [sub_resource type="RectangleShape2D" id="PocketWatchShape"]
 size = Vector2(56, 40)
+
+[sub_resource type="RectangleShape2D" id="StoneBox"]
+size = Vector2(34, 34)
 
 [node name="Awakening" type="Node2D"]
 script = ExtResource("23")
@@ -228,6 +232,27 @@ position = Vector2(0, -8)
 texture = ExtResource("5")
 centered = true
 modulate = Color(0.55, 0.5, 0.58, 0.92)
+
+[node name="WeightStone" type="CharacterBody2D" parent="."]
+position = Vector2(840, 288)
+collision_layer = 9
+collision_mask = 1
+floor_stop_on_slope = true
+script = ExtResource("weight_stone_script")
+min_x = 600.0
+max_x = 1000.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WeightStone"]
+position = Vector2(0, -18)
+shape = SubResource("StoneBox")
+
+[node name="Sprite2D" type="Sprite2D" parent="WeightStone"]
+texture_filter = 0
+texture = ExtResource("weight_stone_tex")
+centered = true
+position = Vector2(0, -18)
+scale = Vector2(0.375, 0.375)
+modulate = Color(0.9, 0.86, 0.92, 1)
 
 [node name="Hazards" type="Node2D" parent="."]
 

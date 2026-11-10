@@ -40,6 +40,7 @@ var _door_h: float = 116.0
 var _locked_tries: int = 0
 var _last_locked_ms: int = -10000
 var _phase: float = 0.0
+var _in_travel: bool = false
 
 
 func _ready() -> void:
@@ -48,7 +49,9 @@ func _ready() -> void:
 	monitoring = false
 	monitorable = true
 	add_to_group("room_door")
-	_transitioning = false
+	reset_transition_lock()
+	if not RoomManager.room_changed.is_connected(_on_room_changed):
+		RoomManager.room_changed.connect(_on_room_changed)
 	## Eski kapılar y≈268'e konmuştu; zemin 288 — kapı tabanı tam zeminde olsun.
 	if position.y > 250.0 and position.y < 300.0:
 		position.y = FLOOR_Y
@@ -65,8 +68,7 @@ func _ready() -> void:
 	_label.add_theme_constant_override("shadow_offset_y", 1)
 	var touch := MobileInputManager.is_touch_ui()
 	var hint := "El · Geç" if touch else "[E] Geç"
-	_label.text = "%s
-%s" % [get_display_name(), hint]
+	_label.text = "%s\n%s" % [get_display_name(), hint]
 	_label.z_index = 4
 	_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	## Her zaman kapının tam ortasında; sabit sağ kenar kayması yok.
@@ -95,8 +97,18 @@ func _ready() -> void:
 
 
 func _exit_tree() -> void:
+	reset_transition_lock()
 	if UiGate.gate_changed.is_connected(_on_gate_changed):
 		UiGate.gate_changed.disconnect(_on_gate_changed)
+	if RoomManager.room_changed.is_connected(_on_room_changed):
+		RoomManager.room_changed.disconnect(_on_room_changed)
+
+
+func _on_room_changed(_from: StringName, to: StringName) -> void:
+	if _in_travel and to == target_room_id:
+		return
+	_in_travel = false
+	reset_transition_lock()
 
 
 ## Ana bölge (ilk "_" öncesi) hedefle farklıysa büyük kapı.
@@ -313,7 +325,11 @@ func _shake_seal() -> void:
 
 func _travel(by: Node) -> void:
 	_transitioning = true
+	_in_travel = true
 	var tree := get_tree()
+	if tree == null:
+		reset_transition_lock()
+		return
 	UiGate.set_cutscene(true)
 	MobileInputManager.clear_held_inputs()
 	AudioManager.play_sfx(&"door_open", -4.0)
@@ -321,7 +337,12 @@ func _travel(by: Node) -> void:
 	if player == null or not player.is_in_group("player"):
 		player = tree.get_first_node_in_group("player") as Node2D
 	var fade := _make_fade(tree)
-	var rect := fade.get_child(0) as ColorRect
+	var rect := fade.get_child(0) as ColorRect if fade and fade.get_child_count() > 0 else null
+	if rect == null:
+		if is_instance_valid(fade):
+			fade.queue_free()
+		reset_transition_lock()
+		return
 	## Ağaç tween'i: oda değişince bu kapı devre dışı kalsa da animasyon sürer.
 	var tw := tree.create_tween()
 	if player:
@@ -341,19 +362,35 @@ func _travel(by: Node) -> void:
 	else:
 		tw.tween_property(rect, "color:a", 1.0, FADE_OUT)
 	await tw.finished
+	if not is_instance_valid(tree):
+		if is_instance_valid(fade):
+			fade.queue_free()
+		reset_transition_lock()
+		return
 	RoomManager.enter_room(target_room_id, target_spawn_id)
 	if is_instance_valid(player):
 		player.modulate = Color.WHITE
 		if player is CharacterBody2D:
 			(player as CharacterBody2D).velocity = Vector2.ZERO
 	await tree.process_frame
+	if not is_instance_valid(tree):
+		if is_instance_valid(fade):
+			fade.queue_free()
+		reset_transition_lock()
+		return
+	if not is_instance_valid(rect):
+		if is_instance_valid(fade):
+			fade.queue_free()
+		_in_travel = false
+		reset_transition_lock()
+		return
 	var tw2 := tree.create_tween()
 	tw2.tween_property(rect, "color:a", 0.0, FADE_IN)
 	await tw2.finished
-	fade.queue_free()
-	UiGate.set_cutscene(false)
-	MobileInputManager.clear_held_inputs()
-	_transitioning = false
+	if is_instance_valid(fade):
+		fade.queue_free()
+	_in_travel = false
+	reset_transition_lock()
 
 
 static func _end_walk(player: Node) -> void:
@@ -363,6 +400,17 @@ static func _end_walk(player: Node) -> void:
 
 static func is_transitioning() -> bool:
 	return _transitioning
+
+
+static func reset_transition_lock() -> void:
+	_transitioning = false
+	UiGate.set_cutscene(false)
+	MobileInputManager.clear_held_inputs()
+	var tree := Engine.get_main_loop() as SceneTree
+	if tree and tree.root:
+		for c in tree.root.get_children():
+			if is_instance_valid(c) and c is CanvasLayer and (c.name == "DoorFade" or c.name.begins_with("DoorFade")):
+				c.queue_free()
 
 
 func _make_fade(tree: SceneTree) -> CanvasLayer:

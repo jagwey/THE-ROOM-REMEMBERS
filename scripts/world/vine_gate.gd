@@ -41,6 +41,15 @@ func _apply(open: bool) -> void:
 		sprite.modulate = Color(1, 1, 1, 0.0) if open else Color(0.55, 0.7, 0.45, 1.0)
 
 
+func receive_sword_hit(_from: Node, _dir: float, _combo: int) -> void:
+	if _is_open():
+		return
+	PuzzleManager.mark_solved(puzzle_id)
+	GameState.set_world_flag(flag, true)
+	GameState.set_world_flag(&"decay_vine_cleared", true)
+	SaveManager.save_game()
+
+
 func _pulse_open() -> void:
 	if not is_visible_in_tree():
 		return

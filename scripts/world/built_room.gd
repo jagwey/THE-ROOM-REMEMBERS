@@ -272,6 +272,6 @@ func _build_spawns_and_doors() -> void:
 		if spawns.get_node_or_null(sname) == null:
 			var m := Marker2D.new()
 			m.name = sname
-			var inward := 40.0 if x < room_width * 0.5 else -40.0
-			m.position = Vector2(clampf(x + inward, 40.0, room_width - 40.0), minf(y + 20.0, 288.0))
+			var inward := 48.0 if x < room_width * 0.5 else -48.0
+			m.position = Vector2(clampf(x + inward, 48.0, room_width - 48.0), 288.0)
 			spawns.add_child(m)

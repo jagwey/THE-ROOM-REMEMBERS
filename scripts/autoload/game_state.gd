@@ -82,15 +82,38 @@ func _ready() -> void:
 	hearts_changed.emit(hearts, max_hearts)
 
 
-## Yeni yaşam: Noroi'nin bu hayata ait bilgisi tamamen silinir. Normal ölüm her zaman
-## Uyanış yatağında doğurur; önceki hayatın uzak checkpoint'i yeni hayata taşınmaz.
-## (Dünya hafızası ve oyuncu ilerlemesi burada DEĞİŞMEZ.)
-func reset_character_life() -> void:
+## Yeni yaşam: Noroi'nin bu hayata ait geçici bilgisi silinir.
+## Normal ölüm oyuncunun bulunduğu odada kalır; dünya hafızası ve oyuncu ilerlemesi korunur.
+func reset_character_life(keep_room: StringName = &"", keep_cp: Vector2 = Vector2.ZERO, keep_spawn: StringName = &"") -> void:
+	var target_room := keep_room
+	if target_room == &"":
+		var current_r: Variant = character_current_life_knowledge.get("room", &"")
+		if current_r != null and StringName(str(current_r)) != &"":
+			target_room = StringName(str(current_r))
+		elif is_instance_valid(RoomManager) and RoomManager.get_active_room_id() != &"":
+			target_room = RoomManager.get_active_room_id()
+		else:
+			target_room = &"awakening"
+
+	var target_cp := keep_cp
+	if target_cp == Vector2.ZERO:
+		if target_room == &"awakening":
+			target_cp = DEFAULT_CHECKPOINT
+		else:
+			target_cp = get_checkpoint()
+
+	var target_spawn := keep_spawn
+	if target_spawn == &"":
+		if target_room == &"awakening":
+			target_spawn = &"rebirth_bed"
+		else:
+			target_spawn = StringName(str(character_current_life_knowledge.get("spawn_id", &"default")))
+
 	character_current_life_knowledge = {
-		"room": &"awakening",
-		"checkpoint": DEFAULT_CHECKPOINT,
-		"checkpoint_room": &"awakening",
-		"spawn_id": &"rebirth_bed",
+		"room": target_room,
+		"checkpoint": target_cp,
+		"checkpoint_room": target_room,
+		"spawn_id": target_spawn,
 		"interacted": [],
 		"dialogue_flags": {},
 		"warned_hazard": false,

@@ -181,17 +181,8 @@ func _spawn_particles() -> void:
 func _spawn_clarity_spark() -> void:
 	var spark := Area2D.new()
 	spark.name = "ClaritySpark"
-	spark.collision_layer = 0
-	spark.collision_mask = 2 ## LAYER_PLAYER (mask bit 1 = 2)
-	spark.monitoring = true
-	spark.monitorable = false
+	spark.set_script(load("res://scripts/world/clarity_spark.gd"))
 	spark.global_position = global_position + Vector2(0, -16)
-
-	var cs := CollisionShape2D.new()
-	var circle := CircleShape2D.new()
-	circle.radius = 16.0
-	cs.shape = circle
-	spark.add_child(cs)
 
 	var mote := Sprite2D.new()
 	mote.texture = load("res://assets/props/memory_mote.png")
@@ -207,16 +198,6 @@ func _spawn_clarity_spark() -> void:
 		halo.scale = Vector2(0.35, 0.35)
 		halo.modulate = Color(0.4, 0.8, 1.0, 0.5)
 		spark.add_child(halo)
-
-	spark.body_entered.connect(func(body: Node):
-		if body.is_in_group("player"):
-			CurseManager.clear_curse(10.0)
-			var am_spark := get_node_or_null("/root/AudioManager")
-			if am_spark:
-				am_spark.play_sfx(&"seal_open")
-			DialogueManager.whisper("Noroi", "+%10 Berraklık")
-			spark.queue_free()
-	)
 
 	var tw := spark.create_tween().set_loops()
 	tw.tween_property(mote, "scale", Vector2(1.2, 1.2), 0.5).set_trans(Tween.TRANS_SINE)

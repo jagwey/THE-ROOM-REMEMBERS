@@ -40,8 +40,13 @@ func on_interact(_by: Node) -> void:
 		SaveManager.save_game()
 		_refresh_visual()
 		RoomManager.enter_room(target_room_id, target_spawn_id)
+	elif not has_flower and not trusted:
+		DialogueManager.say("Noroi", "Kilit iki şey istiyor.")
+		DialogueManager.say("", "Bahçedeki kırmızı çiçeği incele.")
+		DialogueManager.say("", "Sonra Shilda ile konuş; güvenini kazan.")
 	elif not has_flower:
 		DialogueManager.say("Noroi", "Kilitte bir çiçek izi var.")
-		DialogueManager.say("", "Önce bahçeyi dinle.")
+		DialogueManager.say("", "Bahçedeki kırmızı çiçeği incele.")
 	else:
-		DialogueManager.say(GameState.keeper_speaker_name(), "Henüz değil. Bana… bir kez daha bak.")
+		DialogueManager.say(GameState.keeper_speaker_name(), "Henüz değil.")
+		DialogueManager.say("", "Shilda ile konuş; seni tanımasını bekle.")

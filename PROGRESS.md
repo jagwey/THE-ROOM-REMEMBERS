@@ -282,3 +282,36 @@ Dal: cursor/playable-story-flow-8e4e · Sürüm: v1.2.0 (versionCode 16)
 - [x] Milestone 5 (E2E Opaque-Box Doğrulama):
   - `res://scripts/dev/e2e_runner.gd` 4 kademeli (Tier 1-4, 50 kontrol) master test paketi koşturuldu:
   - **OVERALL TOTAL: 50 | PASSED: 50 | FAILED: 0 | PENDING: 0**.
+
+## v1.7.0 BÃ¼yÃ¼k Mekanik, GeÃ§iÅŸ, Lanet/Ã–lÃ¼m & 30 Oda Revizyonu (2026-11-10) - CURSOR DEVRÄ°
+### âœ… TAMAMLANANLAR (Faz 1, Faz 2, Faz 3):
+- [x] **Faz 1: Ã–lÃ¼m, KalÄ±cÄ± DÃ¼nya ve Yeniden DoÄŸuÅŸ Mimarisi (M1)**:
+  - \scripts/autoload/death_manager.gd\: Oda 01 (\wakening\) dÄ±ÅŸÄ±ndaki 29 odada Ã¶lÃ¼m durumunda oyuncu bulunduÄŸu odanÄ±n (\RoomManager.get_active_room_id()\) gÃ¼venli spawn/checkpoint noktasÄ±nda yeniden doÄŸar. Oda 1 yataÄŸÄ±na zorunlu dÃ¶nÃ¼ÅŸ (\REBIRTH_BED\) kaldÄ±rÄ±ldÄ±.
+  - \scripts/autoload/curse_manager.gd\: Ã–lÃ¼m gerÃ§ekleÅŸtiÄŸinde \
+eload_current_scene\ veya \load_committed\ ile dÃ¼nya sÄ±fÄ±rlanmaz; aÃ§Ä±lan kapÄ±lar, bulmacalar, kÄ±rÄ±lan duvarlar ve cesetler kalÄ±cÄ± kalÄ±r.
+  - Ã–lÃ¼m sonrasÄ± oyuncuya otomatik +%25 lanet (\CurseManager.add_curse(25.0, &"death")\) eklenir; en az 50.0 seviyesine Ã§Ä±karÄ±lÄ±r.
+  - %100 Lanet (\Possession\) durumunda dÃ¼nya ilerlemesi (\world_memory_state\, \PuzzleManager\) silinmez; oyuncu son mÃ¼hÃ¼r odasÄ±na taÅŸÄ±nÄ±p laneti %50'ye Ã§ekilir.
+  - DoÄŸrulama: \m1_rebirth_audit.gd\, \m1_challenger1_audit.gd\, \m1_stress_challenger2.gd\, \m1_forensic_auditor_suite.gd\ (250+ kontrol, 0 FAIL).
+- [x] **Faz 2: Lanet MÃ¼hÃ¼rleme NoktalarÄ± (\memory_seal_point.gd\) (M2)**:
+  - \scripts/world/memory_seal_point.gd\: ArtÄ±k sÄ±radan bir checkpoint deÄŸil, yalnÄ±zca "Lanet MÃ¼hÃ¼rleme NoktasÄ±" olarak Ã§alÄ±ÅŸÄ±r.
+  - Lanet yokken (\<= 0.0\) etkileÅŸim reddedilir, kayÄ±t yapÄ±lmaz ("KanÄ±mda aktif bir lanet yok...").
+  - Lanetliyken (\> 0.0\) laneti emer (\clear_curse\), checkpoint belirler, \commit_save\ yapar ve "LANET MÃœHÃœRLENDÄ°" afiÅŸini gÃ¶sterir.
+  - MÃ¼hÃ¼rler arasÄ± hÄ±zlÄ± seyahat menÃ¼sÃ¼ kaldÄ±rÄ±ldÄ±; hÄ±zlÄ± seyahat yalnÄ±zca \cracked_mirror.gd\ Ã¼zerinden gerÃ§ekleÅŸir.
+  - DoÄŸrulama: \m2_seal_audit.gd\, \m2_challenger1_stress.gd\, \m2_adversarial_forensic_suite.gd\ (143+ kontrol, 0 FAIL).
+- [x] **Faz 3: KapÄ±/GeÃ§iÅŸ Deadlock'Ä±, Oda 01 Softlock'u ve Yan KapÄ±lar (M3)**:
+  - \scenes/rooms/awakening.tscn\ & \scripts/world/memory_hazard.gd\: PlakanÄ±n soluna itilebilir \WeightStone\ ((840, 288)) eklendi; \wakening_rift\ tehlikesi plaka bulmacasÄ±ndan koparÄ±ldÄ± (cep saati gÃ¶rÃ¼lÃ¼nce aktif).
+  - \scripts/world/core_portal.gd\: Ä°ÅŸlevsiz/sahte core_portal dÃ¼ÄŸÃ¼mÃ¼ kaldÄ±rÄ±ldÄ±.
+  - \scripts/world/room_transition.gd\: \
+eset_transition_lock()\ eklendi; sahneye giriÅŸ, Ã§Ä±kÄ±ÅŸ ve oda deÄŸiÅŸimlerinde geÃ§iÅŸ kilidi ve cutscene sÄ±fÄ±rlamasÄ± saÄŸlandÄ±.
+  - \scripts/player/player_controller.gd\: KapÄ±lara (\
+oom_door\) <= 44.0 px mesafede -200 etkileÅŸim Ã¶ncelik bonusu eklendi.
+  - \scripts/main.gd\: \SIDE_DOORS\ 224px bay katlarÄ±na hizalandÄ±, nesnelere en az 120px aÃ§Ä±klÄ±k ve dÃ¶nÃ¼ÅŸte 48px iÃ§eride doÄŸuÅŸ saÄŸlandÄ±.
+  - DoÄŸrulama: \scripts/dev/m3_transition_audit.gd\ (115 kontrol, 0 FAIL).
+
+---
+
+### ✅ CURSOR TAMAMLADI (Faz 4 & Faz 5 & Release) — 2026-11-10
+- [x] Faz 4 Bölge I–VI oda revizyonları uygulandı.
+- [x] Faz 5 audit güncellemesi + headless koşu (death_loop, memory_seal, curse_reload, m1/m2/m3, e2e 50/50).
+- [x] Sürüm 1.7.0 / versionCode 31; APK derlendi; GitHub Releases.
+

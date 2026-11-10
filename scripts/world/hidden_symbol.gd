@@ -3,7 +3,7 @@ extends Node2D
 ## Görüldüğünde memory_code öğretebilir.
 
 @export var symbol_text: String = "◆"
-@export var reveal_radius: float = 110.0
+@export var reveal_radius: float = 220.0
 @export var memory_code_key: String = ""
 @export var memory_code_value: String = ""
 @export var reveal_line: String = ""

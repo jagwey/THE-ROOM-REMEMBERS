@@ -212,8 +212,9 @@ func _run() -> void:
 func _assert_a(seal_pos: Vector2, corpses_a: int, deaths_a: int, fdc_a: bool, tag: String) -> void:
 	check(rm.get_active_room_id() == &"library_hall", "%s: room == A" % tag, rm.get_active_room_id())
 	check(player.global_position.distance_to(seal_pos) < 12.0, "%s: spawn at committed safe position" % tag, player.global_position)
-	check(gs.has_story_flag(&"first_warning_heard") and not gs.has_story_flag(&"core_access_granted"), "%s: story flags == A" % tag)
-	check(not gs.get_world_flag(&"audit_marker_b", false), "%s: world state B lost" % tag)
+	## v1.7: possession odası/konumu A'ya döner ama dünya ilerlemesi (story/world/puzzle) silinmez.
+	check(gs.has_story_flag(&"first_warning_heard") and gs.has_story_flag(&"core_access_granted"), "%s: story flags persist across possession" % tag)
+	check(gs.get_world_flag(&"audit_marker_b", false), "%s: world state B persists" % tag)
 	check((gs.world_memory_state["corpses"] as Array).size() == corpses_a, "%s: corpse count unchanged" % tag)
 	check(int(gs.player_progress_knowledge.get("deaths", 0)) == deaths_a, "%s: death count unchanged" % tag)
 	check(gs.has_story_flag(&"first_death_completed") == fdc_a, "%s: first_death_completed untouched" % tag)

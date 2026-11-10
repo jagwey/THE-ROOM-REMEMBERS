@@ -59,7 +59,10 @@ func on_interact(_by: Node) -> void:
 			DialogueManager.say("Noroi", l)
 	DialogueManager.say("", "%s kazanıldı." % title)
 	if tutorial != "":
-		DialogueManager.say("", tutorial)
+		var tip := tutorial.replace("%DASH%", MobileInputManager.control_name(&"dash"))
+		tip = tip.replace("X / Dash", MobileInputManager.control_name(&"dash"))
+		tip = tip.replace("X / Atıl", MobileInputManager.control_name(&"dash"))
+		DialogueManager.say("", tip)
 	if grant_world_flag != &"":
 		GameState.set_world_flag(grant_world_flag, true)
 	else:

@@ -172,7 +172,7 @@ func _physics_process(delta: float) -> void:
 	_elapsed += delta
 	var spr := player.get_node_or_null("AnimatedSprite2D") as AnimatedSprite2D
 	_frames.append([_elapsed, player.global_position, spr.flip_h if spr else false, String(spr.animation) if spr else "idle"])
-	_label.text = "● KAYIT %.1f" % maxf(0.0, record_seconds - _elapsed)
+	_label.text = "● Kayıt Süresi %.1f" % maxf(0.0, record_seconds - _elapsed)
 	if _elapsed >= record_seconds:
 		_finish_recording()
 
@@ -232,7 +232,10 @@ func _clear_twin() -> void:
 func _refresh_label() -> void:
 	if _label == null:
 		return
-	_label.text = "Yankı Sunağı · çözüldü" if PuzzleManager.is_solved(puzzle_id) else "Yankı Sunağı · %s: kaydet" % MobileInputManager.control_name(&"interact")
+	if PuzzleManager.is_solved(puzzle_id):
+		_label.text = "Yankı Sunağı · çözüldü"
+	else:
+		_label.text = "Yankı Sunağı · %s: kaydet" % MobileInputManager.control_name(&"interact")
 
 
 func _room_id() -> StringName:

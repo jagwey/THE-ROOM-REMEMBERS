@@ -24,5 +24,8 @@ func on_interact(_by: Node) -> void:
 	var ok: bool = await DialogueManager.dialogue_finished
 	if ok:
 		PuzzleManager.mark_solved(puzzle_id)
+		GameState.set_world_flag(&"decay_vine_open", true)
+		GameState.set_world_flag(&"decay_vine_cleared", true)
 		SaveManager.save_game()
+		DialogueManager.say("Noroi", "Sarmaşık çekildi.")
 	_busy = false

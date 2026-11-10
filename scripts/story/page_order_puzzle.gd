@@ -154,6 +154,18 @@ func _success_flow() -> void:
 		GameState.set_world_flag(&"experiment_unlocked", true)
 		_evidence_own_seal()
 		SaveManager.save_game()
+		var cam := get_tree().get_first_node_in_group("follow_camera")
+		var door: Node2D = null
+		for n in get_tree().get_nodes_in_group("room_door"):
+			if n is Node2D and "target_room_id" in n and String(n.get("target_room_id")) == "library_forbidden_wing":
+				door = n as Node2D
+				break
+		if cam and cam.has_method("focus_pulse"):
+			var at: Vector2 = door.global_position + Vector2(0, -40) if door else Vector2(900, 248)
+			cam.focus_pulse(at)
+		var am := get_node_or_null("/root/AudioManager")
+		if am:
+			am.play_sfx(&"seal_open")
 	_hide_puzzle()
 
 

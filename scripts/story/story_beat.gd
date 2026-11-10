@@ -91,8 +91,10 @@ func on_interact(_by: Node) -> void:
 	_busy = false
 
 func _library_hall() -> void:
-
-	DialogueManager.say("Arşivci", "Yine geldin, Noroi. Bu sefer hangi rafa bakacaksın?")
+	if CurseManager.curse > 0.0:
+		DialogueManager.say("Arşivci", "Üzerinde lanet var, gezgin. Raflar seni tanıyor; mühürler seni çağırıyor.")
+	else:
+		DialogueManager.say("Arşivci", "Yine geldin, Noroi. Bu sefer hangi rafa bakacaksın?")
 
 	DialogueManager.say("Arşivci", "Kayıtlar çelişiyor: biri kurtarıcı diyor, biri kapıyı kilitleyen. İmza kazınmış.")
 
@@ -134,11 +136,13 @@ func _library_witness() -> void:
 
 	if ev.has("ev_witness_clock") and ev.has("ev_witness_flower") and ev.has("ev_witness_seal"):
 
-		DialogueManager.say("Noroi", "Deney önce başladı, kapı sonra kapandı. Mühür en son çalışmış.")
+		DialogueManager.say("Noroi", "1927'de kazı başladı. 1995'te ben girdim.")
+		DialogueManager.say("Noroi", "Deney önce, kapı sonra, mühür en son. Kod… iki, beş, bir.")
 		DialogueManager.say("Noroi", "Felaketi mühür başlatmamış. İçeride tutmuş.")
 		var understood: bool = await DialogueManager.dialogue_finished
 		if not understood:
 			return
+		GameState.learn_memory_code("library_witness", "251")
 		PuzzleManager.mark_solved(&"library_witnesses")
 
 		SaveManager.save_game()
@@ -162,9 +166,10 @@ func _library_page() -> void:
 func _experiment_cells() -> void:
 
 	DialogueManager.say("Kayıt", "Hatıra koruma deneyi. Amaç: kaybedilenlerin seslerini saklamak.")
+	DialogueManager.say("Kayıt", "Denek 14: Noroi. Kurucu imza: X (kazınmış).")
 
-	DialogueManager.say("Noroi", "Biri sesleri kaybetmek istememiş. Burası bu yüzden mi böyle?")
-	DialogueManager.say("Shilda", "O önce tek bir sesi saklamak istedi. Sonra kimseyi kaybetmek istemedi.")
+	DialogueManager.say("Noroi", "Ben… denektim. Kurucu ben değilim.")
+	DialogueManager.say("Shilda", "X başlattı. Sen içeride kaldın. Ben dışarıda bekledim.")
 	DialogueManager.say("Shilda", "Hatıralar bedenlerden ayrılıp odada birikti.")
 	DialogueManager.say("Shilda", "Kimseyi feda etmeyeceğiz. Sağdaki devrede yankın bir anahtarı tutacak.")
 	DialogueManager.say("Shilda", "Sen de diğerini açacaksın.")
@@ -202,7 +207,8 @@ func _experiment_circuit() -> void:
 func _experiment_authority() -> void:
 
 	DialogueManager.say("Kayıt", "Protokol yetkilisi: ███ (kazınmış). Güvenlik görevlisi: Shilda.")
-	DialogueManager.say("Kayıt", "Acil kapatma talebi reddedildi.")
+	DialogueManager.say("Kayıt", "Acil kapatma talebi reddedildi. Mühür kodu kenarda: 4-1-8.")
+	DialogueManager.say("X?", "Düzeni bozma. Kapı kapalı kalsın.")
 
 	DialogueManager.say("Noroi", "Biri kapıyı kimse çıkmasın diye kilitlemiş. Sesler içeride kalmış.")
 
@@ -220,7 +226,8 @@ func _experiment_authority() -> void:
 
 		return
 
-	_evidence("ev_authority", "Yetki masası", "Yetki masasındaki imza kazınmış. Düzeni kimin kurduğu okunmuyor.", "evidence", "gunluk")
+	GameState.learn_memory_code("experiment_authority", "418")
+	_evidence("ev_authority", "Yetki masası", "Yetki masasındaki imza kazınmış; kayıtta X? fısıltısı ve 418 mührü kaldı. Düzeni kimin kurduğu okunmuyor.", "evidence", "gunluk")
 
 	PuzzleManager.mark_solved(&"experiment_authority")
 
@@ -276,6 +283,21 @@ func _mirrors_unbroken() -> void:
 	PuzzleManager.mark_solved(&"mirrors_unbroken")
 
 	GameState.set_world_flag(&"core_path_open", true)
+	GameState.learn_memory_code("mirrors_unbroken", "729")
+
+	var cam := get_tree().get_first_node_in_group("follow_camera")
+	var door_fx: Node2D = null
+	for n in get_tree().get_nodes_in_group("room_door"):
+		if n is Node2D and String((n as Node).get("target_room_id") if "target_room_id" in n else "") == "core_threshold":
+			door_fx = n as Node2D
+			break
+	if door_fx == null:
+		door_fx = get_parent() as Node2D
+	if cam and cam.has_method("focus_pulse") and door_fx:
+		cam.focus_pulse(door_fx.global_position + Vector2(0, -40))
+	var am := get_node_or_null("/root/AudioManager")
+	if am:
+		am.play_sfx(&"seal_open")
 
 	SaveManager.save_game()
 

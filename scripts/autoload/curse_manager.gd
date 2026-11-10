@@ -17,8 +17,8 @@ const CURSE_MAX := 100.0
 const BAND_FIRST_SIGNS := 50.0
 const BAND_DANGER := 70.0
 const BAND_CRITICAL := 90.0
-## Ele geçirilmeden sonra lanet bu değeri aşamaz (asla kritik banda dönmez).
-const POSSESSION_SAFE_CURSE := 25.0
+## Ele geçirilmeden sonra lanet bu değere çekilir (Bant 1 - İlk İşaretler).
+const POSSESSION_SAFE_CURSE := 50.0
 const PossessionOverlay := preload("res://scripts/ui/possession_overlay.gd")
 
 var curse: float = 0.0
@@ -146,40 +146,40 @@ func _fail_life() -> void:
 	_begin_possession()
 
 
-## Son committed kayda dön: oda + güvenli konum; dünya ve hikâye durumu committed hale gelir.
+## Son committed kayda dön: oda + güvenli konum; kalıcı dünya ilerlemesi (world_memory_state, PuzzleManager, player_progress_knowledge) KORUNUR.
 func _reload_committed() -> void:
-	if not SaveManager.load_committed():
-		## Committed kayıt okunamadı: canlı durum korunur, oyuncu güvenli konuma döner.
-		push_warning("CurseManager: committed save yüklenemedi; canlı durum korunuyor.")
-		var live_player := get_tree().get_first_node_in_group("player") as Node2D
-		if live_player and live_player.has_method("respawn_at"):
-			var safe_pos: Vector2 = GameState.get_checkpoint()
-			if live_player.has_method("get_last_safe_floor_pos"):
-				var floor_pos: Vector2 = live_player.get_last_safe_floor_pos()
-				if floor_pos != Vector2.ZERO:
-					safe_pos = floor_pos
-			live_player.respawn_at(safe_pos)
-		var live_cam := get_tree().get_first_node_in_group("follow_camera")
-		if live_cam and live_cam.has_method("snap_to_target"):
-			live_cam.snap_to_target()
-		restore_curse(minf(curse, POSSESSION_SAFE_CURSE))
-		SaveManager.save_game()
-		return
-	var life: Dictionary = GameState.character_current_life_knowledge
-	var room := StringName(str(life.get("checkpoint_room", life.get("room", &"awakening"))))
-	## Committed kayıt yoksa da mevcut checkpoint konumu kullanılır (oda varsayılanı değil).
+	var committed_data: Variant = SaveManager._read_with_fallback(SaveManager.SAVE_PATH)
+	var room := &"awakening"
+	var pos := GameState.DEFAULT_CHECKPOINT
+	if committed_data is Dictionary:
+		var life: Dictionary = (committed_data as Dictionary).get("character_current_life_knowledge", {})
+		room = StringName(str(life.get("checkpoint_room", life.get("room", &"awakening"))))
+		var cp_val: Variant = life.get("checkpoint", null)
+		if cp_val is Dictionary:
+			pos = Vector2(float((cp_val as Dictionary).get("x", 120.0)), float((cp_val as Dictionary).get("y", 280.0)))
+		elif cp_val is Vector2:
+			pos = cp_val as Vector2
+	else:
+		var life: Dictionary = GameState.character_current_life_knowledge
+		room = StringName(str(life.get("checkpoint_room", life.get("room", &"awakening"))))
+		pos = GameState.get_checkpoint()
+
+	GameState.character_current_life_knowledge["checkpoint"] = pos
+	GameState.character_current_life_knowledge["checkpoint_room"] = room
+	GameState.character_current_life_knowledge["room"] = room
+	GameState.character_current_life_knowledge["spawn_id"] = &"checkpoint"
+
 	if RoomManager.has_room(room):
 		RoomManager.enter_room(room, &"checkpoint", false)
 	var player := get_tree().get_first_node_in_group("player") as Node2D
 	if player and player.has_method("respawn_at"):
-		var pos: Vector2 = player.global_position if RoomManager.has_room(room) else GameState.get_checkpoint()
 		player.respawn_at(pos)
 	var cam := get_tree().get_first_node_in_group("follow_camera")
 	if cam and cam.has_method("snap_to_target"):
 		cam.snap_to_target()
-	restore_curse(minf(curse, POSSESSION_SAFE_CURSE))
+
+	restore_curse(POSSESSION_SAFE_CURSE)
 	CorpseManager.rebuild_world_corpses()
-	## Sayaç ve yeni durum diske yazılsın (resume dosyası, committed'a dokunmaz).
 	SaveManager.save_game()
 
 

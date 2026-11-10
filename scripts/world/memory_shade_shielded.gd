@@ -207,9 +207,10 @@ func receive_soul_slash(attacker: Node) -> void:
 			am.play_sfx(&"seal_open")
 		var cam := get_tree().get_first_node_in_group("follow_camera")
 		if cam and cam.has_method("add_trauma"):
-			cam.add_trauma(0.2)
+			cam.add_trauma(0.45)
 		_stun_timer = 1.8
 		_spawn_deflect_sparks()
+		_spawn_clarity_spark()
 
 	health -= 2
 	_hurt_timer = 0.35
@@ -240,6 +241,20 @@ func _spawn_deflect_sparks() -> void:
 		get_parent().add_child(p)
 		p.emitting = true
 		get_tree().create_timer(0.4).timeout.connect(p.queue_free)
+
+
+func _spawn_clarity_spark() -> void:
+	var spark := Area2D.new()
+	spark.name = "ClaritySpark"
+	spark.set_script(load("res://scripts/world/clarity_spark.gd"))
+	spark.global_position = global_position + Vector2(0, -16)
+	var mote := Sprite2D.new()
+	mote.texture = load("res://assets/props/memory_mote.png")
+	mote.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	mote.modulate = Color(0.6, 0.9, 1.0, 0.95)
+	spark.add_child(mote)
+	if get_parent():
+		get_parent().add_child(spark)
 
 
 func _die() -> void:

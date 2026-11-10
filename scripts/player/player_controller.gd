@@ -730,8 +730,15 @@ func get_interaction_target() -> Node2D:
 			candidates.append(target)
 	if candidates.is_empty():
 		return null
+	## Kapı önündeyken yapışık itiş kapıyı engellemesin: 44px içinde kapı varsa itiş önceliğini baypas et.
+	var has_nearby_door := false
+	for c in candidates:
+		if c.is_in_group("room_door") and absf(c.global_position.x - global_position.x) <= 44.0:
+			has_nearby_door = true
+			break
+
 	## Yapışık itiş hedefi: son 1.2 sn içinde itilen ceset/taş hâlâ önümüzdeyse ona öncelik.
-	if is_instance_valid(_push_node) and Time.get_ticks_msec() - _push_ms < PUSH_STICKY_MS 			and _push_node.is_visible_in_tree() and _push_node.has_method("on_interact"):
+	if not has_nearby_door and is_instance_valid(_push_node) and Time.get_ticks_msec() - _push_ms < PUSH_STICKY_MS 			and _push_node.is_visible_in_tree() and _push_node.has_method("on_interact"):
 		var pdx := _push_node.global_position.x - global_position.x
 		if absf(pdx) <= PUSH_STICKY_RANGE and absf(_push_node.global_position.y - global_position.y) <= 48.0 				and (pdx * _facing > -4.0):
 			return _push_node
@@ -744,8 +751,11 @@ func get_interaction_target() -> Node2D:
 
 static func _interact_score(n: Node2D, from: Vector2, facing: float) -> float:
 	var d := from.distance_to(n.global_position)
-	if (n.global_position.x - from.x) * facing < -6.0:
+	var dx := n.global_position.x - from.x
+	if dx * facing < -6.0:
 		d += 28.0
+	if n.is_in_group("room_door") and absf(dx) <= 44.0:
+		d -= 200.0
 	return d
 
 

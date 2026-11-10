@@ -95,6 +95,14 @@ func _run() -> void:
 		check(not is_instance_valid(death._soul), "loop %d: soul freed" % i)
 		check(cam == null or cam._focus == null, "loop %d: camera back on player" % i)
 		check(player.visible, "loop %d: player visible after wake" % i)
+		## Sonraki ölümlerin possession'a kaymaması için laneti Bant 1'de tut.
+		var cm_loop := root.get_node("CurseManager")
+		if cm_loop.possessing:
+			var tw := Time.get_ticks_msec()
+			while cm_loop.possessing and Time.get_ticks_msec() - tw < 20000:
+				await process_frame
+		cm_loop.set_curse(50.0)
+		dm.clear()
 	check(int(state.player_progress_knowledge.get("deaths", 0)) == deaths_before + LOOPS, "death counter == loops")
 	var corpses: Array = state.world_memory_state["corpses"]
 	print("DEATH info corpses=", corpses.size())
@@ -108,15 +116,15 @@ func _run() -> void:
 	dm.clear()
 	var cnode: Node = null
 	for n in get_nodes_in_group("corpse"):
-		if String(n.corpse_id) == String(last.get("id", "")):
+		if is_instance_valid(n) and String(n.corpse_id) == String(last.get("id", "")):
 			cnode = n
-	check(cnode != null, "last corpse node exists")
-	if cnode:
+	check(cnode != null and is_instance_valid(cnode), "last corpse node exists")
+	if cnode and is_instance_valid(cnode):
 		cnode._data = last
 		check(cnode._replay_trail(trail), "echo replay starts")
-		check(cnode.get_node_or_null("EchoReplay") != null, "echo replay ghost spawned")
+		check(is_instance_valid(cnode) and cnode.get_node_or_null("EchoReplay") != null, "echo replay ghost spawned")
 		await create_timer(trail.size() * 0.1 + 1.5).timeout
-		check(cnode.get_node_or_null("EchoReplay") == null, "echo replay ghost freed")
+		check(not is_instance_valid(cnode) or cnode.get_node_or_null("EchoReplay") == null, "echo replay ghost freed")
 	## Shilda öldürülemez (v3): vuruş öldürmez, is_defeated daima false.
 	for i in 4:
 		keeper.receive_player_strike()

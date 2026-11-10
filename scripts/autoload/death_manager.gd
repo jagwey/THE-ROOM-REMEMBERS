@@ -11,7 +11,8 @@ enum Phase { ALIVE, DYING, SOUL_RELEASE, SOUL_TRANSITION, RESPAWNING }
 
 const SOUL_COLOR := Color(0.88, 0.82, 1.0, 0.62)
 const SOUL_GLOW := Color(0.72, 0.55, 1.0, 0.38)
-## Normal ölümde Noroi her zaman Uyanış odasındaki yatakta doğar (oda checkpoint'i karar vermez).
+## Normal ölümde Noroi bulunduğu aktif odanın güvenli checkpoint/spawn noktasında doğar;
+## yalnızca Uyanış odasındayken (Oda 01) rebirth_bed (120, 280) noktasında doğar.
 const REBIRTH_ROOM := &"awakening"
 const REBIRTH_SPAWN := &"rebirth_bed"
 const REBIRTH_BED := Vector2(120, 280)
@@ -45,8 +46,9 @@ func request_death(reason: StringName = &"unknown", full_reset: bool = false) ->
 	var death_pos := Vector2.ZERO
 	var player := get_tree().get_first_node_in_group("player") as Node2D
 	if player:
-		if (reason == &"hazard" or reason == &"thorn") and player.has_method("get_last_safe_floor_pos"):
-			death_pos = player.get_last_safe_floor_pos()
+		if (reason == &"hazard" or reason == &"thorn" or reason == &"pit" or reason == &"void") and player.has_method("get_last_safe_floor_pos"):
+			var safe: Vector2 = player.get_last_safe_floor_pos()
+			death_pos = safe if safe != Vector2.ZERO else player.global_position
 		else:
 			death_pos = player.global_position
 		if player.has_method("play_death"):
@@ -59,7 +61,6 @@ func request_death(reason: StringName = &"unknown", full_reset: bool = false) ->
 	var corpse_id := CorpseManager.record_corpse_at(death_pos, reason)
 
 	GameState.reset_character_life()
-	CurseManager.reset_for_new_life()
 	# Karakter bu hayatı unutur; dünya bayrakları durur.
 	knowledge_note_after_death(reason)
 
@@ -215,42 +216,37 @@ func _rise_soul(sec: float) -> void:
 	await tw.finished
 
 
-## Ruh yatağa süzülür. Oda farklıysa söner, odaya geçilir ve yatağın üstünde yeniden belirir.
-func _soul_to_bed() -> void:
-	var cp := REBIRTH_BED
-	var cp_room := REBIRTH_ROOM
+func _get_respawn_position() -> Vector2:
+	var active_room := RoomManager.get_active_room_id()
+	if active_room == &"awakening" or active_room == &"":
+		return REBIRTH_BED
+	if not RoomManager.has_room(active_room):
+		return REBIRTH_BED
+	var entry: Dictionary = RoomManager._rooms.get(active_room, {})
+	var spawns: Dictionary = entry.get("spawns", {})
+	var last_spawn_id: Variant = GameState.character_current_life_knowledge.get("spawn_id", &"default")
+	if entry.has("checkpoint") and (entry["checkpoint"] as Vector2) != Vector2.ZERO:
+		return entry["checkpoint"]
+	elif last_spawn_id != null and last_spawn_id != &"rebirth_bed" and spawns.has(last_spawn_id):
+		return spawns[last_spawn_id]
+	elif spawns.has(&"default"):
+		return spawns[&"default"]
+	var b: Rect2 = entry.get("bounds", Rect2(0, 0, 640, 360))
+	return Vector2(b.position.x + b.size.x * 0.5, 288.0)
+
+
+## Ruh doğuş noktasına süzülür (aynı odada kalır, oda geçişi/yeniden yükleme yapılmaz).
+func _soul_to_bed(target_cp: Vector2 = Vector2.ZERO) -> void:
+	var cp := target_cp if target_cp != Vector2.ZERO else _get_respawn_position()
 	_set_phase(Phase.SOUL_TRANSITION)
 	var above := cp + Vector2(0, -38)
-	var same_room := cp_room == RoomManager.get_active_room_id() or not RoomManager.has_room(cp_room)
-	if same_room:
-		if is_instance_valid(_soul):
-			var dist := _soul.global_position.distance_to(above)
-			var sec := clampf(dist / 260.0, 0.6, 1.6 if cinematic else 1.1)
-			var tw := _soul.create_tween()
-			tw.tween_property(_soul, "global_position", above, _d(sec)) \
-				.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-			await tw.finished
-		if RoomManager.has_room(cp_room):
-			RoomManager.enter_room(cp_room, REBIRTH_SPAWN, false)
-		return
 	if is_instance_valid(_soul):
-		var tw2 := _soul.create_tween()
-		tw2.tween_property(_soul, "modulate:a", 0.0, _d(0.35))
-		await tw2.finished
-	RoomManager.enter_room(cp_room, REBIRTH_SPAWN, false)
-	var player := get_tree().get_first_node_in_group("player") as Node2D
-	if player:
-		player.global_position = cp
-		player.visible = false
-	var cam := _camera()
-	if cam and cam.has_method("snap_to_target"):
-		cam.snap_to_target()
-	if is_instance_valid(_soul):
-		_soul.global_position = above + Vector2(0, -26)
-		var tw3 := _soul.create_tween().set_parallel(true)
-		tw3.tween_property(_soul, "modulate:a", 1.0, _d(0.3))
-		tw3.tween_property(_soul, "global_position", above, _d(0.6)).set_trans(Tween.TRANS_SINE)
-		await tw3.finished
+		var dist := _soul.global_position.distance_to(above)
+		var sec := clampf(dist / 260.0, 0.6, 1.6 if cinematic else 1.1)
+		var tw := _soul.create_tween()
+		tw.tween_property(_soul, "global_position", above, _d(sec)) \
+			.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+		await tw.finished
 
 
 ## Yatak mührü: yerde parlayan halka + yükselen kıvılcımlar.
@@ -308,10 +304,11 @@ func _free_soul() -> void:
 
 func _respawn() -> void:
 	var player := get_tree().get_first_node_in_group("player")
-	var cp: Vector2 = REBIRTH_BED
+	var cp: Vector2 = _get_respawn_position()
+	var active_room := RoomManager.get_active_room_id()
 	if is_instance_valid(_soul):
-		await _soul_to_bed()
-	elif RoomManager.has_room(REBIRTH_ROOM):
+		await _soul_to_bed(cp)
+	elif active_room == &"awakening" and RoomManager.has_room(REBIRTH_ROOM):
 		_set_phase(Phase.SOUL_TRANSITION)
 		RoomManager.enter_room(REBIRTH_ROOM, REBIRTH_SPAWN, false)
 
@@ -347,8 +344,13 @@ func _respawn() -> void:
 				DialogueManager.clear()
 	CorpseManager.rebuild_world_corpses()
 	GameState.set_story_flag(&"first_death_completed")
-	CurseManager.reset_for_new_life()
+	GameState.character_current_life_knowledge["checkpoint"] = cp
+	GameState.character_current_life_knowledge["checkpoint_room"] = active_room
+	GameState.character_current_life_knowledge["room"] = active_room
 	SaveManager.save_game()
 	is_dying = false
 	_set_phase(Phase.ALIVE)
+	CurseManager.add_curse(25.0, &"death")
+	if CurseManager.curse < 50.0:
+		CurseManager.set_curse(50.0)
 	rebirth_completed.emit()

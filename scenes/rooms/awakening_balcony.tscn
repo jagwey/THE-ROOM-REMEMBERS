@@ -33,9 +33,9 @@ script = ExtResource("lore")
 lore_id = &"balcony_view"
 texture_path = "res://assets/props/telescope.png"
 sprite_scale = 0.9
-lines = PackedStringArray("Noroi|Kırık bir gözlem balkonu. Aşağıda… koca bir tesis.", "Noroi|Camların arkasında beyaz önlüklü biri, kalabalığa emir veriyor.", "Noroi|Yüzünü göremiyorum. Ama duruşu… soğuk.", "Shilda|O balkon onundu. Ben aşağıda, kayıtların başındaydım.")
+lines = PackedStringArray("Noroi|Kırık bir gözlem dürbünü. Camın ötesi… zemin yok.", "Noroi|Tesis karanlık bir boşlukta asılı. Dış dünya yok; yalnızca sis ve mesafe.", "Noroi|Bir anlık flaş: beyaz önlüklü biri kalabalığa emir veriyor. Yüzü kazınmış.", "Shilda|Bu balkon dışarıyı göstermez. Bizi içeride tutan boşluğu gösterir.")
 evidence_title = "Gözlem Balkonu"
-evidence_body = "Balkondan tesisi izleyen beyaz önlüklü bir yetkili. Kim olduğu kayıtlardan kazınmış."
+evidence_body = "Dürbünden dışarı bakınca tesisin karanlık bir boşlukta asılı olduğu görülür. Dış dünya yok; yüzü kazınmış bir yetkili anı flaş eder."
 evidence_section = "izler"
 focus_zoom = true
 

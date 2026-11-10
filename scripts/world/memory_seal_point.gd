@@ -1,12 +1,11 @@
 extends Area2D
-## Hafıza Mührü: kayıt noktası + mühürler arası geçiş. Prosedürel çizim (kaide, kırık halka, kristal).
-## Etkileşim: SaveManager.commit_save(&"memory_seal", spawn, oda). Tehlikede (ölüm/diyalog/yakın düşman) tepki vermez.
+## Hafıza Mührü: kayıt noktası ve lanet mühürleme. Yalnızca lanet etkisindeyken (curse > 0) çalışır.
+## Etkileşim: CurseManager.clear_curse(absorbed) ve SaveManager.commit_save(&"memory_seal", spawn, oda).
+## Tehlikede (ölüm/diyalog/yakın düşman) veya lanetsizken tepki vermez.
 
 const ENEMY_RANGE := 120.0
 const SEAL_GROUP := &"memory_seal_point"
-const TRAVEL_LAYER := 30
 const SealBanner := preload("res://scripts/ui/seal_banner.gd")
-const TRAVEL_GROUP := &"seal_travel_modal"
 ## Keeper.Mode değerleri (keeper_controller.gd): INTERVENE=2, COMBAT=5. Bu modlarda Shilda tehlikedir.
 const KEEPER_DANGER_MODES := [2, 5]
 const KEEPER_RANGE := 320.0
@@ -15,7 +14,6 @@ const KEEPER_RANGE := 320.0
 
 var _t: float = 0.0
 var _glow: float = 0.0
-var _travel_layer: CanvasLayer = null
 
 
 func _ready() -> void:
@@ -36,7 +34,9 @@ func _ready() -> void:
 
 
 func get_interact_label() -> String:
-	return "Hafıza Mührü"
+	if CurseManager == null or CurseManager.curse <= 0.0:
+		return "Sessiz Mühür"
+	return "Laneti Mühürle (%d%%)" % int(round(CurseManager.curse))
 
 
 func get_glow_kind() -> StringName:
@@ -98,66 +98,24 @@ func _spawn_position() -> Vector2:
 
 
 func on_interact(_by: Node = null) -> void:
-	if is_instance_valid(_travel_layer):
-		return
 	if _is_danger():
 		DialogueManager.say("Noroi", "Tehlike varken mühür tepki vermiyor.")
 		return
+	if CurseManager == null or CurseManager.curse <= 0.0:
+		DialogueManager.say("Noroi", "Kanımda aktif bir lanet yok. Bu mühür sadece lanet altındayken uyanır.")
+		return
 	var was_known := GameState.discovered_seals.has(room_id)
-	# Mühür kayda girmeden keşfedilmiş sayılmaz: önce listeye ekle (dosyaya yazılsın), yazma başarısızsa geri al.
+	var absorbed := CurseManager.curse
+	CurseManager.clear_curse(absorbed)
 	GameState.discover_seal(room_id)
+	GameState.set_checkpoint(_spawn_position(), room_id)
 	var ok := SaveManager.commit_save(&"memory_seal", _spawn_position(), room_id)
 	if not ok:
+		CurseManager.set_curse(absorbed)
 		if not was_known:
 			GameState.discovered_seals.erase(room_id)
 		SealBanner.show_banner("MÜHÜR YAZILAMADI", "Kayıt yapılamadı, tekrar dene.")
 		return
 	_glow = 1.0
 	AudioManager.play_sfx(&"seal_open")
-	SealBanner.show_banner("HAFIZA MÜHÜRLENDİ", "Kayıt noktası etkinleştirildi.")
-	if was_known and _other_seals().size() > 0:
-		_open_travel()
-
-
-func _other_seals() -> Array[StringName]:
-	var out: Array[StringName] = []
-	for id in GameState.discovered_seals:
-		if id != room_id:
-			out.append(id)
-	return out
-
-
-func _open_travel() -> void:
-	_travel_layer = CanvasLayer.new()
-	_travel_layer.layer = TRAVEL_LAYER
-	_travel_layer.add_to_group(TRAVEL_GROUP)
-	get_tree().current_scene.add_child(_travel_layer)
-	var rows := _other_seals()
-	var modal := GothicModalPanel.new()
-	modal.setup("Mühürler arası geçiş", Vector2(460, 150.0 + 46.0 * rows.size()))
-	_travel_layer.add_child(modal)
-	modal.on_close = _close_travel
-	modal.add_label("Etkinleştirdiğin bir mühre geç.", UiTheme.BODY)
-	for id in rows:
-		var title := RoomManager.get_room_number_and_title(id)
-		var b := modal.add_button(title, _travel_to.bind(id))
-		b.custom_minimum_size = Vector2(0, 38)
-	modal.add_button("Kapat", _close_travel)
-	UiGate.set_story(true)
-
-
-func _close_travel() -> void:
-	if is_instance_valid(_travel_layer):
-		_travel_layer.queue_free()
-	_travel_layer = null
-	UiGate.set_story(false)
-
-
-func _travel_to(target: StringName) -> void:
-	_close_travel()
-	var spawn_id := StringName("seal_%s" % String(target))
-	RoomManager.enter_room(target, spawn_id)
-	# enter_room oda varsayılanını checkpoint yapar; geçişten sonra canlı checkpoint mührün kendisi olsun.
-	var spawns: Dictionary = RoomManager._rooms[target].spawns
-	if spawns.has(spawn_id):
-		GameState.set_checkpoint(spawns[spawn_id] as Vector2, target)
+	SealBanner.show_banner("LANET MÜHÜRLENDİ", "Lanet etkisi temizlendi (%d%%) ve mühre kazındı." % int(round(absorbed)))

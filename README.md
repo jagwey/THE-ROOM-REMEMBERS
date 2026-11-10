@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.6.0"><img src="https://img.shields.io/badge/Son_S%C3%BCr%C3%BCm_(APK)-v1.6.0-8B0000?style=for-the-badge&logo=android&logoColor=white" alt="Latest Release v1.6.0" /></a>
+  <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.7.0"><img src="https://img.shields.io/badge/Son_S%C3%BCr%C3%BCm_(APK)-v1.7.0-8B0000?style=for-the-badge&logo=android&logoColor=white" alt="Latest Release v1.7.0" /></a>
   <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS/releases"><img src="https://img.shields.io/badge/T%C3%BCm_S%C3%BCr%C3%BCmler-9_Aktif_Paket-5c1d3d?style=for-the-badge&logo=github" alt="All Releases" /></a>
   <a href="https://godotengine.org/"><img src="https://img.shields.io/badge/Godot_Engine-4.7.2-478CBF?style=for-the-badge&logo=godotengine&logoColor=white" alt="Godot 4.7.2" /></a>
   <img src="https://img.shields.io/badge/D%C3%BCnya-6_B%C3%B6lge_%C2%B7_30_Oda_%C2%B7_B%C3%B6l%C3%BCm_I-2b1838?style=for-the-badge" alt="World Scope" />
@@ -48,12 +48,12 @@ Oyuncu **Noroi** olarak ne adını ne de neden bu yıkık tesiste tutulduğunu b
 
 Depodaki tüm derlenmiş Android (`arm64-v8a`) APK sürümleri aktif olarak **[GitHub Releases](https://github.com/jagwey/THE-ROOM-REMEMBERS/releases)** sayfasında sunulmaktadır.
 
-> **Önerilen Güncel Sürüm:** [**v1.6.0 (`TheRoomRemembers-1.6.0-android-arm64.apk`)**](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.6.0) — Shilda HD Remaster, Noroi 3 katmanlı hafıza ayrımı, 5 sütunlu güven modeli, 3 kademeli bulmaca ipuçları, tek kanonik final (Bölüm I Sonu).
+> **Önerilen Güncel Sürüm:** [**v1.7.0 (`TheRoomRemembers-1.7.0-android-arm64.apk`)**](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.7.0) — Shilda HD Remaster, Noroi 3 katmanlı hafıza ayrımı, 5 sütunlu güven modeli, 3 kademeli bulmaca ipuçları, tek kanonik final (Bölüm I Sonu).
 
 | Sürüm | Durum | APK Dosyası / İndirme | Öne Çıkan Yenilikler ve Kapsam |
 | :--- | :---: | :--- | :--- |
-| **[v1.6.0](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.6.0)** | 🟢 **Güncel (Latest)** | [📥 `TheRoomRemembers-1.6.0-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.6.0) | Shilda White Guardian V2 HD Remaster (sıfır titreme, 8 duygu portresi), Noroi 3 katmanlı hafıza ayrımı, 5 sütunlu güven modeli, 3 kademeli bulmaca ipuçları (`versionCode 30`). |
-| **[v1.5.1](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.5.1)** | Önceki | [📥 `TheRoomRemembers-1.5.1-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.5.1) | Metin cilası: X kanonu uyumlu diyaloglar, gotik terimler (Kara Tecrit Mahzeni, Ruh Damarları Kanalı, Kefaret Taşı, Çatlak Bellek Aynası), eski suçluluk itiraflarının temizlenmesi (`versionCode 29`). |
+| **[v1.7.0](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.7.0)** | 🟢 **Güncel (Latest)** | [📥 `TheRoomRemembers-1.7.0-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.7.0) | Shilda White Guardian V2 HD Remaster (sıfır titreme, 8 duygu portresi), Noroi 3 katmanlı hafıza ayrımı, 5 sütunlu güven modeli, 3 kademeli bulmaca ipuçları (`versionCode 31`). |
+| **[v1.7.0](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.7.0)** | Önceki | [📥 `TheRoomRemembers-1.7.0-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.7.0) | Metin cilası: X kanonu uyumlu diyaloglar, gotik terimler (Kara Tecrit Mahzeni, Ruh Damarları Kanalı, Kefaret Taşı, Çatlak Bellek Aynası), eski suçluluk itiraflarının temizlenmesi (`versionCode 31`). |
 | **[v1.5.0](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.5.0)** | Önceki | [📥 `TheRoomRemembers-1.5.0-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.5.0) | Hikâye 3.0: Hafıza Mühürleri (kalıcı kayıt), lanet bantları ve ele geçirilme (ceset yok, mühre geri yükleme), ölümde yatakta uyanış, Shilda isim sahnesi, tek final (BÖLÜM I SONU) + jenerik, yeni menüler (`versionCode 28`). |
 | **[v1.4.9](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.4.9)** | Önceki | [📥 `TheRoomRemembers-1.4.9-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.4.9) | X kanonu metin geçişi, yavaş açılış (`versionCode 27`). |
 | **[v1.4.8](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.4.8)** | Önceki | [📥 `TheRoomRemembers-1.4.8-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.4.8) | Gözlem Balkonu (Oda 02) sıkışması düzeltildi: mahzen yolundan gelince mor mühür arkadan açılıyor, Ruh Kesimi olmadan da çıkılabiliyor (`versionCode 26`). |
@@ -255,7 +255,7 @@ THE-ROOM-REMEMBERS/
 ## 🚀 Kurulum, Çalıştırma ve Otomatik Test Altyapısı
 
 ### 1. Android Cihazda Oynama (APK)
-1. **[Releases → v1.6.0](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.6.0)** sayfasından `TheRoomRemembers-1.6.0-android-arm64.apk` dosyasını indirin ve telefonunuza kurun.
+1. **[Releases → v1.7.0](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.7.0)** sayfasından `TheRoomRemembers-1.7.0-android-arm64.apk` dosyasını indirin ve telefonunuza kurun.
 2. Veya USB hata ayıklaması açık bir Android cihaza `adb` ile doğrudan yükleyin:
    ```powershell
    adb install -r TheRoomRemembers-1.5.0-android-arm64.apk

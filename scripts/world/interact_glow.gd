@@ -18,14 +18,14 @@ const KIND_BY_SCRIPT := {
 	"mirror_relay.gd": &"memory", "lore_point.gd": &"memory", "evidence_card.gd": &"memory",
 	"story_beat.gd": &"memory", "pocket_watch_inspect.gd": &"memory",
 	"blood_thorn.gd": &"cursed", "code_seal_base.gd": &"cursed", "core_crystal.gd": &"cursed",
-	"core_portal.gd": &"cursed", "flower_inspect.gd": &"cursed", "decay_flower_evidence.gd": &"cursed",
+"flower_inspect.gd": &"cursed", "decay_flower_evidence.gd": &"cursed",
 }
 const LABEL_BY_SCRIPT := {
 	"decay_flower_evidence.gd": "Kırmızı Çiçek", "flower_inspect.gd": "Kırmızı Çiçek",
 	"pocket_watch_inspect.gd": "Cep Saati", "trace_marker.gd": "Hatıra İzi",
 	"echo_point.gd": "Yankı", "echo_interactable.gd": "Yankı", "awakening_seal_echo_recall.gd": "Yankı Nişi",
 	"echo_altar.gd": "Yankı Sunağı", "echo_switch.gd": "Yankı Anahtarı", "code_seal_base.gd": "Mühür",
-	"blood_thorn.gd": "Kan Dikeni", "core_crystal.gd": "Çekirdek Kristali", "core_portal.gd": "Geçit",
+	"blood_thorn.gd": "Kan Dikeni", "core_crystal.gd": "Çekirdek Kristali", 
 	"mirror_relay.gd": "Ayna", "reset_lever.gd": "Kol",
 	"vine_puzzle_lever.gd": "Kol", "vine_interact.gd": "Sarmaşık", "archive_door.gd": "Arşiv Kapısı",
 	"story_beat.gd": "Hatıra", "keeper_controller.gd": "Shilda", "cracked_mirror.gd": "Çatlak Bellek Aynası",

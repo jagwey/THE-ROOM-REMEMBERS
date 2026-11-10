@@ -30,7 +30,7 @@ intro_text = "Üç kanal aynı anda açık olmalı. Yankın kolu çekip plakada 
 solved_text = "Enerji Çekirdek'e yönlendi. Mühür odasının ışıkları yandı."
 switch_kinds = PackedStringArray("plate", "lever", "lever")
 switch_positions = PackedVector2Array(-300, 20, -150, 0, 330, 0)
-lever_hold_seconds = 3.8
+lever_hold_seconds = 4.5
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ConduitAltar"]
 shape = SubResource("Interact")

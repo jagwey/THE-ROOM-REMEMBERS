@@ -55,19 +55,19 @@ centered = true
 position = Vector2(560.0, 200.0)
 script = ExtResource("symbol")
 symbol_text = "5"
-reveal_radius = 200.0
+reveal_radius = 220.0
 
 [node name="Sym8" type="Node2D" parent="Interactive"]
 position = Vector2(640.0, 176.0)
 script = ExtResource("symbol")
 symbol_text = "8"
-reveal_radius = 200.0
+reveal_radius = 220.0
 
 [node name="Sym6" type="Node2D" parent="Interactive"]
 position = Vector2(720.0, 200.0)
 script = ExtResource("symbol")
 symbol_text = "6"
-reveal_radius = 200.0
+reveal_radius = 220.0
 memory_code_key = "catacomb"
 memory_code_value = "586"
 reveal_line = "Bedenimin ışığında… beş, sekiz, altı."

@@ -22,7 +22,7 @@ func _ready() -> void:
 	var hid: String = String(hazard_id)
 	if hid.begins_with("passage_"):
 		passage_one_heart_cap = true
-	if DeathManager.has_signal("rebirth_completed"):
+	if DeathManager.has_signal("rebirth_completed") and not DeathManager.rebirth_completed.is_connected(_on_rebirth_completed):
 		DeathManager.rebirth_completed.connect(_on_rebirth_completed)
 	if has_node("Sprite2D"):
 		var s: Sprite2D = $Sprite2D
@@ -33,12 +33,15 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	if not _armed:
-		var mystery_ok: bool = bool(GameState.player_progress_knowledge.get("awakening_mystery_seen", false))
-		## Uyanışta kırmızı yarık öğretimi plakadan sonra gelsin; erken oyunda tıkanma yok.
-		var plate_teach_ok: bool = true
-		if hazard_id == &"awakening_rift":
-			plate_teach_ok = PuzzleManager.is_solved(&"awakening_weight") or bool(GameState.get_world_flag(&"awakening_door_opened", false))
-		if (not arm_requires_mystery or mystery_ok) and plate_teach_ok:
+		var pk: Dictionary = GameState.player_progress_knowledge
+		var mystery_ok: bool = (
+			bool(pk.get("awakening_mystery_seen", false))
+			or bool(pk.get("pocket_watch_seen", false))
+			or bool(GameState.get_world_flag(&"intro_completed", false))
+			or bool(GameState.get_world_flag(&"pocket_watch_seen", false))
+			or bool(GameState.get_world_flag(&"awakening_mystery_seen", false))
+		)
+		if not arm_requires_mystery or mystery_ok:
 			_armed = true
 			visible = true
 			GameState.set_world_flag(&"hazard_rift_seen", true)
