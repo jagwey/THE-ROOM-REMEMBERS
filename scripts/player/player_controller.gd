@@ -754,8 +754,10 @@ static func _interact_score(n: Node2D, from: Vector2, facing: float) -> float:
 	var dx := n.global_position.x - from.x
 	if dx * facing < -6.0:
 		d += 28.0
-	if n.is_in_group("room_door") and absf(dx) <= 44.0:
-		d -= 200.0
+	## Kapı yalnız önündeyken hafif öncelik alır. Arkadaki yan kapı, ayakucundaki
+	## nesneyi (saat, taş, sayaç) yutmasın. Yapışık itiş ayrıca 44px kapıda baypas edilir.
+	elif n.is_in_group("room_door") and absf(dx) <= 44.0:
+		d -= 16.0
 	return d
 
 

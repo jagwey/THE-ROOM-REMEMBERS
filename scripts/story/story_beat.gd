@@ -92,13 +92,13 @@ func on_interact(_by: Node) -> void:
 
 func _library_hall() -> void:
 	if CurseManager.curse > 0.0:
-		DialogueManager.say("Arşivci", "Üzerinde lanet var, gezgin. Raflar seni tanıyor; mühürler seni çağırıyor.")
+		DialogueManager.say("Arşivci", "Lanetin hâlâ sıcak. Raflar seni tanıyor; mühürler de.")
 	else:
 		DialogueManager.say("Arşivci", "Yine geldin, Noroi. Bu sefer hangi rafa bakacaksın?")
 
-	DialogueManager.say("Arşivci", "Kayıtlar çelişiyor: biri kurtarıcı diyor, biri kapıyı kilitleyen. İmza kazınmış.")
+	DialogueManager.say("Arşivci", "Bir kayıt kurtarıcı diyor, öteki kapıyı kilitleyen. İmza kazınmış.")
 
-	DialogueManager.say("Noroi", "Hangisi doğru?")
+	DialogueManager.say("Noroi", "Hangisine inanayım?")
 
 	DialogueManager.say("Arşivci", "Sağdaki odada saat, çiçek ve mühür var. Üçünü de dinle.")
 
@@ -169,10 +169,10 @@ func _experiment_cells() -> void:
 	DialogueManager.say("Kayıt", "Denek 14: Noroi. Kurucu imza: X (kazınmış).")
 
 	DialogueManager.say("Noroi", "Ben… denektim. Kurucu ben değilim.")
-	DialogueManager.say("Shilda", "X başlattı. Sen içeride kaldın. Ben dışarıda bekledim.")
-	DialogueManager.say("Shilda", "Hatıralar bedenlerden ayrılıp odada birikti.")
+	DialogueManager.say("Shilda", "X başlattı. Sen içeride kaldın. Ben kapıda bekledim.")
+	DialogueManager.say("Shilda", "Sesler bedenlerinden koptu. Oda onları sakladı.")
 	DialogueManager.say("Shilda", "Kimseyi feda etmeyeceğiz. Sağdaki devrede yankın bir anahtarı tutacak.")
-	DialogueManager.say("Shilda", "Sen de diğerini açacaksın.")
+	DialogueManager.say("Shilda", "Sen de diğerini açacaksın. Bu sefer birlikte.")
 
 	var ok: bool = await DialogueManager.dialogue_finished
 
@@ -210,10 +210,10 @@ func _experiment_authority() -> void:
 	DialogueManager.say("Kayıt", "Acil kapatma talebi reddedildi. Mühür kodu kenarda: 4-1-8.")
 	DialogueManager.say("X?", "Düzeni bozma. Kapı kapalı kalsın.")
 
-	DialogueManager.say("Noroi", "Biri kapıyı kimse çıkmasın diye kilitlemiş. Sesler içeride kalmış.")
+	DialogueManager.say("Noroi", "Biri kapıyı, kimse çıkmasın diye kilitlemiş. Sesler içeride kalmış.")
 
 	DialogueManager.say("Noroi", "Benden önce kimler vardı?")
-	DialogueManager.say("Shilda", "Çok fazla insan.")
+	DialogueManager.say("Shilda", "Çok fazla insan. Çoğunun adını oda unuttu.")
 	DialogueManager.say("Noroi", "Hepsini tanıyor muydun?")
 	DialogueManager.say("Shilda", "Bazılarını tanıyacak kadar zamanım oldu.")
 	DialogueManager.say("Shilda", "Seni unutturmak istediler. Ben hatırlamayı seçtim.")

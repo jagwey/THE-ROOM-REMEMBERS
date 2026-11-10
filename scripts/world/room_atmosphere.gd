@@ -75,7 +75,7 @@ func _align_backdrop() -> void:
 	add_child(back)
 	move_child(back, last_idx + 1 if last_idx >= 0 else 0)
 	var tint := _region_color().lerp(Color.WHITE, 0.55)
-	back.call("setup", _backdrop_width(), tint, String(room_id) == "awakening_balcony")
+	back.call("setup", _backdrop_width(), tint, String(room_id) == "awakening_balcony", _motif())
 	call_deferred("_refresh_backdrop_width", back)
 
 
@@ -87,7 +87,7 @@ func _backdrop_width() -> float:
 
 func _refresh_backdrop_width(back: Node) -> void:
 	if is_instance_valid(back):
-		back.call("setup", _backdrop_width(), _region_color().lerp(Color.WHITE, 0.55), String(room_id) == "awakening_balcony")
+		back.call("setup", _backdrop_width(), _region_color().lerp(Color.WHITE, 0.55), String(room_id) == "awakening_balcony", _motif())
 
 
 
@@ -110,6 +110,21 @@ func _on_visibility_changed() -> void:
 			_motes.position = Vector2(bw * 0.5, ROOM_H * 0.5)
 	_motes.emitting = vis
 	set_process(vis and not _beams.is_empty())
+
+
+func _motif() -> String:
+	var rid := String(room_id)
+	if rid.begins_with("core"):
+		return "core"
+	if rid.begins_with("decay"):
+		return "decay"
+	if rid.begins_with("library"):
+		return "library"
+	if rid.begins_with("experiment"):
+		return "experiment"
+	if rid.begins_with("mirrors"):
+		return "mirrors"
+	return "awakening"
 
 
 func _region_color() -> Color:

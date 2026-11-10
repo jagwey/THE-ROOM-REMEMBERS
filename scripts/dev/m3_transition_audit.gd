@@ -1,7 +1,7 @@
 extends SceneTree
 ## Milestone 3 Verification Audit: Room Transitions, Room 1 Softlock & Door Cleaning (R3)
 ## Tests:
-## 1. Door interaction priority: absf(dx) <= 44px gets -200.0 score, bypasses _push_node sticky capture
+## 1. Door interaction priority: in-front door within 44px gets -16; a door behind does not steal a closer target. Sticky push is bypassed when a door is within 44px.
 ## 2. Transition lock safety: reset_transition_lock() in _ready(), _exit_tree(), and room_changed, cleans DoorFade
 ## 3. Room 1 softlock: hazard decoupled from plate, WeightStone present at (840, 288), bounds [600, 1000], pushable
 ## 4. SIDE_DOORS grid alignment (bay=224 multiples/arch centers) and >= 120px clearance from interactables
@@ -142,17 +142,18 @@ func _test_door_priority() -> void:
 
 	var score_door: float = pc_script._interact_score(dummy_door, from_pos, facing)
 	var score_stone: float = pc_script._interact_score(dummy_stone, from_pos, facing)
-	# Door is at dist 20 with facing penalty (+28) - 200 priority = 20 + 28 - 200 = -152
-	# Stone is at dist 10 with facing penalty (+28) = 38
-	check(score_door < -100.0, "Door within 44px gets -200 priority bonus", score_door)
-	check(score_door < score_stone, "Door priority score beats closer non-door object", "door: %f, stone: %f" % [score_door, score_stone])
+	# Both are behind the facing. The closer stone must win; a rear door gets no bonus.
+	check(score_door > score_stone, "Door behind does not steal a closer object", "door: %f, stone: %f" % [score_door, score_stone])
+	var front_from := Vector2(100.0, 288.0)
+	var score_front: float = pc_script._interact_score(dummy_door, front_from, facing)
+	check(score_front < 10.0, "In-front door within 44px gets a priority bonus", score_front)
 
 	# Outside 44px: dx = 50px
 	var far_door := Area2D.new()
 	far_door.add_to_group("room_door")
 	far_door.global_position = Vector2(190.0, 288.0) # dx = 50px (> 44)
 	var score_far: float = pc_script._interact_score(far_door, from_pos, facing)
-	check(score_far > 0.0, "Door outside 44px does NOT get -200 bonus", score_far)
+	check(score_far > 0.0, "Door outside 44px does NOT get a priority bonus", score_far)
 	far_door.queue_free()
 
 	# 1.2 Sticky push bypass check

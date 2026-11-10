@@ -369,7 +369,9 @@ static func is_transitioning() -> bool:
 static func reset_transition_lock() -> void:
 	_transitioning = false
 	UiGate.set_cutscene(false)
-	MobileInputManager.clear_held_inputs()
+	## clear_held_inputs burada çağrılmaz: her oda değişiminde (geçiş yokken de)
+	## nötr-joystick kilidi yeniden kuruluyor ve bir sonraki adım yutuluyordu.
+	## Kilit, geçişin başında _travel içinde kurulur; parmak hâlâ basılıysa orada kalır.
 	var tree := Engine.get_main_loop() as SceneTree
 	if tree and tree.root:
 		for c in tree.root.get_children():

@@ -107,8 +107,11 @@ func _clear_distance(dir: float, want: float) -> float:
 	if allowed < 1.0:
 		return 0.0
 	## Zemin: hedef ayak ucunun altında zemin olmalı (taşın ön kenarı boşlukta kalmasın).
+	## Gövde kökeni çarpışma tabanından aşağıda kalabilir (şekil ofseti). Işın zeminin
+	## içinden başlarsa Godot çarpışmayı kaçırır ve taş hiç itilemez. Üstten bak.
 	var foot_x := global_position.x + dir * (allowed + half_width * 0.5)
-	var qf := PhysicsRayQueryParameters2D.create(Vector2(foot_x, global_position.y - 4.0), Vector2(foot_x, global_position.y + 24.0), 1)
+	var probe_top := minf(global_position.y - 20.0, 270.0)
+	var qf := PhysicsRayQueryParameters2D.create(Vector2(foot_x, probe_top), Vector2(foot_x, global_position.y + 48.0), 1)
 	qf.exclude = [get_rid()]
 	if space.intersect_ray(qf).is_empty():
 		return 0.0
