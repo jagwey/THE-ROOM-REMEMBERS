@@ -1,6 +1,8 @@
 extends Node
 ## Bulmaca durumu — world_memory_state.puzzles + bayrak migrasyonu.
 
+const SealBanner := preload("res://scripts/ui/seal_banner.gd")
+
 signal puzzle_solved(puzzle_id: StringName)
 
 var solved: Dictionary = {}
@@ -62,6 +64,18 @@ func mark_solved(puzzle_id: StringName) -> void:
 		_:
 			pass
 	puzzle_solved.emit(puzzle_id)
+	_celebrate_solve()
+
+
+## İlk çözümde kısa bir ödül: ses + afiş. Testler afişi beklemesin diye başlıksız kalır.
+func _celebrate_solve() -> void:
+	if is_inside_tree():
+		var am := get_node_or_null("/root/AudioManager")
+		if am and am.has_method("play_sfx"):
+			am.play_sfx(&"seal_open", -8.0)
+	if OS.get_environment("TORIMON_TEST") == "1":
+		return
+	SealBanner.show_banner("HATIRLANDI", "Bir kilit daha açıldı.")
 
 
 func is_solved(puzzle_id: StringName) -> bool:

@@ -9,12 +9,14 @@ const ROOM_H := 360.0
 var width: float = 960.0
 var tint: Color = Color(1, 1, 1, 1)
 var balcony: bool = false
+var motif: String = "awakening"
 
 
-func setup(w: float, region_tint: Color, is_balcony: bool) -> void:
+func setup(w: float, region_tint: Color, is_balcony: bool, region_motif: String = "awakening") -> void:
 	width = maxf(w, 640.0)
 	tint = region_tint
 	balcony = is_balcony
+	motif = region_motif
 	queue_redraw()
 
 
@@ -45,9 +47,75 @@ static func arch_points(cx: float, spring: float, a: float, h: float, n: int = 2
 
 func _draw() -> void:
 	_draw_ceiling()
+	_draw_motif()
 	if balcony:
 		_draw_balcony()
 	_draw_floor()
+
+
+## Bölge kimliği: boyalı arka planın üstüne, tavan boşluğunda okunur bir iz.
+func _draw_motif() -> void:
+	var w := width
+	match motif:
+		"decay":
+			var vine := _tc(Color(0.28, 0.42, 0.22), 0.55)
+			var x := 36.0
+			var i := 0
+			while x < w:
+				var h := 28.0 + _h(float(i), 2.0) * 46.0
+				draw_line(Vector2(x, 0), Vector2(x + 6.0, h), vine, 2.0)
+				draw_line(Vector2(x + 6.0, h), Vector2(x - 8.0, h + 10.0), vine, 1.5)
+				draw_line(Vector2(x + 6.0, h), Vector2(x + 16.0, h + 8.0), vine, 1.5)
+				x += 70.0 + _h(float(i), 4.0) * 40.0
+				i += 1
+		"library":
+			var wood := _tc(Color(0.45, 0.32, 0.18), 0.7)
+			var shelf_y := 18.0
+			while shelf_y < 96.0:
+				draw_rect(Rect2(8, shelf_y, w - 16.0, 3.0), wood)
+				var bx := 16.0
+				var bi := 0
+				while bx < w - 20.0:
+					var bh := 10.0 + _h(float(bi), shelf_y) * 8.0
+					var bc := _tc(Color(0.55, 0.28, 0.22), 0.45) if bi % 3 == 0 else _tc(Color(0.25, 0.22, 0.32), 0.4)
+					draw_rect(Rect2(bx, shelf_y - bh, 4.0 + _h(float(bi), 1.0) * 3.0, bh), bc)
+					bx += 8.0 + _h(float(bi), 8.0) * 6.0
+					bi += 1
+				shelf_y += 26.0
+		"experiment":
+			var glass := _tc(Color(0.55, 0.85, 0.9), 0.28)
+			var cx := 120.0
+			var i2 := 0
+			while cx < w - 40.0:
+				draw_rect(Rect2(cx, 16, 28, 78), glass)
+				draw_rect(Rect2(cx + 4, 24, 6, 52), _tc(Color(0.7, 0.95, 1.0), 0.18))
+				draw_line(Vector2(cx + 14, 16), Vector2(cx + 14, 8), glass, 2.0)
+				cx += 160.0 + _h(float(i2), 3.0) * 40.0
+				i2 += 1
+		"mirrors":
+			var shard := _tc(Color(0.82, 0.88, 1.0), 0.35)
+			for i3 in int(w / 90.0) + 1:
+				var sx := float(i3) * 90.0 + 20.0
+				draw_line(Vector2(sx, 12), Vector2(sx + 22, 48), shard, 1.5)
+				draw_line(Vector2(sx + 22, 48), Vector2(sx + 6, 70), shard, 1.5)
+				draw_line(Vector2(sx + 6, 70), Vector2(sx, 12), shard, 1.0)
+		"core":
+			var glow := _tc(Color(0.75, 0.15, 0.22), 0.22)
+			draw_rect(Rect2(0, 96, w, 36), glow)
+			var diamond := PackedVector2Array([
+				Vector2(w * 0.5, 28), Vector2(w * 0.5 + 14, 48),
+				Vector2(w * 0.5, 68), Vector2(w * 0.5 - 14, 48),
+			])
+			draw_colored_polygon(diamond, _tc(Color(0.9, 0.25, 0.3), 0.45))
+		"awakening":
+			var wax := _tc(Color(0.85, 0.7, 0.4), 0.35)
+			for i4 in int(w / 180.0):
+				var lx := 90.0 + float(i4) * 180.0
+				draw_rect(Rect2(lx, 20, 3, 22), wax)
+				draw_circle(Vector2(lx + 1.5, 16), 3.0, _tc(Color(1.0, 0.82, 0.45), 0.5))
+		_:
+			var unknown: String = motif
+			push_warning("room_backdrop: unknown motif %s" % unknown)
 
 
 func _draw_ceiling() -> void:

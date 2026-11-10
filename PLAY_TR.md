@@ -1,10 +1,10 @@
-# THE ROOM REMEMBERS — Oynanış ve Çalıştırma Rehberi (`v1.7.0` · Godot 4.7)
+# THE ROOM REMEMBERS — Oynanış ve Çalıştırma Rehberi (`v1.8.1` · Godot 4.7)
 
 ## 1. Proje Bilgileri
 - **Depo:** [`jagwey/THE-ROOM-REMEMBERS`](https://github.com/jagwey/THE-ROOM-REMEMBERS)
 - **Motor:** Godot **4.7.2** (`gl_compatibility`)
 - **Ana Sahne:** `scenes/main/main.tscn` (**F5**)
-- **Güncel Android Sürümü:** **[v1.7.0 (`TheRoomRemembers-1.7.0-android-arm64.apk`)](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.7.0)** (`com.torimon.theroomremembers`, `versionCode 31`)
+- **Güncel Android Sürümü:** **[v1.8.1 (`TheRoomRemembers-1.8.1-android-arm64.apk`)](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.8.1)** (`com.torimon.theroomremembers`, `versionCode 33`)
 
 ---
 

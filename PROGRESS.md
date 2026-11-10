@@ -320,3 +320,12 @@ oom_door\) <= 44.0 px mesafede -200 etkileÅŸim Ã¶ncelik bonusu eklendi.
 - [x] Polish: gotik kapı collision hizası, ClaritySpark ortak spawn/magnet, ???/X? ayrı portreler, Bölüm II teaser; jump/fall sheet satır 4 doğrulandı.
 - [x] Sürüm 1.8.0 / versionCode 32; ses/Play Store yok.
 
+## v1.8.1 — Kalite geçişi (2026-11-10)
+- [x] Hareket: `reset_transition_lock` her oda değişiminde nötr-joystick kilidini yeniden kuruyordu; oyuncu sağa basılı tutunca yerinden oynamıyordu. Kilit yalnız geçiş başında kurulur.
+- [x] Taş itme: zemin ışını gövdenin içinden başlayınca Godot çarpışmayı kaçırıyor, kefaret taşı adım atmıyordu. Işın artık zeminin üstünden bakıyor.
+- [x] Etkileşim: arkadaki yan kapı 44px içinde -200 ile ayakucundaki nesneyi yutuyordu. Öncelik yalnız öndeki kapıda ve küçük (-16).
+- [x] Diyalog: açılış, arşivci ve deney/yetki satırları daha konuşulur hale geldi (kanon ve satır uzunluğu korundu).
+- [x] Odalar: tavan dolgusuna bölge motifi (sarmaşık, raf, tank, ayna kırığı, çekirdek, mum).
+- [x] Bulmaca ilk çözümünde `seal_open` + "HATIRLANDI" afişi (testlerde afiş yok).
+- [x] Sürüm 1.8.1 / versionCode 33.
+
