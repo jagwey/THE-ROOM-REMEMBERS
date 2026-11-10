@@ -122,7 +122,7 @@ func _run() -> void:
 		keeper.receive_player_strike()
 	check(not keeper.is_defeated(), "keeper cannot be defeated by strikes")
 	check(not bool(state.get_world_flag(&"keeper_defeated", false)), "no keeper_defeated flag after strikes")
-	## Normal ölüm (v3): uzak odada ölüm -> Uyanış yatağında doğuş; ceset uzak odada; dünya kalır; committed kayıt dokunulmaz.
+	## Normal ölüm (v1.7): uzak odada ölüm -> aynı odada doğuş; +%25 lanet (en az %50); ceset uzak odada; dünya kalır; committed kayıt dokunulmaz.
 	var puz := root.get_node("PuzzleManager")
 	puz.mark_solved(&"decay_vine_shortcut")
 	state.set_world_flag(&"audit_door_open", true)
@@ -136,14 +136,19 @@ func _run() -> void:
 	dm.clear()
 	player.global_position = Vector2(420, 288)
 	var far_pos: Vector2 = player.global_position
+	var curse_pre_far: float = root.get_node("CurseManager").curse
 	state.damage(99)
 	var t2 := Time.get_ticks_msec()
 	while death.is_dying and Time.get_ticks_msec() - t2 < 25000:
 		await process_frame
 	await create_timer(0.2).timeout
 	dm.clear()
-	check(not death.is_dying and rm.get_active_room_id() == &"awakening", "far death respawns in awakening", str(rm.get_active_room_id()))
-	check(absf(player.global_position.x - death.REBIRTH_BED.x) < 6.0 and absf(player.global_position.y - death.REBIRTH_BED.y) < 14.0, "respawn at rebirth bed", str(player.global_position))
+	check(not death.is_dying and rm.get_active_room_id() == &"decay_garden", "far death respawns in same room", str(rm.get_active_room_id()))
+	var garden_cp := Vector2(130, 288)
+	check(absf(player.global_position.x - garden_cp.x) < 8.0 and absf(player.global_position.y - garden_cp.y) < 14.0, "respawn at room checkpoint not rebirth bed", str(player.global_position))
+	var curse_after_far: float = root.get_node("CurseManager").curse
+	check(curse_after_far >= 50.0, "far death curse at least 50", curse_after_far)
+	check(curse_after_far >= curse_pre_far + 24.0 or curse_pre_far + 25.0 > 99.0, "far death adds ~25 curse", [curse_pre_far, curse_after_far])
 	var corpses_far: Array = state.world_memory_state["corpses"]
 	check(corpses_far.size() > 0 and String((corpses_far[corpses_far.size() - 1] as Dictionary).get("room", "")) == "decay_garden", "new corpse recorded in far room (list is capped)")
 	var far_corpse: Dictionary = corpses_far[corpses_far.size() - 1] if corpses_far.size() > 0 else {}
@@ -188,7 +193,8 @@ func _run() -> void:
 	check(phases.is_empty(), "possession never enters a death phase (no soul/bed)")
 	check(int(state.player_progress_knowledge.get("deaths", 0)) == deaths_pre, "possession does not count as a death")
 	check(state.has_story_flag(&"first_death_completed") == fdc_pre, "possession does not fire first_death_completed")
-	check(curse.curse <= 30.0 and root.get_node("EndingManager").current == root.get_node("EndingManager").Ending.NONE, "curse safe and no ending after possession")
+	check(absf(curse.curse - curse.POSSESSION_SAFE_CURSE) < 1.0 and root.get_node("EndingManager").current == root.get_node("EndingManager").Ending.NONE, "curse at possession safe band and no ending", curse.curse)
+	check(puz.is_solved(&"decay_vine_shortcut") and state.world_memory_state["flags"].get("audit_door_open", false), "possession keeps world memory and puzzles")
 	sm.delete_all_save_files()
 	dm.clear()
 	print("DEATH_AUDIT failures=", failures)

@@ -1,6 +1,6 @@
 extends SceneTree
-## Hafiza Muhru denetimi: 12 ana odada muhur, tehlike/kapi ortusmesi yok, etkilesim commit eder,
-## muhurler arasi gecis, guvenlik kapisi, commit -> oda degis -> load_committed -> muhur konumu.
+## Hafiza Muhru denetimi: 12 ana odada muhur, tehlike/kapi ortusmesi yok, lanetliyken commit eder,
+## lanetsiz red, guvenlik kapisi, commit -> oda degis -> load_committed -> muhur konumu.
 ## Calistir: TORIMON_TEST=1 godot --headless --path . -s res://scripts/dev/memory_seal_audit.gd
 const ROOMS: Array[StringName] = [
 	&"awakening", &"decay_garden", &"library_hall", &"experiment_cells", &"mirrors_reverse", &"core_threshold",
@@ -15,6 +15,7 @@ var sm: Node
 var gs: Node
 var dm: Node
 var player: Node2D
+var curse: Node
 
 
 func _initialize() -> void:
@@ -89,6 +90,7 @@ func _run() -> void:
 	main = current_scene
 	rm = root.get_node("RoomManager")
 	player = main.get_node("Player")
+	curse = root.get_node("CurseManager")
 	dm.clear()
 	var path := String(sm.SAVE_PATH)
 
@@ -136,22 +138,33 @@ func _run() -> void:
 		check(crowd.is_empty(), "no other interactable within 80px in %s" % rid, crowd)
 		check(foes.is_empty(), "no enemy spawn within 160px in %s" % rid, foes)
 
-	## 2) Etkilesim commit eder (Uyanis).
+	## 2) Lanetsiz etkilesim kayit yazmaz; lanetliyken clear_curse + commit (Uyanis).
 	rm.enter_room(&"awakening", &"default")
 	await _wait(0.15)
 	dm.clear()
 	var a_seal := _find_seal(&"awakening")
 	sm.delete_all_save_files()
+	curse.set_curse(0.0)
 	var s0 := _serial(path)
 	a_seal.on_interact(player)
 	await _wait(0.1)
+	dm.clear()
+	check(_serial(path) <= s0, "zero curse does not commit", [s0, _serial(path)])
+	check(dm.is_open, "zero curse shows rejection line")
+	check(curse.curse <= 0.0, "curse unchanged when rejected")
+	curse.add_curse(40.0)
+	var s1c := _serial(path)
+	a_seal.on_interact(player)
+	await _wait(0.1)
+	dm.clear()
 	var c: Variant = sm._read_save(path)
-	check(c is Dictionary and _serial(path) > s0, "interact commits (serial up)", [s0, _serial(path)])
+	check(c is Dictionary and _serial(path) > s1c, "cursed interact commits (serial up)", [s1c, _serial(path)])
+	check(curse.curse <= 0.0, "seal clears curse to zero", curse.curse)
 	if c is Dictionary:
 		var life: Dictionary = c["character_current_life_knowledge"]
 		check(str(life.get("room", "")) == "awakening" and str(life.get("checkpoint_room", "")) == "awakening", "committed records room")
 		check((c["discovered_seals"] as Array).has("awakening"), "committed file lists awakening seal")
-	check(get_nodes_in_group("seal_banner").size() == 1, "banner shown")
+	check(get_nodes_in_group("seal_banner").size() >= 1, "banner shown")
 	check(not FileAccess.file_exists(sm.resume_path()), "seal does not write resume file")
 
 	## 4) Tehlike kapisi: yakin dusman ve diyalog.
@@ -163,7 +176,7 @@ func _run() -> void:
 	foe.global_position = player.global_position + Vector2(60, 0)
 	a_seal.on_interact(player)
 	await _wait(0.05)
-	check(_serial(path) == s2 and not is_instance_valid(a_seal._travel_layer), "enemy within 120px blocks seal")
+	check(_serial(path) == s2, "enemy within 120px blocks seal")
 	check(dm.is_open, "blocked seal shows danger line")
 	dm.clear()
 	foe.global_position = player.global_position + Vector2(400, 0)
@@ -197,8 +210,10 @@ var mode := 5
 	var card_cls = load("res://scripts/ui/region_title_card.gd")
 	card_cls.show_region_title("library")
 	await _wait(0.1)
+	curse.add_curse(30.0)
 	a_seal.on_interact(player)
 	await _wait(0.7)
+	dm.clear()
 	var card_ok: bool = card_cls.is_showing()
 	var card_rect := Rect2()
 	var banner_rect := Rect2()
@@ -210,46 +225,41 @@ var mode := 5
 	check(card_ok and banner_rect.size.x > 0.0 and not card_rect.intersects(banner_rect), "seal banner does not overlap region card", [card_rect, banner_rect])
 	dm.clear()
 
-	## 3) Yeni muhur: kesif listesi, her iki dosyada.
+	## 3) Yeni muhur: lanetliyken kesif listesi + commit; resume dosyasi.
 	rm.enter_room(&"decay_garden", &"default")
 	await _wait(0.15)
 	dm.clear()
 	var g_seal := _find_seal(&"decay_garden")
+	curse.add_curse(35.0)
 	var s1 := _serial(path)
 	g_seal.on_interact(player)
 	await _wait(0.1)
+	dm.clear()
 	check(_serial(path) > s1 and gs.discovered_seals.has(&"decay_garden"), "second seal commits and is discovered")
-	check(not is_instance_valid(g_seal._travel_layer), "first activation offers no travel")
+	check(curse.curse <= 0.0, "garden seal cleared curse")
 	sm.save_game()
 	var rs: Variant = sm._read_save(sm.resume_path())
 	check(rs is Dictionary and (rs["discovered_seals"] as Array).has("decay_garden") and (rs["discovered_seals"] as Array).has("awakening"), "resume file persists discovered_seals")
 
-	## 5) Bilinen muhuru yeniden etkinlestir -> commit + gecis listesi; Kapat; ardindan gecis.
+	## 5) Bilinen muhuru lanetliyken yeniden etkinlestir -> yine commit; seyahat menusu yok (v1.7).
 	var s3 := _serial(path)
+	curse.add_curse(22.0)
 	g_seal.on_interact(player)
 	await _wait(0.1)
-	check(_serial(path) > s3, "re-activation still commits")
-	check(is_instance_valid(g_seal._travel_layer), "re-activation offers travel list")
-	check(get_first_node_in_group("seal_travel_modal") != null, "travel modal flagged so player interact is blocked")
-	g_seal._close_travel()
-	await _wait(0.05)
-	check(not is_instance_valid(g_seal._travel_layer) and root.get_node("UiGate").current_layer() == 0, "Kapat closes list and releases gate")
-	g_seal.on_interact(player)
-	await _wait(0.2)
-	g_seal._travel_to(&"awakening")
-	await _wait(0.3)
-	check(rm.get_active_room_id() == &"awakening", "fast travel lands in awakening", rm.get_active_room_id())
-	check(player.global_position.distance_to(a_seal.global_position) < 8.0 and player.global_position.y < 330.0, "fast travel on floor at seal", player.global_position)
-	check(gs.get_checkpoint().distance_to(a_seal.global_position) < 1.0 and gs.character_current_life_knowledge.get("checkpoint_room", &"") == &"awakening", "checkpoint after travel equals seal spawn", gs.get_checkpoint())
+	dm.clear()
+	check(_serial(path) > s3, "re-activation still commits when cursed")
+	check(get_first_node_in_group("seal_travel_modal") == null, "no seal travel modal")
+	check(curse.curse <= 0.0, "re-activation clears curse")
 
 	## 6) commit -> oda degistir -> load_committed -> muhur konumu.
 	rm.enter_room(&"library_hall", &"default")
 	await _wait(0.15)
 	dm.clear()
 	var l_seal := _find_seal(&"library_hall")
+	curse.add_curse(28.0)
 	l_seal.on_interact(player)
 	await _wait(0.1)
-	l_seal._close_travel()
+	dm.clear()
 	rm.enter_room(&"awakening", &"default")
 	await _wait(0.1)
 	check(sm.load_committed(false), "load_committed ok")

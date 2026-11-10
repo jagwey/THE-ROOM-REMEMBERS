@@ -53,16 +53,16 @@ const ROOM_DEFS := {
 ## v1.0 genişleme: mevcut odalardan yan bölgelere açılan kapılar (geri dönüş / metroidvania-lite).
 ## room_id -> [{x, to, req, msg}] — hedef odada "from_<room_id>" spawn'ı built_room tarafından üretilir.
 const SIDE_DOORS := {
-	"awakening": [{"x": 660.0, "to": "awakening_balcony"}],
-	"decay_vines": [{"x": 860.0, "to": "decay_catacombs"}],
-	"decay_garden": [{"x": 240.0, "to": "decay_shilda_wall"}],
-	"library_hall": [{"x": 800.0, "to": "library_upper_stacks"}],
-	"experiment_cells": [{"x": 720.0, "to": "experiment_quarantine"}],
-	"experiment_authority": [{"x": 700.0, "to": "experiment_core_conduit"}],
-	"mirrors_reverse": [{"x": 720.0, "to": "mirrors_labyrinth"}],
-	"mirrors_unbroken": [{"x": 720.0, "to": "mirrors_shrine"}],
-	"core_threshold": [{"x": 720.0, "to": "core_memory_vault"}],
-	"core_seal_chamber": [{"x": 720.0, "to": "core_bloom_garden"}],
+	"awakening": [{"x": 672.0, "to": "awakening_balcony"}],
+	"decay_vines": [{"x": 896.0, "to": "decay_catacombs"}],
+	"decay_garden": [{"x": 224.0, "to": "decay_shilda_wall"}],
+	"library_hall": [{"x": 784.0, "to": "library_upper_stacks"}],
+	"experiment_cells": [{"x": 784.0, "to": "experiment_quarantine"}],
+	"experiment_authority": [{"x": 672.0, "to": "experiment_core_conduit"}],
+	"mirrors_reverse": [{"x": 672.0, "to": "mirrors_labyrinth"}],
+	"mirrors_unbroken": [{"x": 784.0, "to": "mirrors_shrine"}],
+	"core_threshold": [{"x": 784.0, "to": "core_memory_vault"}],
+	"core_seal_chamber": [{"x": 784.0, "to": "core_bloom_garden"}],
 }
 
 
@@ -72,6 +72,7 @@ func _add_side_doors() -> void:
 		if not RoomManager.has_room(StringName(rid)):
 			continue
 		var entry: Dictionary = RoomManager._rooms[StringName(rid)]
+		var bounds: Rect2 = entry.get("bounds", Rect2(0, 0, 960, 360))
 		var root: Node2D = entry["root"]
 		var parent: Node = root.get_node_or_null("Interactive")
 		if parent == null:
@@ -99,7 +100,8 @@ func _add_side_doors() -> void:
 			door.add_child(cs)
 			parent.add_child(door)
 			var spawns: Dictionary = entry["spawns"]
-			spawns[StringName("from_%s" % target)] = Vector2(float(d["x"]) + 36.0, 288.0)
+			var inward := 48.0 if float(d["x"]) < bounds.size.x * 0.5 else -48.0
+			spawns[StringName("from_%s" % target)] = Vector2(float(d["x"]) + inward, 288.0)
 
 
 func _ready() -> void:
@@ -223,6 +225,8 @@ func _headless_faz67_smoke() -> void:
 	print("SMOKE_AFTER_INTRO")
 
 	var deaths_before := int(GameState.player_progress_knowledge["deaths"])
+	GameState.set_world_flag(&"smoke_possession_world_persist", true)
+	PuzzleManager.mark_solved(&"smoke_possession_persist")
 	print("SMOKE_CURSE")
 	CurseManager.add_curse(100.0, &"smoke_curse")
 	## v3: lanet dolunca ölüm değil ele geçirme; committed kayda döner, ölüm sayılmaz.
@@ -232,8 +236,9 @@ func _headless_faz67_smoke() -> void:
 		await get_tree().create_timer(0.25).timeout
 		waited += 0.25
 	var curse_fail_ok: bool = possession_started and not CurseManager.possessing 			and not DeathManager.is_dying 			and int(GameState.player_progress_knowledge["deaths"]) == deaths_before
-	print("SMOKE_CURSE_DONE possession=", curse_fail_ok)
-	var world_kept := GameState.world_memory_state.has("flags")
+	var curse_safe_ok: bool = absf(CurseManager.curse - CurseManager.POSSESSION_SAFE_CURSE) < 1.0
+	print("SMOKE_CURSE_DONE possession=", curse_fail_ok, " curse50=", curse_safe_ok)
+	var world_kept: bool = GameState.world_memory_state.has("flags") and GameState.get_world_flag(&"smoke_possession_world_persist", false) and PuzzleManager.is_solved(&"smoke_possession_persist")
 
 	## Tek final: Shilda öldürülemez, sonra BÖLÜM I SONU dizisi (hızlı)
 	EndingManager.reset_for_smoke()
@@ -254,8 +259,9 @@ func _headless_faz67_smoke() -> void:
 	await EndingManager.trigger(EndingManager.Ending.PART_ONE, true)
 	var good_ok := EndingManager.last_ending == EndingManager.Ending.PART_ONE and GameState.has_story_flag(&"final_seal_broken") and GameState.has_story_flag(&"x_revealed") and GameState.has_story_flag(&"game_completed")
 	print("SMOKE_FINAL_DONE ", good_ok)
-	var msg := "FAZ67_SMOKE ok curse_possession=%s world=%s bad=%s good=%s rooms=%s indicator=%s" % [
+	var msg := "FAZ67_SMOKE ok curse_possession=%s curse50=%s world=%s bad=%s good=%s rooms=%s indicator=%s" % [
 		str(curse_fail_ok),
+		str(curse_safe_ok),
 		str(world_kept),
 		str(bad_ok),
 		str(good_ok),
@@ -268,4 +274,4 @@ func _headless_faz67_smoke() -> void:
 		f.store_string(msg)
 	SaveManager.save_game()
 	await get_tree().create_timer(0.2).timeout
-	get_tree().quit(0 if (curse_fail_ok and world_kept and bad_ok and good_ok) else 1)
+	get_tree().quit(0 if (curse_fail_ok and curse_safe_ok and world_kept and bad_ok and good_ok) else 1)

@@ -11,6 +11,7 @@ var dm: Node
 var gate: Node
 var death: Node
 var player: CharacterBody2D
+var puz: Node
 var phases: Array = []
 
 
@@ -123,6 +124,9 @@ func _run() -> void:
 	gs.set_story_flag(&"first_warning_heard")
 	gs.set_story_flag(&"first_death_completed", false) ## ele geçirme bunu ASLA açmamalı: assert gerçekten sınasın
 	gs.set_world_flag(&"audit_marker_b", false)
+	gs.set_world_flag(&"audit_possession_world_persist", true)
+	puz = root.get_node("PuzzleManager")
+	puz.mark_solved(&"audit_possession_persist")
 	curse.set_curse(20.0)
 	check(sm.commit_save(&"audit_a", seal_pos, &"library_hall"), "commit A")
 	var corpses_a: int = (gs.world_memory_state["corpses"] as Array).size()
@@ -215,7 +219,9 @@ func _assert_a(seal_pos: Vector2, corpses_a: int, deaths_a: int, fdc_a: bool, ta
 	check(gs.has_story_flag(&"first_death_completed") == fdc_a, "%s: first_death_completed untouched" % tag)
 	check(phases.is_empty() and not death.is_dying, "%s: no death/soul/bed phases" % tag, phases)
 	check(root.get_node("EndingManager").current == root.get_node("EndingManager").Ending.NONE, "%s: EndingManager.current == NONE" % tag)
-	check(curse.curse <= 30.0 and curse.curse < 90.0 and curse.get_band() < 2, "%s: curse safe" % tag, curse.curse)
+	check(absf(curse.curse - curse.POSSESSION_SAFE_CURSE) < 1.0 and curse.get_band() == curse.Band.FIRST_SIGNS, "%s: curse at possession safe 50" % tag, curse.curse)
+	check(gs.get_world_flag(&"audit_possession_world_persist", false), "%s: world flag persisted" % tag)
+	check(puz.is_solved(&"audit_possession_persist"), "%s: puzzle state persisted" % tag)
 	check(not _on_hazard(player.global_position), "%s: player not on a hazard" % tag)
 	check(not curse.possessing and gate.current_layer() == gate.Layer.NONE, "%s: control returned" % tag, gate.current_layer())
 	check(player.visible and player.modulate.is_equal_approx(Color.WHITE), "%s: player visible, tint reset" % tag)

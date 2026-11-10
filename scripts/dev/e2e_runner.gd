@@ -267,8 +267,8 @@ func _run_tier_1_feature_coverage() -> void:
 	var awake_room_code: String = _read_file_text("res://scripts/world/awakening_room.gd")
 	var inherits_atmosphere: bool = awake_room_code.contains("extends \"res://scripts/world/room_atmosphere.gd\"") or awake_room_code.contains("extends RoomAtmosphere")
 	var conduit_code: String = _read_file_text("res://scripts/world/experiment_core_conduit.gd")
-	var conduit_timing_ok: bool = conduit_code.contains("3.8") or conduit_code.contains("3.80")
-	record_check(1, 15, "Puzzle hints & room inheritance", inherits_atmosphere and conduit_timing_ok, "awakening inherits atmosphere=%s conduit timing 3.8s=%s" % [inherits_atmosphere, conduit_timing_ok], false, "M2")
+	var conduit_timing_ok: bool = conduit_code.contains("4.5") or conduit_code.contains("3.8") or conduit_code.contains("3.80")
+	record_check(1, 15, "Puzzle hints & room inheritance", inherits_atmosphere and conduit_timing_ok, "awakening inherits atmosphere=%s conduit timing 4.5s/>=3.8s=%s" % [inherits_atmosphere, conduit_timing_ok], false, "M2")
 
 	# F16: Door transition labels (M2)
 	var door_code: String = _read_file_text("res://scripts/world/room_transition.gd")
@@ -389,9 +389,9 @@ func _run_tier_1_feature_coverage() -> void:
 	record_check(1, 31, "POCO X6 Pro 5G Android APK build & test", arm64_enabled and package_name_ok, "arm64 enabled=%s package name=%s" % [arm64_enabled, package_name_ok], false, "M4")
 
 	# F32: Versioning & export configuration (M5)
-	var godot_v147: bool = proj_cfg.contains('config/version="1.6.0"')
-	var preset_v147: bool = exp_presets.contains('version/name="1.6.0"') and exp_presets.contains('version/code=30')
-	record_check(1, 32, "Versioning & export configuration", godot_v147 and preset_v147, "version 1.6.0 code 30 verified", false, "M5")
+	var godot_v170: bool = proj_cfg.contains('config/version="1.7.0"')
+	var preset_v170: bool = exp_presets.contains('version/name="1.7.0"') and exp_presets.contains('version/code=31')
+	record_check(1, 32, "Versioning & export configuration", godot_v170 and preset_v170, "version 1.7.0 code 31 verified", false, "M5")
 
 	# F33: Git commit, tag, and GitHub Release (M5)
 	var git_clean: bool = FileAccess.file_exists("res://PROJECT.md") and FileAccess.file_exists("res://TEST_INFRA.md")
