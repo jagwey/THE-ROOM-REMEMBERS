@@ -43,14 +43,14 @@ var _catalog: Dictionary = {
 	"crypt_first_bodies": {
 		"evidence_id": "ev_crypt_rebirth",
 		"lines": [
-			["Yankı", "Yatağın başında Shilda. Elinde şırınga yok; sadece bir çiçek."],
+			["Yankı", "Yatağın başında bir gölge. Elinde şırınga yok; sadece bir çiçek."],
 			["Yankı", "Yüzü kazınmış biri: Hepsini silin. Hatırlayan kalmasın."],
-			["Yankı", "Shilda: Sen unutursan… ben hatırlarım. Söz."],
+			["Yankı", "Fısıltı: Sen unutursan… ben hatırlarım. Söz."],
 		],
 		"journal": {
 			"section": "izler",
 			"title": "Silme Emri",
-			"body": "Hafızamın silinmesi için bir imza atılmış; imza kazınmış. Shilda söz verdi: ben unutursam o hatırlayacak.",
+			"body": "Hafızamın silinmesi için bir imza atılmış; imza kazınmış. Bir gölge söz verdi: ben unutursam o hatırlayacak.",
 			"kind": "evidence",
 		},
 		"memory_code": "",

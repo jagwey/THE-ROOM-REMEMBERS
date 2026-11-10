@@ -1,0 +1,300 @@
+[gd_resource type="SpriteFrames" load_steps=58 format=3]
+
+[ext_resource type="Texture2D" path="res://addons/trr_shilda_white/spritesheets/shilda_master_atlas.png" id="1"]
+
+[sub_resource type="AtlasTexture" id="idle_0"]
+atlas = ExtResource("1")
+region = Rect2(0, 0, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_1"]
+atlas = ExtResource("1")
+region = Rect2(224, 0, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_2"]
+atlas = ExtResource("1")
+region = Rect2(448, 0, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_3"]
+atlas = ExtResource("1")
+region = Rect2(672, 0, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_4"]
+atlas = ExtResource("1")
+region = Rect2(896, 0, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_5"]
+atlas = ExtResource("1")
+region = Rect2(1120, 0, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_6"]
+atlas = ExtResource("1")
+region = Rect2(1344, 0, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_7"]
+atlas = ExtResource("1")
+region = Rect2(1568, 0, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="walk_0"]
+atlas = ExtResource("1")
+region = Rect2(0, 224, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="walk_1"]
+atlas = ExtResource("1")
+region = Rect2(224, 224, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="walk_2"]
+atlas = ExtResource("1")
+region = Rect2(448, 224, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="walk_3"]
+atlas = ExtResource("1")
+region = Rect2(672, 224, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="walk_4"]
+atlas = ExtResource("1")
+region = Rect2(896, 224, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="walk_5"]
+atlas = ExtResource("1")
+region = Rect2(1120, 224, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="walk_6"]
+atlas = ExtResource("1")
+region = Rect2(1344, 224, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="walk_7"]
+atlas = ExtResource("1")
+region = Rect2(1568, 224, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="talk_0"]
+atlas = ExtResource("1")
+region = Rect2(0, 448, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="talk_1"]
+atlas = ExtResource("1")
+region = Rect2(224, 448, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="talk_2"]
+atlas = ExtResource("1")
+region = Rect2(448, 448, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="talk_3"]
+atlas = ExtResource("1")
+region = Rect2(672, 448, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="talk_4"]
+atlas = ExtResource("1")
+region = Rect2(896, 448, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="talk_5"]
+atlas = ExtResource("1")
+region = Rect2(1120, 448, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="warning_0"]
+atlas = ExtResource("1")
+region = Rect2(0, 672, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="warning_1"]
+atlas = ExtResource("1")
+region = Rect2(224, 672, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="warning_2"]
+atlas = ExtResource("1")
+region = Rect2(448, 672, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="warning_3"]
+atlas = ExtResource("1")
+region = Rect2(672, 672, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="warning_4"]
+atlas = ExtResource("1")
+region = Rect2(896, 672, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="warning_5"]
+atlas = ExtResource("1")
+region = Rect2(1120, 672, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="cast_0"]
+atlas = ExtResource("1")
+region = Rect2(0, 896, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="cast_1"]
+atlas = ExtResource("1")
+region = Rect2(224, 896, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="cast_2"]
+atlas = ExtResource("1")
+region = Rect2(448, 896, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="cast_3"]
+atlas = ExtResource("1")
+region = Rect2(672, 896, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="cast_4"]
+atlas = ExtResource("1")
+region = Rect2(896, 896, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="cast_5"]
+atlas = ExtResource("1")
+region = Rect2(1120, 896, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="cast_6"]
+atlas = ExtResource("1")
+region = Rect2(1344, 896, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="cast_7"]
+atlas = ExtResource("1")
+region = Rect2(1568, 896, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="flower_0"]
+atlas = ExtResource("1")
+region = Rect2(0, 1120, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="flower_1"]
+atlas = ExtResource("1")
+region = Rect2(224, 1120, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="flower_2"]
+atlas = ExtResource("1")
+region = Rect2(448, 1120, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="flower_3"]
+atlas = ExtResource("1")
+region = Rect2(672, 1120, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="flower_4"]
+atlas = ExtResource("1")
+region = Rect2(896, 1120, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="flower_5"]
+atlas = ExtResource("1")
+region = Rect2(1120, 1120, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="vanish_0"]
+atlas = ExtResource("1")
+region = Rect2(0, 1344, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="vanish_1"]
+atlas = ExtResource("1")
+region = Rect2(224, 1344, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="vanish_2"]
+atlas = ExtResource("1")
+region = Rect2(448, 1344, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="vanish_3"]
+atlas = ExtResource("1")
+region = Rect2(672, 1344, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="vanish_4"]
+atlas = ExtResource("1")
+region = Rect2(896, 1344, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="vanish_5"]
+atlas = ExtResource("1")
+region = Rect2(1120, 1344, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="dash_0"]
+atlas = ExtResource("1")
+region = Rect2(0, 1568, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="dash_1"]
+atlas = ExtResource("1")
+region = Rect2(224, 1568, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="dash_2"]
+atlas = ExtResource("1")
+region = Rect2(448, 1568, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="dash_3"]
+atlas = ExtResource("1")
+region = Rect2(672, 1568, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="dash_4"]
+atlas = ExtResource("1")
+region = Rect2(896, 1568, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="dash_5"]
+atlas = ExtResource("1")
+region = Rect2(1120, 1568, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="dash_6"]
+atlas = ExtResource("1")
+region = Rect2(1344, 1568, 224, 224)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="dash_7"]
+atlas = ExtResource("1")
+region = Rect2(1568, 1568, 224, 224)
+filter_clip = true
+
+[resource]
+animations = [
+{"frames": [{"duration": 1.0, "texture": SubResource("idle_0")}, {"duration": 1.0, "texture": SubResource("idle_1")}, {"duration": 1.0, "texture": SubResource("idle_2")}, {"duration": 1.0, "texture": SubResource("idle_3")}, {"duration": 1.0, "texture": SubResource("idle_4")}, {"duration": 1.0, "texture": SubResource("idle_5")}, {"duration": 1.0, "texture": SubResource("idle_6")}, {"duration": 1.0, "texture": SubResource("idle_7")}], "loop": true, "name": &"idle", "speed": 7.0},
+{"frames": [{"duration": 1.0, "texture": SubResource("idle_0")}, {"duration": 1.0, "texture": SubResource("idle_1")}, {"duration": 1.0, "texture": SubResource("idle_2")}, {"duration": 1.0, "texture": SubResource("idle_3")}, {"duration": 1.0, "texture": SubResource("idle_4")}, {"duration": 1.0, "texture": SubResource("idle_5")}, {"duration": 1.0, "texture": SubResource("idle_6")}, {"duration": 1.0, "texture": SubResource("idle_7")}], "loop": true, "name": &"observe", "speed": 7.0},
+{"frames": [{"duration": 1.0, "texture": SubResource("walk_0")}, {"duration": 1.0, "texture": SubResource("walk_1")}, {"duration": 1.0, "texture": SubResource("walk_2")}, {"duration": 1.0, "texture": SubResource("walk_3")}, {"duration": 1.0, "texture": SubResource("walk_4")}, {"duration": 1.0, "texture": SubResource("walk_5")}, {"duration": 1.0, "texture": SubResource("walk_6")}, {"duration": 1.0, "texture": SubResource("walk_7")}], "loop": true, "name": &"walk", "speed": 9.0},
+{"frames": [{"duration": 1.0, "texture": SubResource("talk_0")}, {"duration": 1.0, "texture": SubResource("talk_1")}, {"duration": 1.0, "texture": SubResource("talk_2")}, {"duration": 1.0, "texture": SubResource("talk_3")}, {"duration": 1.0, "texture": SubResource("talk_4")}, {"duration": 1.0, "texture": SubResource("talk_5")}], "loop": true, "name": &"talk", "speed": 6.0},
+{"frames": [{"duration": 1.0, "texture": SubResource("warning_0")}, {"duration": 1.0, "texture": SubResource("warning_1")}, {"duration": 1.0, "texture": SubResource("warning_2")}, {"duration": 1.0, "texture": SubResource("warning_3")}, {"duration": 1.0, "texture": SubResource("warning_4")}, {"duration": 1.0, "texture": SubResource("warning_5")}], "loop": false, "name": &"warning", "speed": 7.0},
+{"frames": [{"duration": 1.0, "texture": SubResource("warning_0")}, {"duration": 1.0, "texture": SubResource("warning_1")}, {"duration": 1.0, "texture": SubResource("warning_2")}, {"duration": 1.0, "texture": SubResource("warning_3")}, {"duration": 1.0, "texture": SubResource("warning_4")}, {"duration": 1.0, "texture": SubResource("warning_5")}], "loop": false, "name": &"warn", "speed": 7.0},
+{"frames": [{"duration": 1.0, "texture": SubResource("cast_0")}, {"duration": 1.0, "texture": SubResource("cast_1")}, {"duration": 1.0, "texture": SubResource("cast_2")}, {"duration": 1.0, "texture": SubResource("cast_3")}, {"duration": 1.0, "texture": SubResource("cast_4")}, {"duration": 1.0, "texture": SubResource("cast_5")}, {"duration": 1.0, "texture": SubResource("cast_6")}, {"duration": 1.0, "texture": SubResource("cast_7")}], "loop": false, "name": &"cast", "speed": 11.0},
+{"frames": [{"duration": 1.0, "texture": SubResource("cast_0")}, {"duration": 1.0, "texture": SubResource("cast_1")}, {"duration": 1.0, "texture": SubResource("cast_2")}, {"duration": 1.0, "texture": SubResource("cast_3")}, {"duration": 1.0, "texture": SubResource("cast_4")}, {"duration": 1.0, "texture": SubResource("cast_5")}, {"duration": 1.0, "texture": SubResource("cast_6")}, {"duration": 1.0, "texture": SubResource("cast_7")}], "loop": false, "name": &"attack", "speed": 11.0},
+{"frames": [{"duration": 1.0, "texture": SubResource("flower_0")}, {"duration": 1.0, "texture": SubResource("flower_1")}, {"duration": 1.0, "texture": SubResource("flower_2")}, {"duration": 1.0, "texture": SubResource("flower_3")}, {"duration": 1.0, "texture": SubResource("flower_4")}, {"duration": 1.0, "texture": SubResource("flower_5")}], "loop": false, "name": &"flower", "speed": 7.0},
+{"frames": [{"duration": 1.0, "texture": SubResource("flower_0")}, {"duration": 1.0, "texture": SubResource("flower_1")}, {"duration": 1.0, "texture": SubResource("flower_2")}, {"duration": 1.0, "texture": SubResource("flower_3")}, {"duration": 1.0, "texture": SubResource("flower_4")}, {"duration": 1.0, "texture": SubResource("flower_5")}], "loop": false, "name": &"grieve", "speed": 7.0},
+{"frames": [{"duration": 1.0, "texture": SubResource("vanish_0")}, {"duration": 1.0, "texture": SubResource("vanish_1")}, {"duration": 1.0, "texture": SubResource("vanish_2")}, {"duration": 1.0, "texture": SubResource("vanish_3")}, {"duration": 1.0, "texture": SubResource("vanish_4")}, {"duration": 1.0, "texture": SubResource("vanish_5")}], "loop": false, "name": &"vanish", "speed": 8.0},
+{"frames": [{"duration": 1.0, "texture": SubResource("vanish_0")}, {"duration": 1.0, "texture": SubResource("vanish_1")}, {"duration": 1.0, "texture": SubResource("vanish_2")}, {"duration": 1.0, "texture": SubResource("vanish_3")}, {"duration": 1.0, "texture": SubResource("vanish_4")}, {"duration": 1.0, "texture": SubResource("vanish_5")}], "loop": false, "name": &"disappear", "speed": 8.0},
+{"frames": [{"duration": 1.0, "texture": SubResource("dash_0")}, {"duration": 1.0, "texture": SubResource("dash_1")}, {"duration": 1.0, "texture": SubResource("dash_2")}, {"duration": 1.0, "texture": SubResource("dash_3")}, {"duration": 1.0, "texture": SubResource("dash_4")}, {"duration": 1.0, "texture": SubResource("dash_5")}, {"duration": 1.0, "texture": SubResource("dash_6")}, {"duration": 1.0, "texture": SubResource("dash_7")}], "loop": false, "name": &"dash", "speed": 12.0}
+]

@@ -39,6 +39,8 @@ func _ready() -> void:
 				break
 	if PuzzleManager.is_solved(puzzle_id) or legacy_awakening:
 		_set_pressed(true, false)
+	else:
+		call_deferred("_recompute")
 
 
 func _physics_process(_delta: float) -> void:
@@ -54,6 +56,8 @@ func _recompute() -> void:
 	var seen: Dictionary = {}
 	var total := 0
 	for b in get_overlapping_bodies():
+		if not b.is_visible_in_tree() or b.is_queued_for_deletion():
+			continue
 		seen[b] = true
 		total += _weight_of(b)
 	if total < required_weight:
@@ -63,13 +67,22 @@ func _recompute() -> void:
 			if seen.has(c) or not (c is Node2D):
 				continue
 			var n2 := c as Node2D
+			if not n2.is_visible_in_tree() or n2.is_queued_for_deletion():
+				continue
 			if absf(global_position.x - n2.global_position.x) <= 30.0 + overlap_slack \
 					and absf(global_position.y - n2.global_position.y) <= 24.0 + overlap_slack:
 				total += _weight_of(c)
 				seen[c] = true
 	for c in get_tree().get_nodes_in_group("corpse"):
+		if c.is_queued_for_deletion():
+			continue
+		var on_plate: bool = seen.has(c) and total >= required_weight
 		if c.has_method("set_anchoring"):
-			c.set_anchoring(seen.has(c) and total >= required_weight, puzzle_id)
+			c.set_anchoring(on_plate, puzzle_id)
+		elif c.has_method("set_anchored"):
+			c.set_anchored(on_plate)
+		elif "corpse_id" in c and String(c.corpse_id) != "":
+			CorpseManager.set_corpse_anchored(String(c.corpse_id), on_plate)
 	_set_pressed(total >= required_weight, true)
 
 

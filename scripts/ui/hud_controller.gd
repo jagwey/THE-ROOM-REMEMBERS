@@ -925,7 +925,7 @@ func _process(delta: float) -> void:
 func _friendly_target(node_name: String) -> String:
 	var n := node_name.to_lower()
 	if "keeper" in n or "shilda" in n:
-		return "Shilda ile konuş"
+		return GameState.keeper_speaker_name() + " ile konuş"
 	if "exit" in n or "transition" in n or "portal" in n or "door" in n:
 		return "Geçidi kullan"
 	if "seal" in n:

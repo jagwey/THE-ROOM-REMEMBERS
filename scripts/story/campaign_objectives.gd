@@ -22,7 +22,7 @@ const _BY_ROOM: Dictionary = {
 	"core_seal_chamber": "Tanıklıkları birleştir; son kapıyı aç.",
 	"core": "Çekirdeğe in; mührü Shilda ile birlikte kır.",
 	"awakening_balcony": "Tesisi izle. Mor mühür Ruh Kesimi ister.",
-	"awakening_crypt": "Yatakların sırrını oku; Shilda'nın defterini bul.",
+	"awakening_crypt": "Yatakların sırrını oku; defteri bul.",
 	"decay_catacombs": "Karanlıkta yalnız ölülerin ışığı yol gösterir. Sembolleri gör; mührü aç.",
 	"decay_shilda_wall": "Shilda atılınca son anda kenara çekil; duvara çarpsın.",
 	"library_upper_stacks": "Zıpla, Arşivci'yi bul; yasak kanada tırman.",
@@ -58,6 +58,12 @@ static func objective_for_room(room_id: String) -> String:
 	var i := raw.find(" · ")
 	if i > 0 and i <= 32:
 		raw = raw.substr(i + 3)
+	if not GameState.is_shilda_named():
+		raw = raw.replace("Shilda'yı", "gölgeyi") \
+			.replace("Shilda'nın", "gölgenin") \
+			.replace("Shilda'ya", "gölgeye") \
+			.replace("Shilda ile", "gölge ile") \
+			.replace("Shilda", "Gölge")
 	return raw
 
 

@@ -249,3 +249,36 @@ Dal: cursor/playable-story-flow-8e4e · Sürüm: v1.2.0 (versionCode 16)
 - Sürüm 1.5.1 / versionCode 29 (a2a215c); APK `TheRoomRemembers-1.5.1-android-arm64.apk` (34,2 MB, imza 16fd6975…). Yayın: public release (latest) + private v1.5.1. `origin/main` = `origin/claude/v1.4.1` = a2a215c.
 - Dal temizliği: cursor/*, android_live_playtest, generate_claude_prompt_fixes, adoring/token-usage, claude/v1.4-fixes (yerel+remote), origin/claude/story-x silindi. Ana checkout artık `main`'de.
 - Temizlik: eski oturum dalları (story-x, nice-wing, serene), worktree'leri ve eski stash 1c54526 silindi; yerel+remote yalnız `main` ve `claude/v1.4.1`. Cihaz testi yapılmadı.
+
+## Noroi v2 sprite paketi (2026-11-09)
+- Referans görsellere göre (gümüş saç, kırmızı lanetli göz, kırık-beyaz pelerin, siyah üniforma) mevcut 20 frame yeniden boyandı; yüz artık cilt tonlu (eski "bembeyaz yüz" sorunu). Layout aynı: 384x480, 4x5, 96x96 → `noroi.tres` değişmeden çalışır.
+- Çıktı: `out/noroi_v2/noroi_v2_assets.zip` (sheet, frame_00..19, 384x384 portre, animasyon GIF önizlemeleri, OKUBENI.txt). Oyundaki asset'ler henüz DEĞİŞTİRİLMEDİ; commit yok.
+- Bilinen eksik: hurt/death (14-15) frame'lerinde yüz görünmüyor (yalnız saç rengi değişti).
+- Kullanıcı v2 recolor'ı "kalitesiz" diye REDDETTİ. Sıradaki yol: AI ile referanstan yeni sprite sheet üretimi (PixelLab üyeliği yok → Gemini/Flow görsel üretimi, kullanıcı PNG verir, ben 96x96 grid/tres/zip'e çeviririm).
+
+
+## Kapsamlı Oyun Denetimi & Kalite Artırma — Milestone 1, 2, 3 & E2E Tamamlandı (2026-11-10)
+- [x] Shilda White Guardian V2.0 HD Asset Remaster:
+  - 557.049 piksellik alfa sisi temizlendi (anti-aliased soft threshold).
+  - 1:1 orijinal 224x224 canvas ve 8 duygu portresi (384x384, neutral/gentle/smile/sad/worried/angry/determined/eyes_closed) oluşturuldu.
+  - 33 piksellik zıplama/titreme giderildi, ağırlık merkezi ve ayak tabanı (Y=196) kilitlendi.
+  - `addons/trr_shilda_white` ve `assets/portraits/shilda/` entegre edildi. Headless ve header denetimlerinden (48/48) 0 hata ile geçti.
+- [x] Milestone 1 (P0 Temel Mekanikler & Yarış Durumları):
+  - 100% lanet ele geçirilmesi ile ölüm döngüsü yarış durumu çözüldü (`CurseManager.possessing` mutex koruması).
+  - Ceset itme dinamik oda sınırlarına bağlandı (`corpse.gd`).
+  - Basınç plakası üzerindeki cesetlerin dekoratif ize dönüşmesi engellendi (`corpse_manager.gd` anchoring).
+  - Stres testleri (`curse_death_concurrency_stress_audit.gd` 53/53, `m1_challenger2_audit.gd` 24/24) 0 hata ile onaylandı.
+- [x] Milestone 2 (V3 Hikâye Kanonu, Noroi Hafızası & Shilda Sistemleri):
+  - Feature 6: Noroi 3 katmanlı hafıza izolasyonu uygulandı; her ölümde `character_current_life_knowledge` sıfırlanır, `awakening` yatağına döner. Cep saati (`pocket_watch_inspect`), mühür rezonansı (`awakening_seal_echo_recall`), kanlı diken (`blood_thorn`) ve geçit replikleri amnezik kanona göre arındırıldı.
+  - Feature 7: Eski "Shiren" isim kırıntısı ve boş dizin tamamen temizlendi (`lore_canon_audit` 0 hata).
+  - Feature 8 & 9: Shilda ismi tanışma öncesi gizlendi ("???", "Gölge", "Bekçi"); §17 diyaloğu iptal edilirse isim bayrağı açılmaz (`keeper_naming_audit` 18/18 PASS).
+  - Feature 10 & 11: 5 sütunlu eylem odaklı güven modeli (`GameState.get_shilda_trust_state()`, `is_shilda_trusted()`) entegre edildi. Savaşta öldürülemezlik, savunma kalkanı efekti (`_spawn_defensive_shield()`) ve barışma diyaloğu eklendi.
+  - Feature 12 & 13: Tek kanonik final (END OF PART I, Kurucu X gelişi öncesi çıkış kapısının aralanması) uygulandı; `PLAY_TR.md`'den eski 5 alternatif son temizlendi; `docs/specs/shilda_human_asset_spec.md` şartnamesi hazırlandı (`final_sequence_audit` 0 hata).
+- [x] Milestone 3 & 4 (3 Kademeli İpuçları, Türkçe Metin, UI & Güvenlik):
+  - `PuzzleManager` 3 kademeli ilerlemeli ipucu sistemi (`get_hints`, `get_current_hint` - Hedef / Yönelim / Açık) 7 ana bulmaca için eklendi.
+  - `session_menu.gd` "Kaydet ve Çık" onay penceresi doğrulandı (`save_quit_audit` 0 hata).
+  - 30 odanın kapı, geçiş, çarpışma ve sahne bütünlüğü doğrulandı (`release_audit` 111/111 PASS).
+  - Kontroller, yetenekler ve dövüş mekanikleri doğrulandı (`controls_audit` 33/33 PASS, `push_audit` 0 hata, `door_audit` 0 hata, `interact_audit` 0 hata).
+- [x] Milestone 5 (E2E Opaque-Box Doğrulama):
+  - `res://scripts/dev/e2e_runner.gd` 4 kademeli (Tier 1-4, 50 kontrol) master test paketi koşturuldu:
+  - **OVERALL TOTAL: 50 | PASSED: 50 | FAILED: 0 | PENDING: 0**.

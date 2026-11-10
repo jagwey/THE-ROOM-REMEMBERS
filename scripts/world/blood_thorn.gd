@@ -6,7 +6,7 @@ extends Area2D
 @export var puzzle_hint: StringName = &"awakening_seal_weight"
 ## Odaya özgü satırlar (boşsa Uyanış plakası metni).
 @export var body_line: String = "Dokunursam ölürüm. Ama beden… burada, plakanın üstünde kalır."
-@export var solved_line: String = "Kristal sustu. Bedenim plakayı tutuyor."
+@export var solved_line: String = "Kristal sustu. Beden plakayı tutuyor."
 
 var _armed: bool = false
 

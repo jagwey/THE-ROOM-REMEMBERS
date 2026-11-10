@@ -190,8 +190,17 @@ func _on_entry_selected(index: int) -> void:
 		var b := entry_list.get_child(i) as Button
 		if b:
 			b.add_theme_stylebox_override("normal", _entry_box(0.22) if i == index else StyleBoxEmpty.new())
-	detail_title.text = String(n.get("title", ""))
-	detail_body.text = String(n.get("body", ""))
+	var raw_title := String(n.get("title", ""))
+	var raw_body := String(n.get("body", ""))
+	if not GameState.is_shilda_named():
+		raw_body = raw_body.replace("Shilda'yı", "gölgeyi") \
+			.replace("Shilda'nın", "gölgenin") \
+			.replace("Shilda'ya", "gölgeye") \
+			.replace("Shilda ile", "gölge ile") \
+			.replace("Shilda", "Gölge")
+		raw_title = raw_title.replace("Shilda", "Gölge")
+	detail_title.text = raw_title
+	detail_body.text = raw_body
 	detail_body.scroll_to_line(0)
 
 

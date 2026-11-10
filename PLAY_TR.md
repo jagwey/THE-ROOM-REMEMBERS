@@ -43,12 +43,8 @@
    - **Ayna Tapınağı**'nda **Gölge Atılması (`ShadowDash`)** yeteneğini kazan (lanet bariyerlerinden ve kalkanlı gölgelerin içinden hasar almadan geçer).
    - **`729`** mührünü çöz ve **2. Mühür Parçasını (`seal_fragment_mirrors`)** al.
 6. **Bölge VI — Bellek Çekirdeği (`core`):**
-   - **Bellek Mahzeni**'nde gerçeği gör (`truth_seen`), **Mühür Odası**'nda iki mühür parçasını birleştir ve **Çekirdek**'te son seçimini yap:
-     - **Birlikte Çıkış (`GOOD`):** Her iki mühür parçası + `truth_seen` + `trusted_keeper` ile **Kabul** zemini.
-     - **Yalnız Çıkış (`SOLO_EXIT`):** Eksik bağ/parça ile çıkış seçimi.
-     - **Yeni Bekçi (`WORLD`):** **Kal / Nöbeti Devral** seçimi.
-     - **Çekirdek Çöküşü (`BAD`):** Çekirdekte Shilda'ya veya kristale saldırmak.
-     - **Lanet Ele Geçirmesi (`CURSE_TAKEOVER`):** Çekirdekte lanetin %100'e ulaşması.
+   - **Bellek Mahzeni**'nde gerçeği gör (`truth_seen`), **Mühür Odası**'nda iki mühür parçasını birleştir ve **Çekirdek**'e in.
+   - **Kanonik Final (BÖLÜM I SONU):** Ruh Kesiği ile ana mühür kırılır; Shilda insan formuna döner. Çıkış kapısı aralanırken Kurucu X ortaya çıkar ve boyutlar arası deneyin perdesini aralar.
 
 ---
 
@@ -57,7 +53,7 @@
 ### Android APK Dışa Aktarma
 ```powershell
 New-Item -ItemType Directory -Force -Path $env:LOCALAPPDATA\Temp\torimon-build | Out-Null
-godot --headless --path . --export-debug "Android" "$env:LOCALAPPDATA\Temp\torimon-build\TheRoomRemembers-1.4.8-android-arm64.apk"
+godot --headless --path . --export-debug "Android" "$env:LOCALAPPDATA\Temp\torimon-build\TheRoomRemembers-1.6.0-android-arm64.apk"
 ```
 
 ### Headless Denetim ve Smoke Testleri

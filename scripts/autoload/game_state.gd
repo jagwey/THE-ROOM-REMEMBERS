@@ -82,14 +82,15 @@ func _ready() -> void:
 	hearts_changed.emit(hearts, max_hearts)
 
 
+## Yeni yaşam: Noroi'nin bu hayata ait bilgisi tamamen silinir. Normal ölüm her zaman
+## Uyanış yatağında doğurur; önceki hayatın uzak checkpoint'i yeni hayata taşınmaz.
+## (Dünya hafızası ve oyuncu ilerlemesi burada DEĞİŞMEZ.)
 func reset_character_life() -> void:
-	var cp: Vector2 = get_checkpoint()
-	var room: StringName = character_current_life_knowledge.get("checkpoint_room", &"awakening")
 	character_current_life_knowledge = {
-		"room": room,
-		"checkpoint": cp,
-		"checkpoint_room": room,
-		"spawn_id": &"checkpoint",
+		"room": &"awakening",
+		"checkpoint": DEFAULT_CHECKPOINT,
+		"checkpoint_room": &"awakening",
+		"spawn_id": &"rebirth_bed",
 		"interacted": [],
 		"dialogue_flags": {},
 		"warned_hazard": false,
@@ -246,3 +247,40 @@ func _clear_legacy_shilda_named() -> void:
 ## Shilda'nın konuşmacı adı: isim öncesi "???", sonrası "Shilda".
 func keeper_speaker_name() -> String:
 	return "Shilda" if is_shilda_named() else "???"
+
+
+func get_shilda_trust_state() -> Dictionary:
+	if not player_progress_knowledge.has("shilda_trust"):
+		player_progress_knowledge["shilda_trust"] = {
+			"warnings_heeded": 0,
+			"warnings_breached": 0,
+			"echoes_completed": 0,
+			"echoes_skipped": 0,
+			"flowers_respected": true,
+			"sanctuary_peace": true,
+			"strikes_dealt": 0,
+			"reconciled": false,
+		}
+	return player_progress_knowledge["shilda_trust"]
+
+
+func is_shilda_trusted() -> bool:
+	if bool(player_progress_knowledge.get("keeper_hurt", false)):
+		return false
+	if bool(player_progress_knowledge.get("keeper_withdrew", false)):
+		return false
+	if bool(player_progress_knowledge.get("trusted_keeper", false)):
+		return true
+	var t: Dictionary = get_shilda_trust_state()
+	var score: int = 0
+	if int(t.get("warnings_heeded", 0)) >= int(t.get("warnings_breached", 0)):
+		score += 1
+	if int(t.get("echoes_completed", 0)) >= 1:
+		score += 1
+	if bool(t.get("flowers_respected", true)):
+		score += 1
+	if bool(t.get("sanctuary_peace", true)) and int(t.get("strikes_dealt", 0)) == 0:
+		score += 1
+	if bool(t.get("reconciled", false)):
+		score += 1
+	return score >= 3

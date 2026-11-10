@@ -1,0 +1,97 @@
+{
+  "project": "The Room Remembers / Torimon",
+  "character": "Shilda (White Guardian Remastered)",
+  "version": "2.0-HD",
+  "design": "White/silver hair, black-gray-crimson ceremonial dress, gentle human face, red spider lily flower and halo ornament, pristine alpha transparency, zero jitter",
+  "sprite_canvas": [
+    224,
+    224
+  ],
+  "target_ratio_to_Noroi": 1.6,
+  "zero_jitter_aligned": true,
+  "max_torso_drift_px": 0.9,
+  "foot_baseline_y": 196,
+  "animations": {
+    "idle": {
+      "frames": 8,
+      "fps": 7.0,
+      "loop": true,
+      "alias": "observe",
+      "frame_size": [224, 224],
+      "description": "Sabit duruş / nefes alma (torso drift < 0.8px, ayak oynamaz)"
+    },
+    "walk": {
+      "frames": 8,
+      "fps": 9.0,
+      "loop": true,
+      "alias": null,
+      "frame_size": [224, 224],
+      "description": "Yürüme / süzülme (torso drift < 0.7px)"
+    },
+    "talk": {
+      "frames": 6,
+      "fps": 6.0,
+      "loop": true,
+      "alias": null,
+      "frame_size": [224, 224],
+      "description": "Konuşma / baş ve el jestleri (eskiden 33px sola kayıyordu, şimdi 0px kayma)"
+    },
+    "warning": {
+      "frames": 6,
+      "fps": 7.0,
+      "loop": false,
+      "alias": "warn",
+      "frame_size": [224, 224],
+      "description": "Uyarma / elini uzatma (eskiden 30px sola kayıyordu, şimdi 0px kayma)"
+    },
+    "cast": {
+      "frames": 8,
+      "fps": 11.0,
+      "loop": false,
+      "alias": "attack",
+      "frame_size": [224, 224],
+      "description": "Koruyucu büyü / saldırı jesti (torso drift < 1.0px)"
+    },
+    "flower": {
+      "frames": 6,
+      "fps": 7.0,
+      "loop": false,
+      "alias": "grieve",
+      "frame_size": [224, 224],
+      "description": "Diz çökme / kırmızı çiçek sunma / yas (ayak tabanı sabit)"
+    },
+    "vanish": {
+      "frames": 6,
+      "fps": 8.0,
+      "loop": false,
+      "alias": "disappear",
+      "frame_size": [224, 224],
+      "description": "Kaybolma / çözünme (son kare kasıtlı tam şeffaf)"
+    },
+    "dash": {
+      "frames": 8,
+      "fps": 12.0,
+      "loop": false,
+      "alias": null,
+      "frame_size": [224, 224],
+      "description": "Hızlı atılma / kayma hareketi"
+    }
+  },
+  "total_frames": 48,
+  "source_illustrated_frames": 47,
+  "transparent_ending_frames": 1,
+  "master_atlas": "spritesheets/shilda_master_atlas.png",
+  "in_scale_keeper_sheet": "spritesheets/shilda_keeper_sheet_104x128.png",
+  "portraits_resolution": [384, 384],
+  "portrait_names": [
+    "neutral",
+    "gentle",
+    "angry",
+    "worried",
+    "sad",
+    "eyes_closed",
+    "determined",
+    "smile"
+  ],
+  "ui_cleaned": true
+}

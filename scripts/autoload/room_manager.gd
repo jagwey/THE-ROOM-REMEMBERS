@@ -131,6 +131,13 @@ func get_active_room_id() -> StringName:
 	return _current
 
 
+func get_active_room_bounds() -> Rect2:
+	var b := get_room_bounds(_current)
+	if b.size.x <= 0.0 or b.size.y <= 0.0:
+		return Rect2(0, 0, 640.0, 360.0)
+	return b
+
+
 ## "ODA 01 · Uyanış" — sıra ROOM_ORDER'dan; bilinmeyen oda "ODA ?? · <id>".
 func get_room_number_and_title(room_id: StringName) -> String:
 	var idx := ROOM_ORDER.find(String(room_id))
@@ -247,6 +254,8 @@ func apply_initial_room(room_id: StringName, spawn_id: StringName = &"default", 
 		return
 	_deactivate_all_rooms()
 	_current = room_id
+	GameState.character_current_life_knowledge["room"] = room_id
+	GameState.mark_room_visited(room_id)
 	var entry: Dictionary = _rooms[room_id]
 	var root: Node2D = entry["root"]
 	if root:

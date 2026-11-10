@@ -15,12 +15,16 @@ func on_interact(_by: Node) -> void:
 	if _busy:
 		return
 	_busy = true
-	var seen: bool = bool(GameState.player_progress_knowledge.get("pocket_watch_seen", false))
-	if seen:
+	## "Hâlâ aynı yerde" yalnız BU hayatta saate zaten bakıldıysa söylenir (karakter bilgisi).
+	## Önceki hayatta bakılmış olması Noroi'ye geçmez; kanıt/günlük oyuncu ilerlemesinde kalır.
+	var life_flags: Dictionary = GameState.character_current_life_knowledge.get("dialogue_flags", {})
+	if bool(life_flags.get("pocket_watch_inspected", false)):
 		DialogueManager.say("Noroi", "Akrep ve yelkovan hâlâ aynı yerde.")
 		await DialogueManager.dialogue_finished
 		_busy = false
 		return
+	life_flags["pocket_watch_inspected"] = true
+	GameState.character_current_life_knowledge["dialogue_flags"] = life_flags
 
 	_opening_hook()
 	DialogueManager.say("Noroi", "Saat durmuş. Ama içeriden hâlâ ses geliyor.")

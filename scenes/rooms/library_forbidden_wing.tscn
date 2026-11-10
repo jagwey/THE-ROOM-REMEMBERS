@@ -45,7 +45,7 @@ grant_world_flag = &"seal_shard_1"
 title = "1. Mühür Parçası"
 texture_path = "res://assets/props/seal.png"
 tint = Color(1, 0.75, 0.8, 1)
-lines = PackedStringArray("Noroi|Kırık bir mührün yarısı. Kenarında Shilda'nın adı.", "Shilda|(uzaktan) Diğer yarısı aynaların ardında.")
+lines = PackedStringArray("Noroi|Kırık bir mührün yarısı. Kenarında bir bekçi mührü.", "Shilda|(uzaktan) Diğer yarısı aynaların ardında.")
 
 [node name="ProtocolSeal" type="StaticBody2D" parent="Interactive"]
 position = Vector2(720.0, 288.0)

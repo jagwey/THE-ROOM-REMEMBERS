@@ -71,6 +71,7 @@ func play(tree: SceneTree, fast_mode: bool = false) -> void:
 		["Shilda", "Sanırım... sonunda bitti."],
 		["Noroi", "Gidelim."],
 	])
+	await _exit_door_opens()
 	await _wait(0.8)
 	await _say([[DialogueManager.UNKNOWN_VOICE, "Demek sonunda başardınız."]])
 	await _say([["Shilda", "Bu ses..."]])
@@ -169,6 +170,21 @@ func _seal_break() -> void:
 	tw.tween_property(_bonds, "modulate:a", 0.0, d)
 	tw.tween_property(_bonds, "scale", Vector2(2.2, 2.2), d)
 	await _wait(1.0)
+
+
+func _exit_door_opens() -> void:
+	_stage(&"exit_door_opens")
+	var exit_light := _make_glow(Color(0.9, 0.95, 1.0, 0.95), 80.0)
+	exit_light.name = "ExitDoorLight"
+	exit_light.z_index = 3
+	_scene.add_child(exit_light)
+	exit_light.global_position = Vector2(880, 268)
+	exit_light.scale = Vector2(0.2, 1.8)
+	_camera_trauma(0.4)
+	var tw := exit_light.create_tween().set_parallel(true)
+	tw.tween_property(exit_light, "scale:x", 1.2, 0.8 if not fast else 0.05)
+	tw.tween_property(exit_light, "modulate:a", 0.9, 0.8 if not fast else 0.05)
+	await _wait(0.8)
 
 
 func _shilda_human() -> void:

@@ -7,6 +7,9 @@ signal band_changed(band: int)
 signal curse_whisper(text: String)
 signal possession_started
 signal possession_finished
+signal curse_possession_started
+signal curse_possession_finished
+signal curse_failed_life
 
 enum Band { CONTROL, FIRST_SIGNS, DANGER, CRITICAL }
 
@@ -22,6 +25,9 @@ var curse: float = 0.0
 var visible_meter: bool = false ## 50+ görüldüyse küçük mühür açık kalır
 var band: int = Band.CONTROL
 var possessing: bool = false
+var is_possessing: bool:
+	get: return possessing
+	set(v): possessing = v
 
 
 static func band_for(value: float) -> int:
@@ -39,7 +45,7 @@ func get_band() -> int:
 
 
 func add_curse(amount: float, reason: StringName = &"") -> void:
-	if amount <= 0.0 or possessing:
+	if amount <= 0.0 or possessing or DeathManager.is_dying:
 		return
 	if reason != &"":
 		var touched: Array = GameState.world_memory_state["forbidden_touched"]
@@ -57,7 +63,7 @@ func clear_curse(amount: float) -> void:
 
 ## Lanet değerini ayarla (0–100). 100'e ulaşırsa ele geçirilme başlar.
 func set_curse(value: float) -> void:
-	if possessing:
+	if possessing or DeathManager.is_dying:
 		return
 	var prev := curse
 	curse = clampf(value, 0.0, CURSE_MAX)
@@ -98,13 +104,13 @@ func _update_band(prev: float) -> void:
 
 
 func _begin_possession() -> void:
-	## Ölüm/final sırasında ele geçirme başlamaz; lanet 99'da tutulur.
+	## Ölüm/final sırasında ele geçirme başlamaz.
 	if DeathManager.is_dying or EndingManager.current != EndingManager.Ending.NONE:
-		curse = CURSE_MAX - 1.0
-		curse_changed.emit(curse)
 		return
 	possessing = true
 	possession_started.emit()
+	curse_possession_started.emit()
+	curse_failed_life.emit()
 	DialogueManager.clear()
 	var repeat: bool = GameState.possession_count > 0
 	GameState.possession_count += 1
@@ -125,6 +131,19 @@ func _begin_possession() -> void:
 	UiGate.set_cutscene(false)
 	possessing = false
 	possession_finished.emit()
+	curse_possession_finished.emit()
+
+
+## Contract entrypoint (Interface Contract 1 / PROJECT.md)
+func fail_curse_possession() -> void:
+	if DeathManager.is_dying:
+		return
+	_begin_possession()
+
+
+## Legacy alias for compatibility with R4/dispatch requirements
+func _fail_life() -> void:
+	_begin_possession()
 
 
 ## Son committed kayda dön: oda + güvenli konum; dünya ve hikâye durumu committed hale gelir.
@@ -165,6 +184,7 @@ func _reload_committed() -> void:
 
 
 func reset_for_new_life() -> void:
+	possessing = false
 	curse = 0.0
 	if band != Band.CONTROL:
 		band = Band.CONTROL

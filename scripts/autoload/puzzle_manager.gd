@@ -66,3 +66,63 @@ func mark_solved(puzzle_id: StringName) -> void:
 
 func is_solved(puzzle_id: StringName) -> bool:
 	return bool(solved.get(String(puzzle_id), false))
+
+
+const HINTS: Dictionary = {
+	&"awakening_weight": {
+		"goal": "Kapıyı açık tutmak için bir ağırlık gerekiyor.",
+		"orientation": "Ağırlık taşı taşınabilir; basamak plakasına kadar itilebilir.",
+		"explicit": "Taş ya da hareketsiz bir beden plakanın üzerinde durursa kapı açık kalır."
+	},
+	&"awakening_memory_code": {
+		"goal": "Taş mühür üç haneli bir bellek rezonansı bekliyor.",
+		"orientation": "Geçitteki yarıkta geçmişten kalan bir ses yankılanıyor.",
+		"explicit": "Yarıktaki fısıltıyı dinle; zihninde canlanan üç sembolü sırayla gir."
+	},
+	&"decay_weight_latch": {
+		"goal": "Çürüme bahçesine giden sürgülü kapı kilitli.",
+		"orientation": "Zemindeki plaka ağırlıkla tetiklenir; karşıdaki mekanizma sürgüyü yakalar.",
+		"explicit": "Ağır kütleyi plakanın tam üzerine sürükleyerek sürgüyü kalıcı olarak kilitle."
+	},
+	&"decay_archive_key": {
+		"goal": "Arşiv kapısı mühürlü; kilitte bir çiçek motifi yer alıyor.",
+		"orientation": "Bahçedeki kırmızı yaprakları incele ve Bekçi'nin güvenini kazan.",
+		"explicit": "Bekçi ile barış içinde konuşup çiçeğin anısını günlüğüne kaydet; kilit açılır."
+	},
+	&"library_page_order": {
+		"goal": "Dağılmış arşiv sayfaları doğru kronolojiye dizilmeli.",
+		"orientation": "Sayfa kenarlarındaki tarih damgaları ve yanık izleri olayların sırasını gösterir.",
+		"explicit": "İlk deney başlangıcından mühürlerin kapandığı felaket gününe kadar olayları sırala."
+	},
+	&"mirrors_dual": {
+		"goal": "İkiz aynaların arkasındaki geçit eşzamanlı rezonans istiyor.",
+		"orientation": "Aynadaki yansıma seninle zıt yönde hareket eder; iki kristali aynı anda tetikle.",
+		"explicit": "Gölge Atılması ile mesafeyi hızla kapatıp iki tarafın enerjisini dengele."
+	},
+	&"core_seal": {
+		"goal": "Çekirdeğin ana mührü kırılmalı ve boyut kapısı aralanmalı.",
+		"orientation": "Her iki mühür parçası birleşmeden çekirdek savunması gevşemez.",
+		"explicit": "Bekçi ile birlikte çekirdeğin merkezine yaklaş ve Ruh Kesiği ile bağı kopar."
+	}
+}
+
+
+func get_hints(puzzle_id: StringName) -> Dictionary:
+	return HINTS.get(puzzle_id, {
+		"goal": "Odadaki izleri ve mekanizmaları incele.",
+		"orientation": "Çevredeki yankılar ve nesneler yol gösterir.",
+		"explicit": "Bulmacanın parçalarını sırayla birleştir."
+	})
+
+
+func get_current_hint(puzzle_id: StringName, tier: int = 1) -> String:
+	var h := get_hints(puzzle_id)
+	match tier:
+		1:
+			return String(h.get("goal", ""))
+		2:
+			return String(h.get("orientation", ""))
+		3:
+			return String(h.get("explicit", ""))
+		_:
+			return String(h.get("goal", ""))

@@ -540,6 +540,19 @@ func on_interact(_by: Node) -> void:
 	if _busy or DialogueManager.is_open:
 		DialogueManager.advance()
 		return
+	# Barışma / Onarım mekaniği (Pillar 5)
+	if bool(GameState.player_progress_knowledge.get("keeper_withdrew", false)) or mode == Mode.MOURNING:
+		DialogueManager.say("Noroi", "Özür dilerim. Seni incitmek istemedim.")
+		DialogueManager.say(GameState.keeper_speaker_name(), "…Acı unutturmaz ama affetmek mümkün. Yanımda durabilirsin.")
+		await _await_dialogue_or_smoke()
+		GameState.player_progress_knowledge["keeper_withdrew"] = false
+		GameState.player_progress_knowledge["keeper_hurt"] = false
+		var trust_state := GameState.get_shilda_trust_state()
+		trust_state["reconciled"] = true
+		modulate = Color.WHITE
+		set_mode(Mode.OBSERVE)
+		SaveManager.save_game()
+		return
 	## İlk gerçek konuşma = isim sahnesi. Ad söylenene dek ilk etkileşim bunu tetikler.
 	if not GameState.is_shilda_named():
 		await _run_naming_scene()
@@ -606,14 +619,15 @@ func _run_naming_scene() -> void:
 	_busy = true
 	_queue_naming_lines()
 	await _await_dialogue_or_smoke()
-	## Konuşma yarıda kapansa bile ad artık bilinir; takılma yok.
-	GameState.set_shilda_named(true)
+	_busy = false
+	if not GameState.is_shilda_named():
+		## 9. satırdan ("Ben Noroi.") önce iptal edildi/kesildi -> isim öğrenilmedi
+		return
 	GameState.player_progress_knowledge["shilda_talk_done"] = true
 	GameState.player_progress_knowledge["seen_keeper"] = true
 	GameState.player_progress_knowledge["awakening_mystery_seen"] = true
 	GameState.knowledge_changed.emit(&"player")
 	SaveManager.save_game()
-	_busy = false
 
 
 ## §17 satırları (denetim bunu doğrudan kuyruğa alıp satır satır ilerletir).
@@ -640,6 +654,9 @@ func receive_player_strike() -> void:
 	if DeathManager.is_dying:
 		return
 	GameState.character_current_life_knowledge["struck_keeper"] = true
+	_spawn_defensive_shield()
+	var trust_state := GameState.get_shilda_trust_state()
+	trust_state["strikes_dealt"] = int(trust_state.get("strikes_dealt", 0)) + 1
 	if mode == Mode.COMBAT:
 		## Karşılaşmada vuruş: geri sendeler, ilişki yine zedelenir ama son tetiklenmez.
 		_combat_phase = &"stunned"
@@ -679,11 +696,12 @@ func receive_player_strike() -> void:
 			_strikes = 0 ## onarım için sıfırla
 			SaveManager.save_game()
 			return
-		## Çekirdekte Shilda düşmez: vuruş savuşturulur (öldürülemez).
-	_strikes = 0
-	_flash(Color(1.5, 1.4, 1.6, 1))
-	DialogueManager.say(GameState.keeper_speaker_name(), "…Beni durduramazsın. Ben de seni durdurmayacağım.")
-	await _await_dialogue_or_smoke()
+		else:
+			## Çekirdekte Shilda düşmez: vuruş savuşturulur (öldürülemez).
+			_strikes = 0
+			_flash(Color(1.5, 1.4, 1.6, 1))
+			DialogueManager.say(GameState.keeper_speaker_name(), "…Beni durduramazsın. Ben de seni durdurmayacağım.")
+			await _await_dialogue_or_smoke()
 
 
 # --- Sargı hafızası ---------------------------------------------------------------
@@ -884,6 +902,28 @@ func _face_player() -> void:
 		sprite.flip_h = _player.global_position.x < global_position.x
 
 
+func _spawn_defensive_shield() -> void:
+	var shield := Node2D.new()
+	shield.name = "DefensiveShield"
+	shield.z_index = 6
+	add_child(shield)
+	var ring := Line2D.new()
+	ring.width = 2.5
+	ring.default_color = Color(0.7, 0.85, 1.0, 0.85)
+	var pts := PackedVector2Array()
+	for i in 17:
+		var rad := i * TAU / 16.0
+		pts.append(Vector2(cos(rad), sin(rad)) * 36.0)
+	ring.points = pts
+	shield.add_child(ring)
+	shield.position = Vector2(0, -28)
+	var tw := shield.create_tween().set_parallel(true)
+	tw.tween_property(shield, "scale", Vector2(1.3, 1.3), 0.35)
+	tw.tween_property(shield, "modulate:a", 0.0, 0.35)
+	tw.chain().tween_callback(shield.queue_free)
+	_sfx(&"sword_hit")
+
+
 func _flash(c: Color) -> void:
 	modulate = c
 
@@ -896,8 +936,10 @@ func _sfx(id: StringName) -> void:
 
 func _await_dialogue_or_smoke() -> void:
 	if OS.get_environment("TORIMON_SMOKE") == "1" or DisplayServer.get_name() == "headless":
-		await get_tree().create_timer(0.1).timeout
-		if DialogueManager.is_open:
-			DialogueManager.clear()
+		var safety := 0
+		while DialogueManager.is_open and safety < 100:
+			safety += 1
+			DialogueManager.advance()
+			await get_tree().process_frame
 		return
 	await DialogueManager.dialogue_finished

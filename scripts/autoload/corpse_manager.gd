@@ -40,6 +40,7 @@ func record_corpse_at(pos: Vector2, reason: StringName = &"unknown") -> String:
 		"weight": 1,
 		"usable_for_puzzle": true,
 		"reason": String(reason),
+		"anchored": false,
 		"anchoring": false,
 		"facing": facing,
 		"curse": CurseManager.curse,
@@ -88,16 +89,16 @@ func _trim_excess() -> void:
 	var corpses: Array = GameState.world_memory_state["corpses"]
 	var traces: Array = GameState.world_memory_state["traces"]
 	while corpses.size() > MAX_CORPSES:
-		## Aktif bulmacayı tutan cesetler silinmez (sert üst sınır: MAX_CORPSES + 3).
+		## Aktif bulmacayı tutan cesetler silinmez.
 		var idx := -1
 		for i in corpses.size():
-			if not bool((corpses[i] as Dictionary).get("anchoring", false)):
+			var c: Dictionary = corpses[i] as Dictionary
+			if not bool(c.get("anchoring", false)) and not bool(c.get("anchored", false)):
 				idx = i
 				break
 		if idx < 0:
-			if corpses.size() <= MAX_CORPSES + 3:
-				break
-			idx = 0
+			# Tüm cesetler plakalarda kilitli/anchored; bulmacayı bozmamak için hepsi korunur
+			break
 		var old: Dictionary = corpses.pop_at(idx)
 		var kind := "stain"
 		var n := traces.size() % 3
@@ -127,6 +128,22 @@ func get_traces() -> Array:
 	return GameState.world_memory_state["traces"]
 
 
+func set_corpse_anchored(corpse_id: String, anchored: bool = true) -> void:
+	for c in GameState.world_memory_state["corpses"]:
+		if c is Dictionary and String(c.get("id", "")) == corpse_id:
+			c["anchored"] = anchored
+			c["anchoring"] = anchored
+			break
+	for node in _spawned:
+		if is_instance_valid(node) and "corpse_id" in node and String(node.corpse_id) == corpse_id:
+			if node.has_method("set_anchored"):
+				node.set_anchored(anchored)
+			elif node.has_method("set_anchoring"):
+				node.set_anchoring(anchored)
+			elif "is_anchored" in node:
+				node.is_anchored = anchored
+
+
 func mark_flower_on_corpse(corpse_id: String) -> void:
 	for c in GameState.world_memory_state["corpses"]:
 		if c is Dictionary and String(c.get("id", "")) == corpse_id:
@@ -138,7 +155,8 @@ func mark_flower_on_corpse(corpse_id: String) -> void:
 
 func _find_active_corpses_root() -> Node:
 	## Aktif odanın corpses_root'unu seç — gruptaki ilk (çoğunlukla Uyanış) değil.
-	var room := String(RoomManager.get_active_room_id())
+	var active_id := RoomManager.get_active_room_id()
+	var room := String(active_id) if active_id != &"" else String(GameState.character_current_life_knowledge.get("room", &"awakening"))
 	var fallback: Node = null
 	for n in get_tree().get_nodes_in_group("corpses_root"):
 		if fallback == null:
@@ -175,7 +193,8 @@ func rebuild_world_corpses() -> void:
 	var root := _find_active_corpses_root()
 	if root == null:
 		return
-	var room := String(RoomManager.get_active_room_id())
+	var active_id := RoomManager.get_active_room_id()
+	var room := String(active_id) if active_id != &"" else String(GameState.character_current_life_knowledge.get("room", &"awakening"))
 	for c in GameState.world_memory_state["corpses"]:
 		if not (c is Dictionary):
 			continue
@@ -187,6 +206,9 @@ func rebuild_world_corpses() -> void:
 			node.setup_from_data(c)
 		_spawned.append(node)
 	_spawn_traces(root, room)
+	for p in get_tree().get_nodes_in_group("pressure_plate"):
+		if p.has_method("_recompute"):
+			p._recompute()
 
 
 func _spawn_traces(root: Node, room: String) -> void:

@@ -20,6 +20,7 @@ var _carrier: Node2D = null
 ## Taşıyan son kez sağlam zemindeyken bedenin bırakılacağı yer (ölüm/oda değişiminde buraya düşer).
 var _last_safe: Vector2 = Vector2.ZERO
 const CARRY_OFFSET := Vector2(-3, -50)
+var is_anchored: bool = false
 
 
 func _ready() -> void:
@@ -49,8 +50,14 @@ func setup_from_data(data: Dictionary) -> void:
 	echo_id = StringName(String(data.get("echo_id", "echo_%s" % corpse_id)))
 	weight = int(data.get("weight", 1))
 	usable_for_puzzle = bool(data.get("usable_for_puzzle", true))
-	var pos: Dictionary = data.get("position", {"x": 0, "y": 0})
-	global_position = Vector2(float(pos.get("x", 0)), float(pos.get("y", 0)))
+	var raw_pos: Variant = data.get("position", {"x": 0, "y": 0})
+	if raw_pos is Vector2:
+		global_position = raw_pos
+	elif raw_pos is Dictionary:
+		global_position = Vector2(float(raw_pos.get("x", 0)), float(raw_pos.get("y", 0)))
+	else:
+		global_position = Vector2.ZERO
+	is_anchored = bool(data.get("anchored", false)) or bool(data.get("anchoring", false))
 	var seen: Array = GameState.player_progress_knowledge.get("echoes_seen", [])
 	_echo_done = seen.has(String(echo_id))
 	if sprite:
@@ -226,10 +233,14 @@ func _exit_tree() -> void:
 func _push(dir: float, by_node: Node = null) -> void:
 	if not usable_for_puzzle or _pushing:
 		return
-	var bounds := RoomManager.get_room_bounds(RoomManager.get_active_room_id())
+	var bounds: Rect2 = RoomManager.get_active_room_bounds()
+	if bounds.size.x <= 0.0 and _data.has("room"):
+		bounds = RoomManager.get_room_bounds(StringName(_data.get("room", "")))
 	if bounds.size.x <= 0.0:
-		bounds = Rect2(0, 0, 640, 360)
-	var raw_target_x := clampf(global_position.x + dir * push_step, bounds.position.x + 40.0, bounds.end.x - 40.0)
+		bounds = Rect2(0, 0, 640.0, 360.0)
+	var min_x: float = bounds.position.x + 32.0
+	var max_x: float = bounds.position.x + bounds.size.x - 32.0
+	var raw_target_x := clampf(global_position.x + dir * push_step, min_x, max_x)
 	if absf(raw_target_x - global_position.x) < 0.5:
 		DialogueManager.say("Noroi", "…Daha ileri gitmiyor.")
 		return
@@ -473,13 +484,25 @@ static func make_light_texture() -> Texture2D:
 	return t
 
 
-func set_anchoring(value: bool, plate_id: StringName) -> void:
+func set_anchored(value: bool) -> void:
+	is_anchored = value
+	set_anchoring(value, &"")
+
+
+func set_anchoring(value: bool, plate_id: StringName = &"") -> void:
+	is_anchored = value
+	if _data is Dictionary:
+		_data["anchored"] = value
+		_data["anchoring"] = value
 	for c in GameState.world_memory_state["corpses"]:
 		if c is Dictionary and String(c.get("id", "")) == corpse_id:
 			if value:
+				c["anchored"] = true
 				c["anchoring"] = true
-				c["anchor_plate"] = String(plate_id)
-			elif String(c.get("anchor_plate", "")) == String(plate_id):
+				if plate_id != &"":
+					c["anchor_plate"] = String(plate_id)
+			elif plate_id == &"" or String(c.get("anchor_plate", "")) == String(plate_id):
+				c["anchored"] = false
 				c["anchoring"] = false
 			break
 

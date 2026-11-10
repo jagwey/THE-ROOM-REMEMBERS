@@ -12,22 +12,37 @@ func _ready() -> void:
 
 
 func get_interact_label() -> String:
-	return "Shilda"
+	return GameState.keeper_speaker_name()
 
 
 func on_interact(_by: Node) -> void:
 	if _busy:
 		return
-	if bool(GameState.player_progress_knowledge.get("shilda_garden_beat", false)):
-		DialogueManager.say("Shilda", "Burada güvendesin.")
-		return
 	_busy = true
-	DialogueManager.say("Shilda", "Bu çürüyen kökler… seni de çeker. Dur yanımda.")
-	DialogueManager.say("Noroi", "…Tamam. Senden yana duruyorum.")
-	DialogueManager.say("Shilda", "O zaman adını mühürlemeden gitme; hatırla.")
+	var keeper_name := GameState.keeper_speaker_name()
+	var trusted: bool = GameState.is_shilda_trusted()
+
+	if bool(GameState.player_progress_knowledge.get("shilda_garden_beat", false)):
+		if trusted:
+			DialogueManager.say(keeper_name, "Burada güvendesin. Çiçeklerin fısıltısını duyabiliyorum.")
+		else:
+			DialogueManager.say(keeper_name, "Adımlarına dikkat et. Kökler hâlâ huzursuz.")
+		await DialogueManager.dialogue_finished
+		_busy = false
+		return
+
+	# İlk derin diyalog — oyuncunun eylemlerini tartar
+	DialogueManager.say(keeper_name, "Bu çürüyen kökler… seni de çeker. Dur yanımda.")
+	if trusted:
+		DialogueManager.say("Noroi", "Seni dinliyorum. Çiçeklere zarar vermedim.")
+		DialogueManager.say(keeper_name, "Fark ettim. Adımların aceleci değil. Sana inanmak istiyorum.")
+		GameState.player_progress_knowledge["trusted_keeper"] = true
+	else:
+		DialogueManager.say("Noroi", "Buradan nasıl çıkarım?")
+		DialogueManager.say(keeper_name, "Acele ediyorsun. Bu odada güven sözle değil, adımlarla kazanılır.")
+
 	var ok: bool = await DialogueManager.dialogue_finished
 	if ok:
 		GameState.player_progress_knowledge["shilda_garden_beat"] = true
-		GameState.player_progress_knowledge["trusted_keeper"] = true
 		SaveManager.save_game()
 	_busy = false

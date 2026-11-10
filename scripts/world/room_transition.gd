@@ -285,7 +285,7 @@ func on_interact(by: Node) -> void:
 			elif idx % 2 == 0:
 				msg = "Mor bir mühür. Kılıç işlemez… ruhumla kesmeyi henüz bilmiyorum."
 			else:
-				msg = "Bu güç Yasak Kanat'ta saklı. Kütüphanede Arşivci'yi bul."
+				msg = "Mor bir mühür. Bunu kıracak güç… belki eski kitapların arasında saklı."
 		AudioManager.play_sfx(&"seal_key", -8.0, 0.55)
 		_shake_seal()
 		DialogueManager.say("Noroi", msg)
@@ -296,7 +296,7 @@ func on_interact(by: Node) -> void:
 	if target_room_id == &"core" and not EndingManager.has_both_shards():
 		if not bool(GameState.character_current_life_knowledge.get("warned_core_shards", false)):
 			GameState.character_current_life_knowledge["warned_core_shards"] = true
-			DialogueManager.say("Shilda", "Çekirdek açılacak… ama mühür parçaların eksik. Eksik girersen geri dönmek zorunda kalırsın.")
+			DialogueManager.say(GameState.keeper_speaker_name(), "Çekirdek açılacak… ama mühür parçaların eksik. Eksik girersen geri dönersin.")
 			return
 	_travel(by)
 
