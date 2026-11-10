@@ -538,6 +538,14 @@ func _on_gate_changed(_layer: UiGate.Layer) -> void:
 		_release_all_buttons()
 
 
+## Kapı/ölüm sonrası dışarıdan çağrılır: dokunmatik HUD'u güncel UiGate katmanına göre yeniler.
+func refresh_touch_controls() -> void:
+	_update_control_visibility()
+	if not UiGate.blocks_gameplay_input():
+		_release_joystick()
+		_release_all_buttons()
+
+
 func _update_control_visibility() -> void:
 	var blocked := UiGate.blocks_gameplay_input()
 	# Masaüstünde sanal joystick/düğmeler yok: yalnız dokunmatik modda ya da ilk dokunuştan sonra.

@@ -244,17 +244,9 @@ func _spawn_deflect_sparks() -> void:
 
 
 func _spawn_clarity_spark() -> void:
-	var spark := Area2D.new()
-	spark.name = "ClaritySpark"
-	spark.set_script(load("res://scripts/world/clarity_spark.gd"))
-	spark.global_position = global_position + Vector2(0, -16)
-	var mote := Sprite2D.new()
-	mote.texture = load("res://assets/props/memory_mote.png")
-	mote.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	mote.modulate = Color(0.6, 0.9, 1.0, 0.95)
-	spark.add_child(mote)
-	if get_parent():
-		get_parent().add_child(spark)
+	var ClaritySpark = load("res://scripts/world/clarity_spark.gd")
+	if get_parent() and ClaritySpark:
+		ClaritySpark.spawn_at(get_parent(), global_position + Vector2(0, -16))
 
 
 func _die() -> void:

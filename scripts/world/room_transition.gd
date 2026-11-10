@@ -89,8 +89,10 @@ func _ready() -> void:
 		cs = CollisionShape2D.new()
 		cs.name = "CollisionShape2D"
 		add_child(cs)
+	## Gotik kapı görseline hizalı etkileşim kutusu (açıklık genişliği + yüksekliğin %90'ı).
+	var art_sizes: Dictionary = GothicDoorArt.get_textures(grand)
 	var rect := RectangleShape2D.new()
-	rect.size = Vector2(maxf(60.0, GothicDoorArt.get_textures(grand)["opening_w"] + 8.0), _door_h * 0.82)
+	rect.size = Vector2(maxf(64.0, float(art_sizes["opening_w"]) + 12.0), _door_h * 0.9)
 	cs.shape = rect
 	cs.position = Vector2(0.0, FOOT_Y - rect.size.y * 0.5)
 	call_deferred("_hide_legacy_door_sprites")
@@ -105,7 +107,9 @@ func _exit_tree() -> void:
 
 
 func _on_room_changed(_from: StringName, to: StringName) -> void:
-	if _in_travel and to == target_room_id:
+	## Aktif geçiş varken diğer kapılar kilidi düşürmesin (fade yarım kalır / HUD yarışır).
+	## Geçiş RoomManager üzerinde yürür; oda PROCESS_MODE_DISABLED olsa bile await sürer.
+	if is_transitioning():
 		return
 	_in_travel = false
 	reset_transition_lock()
@@ -324,6 +328,8 @@ func _shake_seal() -> void:
 
 
 func _travel(by: Node) -> void:
+	## Kapı düğümü eski odada PROCESS_MODE_DISABLED olur; await burada kalırsa UiGate CUTSCENE
+	## ve DoorFade asılı kalır → joystick/hareket kaybolur. Geçişi her zaman aktif RoomManager yürütür.
 	_transitioning = true
 	_in_travel = true
 	var tree := get_tree()
@@ -343,54 +349,12 @@ func _travel(by: Node) -> void:
 			fade.queue_free()
 		reset_transition_lock()
 		return
-	## Ağaç tween'i: oda değişince bu kapı devre dışı kalsa da animasyon sürer.
-	var tw := tree.create_tween()
-	if player:
-		if player is CharacterBody2D:
-			(player as CharacterBody2D).velocity = Vector2.ZERO
-		var sprite := player.get_node_or_null("AnimatedSprite2D") as AnimatedSprite2D
-		var walk := absf(global_position.x - player.global_position.x) > 2.0
-		if sprite and walk:
-			sprite.flip_h = global_position.x < player.global_position.x
-		if walk and "scripted_walk" in player:
-			player.set("scripted_walk", true)
-		tw.tween_property(player, "global_position:x", global_position.x, WALK_TIME) \
-			.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-		tw.tween_callback(_end_walk.bind(player))
-		tw.tween_property(player, "modulate", Color(0.35, 0.28, 0.42, 1.0), FADE_OUT)
-		tw.parallel().tween_property(rect, "color:a", 1.0, FADE_OUT)
-	else:
-		tw.tween_property(rect, "color:a", 1.0, FADE_OUT)
-	await tw.finished
-	if not is_instance_valid(tree):
-		if is_instance_valid(fade):
-			fade.queue_free()
-		reset_transition_lock()
-		return
-	RoomManager.enter_room(target_room_id, target_spawn_id)
-	if is_instance_valid(player):
-		player.modulate = Color.WHITE
-		if player is CharacterBody2D:
-			(player as CharacterBody2D).velocity = Vector2.ZERO
-	await tree.process_frame
-	if not is_instance_valid(tree):
-		if is_instance_valid(fade):
-			fade.queue_free()
-		reset_transition_lock()
-		return
-	if not is_instance_valid(rect):
-		if is_instance_valid(fade):
-			fade.queue_free()
-		_in_travel = false
-		reset_transition_lock()
-		return
-	var tw2 := tree.create_tween()
-	tw2.tween_property(rect, "color:a", 0.0, FADE_IN)
-	await tw2.finished
-	if is_instance_valid(fade):
-		fade.queue_free()
+	RoomManager.run_door_travel(self, player, fade, rect)
+
+
+## RoomManager tarafından çağrılır (autoload: oda disable'dan etkilenmez).
+func finish_travel_flags() -> void:
 	_in_travel = false
-	reset_transition_lock()
 
 
 static func _end_walk(player: Node) -> void:
@@ -411,6 +375,11 @@ static func reset_transition_lock() -> void:
 		for c in tree.root.get_children():
 			if is_instance_valid(c) and c is CanvasLayer and (c.name == "DoorFade" or c.name.begins_with("DoorFade")):
 				c.queue_free()
+	## Ölümdeki gate_changed kaçırma hatasının kapı eşi: HUD'u her kilit çözülüşünde yenile.
+	if tree:
+		var hud := tree.get_first_node_in_group("hud")
+		if hud and hud.has_method("refresh_touch_controls"):
+			hud.call("refresh_touch_controls")
 
 
 func _make_fade(tree: SceneTree) -> CanvasLayer:

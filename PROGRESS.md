@@ -315,3 +315,8 @@ oom_door\) <= 44.0 px mesafede -200 etkileÅŸim Ã¶ncelik bonusu eklendi.
 - [x] Faz 5 audit güncellemesi + headless koşu (death_loop, memory_seal, curse_reload, m1/m2/m3, e2e 50/50).
 - [x] Sürüm 1.7.0 / versionCode 31; APK derlendi; GitHub Releases.
 
+## v1.8.0 — Kapı kontrol fix + polish (2026-11-10)
+- [x] P0: ODA 03 sonrası kaybolan joystick — kök neden: kapı `_travel` await'i eski odada `PROCESS_MODE_DISABLED` kalıyordu; geçiş `RoomManager.run_door_travel` üzerinde; `door_controls_audit` eklendi.
+- [x] Polish: gotik kapı collision hizası, ClaritySpark ortak spawn/magnet, ???/X? ayrı portreler, Bölüm II teaser; jump/fall sheet satır 4 doğrulandı.
+- [x] Sürüm 1.8.0 / versionCode 32; ses/Play Store yok.
+

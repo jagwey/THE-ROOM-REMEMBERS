@@ -60,7 +60,13 @@ func show_key(new_key: StringName, animate: bool) -> void:
 		visible = false
 		return
 	rect.texture = load("res://scripts/ui/dialogue_portraits.gd").texture_for(new_key)
-	(rect.material as ShaderMaterial).set_shader_parameter(&"tint", Vector3(0.05, 0.04, 0.09) if new_key == &"shilda_unknown" else Vector3.ONE)
+	## Ayrı asset'ler kendi siluetlerini taşır; ek karartma yalnız yedek anahtarlarda.
+	var tint := Vector3.ONE
+	if new_key == &"shilda_unknown":
+		tint = Vector3(0.55, 0.5, 0.7)
+	elif new_key == &"x_unknown":
+		tint = Vector3(0.75, 0.85, 1.0)
+	(rect.material as ShaderMaterial).set_shader_parameter(&"tint", tint)
 	visible = true
 	if not animate:
 		modulate.a = 1.0

@@ -130,7 +130,7 @@ func _run() -> void:
 	quit(1 if failures else 0)
 
 
-const ALLOWED_SPEAKERS := ["", "???", "Sistem", "Kayıt", "Shilda", "Noroi", "Arşivci", "Yansıma", "Ses", "Çekirdek", "GameState.keeper_speaker_name()"]
+const ALLOWED_SPEAKERS := ["", "???", "X?", "X", "Sistem", "Kayıt", "Shilda", "Noroi", "Arşivci", "Yansıma", "Ses", "Çekirdek", "GameState.keeper_speaker_name()"]
 
 
 ## Verilen alt dizgeyi içeren fonksiyon adları (üst düzey func satırına göre).

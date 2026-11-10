@@ -201,7 +201,7 @@ func _test_transition_lock_reset() -> void:
 	await process_frame
 	check(root.get_node_or_null("DoorFade") == null or fake_fade.is_queued_for_deletion(), "reset_transition_lock frees lingering DoorFade")
 
-	# Test room_changed signal handler resets lock and clears lingering DoorFade
+	# Aktif geçiş sırasında room_changed kilidi DÜŞÜRMEMELİ (HUD/cutscene yarışı).
 	var fake_fade2 := CanvasLayer.new()
 	fake_fade2.name = "DoorFade"
 	root.add_child(fake_fade2)
@@ -211,9 +211,15 @@ func _test_transition_lock_reset() -> void:
 	rm.room_changed.emit(&"test_room_a", &"test_room_b")
 	await process_frame
 
-	check(not rt_script.is_transitioning(), "RoomManager.room_changed resets transition lock")
-	check(not gate.is_cutscene(), "RoomManager.room_changed resets UiGate cutscene")
-	check(root.get_node_or_null("DoorFade") == null or fake_fade2.is_queued_for_deletion(), "RoomManager.room_changed cleans up lingering DoorFade")
+	check(rt_script.is_transitioning(), "room_changed does not clear lock while transitioning")
+	check(gate.is_cutscene(), "room_changed does not clear cutscene while transitioning")
+	check(root.get_node_or_null("DoorFade") != null and not fake_fade2.is_queued_for_deletion(), "DoorFade kept during active transition")
+	## Geçiş bitince kilidi temizle; orphan fade temizlenir.
+	rt_script.reset_transition_lock()
+	await process_frame
+	check(not rt_script.is_transitioning(), "reset_transition_lock clears after travel")
+	check(not gate.is_cutscene(), "reset_transition_lock clears cutscene")
+	check(root.get_node_or_null("DoorFade") == null or fake_fade2.is_queued_for_deletion(), "reset_transition_lock cleans DoorFade")
 
 	# Test door _exit_tree resets transition lock
 	var test_door: Area2D = rt_script.new()

@@ -179,29 +179,6 @@ func _spawn_particles() -> void:
 
 
 func _spawn_clarity_spark() -> void:
-	var spark := Area2D.new()
-	spark.name = "ClaritySpark"
-	spark.set_script(load("res://scripts/world/clarity_spark.gd"))
-	spark.global_position = global_position + Vector2(0, -16)
-
-	var mote := Sprite2D.new()
-	mote.texture = load("res://assets/props/memory_mote.png")
-	mote.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	mote.modulate = Color(0.6, 0.9, 1.0, 0.95)
-	spark.add_child(mote)
-
-	var halo := Sprite2D.new()
-	var halo_tex = load("res://assets/props/halo.png")
-	if halo_tex:
-		halo.texture = halo_tex
-		halo.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-		halo.scale = Vector2(0.35, 0.35)
-		halo.modulate = Color(0.4, 0.8, 1.0, 0.5)
-		spark.add_child(halo)
-
-	var tw := spark.create_tween().set_loops()
-	tw.tween_property(mote, "scale", Vector2(1.2, 1.2), 0.5).set_trans(Tween.TRANS_SINE)
-	tw.tween_property(mote, "scale", Vector2(0.9, 0.9), 0.5).set_trans(Tween.TRANS_SINE)
-
-	if get_parent():
-		get_parent().add_child(spark)
+	var ClaritySpark = load("res://scripts/world/clarity_spark.gd")
+	if get_parent() and ClaritySpark:
+		ClaritySpark.spawn_at(get_parent(), global_position + Vector2(0, -16))

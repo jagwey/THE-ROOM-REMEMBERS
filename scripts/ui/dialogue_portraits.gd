@@ -5,8 +5,10 @@ const PATHS := {
 	&"noroi": "res://assets/portraits/portrait_noroi.png",
 	&"noroi_sad": "res://assets/portraits/portrait_noroi_sad.png",
 	&"shilda": "res://assets/portraits/portrait_shilda.png",
-	## Adı bilinmeyen Shilda ("???"): aynı çizim, siluet olarak karartılır (portrait_medallion).
-	&"shilda_unknown": "res://assets/portraits/portrait_shilda.png",
+	## Adı bilinmeyen Shilda ("???"): ayrı siluet asset.
+	&"shilda_unknown": "res://assets/portraits/portrait_unknown.png",
+	## Kurucu X / X? — soğuk siluet.
+	&"x_unknown": "res://assets/portraits/portrait_x.png",
 }
 ## Portre kutusu görünürken metin sütunundan düşülen genişlik (px).
 const TEXT_INSET := 78.0
@@ -24,6 +26,8 @@ static func key_for(speaker: String, sad: bool = false) -> StringName:
 			return &"shilda_unknown"
 		"Shilda":
 			return &"shilda"
+		"X?", "X":
+			return &"x_unknown"
 	return &""
 
 

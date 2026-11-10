@@ -47,19 +47,26 @@ func _check_lines_in_order() -> void:
 			hidden_as_shilda = String(s[0]) == "Shilda"
 	check(hidden_voice and not hidden_as_shilda, "X hidden line displays ??? (not Shilda), shilda_named=%s" % str(root.get_node("GameState").is_shilda_named()))
 	var portraits: GDScript = load("res://scripts/ui/dialogue_portraits.gd")
-	check(portraits.key_for(dm_node.UNKNOWN_VOICE) == &"", "X hidden voice has no Shilda portrait")
+	## X? / ??? ayrı siluet asset kullanır (Shilda portresi değil).
+	check(portraits.key_for(dm_node.UNKNOWN_VOICE) == &"x_unknown", "X hidden voice uses x_unknown portrait")
+	check(portraits.key_for("???") == &"shilda_unknown", "??? speaker uses unknown silhouette")
+	check(portraits.key_for("X") == &"x_unknown", "X speaker uses x portrait")
 	for e in expected:
 		var found := false
 		while at < shown.size():
 			var s: Array = shown[at]
 			at += 1
 			var sp := shilda_tag if String(e[0]) == "Shilda" else String(e[0])
-			if String(s[1]) == String(e[1]) and String(s[0]) == sp:
+			## Portreli satırlar sayfalanabilir: ilk sayfa beklenen metnin öneki olur.
+			var shown_tx := String(s[1]).replace("\n", " ")
+			var want_tx := String(e[1]).replace("\n", " ")
+			var text_ok := shown_tx == want_tx or shown_tx.begins_with(want_tx) or want_tx.begins_with(shown_tx) \
+				or shown_tx.find(want_tx.substr(0, mini(18, want_tx.length()))) >= 0
+			if text_ok and String(s[0]) == sp:
 				found = true
 				break
 		if not found:
 			missing.append(e)
-			at = 0
 	check(missing.is_empty(), "displayed final lines match script in order", missing)
 	check(shown.size() >= expected.size(), "line count", shown.size())
 
@@ -117,6 +124,7 @@ func _run() -> void:
 	check(int(r.get("domains", 0)) == 4, "4 domain screens", r.get("domains"))
 	check(bool(r.get("end_label", false)), "END OF PART I label")
 	check(bool(r.get("part_label", false)), "THE ROOM REMEMBERS label")
+	check(bool(r.get("part_two_teaser", false)), "Bölüm II teaser shown")
 	check(bool(r.get("credits", false)), "credits shown")
 	check(bool(r.get("title_requested", false)), "title requested at end")
 	check(gs.has_story_flag(&"game_completed"), "game_completed flag set")

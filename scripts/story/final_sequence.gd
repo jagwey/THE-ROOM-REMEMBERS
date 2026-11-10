@@ -380,6 +380,40 @@ func _title_card() -> void:
 	tw3.tween_property(box, "modulate:a", 0.0, 1.0 if not fast else 0.05)
 	await _wait(1.2)
 	box.queue_free()
+	await _part_two_teaser()
+
+
+## Jenerik öncesi Bölüm II kancası (post-credits hook değil; END OF PART I kartından hemen sonra).
+func _part_two_teaser() -> void:
+	_stage(&"part_two_teaser")
+	var box := VBoxContainer.new()
+	box.name = "PartTwoTeaser"
+	box.set_anchors_preset(Control.PRESET_FULL_RECT)
+	box.alignment = BoxContainer.ALIGNMENT_CENTER
+	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_theme_constant_override("separation", 10)
+	_overlay.add_child(box)
+	var hook := Label.new()
+	hook.name = "TeaserHook"
+	hook.text = "Ama oda hâlâ uyanık."
+	hook.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	UiTheme.apply_outlined(hook, 16, false, Palette.PALE_LILAC)
+	box.add_child(hook)
+	var t2 := Label.new()
+	t2.name = "TeaserTitle"
+	t2.text = "BÖLÜM II — yakında"
+	t2.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	UiTheme.apply_outlined(t2, 18, true, Palette.IVORY)
+	box.add_child(t2)
+	last_run["part_two_teaser"] = true
+	box.modulate.a = 0.0
+	var tw := box.create_tween()
+	tw.tween_property(box, "modulate:a", 1.0, 0.8 if not fast else 0.05)
+	await _wait(2.4 if not fast else 0.1)
+	var tw2 := box.create_tween()
+	tw2.tween_property(box, "modulate:a", 0.0, 0.7 if not fast else 0.05)
+	await _wait(0.9 if not fast else 0.05)
+	box.queue_free()
 
 
 func _credits() -> void:

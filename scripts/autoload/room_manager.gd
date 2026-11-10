@@ -161,6 +161,76 @@ func get_room_bounds(room_id: StringName) -> Rect2:
 	return e["bounds"] as Rect2
 
 
+## Kapı geçişini autoload üzerinde yürüt — kaynak odanın PROCESS_MODE_DISABLED oluşu await'i dondurmasın.
+func run_door_travel(door: Node, player: Node2D, fade: CanvasLayer, rect: ColorRect) -> void:
+	await _run_door_travel(door, player, fade, rect)
+
+
+func _run_door_travel(door: Node, player: Node2D, fade: CanvasLayer, rect: ColorRect) -> void:
+	var DoorScript = load("res://scripts/world/room_transition.gd")
+	var tree := get_tree()
+	if tree == null or not is_instance_valid(door):
+		if DoorScript:
+			DoorScript.reset_transition_lock()
+		return
+	var walk_time: float = float(DoorScript.WALK_TIME)
+	var fade_out: float = float(DoorScript.FADE_OUT)
+	var fade_in: float = float(DoorScript.FADE_IN)
+	var target_room: StringName = door.target_room_id
+	var target_spawn: StringName = door.target_spawn_id
+	var door_x: float = (door as Node2D).global_position.x if door is Node2D else 0.0
+	var tw := tree.create_tween()
+	if player:
+		if player is CharacterBody2D:
+			(player as CharacterBody2D).velocity = Vector2.ZERO
+		var sprite := player.get_node_or_null("AnimatedSprite2D") as AnimatedSprite2D
+		var walk := absf(door_x - player.global_position.x) > 2.0
+		if sprite and walk:
+			sprite.flip_h = door_x < player.global_position.x
+		if walk and "scripted_walk" in player:
+			player.set("scripted_walk", true)
+		tw.tween_property(player, "global_position:x", door_x, walk_time) \
+			.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+		tw.tween_callback(DoorScript._end_walk.bind(player))
+		tw.tween_property(player, "modulate", Color(0.35, 0.28, 0.42, 1.0), fade_out)
+		if is_instance_valid(rect):
+			tw.parallel().tween_property(rect, "color:a", 1.0, fade_out)
+	elif is_instance_valid(rect):
+		tw.tween_property(rect, "color:a", 1.0, fade_out)
+	await tw.finished
+	if not is_instance_valid(tree):
+		if is_instance_valid(fade):
+			fade.queue_free()
+		DoorScript.reset_transition_lock()
+		return
+	enter_room(target_room, target_spawn)
+	if is_instance_valid(player):
+		player.modulate = Color.WHITE
+		if player is CharacterBody2D:
+			(player as CharacterBody2D).velocity = Vector2.ZERO
+	await tree.process_frame
+	if not is_instance_valid(tree):
+		if is_instance_valid(fade):
+			fade.queue_free()
+		DoorScript.reset_transition_lock()
+		return
+	if not is_instance_valid(rect):
+		if is_instance_valid(fade):
+			fade.queue_free()
+		if is_instance_valid(door) and door.has_method("finish_travel_flags"):
+			door.finish_travel_flags()
+		DoorScript.reset_transition_lock()
+		return
+	var tw2 := tree.create_tween()
+	tw2.tween_property(rect, "color:a", 0.0, fade_in)
+	await tw2.finished
+	if is_instance_valid(fade):
+		fade.queue_free()
+	if is_instance_valid(door) and door.has_method("finish_travel_flags"):
+		door.finish_travel_flags()
+	DoorScript.reset_transition_lock()
+
+
 func enter_room(room_id: StringName, spawn_id: StringName = &"default", apply_room_checkpoint: bool = true) -> void:
 	if not _rooms.has(room_id):
 		push_warning("RoomManager.enter_room: unknown room %s" % String(room_id))
