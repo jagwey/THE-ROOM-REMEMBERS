@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS"><img src="https://img.shields.io/badge/Kaynak-v1.12.2-8B0000?style=for-the-badge&logo=godotengine&logoColor=white" alt="Kaynak v1.12.2" /></a>
+  <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS"><img src="https://img.shields.io/badge/Kaynak-v1.12.3-8B0000?style=for-the-badge&logo=godotengine&logoColor=white" alt="Kaynak v1.12.3" /></a>
   <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases"><img src="https://img.shields.io/badge/Resmi_İndirme-GitHub_Releases-5c1d3d?style=for-the-badge&logo=github" alt="All Releases" /></a>
   <a href="https://godotengine.org/"><img src="https://img.shields.io/badge/Godot_Engine-4.7.2-478CBF?style=for-the-badge&logo=godotengine&logoColor=white" alt="Godot 4.7.2" /></a>
   <img src="https://img.shields.io/badge/Dünya-6_Bölge_·_40_Oda_·_Bölüm_I-2b1838?style=for-the-badge" alt="World Scope" />
@@ -226,7 +226,8 @@ Depodaki tüm derlenmiş Android (`arm64-v8a`) APK paketleri düzenli olarak **[
 
 | Sürüm | Durum | APK Dosyası / İndirme | Öne Çıkan Yenilikler ve Kapsam |
 | :--- | :---: | :--- | :--- |
-| **v1.12.2** | 🟢 **Güncel Kaynak** | APK bu sürümde ayrıca yayınlanır | Sol ve sağ yürüme hızı eşit; lanet kendiliğinden yürütmez; hitstop ve ölüm ağır çekimi `time_scale` değerini 1.0'a döndürür (`versionCode 39`). |
+| **[v1.12.3](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.12.3)** | 🟢 **Güncel** | [📥 `TheRoomRemembers-1.12.3-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.12.3/TheRoomRemembers-1.12.3-android-arm64.apk) | Kayıt sağlamlığı ve softlock korumaları, kanon metin düzeltmeleri (1995 yalnız Perde 3+, Shilda geçmişi Yetki Masası itirafıyla), güncelleme denetleyicisi sağlamlaştırma; v1.12.2 ile aynı imza (`versionCode 40`). |
+| **v1.12.2** | Önceki | APK bu sürümde ayrıca yayınlanır | Sol ve sağ yürüme hızı eşit; lanet kendiliğinden yürütmez; hitstop ve ölüm ağır çekimi `time_scale` değerini 1.0'a döndürür (`versionCode 39`). |
 | **v1.12.1** | Önceki | APK bu sürümde ayrıca yayınlanır | Kırık Geçit geçilebilir: taş blok zıplama yüksekliğinde, diken halkasının hitbox'ı görselle aynı, dönüş boşluğu ve halkanın dışında kontrol noktası (`versionCode 38`). |
 | **v1.12.0** | Önceki | APK bu sürümde ayrıca yayınlanır | Kısa nöbet, ceset basamağı, vuruş ve ölüm hissi cilası, oda girişi kamerası (`versionCode 37`). |
 | **[v1.9.0](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.9.0)** | Önceki | [📥 `TheRoomRemembers-1.9.0-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.9.0) | Derin oynanış geçişi: sıralı bahçe ve kasa, yalan ayna, raf tahtası, kademeli günlük ipucu (`versionCode 34`). |
@@ -260,7 +261,7 @@ Depodaki tüm derlenmiş Android (`arm64-v8a`) APK paketleri düzenli olarak **[
 1. **[Releases](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases)** sayfasından son sürüm `.apk` dosyasını indirin.
 2. Veya USB hata ayıklaması açık cihaza `adb` ile yükleyin:
    ```powershell
-   adb install -r TheRoomRemembers-1.12.2-android-arm64.apk
+   adb install -r TheRoomRemembers-1.12.3-android-arm64.apk
    adb shell am start -n com.torimon.theroomremembers/com.godot.game.GodotApp
    ```
 
@@ -292,6 +293,8 @@ $env:TORIMON_TEST = "1"
 # 4. Lanet ve Mühür Tapınakları Denetimi
 & $godot --headless --path . -s res://scripts/dev/memory_seal_audit.gd
 ```
+
+> **Sürüm hazırlık raporları:** `qa/release-readiness/` altında v1.12.2 için QA/Google Play hazırlık raporları (oda matrisi, hikâye denetimi, hata kaydı, Play kontrol listesi, GO/NO-GO) bulunur. Mevcut karar: NO-GO (cihaz/insan testi, AAB, imza ve politika eksikleri). Kanıtlar yalnız headless/statik; gerçek cihaz testi yapılmadı. Çalışma kopyasında (commit edilmemiş) kayıt sağlamlığı, kilitlenme korumaları ve kanon metin düzeltmeleri yapıldı; yeni denetimler `softlock_reset_audit.gd` ve `save_robustness_audit.gd`, hepsi `docs/gelistirme/Run-Audit.ps1` içinde. Play yayını için taslaklar `docs/play/` altında (kontrol listesi, gizlilik taslağı, lisans listesi, mağaza metni). Play sürümünde güncelleme düğmesini kapatmak için export ön ayarına `play_store` özel özelliği eklenmelidir (`UpdateChecker.is_disabled_build()`). Kanon kararları (otonom, geri alınabilir): 1995 yalnız Perde 3+ içinde okunur; `shilda_past_discovered` Yetki Masası itirafında set edilir; `lore_canon_audit` CANON-A/B bunları korur. Tempo (ana yol ~43 dk) açık, mağaza metni süre vaat etmiyor. Mağaza görselleri taslağı `docs/play/store/` altındadır (öne çıkan görsel 1024×500 + aday ekran görüntüleri; yakalama aracı `scripts/dev/room_visual_capture.gd`).
 
 ---
 

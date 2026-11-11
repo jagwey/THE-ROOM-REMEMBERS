@@ -25,6 +25,8 @@ var curse: float = 0.0
 var visible_meter: bool = false ## 50+ görüldüyse küçük mühür açık kalır
 var band: int = Band.CONTROL
 var possessing: bool = false
+## Yeni oyun / başlığa dönüşte artar: sahne yenilenince asılı kalan ele geçirme coroutine'i bayatlar (BUG-002).
+var _possession_gen: int = 0
 var is_possessing: bool:
 	get: return possessing
 	set(v): possessing = v
@@ -107,6 +109,10 @@ func _begin_possession() -> void:
 	## Ölüm/final sırasında ele geçirme başlamaz.
 	if DeathManager.is_dying or EndingManager.current != EndingManager.Ending.NONE:
 		return
+	## Yeniden giriş koruması: sekans sürerken ikinci çağrı çift overlay / çift sayaç üretmesin (BUG-010).
+	if possessing:
+		return
+	var gen := _possession_gen
 	possessing = true
 	release_motion_locks()
 	possession_started.emit()
@@ -125,10 +131,14 @@ func _begin_possession() -> void:
 		tint = player.create_tween()
 		tint.tween_property(player, "modulate", Color(1.6, 0.2, 0.3, 1.0), 0.6)
 	await overlay.play(repeat)
+	if gen != _possession_gen:
+		return
 	if tint and tint.is_valid():
 		tint.kill() ## atlamada tint, yeniden doğan oyuncuyu kırmızı bırakmasın
 	_reload_committed()
 	await overlay.finish(repeat)
+	if gen != _possession_gen:
+		return
 	UiGate.set_cutscene(false)
 	possessing = false
 	release_motion_locks()
@@ -191,6 +201,9 @@ func release_motion_locks() -> void:
 
 
 func reset_for_new_life() -> void:
+	_possession_gen += 1
+	if possessing:
+		UiGate.set_cutscene(false) ## sekans sırasında sahne yenilendiyse cutscene kilidi takılı kalmasın
 	possessing = false
 	release_motion_locks()
 	curse = 0.0

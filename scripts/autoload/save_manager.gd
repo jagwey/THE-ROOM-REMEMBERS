@@ -33,13 +33,8 @@ func resume_path() -> String:
 
 func start_new_game() -> void:
 	DeathManager.release_time_scale()
-	# Explicit menu confirmation precedes this action; keep a backup.
-	if FileAccess.file_exists(SAVE_PATH):
-		DirAccess.copy_absolute(ProjectSettings.globalize_path(SAVE_PATH), ProjectSettings.globalize_path(SAVE_PATH + ".bak"))
-		DirAccess.remove_absolute(ProjectSettings.globalize_path(SAVE_PATH))
-	var prev_path := ProjectSettings.globalize_path(SAVE_PATH + ".prev")
-	if FileAccess.file_exists(SAVE_PATH + ".prev"):
-		DirAccess.remove_absolute(prev_path)
+	# Explicit menu confirmation precedes this action. Eski committed kayıt, yenisi yazılana kadar
+	# silinmez (BUG-030): commit_save başarısızsa eski iyi kayıt diskte kalır.
 	_delete_resume_files()
 	DialogueManager.clear()
 	UiGate.set_story(false)
@@ -58,11 +53,17 @@ func start_new_game() -> void:
 	PuzzleManager.sync_from_world()
 	EndingManager.reset_for_smoke()
 	EchoManager.active_echo = &""
-	DeathManager.is_dying = false
-	DeathManager.phase = DeathManager.Phase.ALIVE
+	DeathManager.reset_state()
+	UiGate.set_cutscene(false)
 	CurseManager.reset_for_new_life()
 	RoomManager.reset_registry()
-	commit_save(&"new_game", GameState.DEFAULT_CHECKPOINT, &"awakening")
+	if commit_save(&"new_game", GameState.DEFAULT_CHECKPOINT, &"awakening"):
+		## Başarılı yeni oyun: eski oyunun .prev/.bak kopyaları yeni oyunu ezmesin.
+		for suffix in [".prev", ".bak"]:
+			if FileAccess.file_exists(SAVE_PATH + suffix):
+				DirAccess.remove_absolute(ProjectSettings.globalize_path(SAVE_PATH + suffix))
+	else:
+		push_warning("Yeni oyun kaydı yazılamadı — eski kayıt korundu")
 	fresh_start_pending = true
 	get_tree().reload_current_scene()
 
@@ -140,8 +141,15 @@ func _write_atomic(path: String, data: Dictionary) -> bool:
 	if f == null or force_fail_for_test:
 		push_warning("Kayıt yazılamadı: " + (str(FileAccess.get_open_error()) if f == null else "test"))
 		return false
-	f.store_string(JSON.stringify(data))
+	var stored: Variant = f.store_string(JSON.stringify(data))
+	var write_err := f.get_error()
 	f.close()
+	## Yazma sonucu denetlenir (disk dolu / G-Ç hatası): geçici dosya doğrulanmadan hedefe dokunulmaz.
+	if (stored is bool and not stored) or write_err != OK or not _temp_matches(temp_path, int(data["save_serial"])):
+		push_warning("Kayıt geçici dosyaya yazılamadı/doğrulanamadı — eski kayıt korundu")
+		if FileAccess.file_exists(temp_path):
+			DirAccess.remove_absolute(ProjectSettings.globalize_path(temp_path))
+		return false
 
 	var g_target := ProjectSettings.globalize_path(path)
 	var g_temp := ProjectSettings.globalize_path(temp_path)
@@ -188,6 +196,12 @@ func _write_atomic(path: String, data: Dictionary) -> bool:
 	return true
 
 
+## Geçici dosya geri okunur ve beklenen save_serial'ı taşıyorsa true.
+func _temp_matches(temp_path: String, serial: int) -> bool:
+	var parsed: Variant = _read_save(temp_path)
+	return parsed is Dictionary and _serial_of(parsed) == serial
+
+
 ## Test/temizlik: committed + resume ve hepsinin .prev/.bak/.tmp dosyaları.
 func delete_all_save_files() -> void:
 	for base in [SAVE_PATH, resume_path()]:
@@ -216,7 +230,42 @@ func _delete_resume_files() -> void:
 
 
 func _serial_of(data: Variant) -> int:
-	return int((data as Dictionary).get("save_serial", 0)) if data is Dictionary else 0
+	return _int_of((data as Dictionary).get("save_serial", 0)) if data is Dictionary else 0
+
+
+## Elle düzenlenmiş/bozuk kayıtta beklenmeyen tip (dizi, sözlük, null) çökme yerine varsayılana düşer.
+func _int_of(v: Variant, fallback: int = 0) -> int:
+	match typeof(v):
+		TYPE_INT:
+			return v
+		TYPE_BOOL:
+			return int(v)
+		TYPE_FLOAT:
+			return int(v) if is_finite(v) else fallback
+		TYPE_STRING:
+			return int(float(v)) if (v as String).is_valid_float() else fallback
+	return fallback
+
+
+func _float_of(v: Variant, fallback: float = 0.0) -> float:
+	match typeof(v):
+		TYPE_INT, TYPE_BOOL:
+			return float(v)
+		TYPE_FLOAT:
+			return v if is_finite(v) else fallback
+		TYPE_STRING:
+			return float(v) if (v as String).is_valid_float() else fallback
+	return fallback
+
+
+## d[key] varsa ve beklenen kapsayıcı tipinde değilse boş kapsayıcıyla değiştirir.
+func _coerce_container(d: Dictionary, key: String, want_array: bool) -> void:
+	if not d.has(key):
+		return
+	if want_array and not d[key] is Array:
+		d[key] = []
+	elif not want_array and not d[key] is Dictionary:
+		d[key] = {}
 
 
 ## Ana dosya bozuksa .bak, sonra .prev denenir. Hiçbiri yoksa null.
@@ -279,15 +328,15 @@ func _warn_if_fell_back() -> void:
 
 
 func _apply_data(data: Dictionary, apply_room: bool) -> bool:
-	GameState.player_progress_knowledge = data.get("player_progress_knowledge", GameState.player_progress_knowledge)
+	GameState.player_progress_knowledge = _deserialize_progress(data.get("player_progress_knowledge", null))
 	GameState.world_memory_state = _deserialize_world(data.get("world_memory_state", {}))
 	GameState.character_current_life_knowledge = _deserialize_life(data.get("character_current_life_knowledge", {}))
 	GameState.session_loaded_from_save = true
 	GameState.story_flags = _deserialize_story_flags(data.get("story_flags", {}))
 	GameState.discovered_seals = _deserialize_seals(data.get("discovered_seals", null))
 	## Sayaç yalnız artar: load_committed (lanet geri yüklemesi) eski dosyadaki düşük değerle sıfırlamasın.
-	GameState.possession_count = maxi(GameState.possession_count, int(data.get("possession_count", 0)))
-	var ver := int(data.get("version", 0))
+	GameState.possession_count = maxi(GameState.possession_count, _int_of(data.get("possession_count", 0)))
+	var ver := _int_of(data.get("version", 0))
 	if ver > 0 and ver < SAVE_VERSION:
 		if ver < 5:
 			_migrate_to_v5_puzzles()
@@ -295,10 +344,10 @@ func _apply_data(data: Dictionary, apply_room: bool) -> bool:
 			_migrate_to_v6_story_flags()
 	elif ver > SAVE_VERSION:
 		push_warning("Save version newer than game (%d > %d) — loading best-effort" % [ver, SAVE_VERSION])
-	GameState.hearts = clampi(int(data.get("hearts", GameState.max_hearts)), 1, GameState.max_hearts)
+	GameState.hearts = clampi(_int_of(data.get("hearts", GameState.max_hearts), GameState.max_hearts), 1, GameState.max_hearts)
 	GameState.hearts_changed.emit(GameState.hearts, GameState.max_hearts)
 	if data.has("curse") and CurseManager:
-		CurseManager.restore_curse(float(data.get("curse", 0.0)))
+		CurseManager.restore_curse(_float_of(data.get("curse", 0.0)))
 	PuzzleManager.sync_from_world()
 	if apply_room:
 		CorpseManager.rebuild_world_corpses()
@@ -340,6 +389,19 @@ func _deserialize_story_flags(raw: Variant) -> Dictionary:
 	return out
 
 
+## Varsayılan ilerleme + dosyadaki değerler; bozuk tipli kapsayıcılar boşaltılır (BUG-011).
+func _deserialize_progress(raw: Variant) -> Dictionary:
+	var base: Dictionary = _new_progress.duplicate(true)
+	if typeof(raw) == TYPE_DICTIONARY:
+		for k in (raw as Dictionary).keys():
+			base[k] = raw[k]
+	for key in ["rooms_visited", "journal_notes", "echoes_seen", "endings_seen", "lore_seen"]:
+		_coerce_container(base, key, true)
+	for key in ["memory_codes", "memory_code_life", "shilda_trust"]:
+		_coerce_container(base, key, false)
+	return base
+
+
 func _serialize_world(w: Dictionary) -> Dictionary:
 	return w.duplicate(true)
 
@@ -350,17 +412,19 @@ func _deserialize_world(raw: Variant) -> Dictionary:
 		return base
 	var w: Dictionary = raw
 	for k in w.keys():
-		if k == "flags" and w["flags"] is Dictionary:
-			var flags: Dictionary = base.get("flags", {})
-			flags.merge(w["flags"], true)
-			base["flags"] = flags
-		elif k == "puzzles" and w["puzzles"] is Dictionary:
-			var pz: Dictionary = base.get("puzzles", {})
-			if not pz is Dictionary:
-				pz = {}
-			for pk in w["puzzles"].keys():
-				pz[String(pk)] = w["puzzles"][pk]
-			base["puzzles"] = pz
+		if k == "flags":
+			if w["flags"] is Dictionary:
+				var flags: Dictionary = base.get("flags", {})
+				flags.merge(w["flags"], true)
+				base["flags"] = flags
+		elif k == "puzzles":
+			if w["puzzles"] is Dictionary:
+				var pz: Dictionary = base.get("puzzles", {})
+				if not pz is Dictionary:
+					pz = {}
+				for pk in w["puzzles"].keys():
+					pz[String(pk)] = w["puzzles"][pk]
+				base["puzzles"] = pz
 		else:
 			base[k] = w[k]
 	if not base.has("traces"):
@@ -369,6 +433,17 @@ func _deserialize_world(raw: Variant) -> Dictionary:
 		base["flags"] = {}
 	if not base.has("puzzles"):
 		base["puzzles"] = {}
+	## Tip korumaları (BUG-012): bozuk alanlar çökme yerine güvenli varsayılana düşer.
+	for key in ["corpses", "traces", "echo_sites", "forbidden_touched"]:
+		_coerce_container(base, key, true)
+	_coerce_container(base, "flags", false)
+	_coerce_container(base, "puzzles", false)
+	var clean_corpses: Array = []
+	for c in base["corpses"]:
+		if c is Dictionary:
+			clean_corpses.append(c)
+	base["corpses"] = clean_corpses
+	base["flowers_left"] = _int_of(base.get("flowers_left", 0))
 	return base
 
 
@@ -397,15 +472,17 @@ func _deserialize_life(raw: Variant) -> Dictionary:
 	var life: Dictionary = raw
 	for k in life.keys():
 		base[k] = life[k]
+	_coerce_container(base, "interacted", true)
+	_coerce_container(base, "dialogue_flags", false)
 	var cp: Variant = base.get("checkpoint", GameState.DEFAULT_CHECKPOINT)
 	if cp is Dictionary:
-		base["checkpoint"] = Vector2(float(cp.get("x", 120)), float(cp.get("y", 280)))
+		base["checkpoint"] = Vector2(_float_of(cp.get("x", 120), 120.0), _float_of(cp.get("y", 280), 280.0))
 	elif not (cp is Vector2):
 		base["checkpoint"] = GameState.DEFAULT_CHECKPOINT
 	if life.has("curse"):
-		CurseManager.curse = float(life["curse"])
+		CurseManager.curse = _float_of(life["curse"])
 	if life.has("curse_visible"):
-		CurseManager.visible_meter = bool(life["curse_visible"])
+		CurseManager.visible_meter = life["curse_visible"] is bool and life["curse_visible"]
 	return base
 
 
@@ -449,6 +526,8 @@ func _migrate_to_v6_story_flags() -> void:
 	var seen: Array = pk.get("lore_seen", [])
 	if seen.has("crypt_ledger"):
 		_derive_flag(&"dimension_origin_discovered")
+	## Shilda'nın "hatırlamayı seçtim" itirafı experiment_authority sahnesinde yaşanır (crypt_ledger tek başına yetmez).
+	if pz is Dictionary and bool(pz.get("experiment_authority", false)):
 		_derive_flag(&"shilda_past_discovered")
 
 

@@ -26,6 +26,9 @@ var _soul: Node2D = null
 var _time_holds: Array = []
 var _time_token: int = 0
 var _scene_root: Window = null
+## Yeni oyun / başlığa dönüş sırasında uçuştaki ölüm coroutine'i bayatlar: her sıfırlamada artar,
+## await sonrası eşleşmeyen coroutine yeni oyuna dokunmadan çıkar (BUG-001).
+var _gen: int = 0
 
 
 func _ready() -> void:
@@ -63,6 +66,15 @@ func _exit_tree() -> void:
 	Engine.time_scale = 1.0
 
 
+## Yeni oyun / başlığa dönüş: ölüm durumunu temiz bırakır, uçuştaki ölüm coroutine'ini bayatlatır.
+func reset_state() -> void:
+	_gen += 1
+	is_dying = false
+	phase = Phase.ALIVE
+	_free_soul()
+	release_time_scale()
+
+
 func _set_phase(p: int) -> void:
 	phase = p
 	phase_changed.emit(p)
@@ -79,6 +91,7 @@ func request_death(reason: StringName = &"unknown", full_reset: bool = false) ->
 	## Önceki hitstop, ölüm ağır çekiminin üstünde asılı kalmasın.
 	release_time_scale()
 	is_dying = true
+	var gen := _gen
 	_set_phase(Phase.DYING)
 	cinematic = not bool(GameState.player_progress_knowledge.get("first_death_seen", false))
 	death_started.emit(reason)
@@ -111,8 +124,12 @@ func request_death(reason: StringName = &"unknown", full_reset: bool = false) ->
 
 	SaveManager.save_game()
 	await _death_presentation()
+	if gen != _gen:
+		return
 	## DYING: beden çöker (ilk ölüm daha uzun).
 	await _wait(1.1 if cinematic else 0.55)
+	if gen != _gen:
+		return
 
 	## SOUL_RELEASE: beden ceset olarak kalır, ruh yükselir; kamera ruhu izler.
 	_set_phase(Phase.SOUL_RELEASE)
@@ -120,14 +137,18 @@ func request_death(reason: StringName = &"unknown", full_reset: bool = false) ->
 		player.visible = false
 	_spawn_soul(death_pos)
 	await _rise_soul(1.5 if cinematic else 0.7)
+	if gen != _gen:
+		return
 	# Bekçi yas: çiçek bırakabilir (öldürmez). Ruh bu sırada bedenin üstünde bekler.
 	var keeper := get_tree().get_first_node_in_group("keeper")
 	if keeper and keeper.has_method("mourn_corpse"):
 		await keeper.mourn_corpse(death_pos, corpse_id)
+		if gen != _gen:
+			return
 	if DialogueManager.is_open:
 		DialogueManager.clear()
 
-	await _respawn()
+	await _respawn(gen)
 
 
 ## Aktif tutuş yoksa ölçek 1.0. Sahne, ölüm sonu, diriliş, duraklatma ve lanet bitişi bunu çağırır.
@@ -448,12 +469,14 @@ func _free_soul() -> void:
 
 # ---------------- doğuş ----------------
 
-func _respawn() -> void:
+func _respawn(gen: int) -> void:
 	var player := get_tree().get_first_node_in_group("player")
 	var cp: Vector2 = _get_respawn_position()
 	var active_room := RoomManager.get_active_room_id()
 	if is_instance_valid(_soul):
 		await _soul_to_bed(cp)
+		if gen != _gen:
+			return
 	elif active_room == &"awakening" and RoomManager.has_room(REBIRTH_ROOM):
 		_set_phase(Phase.SOUL_TRANSITION)
 		RoomManager.enter_room(REBIRTH_ROOM, REBIRTH_SPAWN, false)
@@ -469,6 +492,8 @@ func _respawn() -> void:
 		tw.tween_property(_soul, "global_position", cp, _d(0.35))
 		tw.tween_property(_soul, "modulate:a", 0.0, _d(0.4))
 		await tw.finished
+		if gen != _gen:
+			return
 	_free_soul()
 	if player and player.has_method("play_wake"):
 		player.play_wake(_d(0.6))
@@ -478,6 +503,8 @@ func _respawn() -> void:
 	if cam and cam.has_method("snap_to_target"):
 		cam.snap_to_target()
 	await _wait(0.45 if cinematic else 0.25)
+	if gen != _gen:
+		return
 
 	DialogueManager.clear()
 	## Karakter unutkanlığı — ilk ölümde tam, sonra sessiz (hızlı döngü).
@@ -486,6 +513,8 @@ func _respawn() -> void:
 		DialogueManager.say("Noroi", "Bir şey… unuttum.")
 		if _fast_mode():
 			await get_tree().create_timer(0.05).timeout
+			if gen != _gen:
+				return
 			if DialogueManager.is_open:
 				DialogueManager.clear()
 	CorpseManager.rebuild_world_corpses()

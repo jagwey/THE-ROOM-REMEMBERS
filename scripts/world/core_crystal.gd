@@ -31,5 +31,5 @@ func on_interact(_by: Node) -> void:
 	if not st["shards"]:
 		DialogueManager.say("", "İki mühür parçası da gerekiyor.")
 	if not st["slash"]:
-		DialogueManager.say("", "Bağları kesecek güç henüz uyanmadı: Ruh Kesiği.")
+		DialogueManager.say("", "Bağları kesecek güç henüz uyanmadı: Ruh Kesimi.")
 	await DialogueManager.dialogue_finished

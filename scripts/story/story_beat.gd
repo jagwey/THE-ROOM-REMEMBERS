@@ -110,7 +110,7 @@ func _library_hall() -> void:
 
 		return
 
-	_evidence("ev_catalog_conflict", "Kazınmış imzalar", "Yüzlerce kişi bu yere girmiş. Hepsinin kaydında imza kazınmış. Benimki en sonda: 1995.", "open_question", "notlar")
+	_evidence("ev_catalog_conflict", "Kazınmış imzalar", "Yüzlerce kişi bu yere girmiş. Hepsinin kaydında imza kazınmış. En sonda bir yıl var: 1995.", "open_question", "notlar")
 
 	PuzzleManager.mark_solved(&"library_catalog")
 
@@ -136,7 +136,7 @@ func _library_witness() -> void:
 
 	if ev.has("ev_witness_clock") and ev.has("ev_witness_flower") and ev.has("ev_witness_seal"):
 
-		DialogueManager.say("Noroi", "1927'de kazı başladı. 1995'te ben girdim.")
+		DialogueManager.say("Noroi", "1927'de kazı başladı. Son kayıt 1995'te düşülmüş.")
 		DialogueManager.say("Noroi", "Deney önce, kapı sonra, mühür en son. Kod… iki, beş, bir.")
 		DialogueManager.say("Noroi", "Felaketi mühür başlatmamış. İçeride tutmuş.")
 		var understood: bool = await DialogueManager.dialogue_finished
@@ -206,9 +206,9 @@ func _experiment_circuit() -> void:
 
 func _experiment_authority() -> void:
 
-	DialogueManager.say("Kayıt", "Protokol yetkilisi: ███ (kazınmış). Güvenlik görevlisi: Shilda.")
+	DialogueManager.say("Kayıt", "Protokol yetkilisi: ███ (kazınmış). Araştırma Yardımcısı S.")
 	DialogueManager.say("Kayıt", "Acil kapatma talebi reddedildi. Mühür kodu kenarda: 4-1-8.")
-	DialogueManager.say("X?", "Düzeni bozma. Kapı kapalı kalsın.")
+	DialogueManager.say("Kayıt", "Kayıt şeridinde silik bir fısıltı izi kalmış. Sözler seçilmiyor.")
 
 	DialogueManager.say("Noroi", "Biri kapıyı, kimse çıkmasın diye kilitlemiş. Sesler içeride kalmış.")
 
@@ -227,7 +227,8 @@ func _experiment_authority() -> void:
 		return
 
 	GameState.learn_memory_code("experiment_authority", "418")
-	_evidence("ev_authority", "Yetki masası", "Yetki masasındaki imza kazınmış; kayıtta X? fısıltısı ve 418 mührü kaldı. Düzeni kimin kurduğu okunmuyor.", "evidence", "gunluk")
+	GameState.set_story_flag(&"shilda_past_discovered")
+	_evidence("ev_authority", "Yetki masası", "Yetki masasındaki imza kazınmış; kayıtta silik bir fısıltı izi ve 418 mührü kaldı. Düzeni kimin kurduğu okunmuyor.", "evidence", "gunluk")
 
 	PuzzleManager.mark_solved(&"experiment_authority")
 
@@ -325,7 +326,7 @@ func _core_seal_chamber() -> void:
 	DialogueManager.say("Kayıt", "Deney başladı. Kapı kapandı. Koruma mührü devreye girdi.")
 	DialogueManager.say("Noroi", "Silinen hafızalar burada kaldı. Hiçbiri kayıp değil artık.")
 
-	DialogueManager.say("Shilda", "Mührün bağları çekirdeğin başında. Ruh Kesiği onları kesebilir.")
+	DialogueManager.say("Shilda", "Mührün bağları çekirdeğin başında. Ruh Kesimi onları kesebilir.")
 	DialogueManager.say("Noroi", "Hazırım. Kristale dokunduğumda bitecek.")
 
 	var ok: bool = await DialogueManager.dialogue_finished

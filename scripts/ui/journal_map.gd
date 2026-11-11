@@ -15,7 +15,7 @@ const REGIONS: Array = [
 	{"id": "mirrors", "seal": &"mirrors_unbroken"},
 	{"id": "core", "seal": &"core_seal"},
 ]
-## Henüz sahnesi olmayabilecek gelecek odalar (yedek liste); asıl kaynak RoomManager.ROOM_TITLES_TR (30 oda).
+## Henüz sahnesi olmayabilecek gelecek odalar (yedek liste); asıl kaynak RoomManager.ROOM_TITLES_TR (40 oda).
 const FUTURE_ROOMS: PackedStringArray = [
 	"awakening_balcony", "awakening_crypt", "decay_catacombs", "decay_shilda_wall",
 	"library_upper_stacks", "library_forbidden_wing", "experiment_quarantine",

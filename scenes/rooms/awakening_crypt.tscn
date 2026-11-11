@@ -41,11 +41,11 @@ script = ExtResource("lore")
 lore_id = &"crypt_ledger"
 texture_path = "res://assets/props/ledger.png"
 sprite_scale = 0.9
-lines = PackedStringArray("Noroi|Defterdeki el yazısı: “Kırk birinci ölüm. Yine unuttu. Yine çiçek bıraktım.”", "Noroi|Defterin kapağında 1927 yazıyor. Gerisi yanmış.", "Noroi|Kenar notu: “Gözlem notu — Araştırma Yardımcısı S.: Denek 14 hâlâ konuşuyor.”")
+lines = PackedStringArray("Noroi|Defterdeki el yazısı: “{deaths}. ölüm. Yine unuttu. Yine çiçek bıraktım.”", "Noroi|Defterin kapağında 1927 yazıyor. Gerisi yanmış.", "Noroi|Kenar notu, imzası silinmiş: “Gözlem notu: hâlâ konuşuyor.”")
 evidence_title = "Bekçinin Defteri"
-evidence_body = "Defteri tutan her döngüyü saymış. Kapağında 1927 yazıyor; gerisi yanmış. Bir kenar notunu Araştırma Yardımcısı S. imzalamış."
+evidence_body = "Defteri tutan her döngüyü saymış. Kapağında 1927 yazıyor; gerisi yanmış. Bir kenar notunun imzası silinmiş."
 evidence_section = "notlar"
-story_flag_ids = PackedStringArray("dimension_origin_discovered", "shilda_past_discovered")
+story_flag_ids = PackedStringArray("dimension_origin_discovered")
 
 [node name="CryptEcho" type="Area2D" parent="Interactive"]
 position = Vector2(780.0, 268.0)

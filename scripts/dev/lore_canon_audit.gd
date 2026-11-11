@@ -75,8 +75,98 @@ func _run() -> void:
 		check(found, "present: %s" % req)
 
 	_check_line_lengths(texts)
+	_check_text_regressions(texts)
 	print("LORE failures=%d" % failures)
 	quit(failures)
+
+
+## Oyuncuya gorunen metin regresyonlari (qa/release-readiness BUG-003/004/005/015/018/022):
+## yorum satirlari haric tum sahne/script/diyalog verisinde yasakli ifadeler bulunmaz.
+const TEXT_REGRESSIONS: Array[Array] = [
+	["kırk bir", "BUG-003/015: sabit '41' olum sayisi ({deaths} kullanilir)"],
+	["Kırk bir", "BUG-003/015: sabit '41' olum sayisi ({deaths} kullanilir)"],
+	["Kırk Bir", "BUG-003/015: sabit '41' olum sayisi ({deaths} kullanilir)"],
+	["Güvenlik görevlisi: Shilda", "BUG-005: Shilda rol sizintisi (Arastirma Yardimcisi S.)"],
+	["Kabul yılım", "BUG-004: 1995'i onceden bilme"],
+	["kabul yılım", "BUG-004: 1995'i onceden bilme"],
+	["1995'te ben girdim", "BUG-004: 1995'i onceden bilme"],
+	["Benimki en sonda: 1995", "BUG-004: 1995'i onceden bilme"],
+	["Finalden önce yüzü yok", "BUG-022: oyun-disi (meta) final anisi"],
+	["Düzeni bozma. Kapı kapalı kalsın.", "BUG-005/X: X? konusma satiri degil iz olmali"],
+	["X? fısıltısı", "BUG-005/X: X? konusma satiri degil iz olmali"],
+	["Ruh Kesiği", "BUG-018: yetenek adi 'Ruh Kesimi'"],
+]
+
+
+func _strip_comment_lines(t: String) -> String:
+	var out: Array[String] = []
+	for line in t.split("\n"):
+		if line.strip_edges().begins_with("#"):
+			continue
+		out.append(line)
+	return "\n".join(out)
+
+
+func _check_text_regressions(texts: Dictionary) -> void:
+	var data: Array[String] = []
+	_collect("res://data", "json", data)
+	var all := {}
+	for p in texts:
+		all[p] = _strip_comment_lines(texts[p] as String) if (p as String).ends_with(".gd") else texts[p]
+	for p in data:
+		all[p] = FileAccess.get_file_as_string(p)
+	for entry in TEXT_REGRESSIONS:
+		var pat: String = entry[0]
+		var hits: Array[String] = []
+		for p in all:
+			if (all[p] as String).contains(pat):
+				hits.append(p)
+		check(hits.is_empty(), "regression '%s' (%s) %s" % [pat, entry[1], str(hits)])
+	## Kanon A: shilda_past_discovered Perde 1'de (awakening_crypt) kurulmaz; itiraf experiment_authority'de.
+	check(not (texts.get("res://scenes/rooms/awakening_crypt.tscn", "") as String).contains("shilda_past_discovered"), "CANON-A: awakening_crypt.tscn shilda_past_discovered kurmaz")
+	check(sb_has_flag_in_authority(texts), "CANON-A: story_beat experiment_authority shilda_past_discovered kurar")
+	## Kanon B: 1995 okunakli olarak en erken library_*/experiment_* asamasinda; awakening_*/decay_* dosyalarinda gecmez.
+	var early_hits: Array[String] = []
+	var early_seen := 0
+	for p in all:
+		var base: String = (p as String).get_file()
+		if base.begins_with("awakening") or base.begins_with("decay"):
+			early_seen += 1
+			if (all[p] as String).contains("1995"):
+				early_hits.append(p)
+	check(early_seen > 0, "CANON-B: awakening_*/decay_* dosyalari tarandi (%d)" % early_seen)
+	check(early_hits.is_empty(), "CANON-B: awakening_*/decay_* dosyalarinda '1995' yok %s" % str(early_hits))
+	## Kanon: Arastirma Yardimcisi S. imzasi artik experiment_authority kaydinda.
+	var sb: String = texts.get("res://scripts/story/story_beat.gd", "")
+	check(sb.contains("Araştırma Yardımcısı S."), "BUG-005: story_beat 'Araştırma Yardımcısı S.' kaydi")
+	## {deaths} yer tutucusu gercek GameState sayacindan gelir (min 1).
+	var lp = load("res://scripts/world/lore_point.gd")
+	var gs: Node = root.get_node_or_null("GameState")
+	check(lp != null and gs != null, "BUG-003: LorePoint + GameState yuklendi")
+	if lp != null and gs != null:
+		var prev = gs.player_progress_knowledge.get("deaths", null)
+		gs.player_progress_knowledge["deaths"] = 7
+		check(lp.format_text("Son sayı: {deaths}.") == "Son sayı: 7.", "BUG-003: {deaths} gercek sayac (7)")
+		gs.player_progress_knowledge["deaths"] = 0
+		check(lp.format_text("{deaths}. ölüm") == "1. ölüm", "BUG-003: {deaths} en az 1")
+		check(lp.format_text("yer tutucu yok") == "yer tutucu yok", "BUG-003: yer tutucusuz metin degismez")
+		if prev == null:
+			gs.player_progress_knowledge.erase("deaths")
+		else:
+			gs.player_progress_knowledge["deaths"] = prev
+	for scene_path in ["res://scenes/rooms/awakening_crypt.tscn", "res://scenes/rooms/decay_shilda_wall.tscn"]:
+		check((texts.get(scene_path, "") as String).contains("{deaths}"), "BUG-003: %s {deaths} kullanir" % scene_path)
+
+
+## story_beat.gd _experiment_authority() govdesinde shilda_past_discovered set edilir.
+func sb_has_flag_in_authority(texts: Dictionary) -> bool:
+	var sb: String = texts.get("res://scripts/story/story_beat.gd", "")
+	var start := sb.find("func _experiment_authority")
+	if start == -1:
+		return false
+	var end := sb.find("\nfunc ", start + 10)
+	var body := sb.substr(start, (end if end != -1 else sb.length()) - start)
+	return body.contains("shilda_past_discovered")
 
 
 ## "Konusmaci|metin" sabitleri (;; ile bolunmus setler dahil) ve say/whisper cagrilari.
