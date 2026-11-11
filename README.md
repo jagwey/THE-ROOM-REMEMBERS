@@ -6,73 +6,186 @@
   <img src="assets/props/seal.png" alt="Crimson Seal" width="96" />
 </p>
 
-<h3 align="center">
+<h2 align="center">
   <strong>Sen unutursun. O hatırlar.</strong><br/>
   <em>You forget. It remembers.</em>
-</h3>
+</h2>
 
 <p align="center">
-  <strong>TORIMON</strong> · Gotik Psikolojik Aksiyon-Bulmaca &amp; Hafıza Platform Oyunu · Godot 4.7 · Android &amp; PC
+  <strong>TORIMON</strong> · Gotik Psikolojik Aksiyon-Bulmaca &amp; Kalıcı Bellek Platform Oyunu · Godot 4.7 · Android &amp; PC
 </p>
 
 <p align="center">
   <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS"><img src="https://img.shields.io/badge/Kaynak-v1.12.1-8B0000?style=for-the-badge&logo=godotengine&logoColor=white" alt="Kaynak v1.12.1" /></a>
-  <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS/releases"><img src="https://img.shields.io/badge/T%C3%BCm_S%C3%BCr%C3%BCmler-9_Aktif_Paket-5c1d3d?style=for-the-badge&logo=github" alt="All Releases" /></a>
+  <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases"><img src="https://img.shields.io/badge/Resmi_İndirme-GitHub_Releases-5c1d3d?style=for-the-badge&logo=github" alt="All Releases" /></a>
   <a href="https://godotengine.org/"><img src="https://img.shields.io/badge/Godot_Engine-4.7.2-478CBF?style=for-the-badge&logo=godotengine&logoColor=white" alt="Godot 4.7.2" /></a>
-  <img src="https://img.shields.io/badge/D%C3%BCnya-6_B%C3%B6lge_%C2%B7_40_Oda_%C2%B7_B%C3%B6l%C3%BCm_I-2b1838?style=for-the-badge" alt="World Scope" />
+  <img src="https://img.shields.io/badge/Dünya-6_Bölge_·_40_Oda_·_Bölüm_I-2b1838?style=for-the-badge" alt="World Scope" />
+  <img src="https://img.shields.io/badge/Platform-Android_arm64_%7C_PC-1f3a2b?style=for-the-badge" alt="Platform" />
 </p>
 
-> **Kapalı kaynak / proprietary.** Bu depo **private** tutulur; kaynak kod paylaşılmaz. Oyunculara yalnızca derlenmiş APK, public [THE-ROOM-REMEMBERS-release](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases) deposundan dağıtılır. © TORIMON — All rights reserved.
+> **Kapalı kaynak / Proprietary.** Bu depo **private** tutulur; kaynak kod paylaşılmaz. Oyunculara yalnızca derlenmiş APK, public [THE-ROOM-REMEMBERS-release](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases) deposundan dağıtılır. © TORIMON — Tüm hakları saklıdır.
 
 ---
 
 <p align="center">
-  <img src="media/readme/00-title-screen.png" alt="THE ROOM REMEMBERS — Ana Menü (v1.3.0)" width="820" />
+  <img src="media/readme/00-title-screen.png" alt="THE ROOM REMEMBERS — Canlı Gotik Ana Menü" width="840" />
 </p>
+
+---
 
 ## 📖 Oyun Hakkında
 
 > *"Gözlerin aralanır. Taş soğuk, tavan yüksek, adın yabancı. Sen öldüğünde hafızan sıfırlanır — fakat oda bıraktığın her bedeni, kırdığın her mührü ve verdiğin her sözü hatırlar."*
 
-**THE ROOM REMEMBERS**, ölümün bir başarısızlık değil, **dünyayı değiştiren fiziksel ve anlatısal bir araç** olduğu karanlık gotik bir 2D aksiyon-bulmaca oyunudur.
+**THE ROOM REMEMBERS**, ölümün bir yenilgi değil, **dünyayı değiştiren fiziksel ve anlatısal bir bulmaca aracı** olduğu karanlık gotik bir 2D aksiyon-platform oyunudur.
 
-Oyuncu **Noroi** olarak ne adını ne de neden bu yıkık tesiste tutulduğunu bilerek uyanır. Her ölümde Noroi'in o yaşamdaki belleği silinir ve ilk yatağında yeniden gözlerini açar; ancak **oda hiçbir şeyi unutmaz**. Önceki yaşamlarından kalan kendi cansız bedenlerin odalarda fiziksel olarak kalmaya devam eder: üzerlerine basıp yüksek çıkıntılara zıplayabilir, onları ağır basınç plakalarının üstüne itebilir, son 3 saniyelik mor **Yankı Tekrarlarını (Echo Replay)** izleyerek ölüm anındaki sırları çözebilir ve **Bekçi Shilda**'nın bedenlerine bıraktığı kızıl ölüm çiçeklerinin ışığıyla karanlıkta gizlenen sembolleri ortaya çıkarabilirsin.
+Oyuncu **Noroi** olarak ne adını ne de neden bu yıkık ve zamandan kopuk yeraltı tesisinde tutulduğunu bilerek uyanır. Her ölümde Noroi'nin o yaşamdaki hatıraları silinir; fakat **oda hiçbir şeyi unutmaz**. Önceki yaşamlarından kalan kendi cansız bedenlerin odalarda kalıcı olarak durur:
+* Üzerlerine basıp yüksek çıkıntılara tırmanabilirsin (`one_way_collision`),
+* Ağır taş basınç plakalarının üstüne itip kapıları açık tutabilirsin (`anchoring`),
+* Son 3 saniyelik mor **Yankı Tekrarlarını (Echo Replay)** izleyerek ölüm anındaki sırları çözebilirsin,
+* **Beyaz Bekçi Shilda**'nın bedenlerine bıraktığı kızıl ölüm çiçeklerinin ışığıyla karanlıkta gizlenen antik mühürleri ortaya çıkarabilirsin.
 
 <p align="center">
-  <img src="media/readme/01-awakening.png" alt="Uyanış Odası — Noroi, Cep Saati ve Shilda" width="820" />
+  <img src="media/readme/01-awakening.png" alt="Uyanış Odası — Noroi, Cep Saati ve Shilda" width="840" />
 </p>
 
 ---
 
-## 📦 Aktif Sürümler ve İndirme Bağlantıları (GitHub Releases)
+## 🏛️ Mimari ve Sistem Tasarımı
 
-Depodaki tüm derlenmiş Android (`arm64-v8a`) APK sürümleri aktif olarak **[GitHub Releases](https://github.com/jagwey/THE-ROOM-REMEMBERS/releases)** sayfasında sunulmaktadır.
+### 1. Üç Katmanlı Bellek ve Kalıcı Dünya Döngüsü (3-Layer Memory & Death Loop)
 
-> **Kaynak sürüm:** **v1.12.1** (`versionCode 38`). Son yayımlanmış APK: [**v1.9.0**](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.9.0).
+Oyun, ölüm anında neyin silinip neyin kalıcı olacağını katı bir mimariyle ayırır:
 
-| Sürüm | Durum | APK Dosyası / İndirme | Öne Çıkan Yenilikler ve Kapsam |
-| :--- | :---: | :--- | :--- |
-| **v1.12.1** | 🟢 **Güncel (kaynak)** | APK bu sürümde ayrıca yayınlanır | Kırık Geçit geçilebilir: taş blok zıplama yüksekliğinde, diken halkasının hitbox'ı görselle aynı ve dönüş boşluğu var, kontrol noktası halkanın dışında (`versionCode 38`). |
-| **v1.12.0** | Önceki kaynak | APK bu sürümde ayrıca yayınlanır | Kısa nöbet, ceset basamağı, vuruş ve ölüm hissi, oda girişi kamerası (`versionCode 37`). |
-| **[v1.9.0](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.9.0)** | Önceki | [📥 `TheRoomRemembers-1.9.0-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.9.0) | Derin oynanış geçişi: sıralı bahçe ve kasa, yalan ayna, raf tahtası, kademeli günlük ipucu, final cevabı (`versionCode 34`). |
-| **[v1.8.1](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.8.1)** | Önceki | [📥 `TheRoomRemembers-1.8.1-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.8.1) | Hareket kilidi, taş itme ve kapı etkileşimi düzeltildi; bölge motifleri, diyalog cilası, bulmaca ödül afişi (`versionCode 33`). |
-| **[v1.8.0](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.8.0)** | Önceki | [📥 `TheRoomRemembers-1.8.0-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.8.0) | Kapı sonrası joystick restorasyonu, door_controls audit, Bölüm II teaser, ???/X? portreleri (`versionCode 32`). |
-| **[v1.7.0](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.7.0)** | Önceki | [📥 `TheRoomRemembers-1.7.0-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.7.0) | Shilda HD Remaster, 3 katmanlı hafıza, tek kanonik final (`versionCode 31`). |
-| **[v1.5.0](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.5.0)** | Önceki | [📥 `TheRoomRemembers-1.5.0-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.5.0) | Hikâye 3.0: Hafıza Mühürleri (kalıcı kayıt), lanet bantları ve ele geçirilme (ceset yok, mühre geri yükleme), ölümde yatakta uyanış, Shilda isim sahnesi, tek final (BÖLÜM I SONU) + jenerik, yeni menüler (`versionCode 28`). |
-| **[v1.4.9](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.4.9)** | Önceki | [📥 `TheRoomRemembers-1.4.9-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.4.9) | X kanonu metin geçişi, yavaş açılış (`versionCode 27`). |
-| **[v1.4.8](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.4.8)** | Önceki | [📥 `TheRoomRemembers-1.4.8-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.4.8) | Gözlem Balkonu (Oda 02) sıkışması düzeltildi: mahzen yolundan gelince mor mühür arkadan açılıyor, Ruh Kesimi olmadan da çıkılabiliyor (`versionCode 26`). |
-| **[v1.4.7](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.4.7)** | Önceki | [📥 `TheRoomRemembers-1.4.7-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.4.7) | Ölüm/diriliş sonrası kaybolan dokunmatik düğmeler (joystick, zıplama, saldırı) düzeltildi; ölümde basılı kalan girdiler temizleniyor (`versionCode 25`). |
-| **[v1.4.6](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.4.6)** | Önceki | [📥 `TheRoomRemembers-1.4.6-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.4.6) | Beden taşıma yeniden (köprü/boşluk geçişi, Kemik Mahzeni kodu), Ruh Kesişi gerektirmeyen metin/gölge düzeltmeleri, Shilda adı, oda etkileşim aralıkları, HUD/harita/pad kırpılma düzeltmeleri (`versionCode 24`). |
-| **[v1.4.5](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.4.5)** | Önceki | [📥 `TheRoomRemembers-1.4.5-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.4.5) | Konuşmacı sözleşmesi ve isim açılışı, diyalog çerçeveleri, HUD/bölge kartı çakışma düzeltmeleri, gotik kapılar ve yeni nesneler, çatlak duvar/Devam Et düzeltmeleri, oyun içi güncelleme (`versionCode 23`). |
-| **[v1.3.0](https://github.com/jagwey/THE-ROOM-REMEMBERS/releases/tag/v1.3.0)** | 🔵 Kararlı | [📥 `TheRoomRemembers-1.3.0.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS/releases/download/v1.3.0/TheRoomRemembers-1.3.0.apk) | **M1–M3 Tam Sürüm:** Yürüyen & Kalkanlı Bellek Gölgeleri (`Memory Shades`), ceset üstü platform mekaniği, `EchoTwin` savaş kaydı, Bölge Başlık Kartları, Çatlak Ayna hızlı seyahat, mobil haptics, gotik kapı katmanlama ve ses iş parçacığı düzeltmeleri (`versionCode 17`). |
-| **[v1.2.0](https://github.com/jagwey/THE-ROOM-REMEMBERS/releases/tag/v1.2.0)** | 🔵 Kararlı | [📥 `TheRoomRemembers-1.2.0-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS/releases/tag/v1.2.0) | **V4.1 Güncellemesi:** Katmanlı gotik kapılar (`96x160`), ortak etkileşim halesi (`InteractGlow`), gelişmiş zıplama fiziği (coyote time, jump buffer, apex hang), doğrulanmış *Kaydet ve Çık / Devam Et* sistemi, yeni kırmızı göz adaptif uygulama ikonu (`versionCode 16`). |
-| **[v1.1.0](https://github.com/jagwey/THE-ROOM-REMEMBERS/releases/tag/v1.1.0)** | 🔵 Kararlı | [📥 `TheRoomRemembers-1.1.0-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS/releases/tag/v1.1.0) | **V3.0 Ölüm & Yeniden Doğuş Sistemi:** Göz açma sinematiği (`EyeOpenIntro`), ruh yükselmesi (`DeathManager` 5 faz), ceset üzerinde son 3 saniyelik mor **Yankı Tekrarı (`EchoReplay`)**, çift kademeli `.bak`/`.prev` kayıt koruma sistemi (`versionCode 15`). |
-| **[v1.0.2](https://github.com/jagwey/THE-ROOM-REMEMBERS/releases/tag/v1.0.2)** | ⚪ Arşiv | [📥 `TheRoomRemembers-1.0.2-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS/releases/tag/v1.0.2) | Atmosferik canlı Ana Menü (`TitleScreen`), kayıt özeti kartı, *Ayarlar* ve *Nasıl Oynanır* panelleri, klavye/gamepad ve dokunmatik menü navigasyonu (`versionCode 14`). |
-| **[v1.0.1](https://github.com/jagwey/THE-ROOM-REMEMBERS/releases/tag/v1.0.1)** | ⚪ Arşiv | [📥 `TheRoomRemembers-1.0.1-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS/releases/tag/v1.0.1) | Oynanış hızı ve zıplama iyileştirmeleri (`175 px/s`), squash-stretch animasyon geçişleri, etkileşim nesnelerine hale (`halo.png`) (`versionCode 13`). |
-| **[v1.0.0](https://github.com/jagwey/THE-ROOM-REMEMBERS/releases/tag/v1.0.0)** | ⚪ Arşiv | [📥 `TheRoomRemembers-1.0.0-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS/releases/tag/v1.0.0) | **8 Fazlı Büyük Yenileme (v1.0 Overhaul):** 30 oda, 6 bölge, `Ruh Kesimi` & `Gölge Atılması` yetenekleri, 4 sekmeli Günlük ve *Harita & Mühürler* görünümü, tam Android dokunmatik HUD (`versionCode 12`). |
-| **[v0.10.1](https://github.com/jagwey/THE-ROOM-REMEMBERS/releases/tag/v0.10.1)** | ⚪ Arşiv | [📥 `TheRoomRemembers-0.10.1-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS/releases/tag/v0.10.1) | Oynanabilir tam hikâye akışı, 18 bağlı oda, görev yönlendirmeleri ve softlock korumaları. |
-| **[v0.9.0](https://github.com/jagwey/THE-ROOM-REMEMBERS/releases/tag/v0.9.0)** | ⚪ Arşiv | [📥 `TheRoomRemembers-0.9.0-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS/releases/tag/v0.9.0) | Genişleme dilimi: Kütüphane, Deney, Aynalar ve Çekirdek bölgelerinin ilk entegrasyonu. |
-| **[v0.8.0-debug](https://github.com/jagwey/THE-ROOM-REMEMBERS/releases/tag/v0.8.0-debug)** | ⚪ Prototip | [📥 `TheRoomRemembers-debug.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS/releases/tag/v0.8.0-debug) | İlk dikey dilim (Vertical Slice) prototipi: Uyanış ve Çekirdek odaları. |
+```mermaid
+flowchart TD
+    subgraph Oyuncu["🗡️ Noroi (Oyuncu)"]
+        Life["Geçici Yaşam Belleği<br/>(character_current_life_knowledge)<br/>• Anlık diyalog bayrakları<br/>• Geçici oda etkileşimleri"]
+        Curse["Lanet Seviyesi (%0 - %100)<br/>(CurseManager.curse)<br/>• Diken/Düşman/Ölümle artar"]
+    end
+
+    subgraph Olum["💀 Ölüm Anı (DeathManager)"]
+        DeathEvent["Ölüm Tetiklenir<br/>(Diken / Uçurum / Hasar)"]
+        SafeFloor["Son Güvenli Zemin Belirleme<br/>(_safe_floor_pos)"]
+        CorpseDrop["Fiziksel Ceset Bırakılır<br/>(corpse.tscn)"]
+    end
+
+    subgraph Dunya["🏛️ Kalıcı Dünya (Oda Hatırlar — world_memory_state)"]
+        Bodies["Kalıcı Fiziksel Bedenler<br/>• Basamak & Platform<br/>• Plaka Ağırlığı (Anchoring)<br/>• Lanet Süngeri<br/>• Yankı Tekrarı (Echo Replay)"]
+        Puzzles["Kalıcı İlerleme<br/>• Açılan Gotik Kapılar<br/>• Kırılan Taş Duvarlar<br/>• Çözülen Bulmacalar (PuzzleManager)"]
+        ShildaRel["Shilda Güven Mimarisi<br/>• Bedenlere Yas Çiçeği (Fener Ceset)<br/>• Koruyucu Kalkan (Ward)<br/>• Bölge Bazlı Evre Replikleri"]
+    end
+
+    subgraph Muhur["🕯️ Lanet Mühürleme Noktaları (MemorySealPoint)"]
+        SealCheck{"Oyuncuda Lanet Var mı?<br/>(curse > 0.0)"}
+        SealReject["Lanetsiz: Reddedilir<br/>'Kanımda aktif bir lanet yok...'"]
+        SealAbsorb["Lanetli: Lanet Emilir (%0)<br/>+ Kalıcı Kayıt Yazılır (commit_save)<br/>+ Afiş: LANET MÜHÜRLENDİ"]
+    end
+
+    Life -->|Ölüm| DeathEvent
+    DeathEvent --> SafeFloor --> CorpseDrop --> Bodies
+    DeathEvent -->|+%25 Lanet Ekle| Curse
+    DeathEvent -->|Oda İçi Güvenli Yeniden Doğuş| Life
+    Bodies --> Dunya
+    Puzzles --> Dunya
+    Curse -->|Mühür Noktası Etkileşimi| SealCheck
+    SealCheck -->|Hayır (<=0%)| SealReject
+    SealCheck -->|Evet (>0%)| SealAbsorb
+    SealAbsorb -->|Kayıt Mühre Kazınır| Dunya
+```
+
+---
+
+### 2. Godot 4.7 Engine Sistem Mimarisi & Autoload Hub
+
+Oyunun tüm alt sistemleri, 14 adet hafif ve otonom Autoload modülü üzerinden haberleşir:
+
+```mermaid
+flowchart LR
+    subgraph Autoload["⚙️ Küresel Autoload Yöneticileri (scripts/autoload/)"]
+        GM["GameState<br/>(3 Katmanlı Hafıza)"]
+        DM["DeathManager<br/>(Oda İçi Rebirth)"]
+        CM["CorpseManager<br/>(Ceset Fizikleri)"]
+        CurM["CurseManager<br/>(Lanet & Possession)"]
+        RM["RoomManager<br/>(Oda Topolojisi)"]
+        PM["PuzzleManager<br/>(3 Kademeli İpucu)"]
+        SM["SaveManager<br/>(Atomik .bak/.prev)"]
+        DiaM["DialogueManager<br/>(Gotik Diyalog Sistemi)"]
+        MIM["MobileInputManager<br/>(Dokunmatik HUD)"]
+        UC["UpdateChecker<br/>(GitHub API Releases)"]
+    end
+
+    subgraph World["🏰 Dünya ve Karakterler"]
+        Player["Noroi (PlayerController)<br/>• Kombo / Dash / Ruh Kesimi"]
+        Keeper["Shilda (KeeperController)<br/>• 5 Sütunlu Güven AI"]
+        Rooms["40 Bağlantılı Oda<br/>(BuiltRoom & Parallax)"]
+        Doors["Gothic Door & Transition<br/>(Deadlock-Free Geçiş)"]
+    end
+
+    subgraph UI["📱 Gotik Arayüz (scripts/ui/)"]
+        HUD["Gothic HUD<br/>(Kalpler, Lanet Barı)"]
+        Journal["Journal & Map<br/>(Kayıtlar, İpuçları, Atlas)"]
+        Title["TitleScreen<br/>(Atmosferik Menü & Güncelleme)"]
+    end
+
+    Player -->|Hareket & Hasar| DM
+    DM --> CM
+    CM --> GM
+    CurM --> GM
+    Player -->|Kapı Etkileşimi| Doors
+    Doors --> RM
+    RM --> Rooms
+    Player -->|Bulmaca Çözümü| PM
+    PM --> GM
+    GM <--> SM
+    MIM --> Player
+    MIM --> HUD
+    Keeper --> DiaM
+    Title --> UC
+```
+
+---
+
+### 3. Dünya Atlası: 6 Bölge ve 40 Bağlı Oda
+
+Tesis, birbirinden farklı görsel atmosfere, Gotik mimariye ve bulmaca dinamiklerine sahip 6 ana bölgeden oluşur:
+
+```mermaid
+flowchart LR
+    Z1["🏛️ <b>Bölge I</b><br/>Uyanış Mahmuzu<br/><i>Awakening</i><br/>(Oda 01 - 06)"]
+    Z2["🌿 <b>Bölge II</b><br/>Çürüme Bahçesi<br/><i>Decay</i><br/>(Oda 07 - 13)"]
+    Z3["📚 <b>Bölge III</b><br/>Hafıza Kütüphanesi<br/><i>Library</i><br/>(Oda 14 - 20)"]
+    Z4["⚗️ <b>Bölge IV</b><br/>Yasak Laboratuvar<br/><i>Experiment</i><br/>(Oda 21 - 27)"]
+    Z5["🪞 <b>Bölge V</b><br/>Aynalar Salonu<br/><i>Mirrors</i><br/>(Oda 28 - 34)"]
+    Z6["💠 <b>Bölge VI</b><br/>Bellek Çekirdeği<br/><i>Core</i><br/>(Oda 35 - 40)"]
+
+    Z1 -->|Taş Bulmacası & Sağ Kapı| Z2
+    Z2 -->|Arşiv Kapısı & Shilda Güveni| Z3
+    Z3 -->|Ruh Kesimi (SoulSlash)| Z4
+    Z4 -->|Karantina & Lanet Koridoru| Z5
+    Z5 -->|Gölge Atılması & 729 Mührü| Z6
+    Z6 -->|2 Mühür Parçası + Çekirdek Kristali| Final["🎬 <b>BÖLÜM I SONU</b><br/>(Tek Kanonik Final)"]
+```
+
+---
+
+## 🎨 Karakterler ve Görsel Yenileme (Shilda HD Remaster)
+
+### Shilda — Beyaz Muhafız (The White Guardian v2.0 HD)
+Shilda'nın tüm piksel sanatı 1:1 224x224 yerel ölçekte yeniden işlenmiş, 557.049 piksellik alfa sisi temizlenmiş ve 8 farklı duygusal portre eklenmiştir:
+
+<p align="center">
+  <img src="addons/trr_shilda_white/previews/shilda_gameplay_scale_preview.png" alt="Shilda HD Gameplay Preview" width="780" />
+</p>
+
+#### Shilda Duygu Portreleri Matrisi (`assets/portraits/shilda/`)
+| `neutral` | `gentle` | `smile` | `sad` | `worried` | `angry` | `determined` | `eyes_closed` |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| <img src="assets/portraits/shilda/shilda_neutral.png" width="76" /> | <img src="assets/portraits/shilda/shilda_gentle.png" width="76" /> | <img src="assets/portraits/shilda/shilda_smile.png" width="76" /> | <img src="assets/portraits/shilda/shilda_sad.png" width="76" /> | <img src="assets/portraits/shilda/shilda_worried.png" width="76" /> | <img src="assets/portraits/shilda/shilda_angry.png" width="76" /> | <img src="assets/portraits/shilda/shilda_determined.png" width="76" /> | <img src="assets/portraits/shilda/shilda_eyes_closed.png" width="76" /> |
+
+<p align="center">
+  <img src="addons/trr_shilda_white/previews/shilda_asset_contact_sheet.png" alt="Shilda Animasyon Temas Çizelgesi" width="840" />
+</p>
 
 ---
 
@@ -80,164 +193,48 @@ Depodaki tüm derlenmiş Android (`arm64-v8a`) APK sürümleri aktif olarak **[G
 
 | Görsel | Unsur | Rolü ve Mekanik İşlevi |
 | :---: | :--- | :--- |
-| <img src="assets/characters/noroi/frame_00.png" width="56" alt="Noroi" /> | **Noroi**<br/>*(Oyuncu)* | Her ölümde belleği sıfırlanan fakat bıraktığı izlerle gerçeğe yürüyen ana karakter. 3'lü kılıç kombosu, **Gölge Atılması (`ShadowDash`)** ve **Ruh Kesimi (`SoulSlash`)** yeteneklerini kullanır. |
-| <img src="assets/characters/keeper/frame_00.png" width="56" alt="Shilda / Bekçi" /> | **Shilda — Bekçi**<br/>*(The Keeper)* | Odanın hafızasını koruyan gizemli figür. Öldüğünde cesedinin başında yas tutar ve bir çiçek bırakır. Ona saldırmak ya da ona güvenmek oyunun sonunu doğrudan belirler. |
-| <img src="assets/props/body_echo.png" width="56" alt="Ceset ve Yankı" /> | **Önceki Bedenler**<br/>*(Corpse & Echo)* | Öldüğün noktada kalan fiziksel bedenin. İlk incelemede son 3 saniyelik mor **Yankı Tekrarını** oynatır; sonrasında **itilebilir ağırlık**, **üzerine çıkılabilir platform** ve **lanet süngeri** görevi görür. |
-| <img src="assets/props/red_flower.png" width="48" alt="Ölüm Çiçeği" /> | **Kızıl Ölüm Çiçeği**<br/>*(Mourning Flower)* | Shilda'nın yas tuttuğu bedenlere bıraktığı çiçek. Çiçekli bedenler (**Fener Ceset / Lantern Corpse**) karanlık odaları aydınlatır ve duvarlardaki gizli sembolleri görünür kılar. |
-| <img src="assets/props/pocket_watch.png" width="48" alt="Cep Saati" /> | **Durmuş Cep Saati**<br/>*(Pocket Watch)* | Uyanış odasındaki ilk kanıt. Kapağının içindeki kazıntı ve durduğu saat (`3:14`), hem ilk bellek mührünün anahtarıdır hem de Shilda ile olan geçmişin ilk izidir. |
-| <img src="assets/layers/core_crystal.png" width="56" alt="Çekirdek Kristali" /> | **Bellek Çekirdeği & Mühürler**<br/>*(Core Crystal)* | Tesisin kalbindeki kristal düzenek. Odalardaki 4 haneli hafıza mühürlerini (`314`, `251`, `418`, `729`) ve iki ana mühür parçasını birleştirerek son mühür kırılır. |
+| <img src="assets/portraits/portrait_noroi.png" width="56" alt="Noroi" /> | **Noroi**<br/>*(Oyuncu)* | Her ölümde belleği sıfırlanan fakat dünyada bıraktığı izlerle gerçeğe yürüyen denek. 3'lü kılıç kombosu, **Gölge Atılması (`ShadowDash`)** ve **Ruh Kesimi (`SoulSlash`)** yeteneklerini kullanır. |
+| <img src="assets/portraits/shilda/shilda_neutral.png" width="56" alt="Shilda" /> | **Shilda — Bekçi**<br/>*(The Keeper)* | Odanın hafızasını koruyan figür. Bedenlerinin başında yas tutar, çiçek bırakır. Ona saldırmak ya da güvenmek oyunun sonunu doğrudan belirler. |
+| <img src="assets/props/memory_echo.png" width="56" alt="Ceset ve Yankı" /> | **Önceki Bedenler**<br/>*(Corpse & Echo)* | Öldüğün noktada kalan fiziksel bedenin. İlk incelemede son 3 saniyelik **Yankı Tekrarını** oynatır; sonrasında **itilebilir ağırlık**, **üzerine çıkılabilir platform** ve **lanet süngeri** olur. |
+| <img src="assets/props/memory_frame.png" width="52" alt="Ölüm Çiçeği" /> | **Kızıl Ölüm Çiçeği**<br/>*(Mourning Flower)* | Shilda'nın yas tuttuğu bedenlere bıraktığı çiçek. Çiçekli bedenler (**Fener Ceset**) karanlık odaları aydınlatır ve duvarlardaki gizli sembolleri görünür kılar. |
+| <img src="assets/props/telescope.png" width="52" alt="Dış Gözlem" /> | **Teleskop & Dış Boşluk**<br/>*(Void Observation)* | Balkondaki antik aygıt. Tesisin gerçek dünyadan kopuk, yıldızsız ve donmuş karanlık bir boşlukta asılı olduğunu ortaya koyar. |
+| <img src="assets/props/mirror_cracked.png" width="52" alt="Çatlak Bellek Aynası" /> | **Çatlak Bellek Aynası**<br/>*(Cracked Mirror)* | Bölgeler arası tek kanonik hızlı seyahat ağı. Keşfedilen tapınaklar arasında hafıza sıçraması sağlar. |
 
 ---
 
-## ⚙️ Temel Oynanış Mekanikleri
-
-### 1. Üç Katmanlı Hafıza Mimarisi (3-Layer Memory State)
-Oyun, her ölümde neyin silinip neyin kalacağını katı bir mimariyle ayırır:
-* **🧠 Oyuncu Bilgisi (`player_progress_knowledge` — Kalıcı):** Öğrenilen mühür kodları, toplanan 16 kanıt kartı (`Evidence`), dinlenen yankılar (`Echoes`) ve açılan yetenekler (`SoulSlash`, `ShadowDash`) ölümden etkilenmez.
-* **🏛️ Dünya Hafızası (`world_memory_state` — Kalıcı):** Önceki yaşamların cesetleri ve koordinatları, çözülmüş ağırlık/kapı bulmacaları, keşfedilmiş bölgeler ve Shilda ile olan güven/savaş durumu dünyada kalıcı olarak iz bırakır.
-* **🩸 Karakterin Mevcut Yaşamı (`character_current_life_knowledge` — Geçici):** O anki bedenin geçici etkileşimleri, anlık diyalog bayrakları ve kontrol noktası ölümle birlikte sıfırlanır.
-
-### 2. Ceset Fizikleri, Yankı İkizi (`EchoTwin`) ve Çevresel Bulmacalar
-* **Çok Amaçlı Fiziksel Cesetler:** Her odada en fazla 3 kalıcı beden tutulur (plaka üzerinde aktif ağırlık tutan `anchoring` bedenler asla silinmez). Bedenler `36px` adımlarla basınç plakalarına itilebilir, tek yönlü üst çarpışması (`one_way_collision`) sayesinde yüksek platformlara zıplamak için basamak olarak kullanılabilir ve zehirli **Lanet Bulutlarını (`CurseCloud`)** emerek yolu temizler.
-* **Yankı Sunağı ve Gölge İkizi (`EchoAltar` & `EchoTwin`):** Sunak etkinleştirildiğinde oyuncunun **yürüyüşü, zıplaması, etkileşimi, kılıç saldırısı ve Ruh Kesimi yeteneği** zaman damgalı olarak kaydedilir. Kayıt bittiğinde doğan mor **Yankı İkizi**, oyuncunun hareketlerini birebir tekrarlayarak eşzamanlı iki şalterli kapıları ve zamanlamalı devreleri açar.
-
-### 3. Savaş Sistemi, Yetenekler ve Lanet / Berraklık Dengesi
-* **3'lü Kılıç Kombosu & Hitstop:** Yakın dövüş saldırıları kıvılcım, ekran sarsıntısı ve mikro-hitstop ile desteklenir. 3. kombo darbesiyle (`finisher`) yok edilen **Yürüyen Bellek Gölgeleri (`Walking Memory Shade`)**, oyuncunun lanetini **%10 temizleyen Berraklık Zerresi (`Memory Mote`)** düşürür.
-* **Kalkanlı Bellek Gölgeleri (`Shielded Memory Shade`):** Önden gelen normal kılıç darbelerini geri yansıtır. Kalkanlarını kırmak için **Ruh Kesimi (`SoulSlash`)** dalgası göndermek veya **Gölge Atılması (`ShadowDash`)** ile içlerinden geçip arkalarından vurmak gerekir.
-* **Lanet Sayacı (`CurseManager`):** Lanetli dikenler, bulutlar ve mühürler oyuncunun lanet oranını artırır. Lanet dört bantta ilerler: **%50**'den itibaren ilk işaretler ve fısıltılar, **%70**'te ekran kenarında damarlar ve tökezlemeler, **%90**'da güçlü nabız (hâlâ kurtulunabilir). **%100** olduğunda beden lanet tarafından ele geçirilir (`Possession`): ceset bırakılmaz, oyun son kayıt noktasından yeniden yüklenir. Bu bir son değildir.
+## 📸 Ekran Görüntüleri Galerisi
 
 <p align="center">
-  <img src="media/readme/03-dialogue.png" alt="Gotik Diyalog Çerçevesi" width="400" />
-  &nbsp;&nbsp;
-  <img src="media/readme/04-journal.png" alt="4 Sekmeli Günlük: Notlar, İzler ve Harita" width="400" />
+  <img src="media/readme/02-passage.png" alt="Geçitler ve Tehlikeler" width="410" />
+  &nbsp;
+  <img src="media/readme/03-dialogue.png" alt="Gotik Diyalog Sistemi" width="410" />
+</p>
+<p align="center">
+  <img src="media/readme/04-journal.png" alt="Günlük ve 6 Bölge Haritası" width="410" />
+  &nbsp;
+  <img src="media/readme/05-decay-garden.png" alt="Çürüme Bahçesi ve Shilda" width="410" />
+</p>
+<p align="center">
+  <img src="media/readme/06-core.png" alt="Bellek Çekirdeği ve Mühür Kristalleri" width="840" />
 </p>
 
 ---
 
-## 🗺️ Dünya Atlası: 6 Ana Bölge ve 40 Bağlı Oda
+## 📦 Aktif Sürümler ve İndirme Bağlantıları (GitHub Releases)
 
-Oyun dünyası, birbirine ana koridorlar, mühürlü kapılar, yan odalar ve **Çatlak Ayna (`Cracked Mirror`)** hızlı seyahat noktalarıyla bağlı **6 atmosferik bölge** ve **40 sahneden** (`scenes/rooms/`) oluşur:
+Depodaki tüm derlenmiş Android (`arm64-v8a`) APK paketleri düzenli olarak **[GitHub Releases](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases)** sayfasında sunulmaktadır:
 
-| Bölge | Görsel Atmosfer | Odalar ve Temel Bulmacalar |
-| :--- | :---: | :--- |
-| **I. UYANIŞ MAHMUZU**<br/>*(`awakening`)* | <img src="assets/backgrounds/awakening/far.png" width="220" alt="Uyanış Mahmuzu" /> | **Odalar (6):** `Uyanış`, `Gözlem Balkonu`, `İlk Bedenler Mahzeni`, `Kırık Geçit`, `Mühürlü Eşik`, `Nöbet Odası`<br/>**Odak:** Cep saati (`314`), ilk basınç plakası, Shilda ile ilk karşılaşma, kırmızı yarıklardan kaçış ve ilk bellek mührü. |
-| **II. ÇÜRÜME BAHÇESİ**<br/>*(`decay`)* | <img src="assets/backgrounds/decay/far.png" width="220" alt="Çürüme Bahçesi" /> | **Odalar (7):** `Sarmaşık Yolu`, `Ağırlık Salonu`, `Sera`, `Çatlak Duvar`, `Solmuş Bahçe`, `Kemik Mahzeni`, `Sarnıç`<br/>**Odak:** Kızıl çiçek kanıtları, hibrit taş/ceset ağırlık bulmacaları, sarmaşık kapıları ve Shilda'ya güven seçimi (`trusted_keeper`). |
-| **III. HAFIZA KÜTÜPHANESİ**<br/>*(`library`)* | <img src="assets/backgrounds/library/far.png" width="220" alt="Hafıza Kütüphanesi" /> | **Odalar (7):** `Hafıza Kütüphanesi`, `Üç Tanık`, `Saatler Odası`, `Unutulmuş Sayfa`, `Üst Raflar`, `Yasak Kanat`, `Okuma Hücresi`<br/>**Odak:** Yırtık sayfa sıralama bulmacası, **Ruh Kesimi (`SoulSlash`)** yeteneğinin kazanılması, `251` mührü ve ilk mühür parçası (`seal_fragment_library`). |
-| **IV. YASAK LABORATUVAR**<br/>*(`experiment`)* | <img src="assets/backgrounds/experiment/far.png" width="220" alt="Yasak Laboratuvar" /> | **Odalar (7):** `Gözlem Hücreleri`, `Kabul Odası`, `Yankı Devresi`, `Yetki Masası`, `Kara Tecrit Mahzeni`, `Ruh Damarları Kanalı`, `Gözlem Camı`<br/>**Odak:** `EchoAltar` & `EchoTwin` ile eşzamanlı devre bulmacaları, zehirli lanet bulutları, `418` mührü ve deney kayıtları. |
-| **V. AYNALAR SALONU**<br/>*(`mirrors`)* | <img src="assets/backgrounds/mirrors/far.png" width="220" alt="Aynalar Salonu" /> | **Odalar (7):** `Ayna Geçidi`, `İki Yankı`, `Bedenler Galerisi`, `Kırılmayan Ayna`, `Yansıma Labirenti`, `Ayna Tapınağı`, `Kırık Gece`<br/>**Odak:** **Gölge Atılması (`ShadowDash`)** yeteneğinin kazanılması, kalkanlı Bellek Gölgeleri, `729` mührü ve ikinci mühür parçası (`seal_fragment_mirrors`). |
-| **VI. BELLEK ÇEKİRDEĞİ**<br/>*(`core`)* | <img src="assets/backgrounds/core/far.png" width="220" alt="Bellek Çekirdeği" /> | **Odalar (6):** `Son Eşik`, `Son Merdiven`, `Mühür Odası`, `Hafıza Kasası`, `Çiçek Bahçesi`, `Çekirdek`<br/>**Odak:** İki mühür parçasının birleştirilmesi, geçmişin tam hakikati (`truth_seen`) ve Shilda ile birlikte kırılan son mühür. |
-
-<p align="center">
-  <img src="media/readme/02-passage.png" alt="Kırık Geçit Koridoru" width="400" />
-  &nbsp;&nbsp;
-  <img src="media/readme/05-decay-garden.png" alt="Çürüme Bahçesi" width="400" />
-</p>
-
-<p align="center">
-  <img src="media/readme/06-core.png" alt="Bellek Çekirdeği (Core)" width="820" />
-</p>
-
----
-
-## 🎭 Final: Bölüm I Sonu (END OF PART I)
-
-`EndingManager` (`scripts/autoload/ending_manager.gd`) yalnız iki durum tutar: `NONE` ve `PART_ONE`. Oyunda **tek bir final** vardır ve `scripts/story/final_sequence.gd` tarafından oynatılır:
-
-1. İki mühür parçası birleştirilir, gerçek görülür (`truth_seen`) ve son mühür Shilda ile birlikte kırılır.
-2. Mühür kırılınca Shilda insan hâline döner; ardından X ortaya çıkar.
-3. **EXPERIMENTAL DOMAIN 01–04** panelleri açılır; X çekirdek parçasını alır ve bir portal açılır.
-4. Karanlıkta bir ses: *"Noroi... beni duyuyor musun?"* → **END OF PART I** → jenerik.
-
-Final bir kez tamamlandıktan sonra Çekirdek Kristali susar; final tekrar oynatılamaz. Lanetin %100'e ulaşması bir son değildir: oyun son kayıt noktasından yeniden yüklenir.
-
----
-
-## 🏗️ Teknik Mimari ve Kod Yapısı
-
-Proje, **Godot 4.7.2 (`GL Compatibility` mobil/masaüstü ortak işleyici)** üzerinde **14 Autoload Singleton** ve veri-güdümlü (data-driven) oda mimarisiyle inşa edilmiştir.
-
-### Sistem Mimarisi Diyagramı
-
-```mermaid
-flowchart TD
-    subgraph Autoloads["🧠 Autoload Tekilleri (scripts/autoload/)"]
-        GS["GameState<br/>(3 Katmanlı Hafıza & Can)"]
-        RM["RoomManager<br/>(40 Oda Kaydı & Geçişler)"]
-        DM["DeathManager<br/>(5 Fazlı Ölüm & Ruh Göçü)"]
-        CM["CorpseManager<br/>(Ceset & Yankı İzi Kaydı)"]
-        CuM["CurseManager<br/>(Lanet %0-100 & Berraklık)"]
-        PM["PuzzleManager<br/>(Bayraklar & Mühür Durumu)"]
-        EM["EchoManager<br/>(Yankılar & Yetenek Kilidi)"]
-        EndM["EndingManager<br/>(Tek Final: Bölüm I Sonu)"]
-        SM["SaveManager<br/>(Atomik JSON + .bak/.prev)"]
-        DiaM["DialogueManager<br/>(Kuyruk & Fısıltı Sistemi)"]
-        UG["UiGate<br/>(Katman Kilidi: STORY/JOURNAL/SEAL/MENU)"]
-        MIM["MobileInputManager<br/>(Çoklu Dokunuş & Haptics)"]
-        AM["AudioManager<br/>(Worker Thread Prosedürel Synth)"]
-    end
-
-    subgraph Gameplay["⚔️ Oynanış ve Dünya (scripts/player, keeper, world)"]
-        PC["PlayerController<br/>(Hareket, 3'lü Kombo, Dash, SoulSlash)"]
-        KC["KeeperController<br/>(Shilda: Gölge, Yas, Diyalog, Savaş)"]
-        BR["BuiltRoom & RoomAtmosphere<br/>(Parallax, Sis, Vinyet, Işık)"]
-        Props["Dünya Nesneleri<br/>(Corpse, WeightStone, EchoAltar, MemoryShade, CrackedMirror)"]
-    end
-
-    subgraph UI["📜 Arayüz Katmanı (scripts/ui & scenes/ui)"]
-        TS["TitleScreen<br/>(Canlı Atmosferik Ana Menü)"]
-        HUD["HudController<br/>(Kalpler, Lanet, Diyalog, Dokunmatik HUD)"]
-        JUI["JournalUI & JournalMap<br/>(Günlük, Notlar, İzler, 6 Bölge Haritası)"]
-        SMenu["SessionMenu<br/>(Duraklatma, Ayarlar, Kaydet ve Çık)"]
-        RTC["RegionTitleCard & EyeOpenIntro<br/>(Gotik Bölge Kartı & Göz Açma)"]
-    end
-
-    PC -->|Etkileşim & Fizik| Props
-    PC -->|Hasar / Ölüm| DM
-    DM -->|Ceset Oluştur| CM
-    CM -->|Dünya Hafızası| GS
-    RM -->|Sahne Yükle| BR
-    RM -->|İlk Keşif| RTC
-    Props -->|Çözüm Kaydı| PM
-    PM --> GS
-    GS <-->|Atomik Kayıt/Yükleme| SM
-    UG -->|Girdi Yalıtımı| PC
-    UG -->|Görünürlük| HUD
-    UG --> JUI
-    UG --> SMenu
-    MIM --> PC
-    KC --> DiaM
-    EndM --> GS
-```
-
-### Klasör ve Dosya Organizasyonu
-
-```text
-THE-ROOM-REMEMBERS/
-├── project.godot                # Godot 4.7 proje yapılandırması, 14 Autoload, girdi haritası
-├── export_presets.cfg           # Android ARM64 APK dışa aktarma profili (com.torimon.theroomremembers)
-├── assets/
-│   ├── backgrounds/             # 6 bölgenin çok katmanlı parallax arka planları (far, mid, front)
-│   ├── characters/              # Noroi, Keeper (Shilda) ve NPC animasyon kareleri & SpriteFrames
-│   ├── hud/ & panels/           # Gotik diyalog, günlük, envanter panelleri ve dokunmatik butonlar
-│   ├── icon/                    # Android adaptif ikon katmanları ve 192/512px uygulama ikonları
-│   ├── layers/ & props/         # Gotik kapılar, mühürler, cep saati, ölüm çiçeği, kristaller
-│   └── tiles/                   # Zemin ve duvar piksel-art karo setleri
-├── scenes/
-│   ├── main/main.tscn           # Kök sahne (WorldRoot, Player, FollowCamera, UI katmanları)
-│   ├── rooms/                   # 40 bağlı oda sahnesi (awakening, decay, library, experiment, mirrors, core)
-│   ├── player/ & keeper/        # Noroi ve Shilda sahneleri
-│   ├── world/                   # Fiziksel ceset, çatlak ayna ve Bellek Gölgesi (Memory Shade) sahneleri
-│   └── ui/                      # HUD, Günlük (Journal), Bölge Kartı, Lanet VFX sahneleri (final: scripts/story/final_sequence.gd)
-└── scripts/
-    ├── autoload/                # 14 küresel sistem yöneticisi (GameState, RoomManager, SaveManager vb.)
-    ├── player/                  # player_controller.gd, soul_slash_wave.gd
-    ├── keeper/                  # keeper_controller.gd (Shilda AI ve durum makinesi)
-    ├── world/                   # 40+ etkileşimli dünya bileşeni (corpse, echo_altar, room_transition vb.)
-    ├── story/                   # Bölge görevleri ve hikâye vuruşları (campaign_objectives, shilda_name_beat vb.)
-    ├── ui/                      # Başlık ekranı, HUD, Günlük haritası, Mühür tuş takımı, Duraklatma menüsü
-    ├── audio/                   # Arka plan iş parçacıklı prosedürel ses sentezleyici (sound_bank, synth_job)
-    └── dev/                     # 15+ otomatik Headless QA ve stres testi betiği (release_audit, e2e_runner vb.)
-```
+| Sürüm | Durum | APK Dosyası / İndirme | Öne Çıkan Yenilikler ve Kapsam |
+| :--- | :---: | :--- | :--- |
+| **v1.12.1** | 🟢 **Güncel Kaynak** | APK bu sürümde ayrıca yayınlanır | Kırık Geçit geçilebilir: taş blok zıplama yüksekliğinde, diken halkasının hitbox'ı görselle aynı, dönüş boşluğu ve halkanın dışında kontrol noktası (`versionCode 38`). |
+| **v1.12.0** | Önceki | APK bu sürümde ayrıca yayınlanır | Kısa nöbet, ceset basamağı, vuruş ve ölüm hissi cilası, oda girişi kamerası (`versionCode 37`). |
+| **[v1.9.0](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.9.0)** | Önceki | [📥 `TheRoomRemembers-1.9.0-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.9.0) | Derin oynanış geçişi: sıralı bahçe ve kasa, yalan ayna, raf tahtası, kademeli günlük ipucu (`versionCode 34`). |
+| **[v1.8.1](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.8.1)** | Önceki | [📥 `TheRoomRemembers-1.8.1-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.8.1) | Hareket kilidi, taş itme ve kapı etkileşimi düzeltildi; bölge motifleri, diyalog cilası (`versionCode 33`). |
+| **[v1.8.0](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.8.0)** | Önceki | [📥 `TheRoomRemembers-1.8.0-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.8.0) | Kapı sonrası joystick restorasyonu, door_controls audit, Bölüm II teaser, ???/X? portreleri (`versionCode 32`). |
+| **[v1.7.0](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.7.0)** | Önceki | [📥 `TheRoomRemembers-1.7.0-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.7.0) | Shilda HD Remaster, 3 katmanlı bellek, oda içi güvenli yeniden doğuş, lanet mühürleme tapınakları (`versionCode 31`). |
+| **[v1.6.0](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.6.0)** | Önceki | [📥 `TheRoomRemembers-1.6.0-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.6.0) | Shilda White Guardian V2 HD Remaster, 3 Katmanlı Hafıza İzolasyonu, 3 Kademeli İpuçları (`versionCode 30`). |
+| **[v1.5.1](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.5.1)** | Önceki | [📥 `TheRoomRemembers-1.5.1-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.5.1) | Gotik metin cilası, X kanonu uyumu, 314 rüya ipucu (`versionCode 29`). |
+| **[v1.0.0](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.0.0)** | Arşiv | [📥 `TheRoomRemembers-1.0.0-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.0.0) | İlk kararlı Android sürümü, 30 bağlı oda, dokunmatik kontroller. |
 
 ---
 
@@ -245,8 +242,8 @@ THE-ROOM-REMEMBERS/
 
 | Eylem | Masaüstü (Klavye) | Android (Dokunmatik HUD) |
 | :--- | :--- | :--- |
-| **Hareket** | `A / D`, `Sol / Sağ Ok` | Sol Sanal Joystick (Sabit / Yüzen mod destekli) |
-| **Zıplama** | `W`, `Space`, `Yukarı Ok` | Sağ HUD — **Zıpla (`^`)** Butonu *(Coyote + Değişken Yükseklik)* |
+| **Hareket** | `A / D`, `Sol / Sağ Ok` | Sol Sanal Joystick (Sabit veya Yüzen mod) |
+| **Zıplama** | `W`, `Space`, `Yukarı Ok` | Sağ HUD — **Zıpla (`^`)** *(Coyote + Değişken Yükseklik)* |
 | **Saldırı (3'lü Kombo)** | `Z` veya `J` | Sağ Alt — **Kılıç** Butonu |
 | **Atılma / Gölge Atılması** | `X` veya `K` | Sağ Alt — **Dash** Butonu |
 | **Etkileşim / İtme / Konuşma** | `E` veya `F` | Sağ Orta — **El (`Interact`)** Butonu |
@@ -256,46 +253,56 @@ THE-ROOM-REMEMBERS/
 
 ---
 
-## 🚀 Kurulum, Çalıştırma ve Otomatik Test Altyapısı
+## 🚀 Kurulum, Çalıştırma ve Test Altyapısı
 
-### 1. Android Cihazda Oynama (APK)
-1. **[Releases → v1.9.0](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.9.0)** sayfasından `TheRoomRemembers-1.9.0-android-arm64.apk` dosyasını indirin ve telefonunuza kurun.
-2. Veya USB hata ayıklaması açık bir Android cihaza `adb` ile doğrudan yükleyin:
+### 1. Android Cihaza Kurulum (APK)
+1. **[Releases](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases)** sayfasından son sürüm `.apk` dosyasını indirin.
+2. Veya USB hata ayıklaması açık cihaza `adb` ile yükleyin:
    ```powershell
-   adb install -r TheRoomRemembers-1.5.0-android-arm64.apk
+   adb install -r TheRoomRemembers-1.12.1-android-arm64.apk
    adb shell am start -n com.torimon.theroomremembers/com.godot.game.GodotApp
    ```
 
-### 2. Godot Editöründe Çalıştırma (Kaynak Koddan)
-1. **[Godot Engine 4.7.2](https://godotengine.org/download)** sürümünü indirin.
-2. Depoyu klonlayın ve `project.godot` dosyasını içe aktarın:
+### 2. Godot Editöründe Çalıştırma (Geliştirici)
+1. **[Godot Engine 4.7.2](https://godotengine.org/download)** konsol veya standart sürümünü indirin.
+2. Depoyu açın ve `project.godot` dosyasını projeye yükleyin:
    ```bash
    git clone https://github.com/jagwey/THE-ROOM-REMEMBERS.git
    cd THE-ROOM-REMEMBERS
    ```
-3. Ana sahne `scenes/main/main.tscn` olarak ayarlıdır; **F5** tuşuyla oyunu doğrudan başlatabilirsiniz.
-4. Türkçe hızlı oynanış rehberi için [`PLAY_TR.md`](PLAY_TR.md) dosyasına göz atabilirsiniz.
+3. Ana sahne `scenes/main/main.tscn` olarak ayarlıdır; **F5** ile doğrudan başlatabilirsiniz.
 
-### 3. Otomatik QA ve Denetim Testlerini Çalıştırma (`scripts/dev/`)
-Projede 40 odanın kapı grafiğini, softlock olasılıklarını, kayıt/yükleme bütünlüğünü, ölüm döngüsünü ve kontrolleri doğrulayan kapsamlı bir **Headless QA Test Altyapısı** bulunur:
+### 3. Otomatik Headless QA ve Audit Testleri (`scripts/dev/`)
+Projeyi kod tabanı seviyesinde doğrulayan 20'den fazla otonom test betiği bulunur:
 
 ```powershell
-# 107 noktalı tam sürüm ve oda/kapı grafiği denetimi
-godot --headless --path . --script res://scripts/dev/release_audit.gd
+$godot = "C:\Users\Osman\OneDrive\Desktop\Godot_v4.7.2-stable_win64.exe\Godot_v4.7.2-stable_win64_console.exe"
+$env:TORIMON_TEST = "1"
 
-# Kontroller, dövüş, yetenekler, mühürler ve bulmaca denetimi
-godot --headless --path . --script res://scripts/dev/controls_audit.gd
+# 1. Master E2E Doğrulama (Tier 1-4, 50 kontrol)
+& $godot --headless --path . -s res://scripts/dev/e2e_runner.gd
 
-# Ölüm döngüsü, ruh yükselmesi ve Yankı Tekrarı (Echo Replay) testi
-godot --headless --path . --script res://scripts/dev/death_loop_audit.gd
+# 2. 40 Oda ve Kapı Grafiği Bütünlüğü Denetimi
+& $godot --headless --path . -s res://scripts/dev/release_audit.gd
 
-# Kayıt sistemi (.bak / .prev yedekleme ve Kaydet & Çık) sağlamlık testi
-godot --headless --path . --script res://scripts/dev/save_robust_audit.gd
+# 3. Ölüm, Rebirth ve Kalıcı Dünya Denetimi
+& $godot --headless --path . -s res://scripts/dev/death_loop_audit.gd
+
+# 4. Lanet ve Mühür Tapınakları Denetimi
+& $godot --headless --path . -s res://scripts/dev/memory_seal_audit.gd
 ```
 
 ---
 
+## 📜 Geliştirici & Ajan Kuralları
+
+Projeye katkı veren her yapay zekâ ajanı, alt ajan veya geliştirici aşağıdaki kurallara **kesinlikle** uyar:
+1. **GÖREV SONU DOKÜMANTASYON KURALI (ZORUNLU):** Her ajan / alt ajan bir işi, revizyonu veya görevi bitirdiğinde; yapılan tüm değişiklikleri, yeni mekanikleri, mimari detayları ve sürüm bilgisini MUTLAKA `README.md` ve `PROGRESS.md` dosyalarına yansıtacaktır. Dokümantasyon asla bayat bırakılamaz.
+2. **Kanonik Dil Standardı:** Kod tanımlayıcıları İngilizce (`snake_case` fonksiyonlar, `PascalCase` sınıflar), oyun içi metinler ve diyaloglar mutlaka **Türkçe (UTF-8)** olmalıdır.
+3. **Kalıcı Dünya İlkeleri:** Ölüm durumunda dünya ilerlemesi (açılan kapılar, çözülen bulmacalar, kırılan duvarlar) asla sıfırlanmaz.
+4. **Tek Kanonik Final:** Hikâye Part I için tek bir kanonik son içerir (`BÖLÜM I SONU`). Eski alternatif son dalları geçersizdir.
+
+---
 <p align="center">
-  <strong>© TORIMON — THE ROOM REMEMBERS</strong><br/>
-  <em>"Sen unutursun. O hatırlar."</em>
+  <sub>TORIMON STUDIO · THE ROOM REMEMBERS · 2026</sub>
 </p>

@@ -1,0 +1,18 @@
+# THE ROOM REMEMBERS — CURSOR AGENT RULES
+
+## Mimari & Kod Standartları
+- Kod tanımlayıcıları ve API'ler İngilizce (`snake_case` fonksiyonlar, `PascalCase` sınıflar, `SCREAMING_SNAKE_CASE` sabitler).
+- Oyun içi metinler, diyaloglar ve UI etiketleri mutlaka **Türkçe (UTF-8)** olmalıdır.
+- Sadece göreve doğrudan ilgili dosyaları oku ve düzenle; ilgisiz log, zip veya binary dosyaları dump etme.
+- Asla kullanıcı onayı olmadan rastgele kod silme; mevcut mimariyi koru.
+
+## GÖREV SONU DOKÜMANTASYON KURALI (ZORUNLU)
+- **Her ajan / alt ajan bir işi, revizyonu veya görevi bitirdiğinde; yapılan tüm değişiklikleri, yeni mekanikleri, mimari detayları ve sürüm bilgisini MUTLAKA `README.md` ve `PROGRESS.md` dosyalarına yansıtacaktır.**
+- Dokümantasyon asla bayat veya eksik bırakılamaz.
+- `README.md` içindeki diyagramlar, ekran görüntüleri ve sürüm tabloları güncel tutulmalıdır.
+
+## Yayın & Release Kuralları
+- Kaynak repo `jagwey/THE-ROOM-REMEMBERS` **private** depodur.
+- Dağıtım ve APK indirmeleri **public** repo olan `https://github.com/jagwey/THE-ROOM-REMEMBERS-release` üzerinden yapılır.
+- Her yeni sürümde `project.godot` (`config/version`) ve `export_presets.cfg` (`version/code`, `version/name`) artırılır.
+- APK derlemesi yapıldıktan sonra her iki depoya da GitHub Release açılır.

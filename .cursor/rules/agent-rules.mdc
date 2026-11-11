@@ -1,0 +1,17 @@
+---
+description: THE ROOM REMEMBERS projesi için zorunlu ajan kuralları
+globs: *
+---
+
+# THE ROOM REMEMBERS — AGENT RULES
+
+## Mimari & Kod Standartları
+- Kod tanımlayıcıları İngilizce, oyun metinleri Türkçe (UTF-8).
+- Asla göreve ilgisiz kodu veya testleri bozma.
+
+## GÖREV SONU DOKÜMANTASYON KURALI (ZORUNLU)
+- **Her ajan / alt ajan bir işi, revizyonu veya görevi bitirdiğinde; yapılan tüm değişiklikleri, yeni mekanikleri, mimari detayları ve sürüm bilgisini MUTLAKA `README.md` ve `PROGRESS.md` dosyalarına yansıtacaktır.**
+- Dokümantasyon asla bayat bırakılamaz.
+
+## Release Kuralları
+- Dağıtım `jagwey/THE-ROOM-REMEMBERS-release` deposuna yapılır.

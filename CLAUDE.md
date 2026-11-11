@@ -17,6 +17,7 @@ Yan görünüşlü bellek/lanet oyunu. Kapalı kaynak, private repo. Paket: com.
 - Sadece göreve ilgili dosyaları oku; log/zip/png dump okuma
 - Yayın/commit yalnız kullanıcı isteyince
 - Sır/anahtar/parola hiçbir dosyaya yazma
+- **GÖREV SONU DOKÜMANTASYON KURALI (ZORUNLU):** Her ajan / alt ajan bir işi, revizyonu veya görevi bitirdiğinde; yapılan tüm değişiklikleri, yeni mekanikleri, mimariyi ve sürüm bilgisini MUTLAKA `README.md` ve `PROGRESS.md` dosyalarına yansıtacaktır. Dokümantasyon asla bayat bırakılamaz.
 
 ## Release (ÖNEMLİ)
 - Kaynak repo `jagwey/THE-ROOM-REMEMBERS` **private**. Oyuncuların gördüğü APK'lar **public** repo'ya gider: https://github.com/jagwey/THE-ROOM-REMEMBERS-release
