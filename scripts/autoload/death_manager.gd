@@ -22,6 +22,12 @@ var phase: int = Phase.ALIVE
 ## Bu ölüm ilk ölüm mü (sinematik, uzun); sonrakiler hızlı.
 var cinematic: bool = false
 var _soul: Node2D = null
+## Gerçek zamanlı yavaşlatma bitişi. Daha geç biten tutuş, erken olanı geri almaz.
+var _time_hold_until_ms: int = 0
+
+
+func _exit_tree() -> void:
+	Engine.time_scale = 1.0
 
 
 func _set_phase(p: int) -> void:
@@ -69,6 +75,7 @@ func request_death(reason: StringName = &"unknown", full_reset: bool = false) ->
 		pass
 
 	SaveManager.save_game()
+	await _death_presentation()
 	## DYING: beden çöker (ilk ölüm daha uzun).
 	await _wait(1.1 if cinematic else 0.55)
 
@@ -86,6 +93,56 @@ func request_death(reason: StringName = &"unknown", full_reset: bool = false) ->
 		DialogueManager.clear()
 
 	await _respawn()
+
+
+## scale 1'in altında, real_sec gerçek saniye. Bittiğinde time_scale her zaman 1'e döner.
+func hold_time_scale(scale: float, real_sec: float) -> void:
+	if _fast_mode():
+		Engine.time_scale = 1.0
+		return
+	var dur := maxf(real_sec, 0.0)
+	Engine.time_scale = clampf(scale, 0.02, 1.0)
+	var until := Time.get_ticks_msec() + int(dur * 1000.0)
+	if until > _time_hold_until_ms:
+		_time_hold_until_ms = until
+	if dur > 0.0:
+		await get_tree().create_timer(dur, true, false, true).timeout
+	if Time.get_ticks_msec() + 20 >= _time_hold_until_ms:
+		Engine.time_scale = 1.0
+		_time_hold_until_ms = 0
+
+
+func _death_presentation() -> void:
+	if _fast_mode():
+		return
+	var cam := _camera()
+	if cam and cam.has_method("add_trauma"):
+		cam.add_trauma(1.0)
+	_flash_red_vignette()
+	await hold_time_scale(0.35, 0.3)
+
+
+func _flash_red_vignette() -> void:
+	var layer := CanvasLayer.new()
+	layer.layer = 90
+	layer.name = "DeathVignette"
+	var rect := ColorRect.new()
+	rect.name = "Flash"
+	rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	rect.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	rect.color = Color.WHITE
+	var shader := Shader.new()
+	shader.code = "shader_type canvas_item;\nvoid fragment() {\n\tfloat d = length(UV - vec2(0.5));\n\tfloat vig = smoothstep(0.2, 0.78, d);\n\tCOLOR = vec4(0.62, 0.02, 0.05, vig);\n}\n"
+	var mat := ShaderMaterial.new()
+	mat.shader = shader
+	rect.material = mat
+	rect.modulate = Color(1, 1, 1, 0)
+	layer.add_child(rect)
+	add_child(layer)
+	var tw := rect.create_tween()
+	tw.tween_property(rect, "modulate:a", 1.0, 0.04)
+	tw.tween_property(rect, "modulate:a", 0.0, 0.2)
+	tw.tween_callback(layer.queue_free)
 
 
 func _fast_mode() -> bool:

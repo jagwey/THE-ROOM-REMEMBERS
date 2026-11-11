@@ -34,6 +34,16 @@ var _zoom_now: float = ZOOM_NORMAL
 var _zoom_hold: float = 0.0
 var _trauma: float = 0.0
 var _shake_t: float = 0.0
+## Oda girişinde bir kez: hedef ekran dışındaysa kısa pan, sonra oyuncuya dön.
+var _goal_pan_pending: bool = false
+var _pan_phase: int = 0
+var _pan_t: float = 0.0
+var _pan_from: Vector2 = Vector2.ZERO
+var _pan_to: Vector2 = Vector2.ZERO
+const PAN_GO := 0.55
+const PAN_HOLD := 0.35
+const PAN_BACK := 0.5
+const GOAL_GROUPS: Array[StringName] = [&"room_door", &"memory_seal", &"soul_seal", &"pressure_plate", &"room_goal"]
 
 
 func _ready() -> void:
@@ -55,6 +65,8 @@ func set_room_bounds(rect: Rect2) -> void:
 	_base_zoom = float(ROOM_BASE_ZOOM.get(String(RoomManager.get_active_room_id()), ZOOM_NORMAL))
 	_zoom_goal = _base_zoom
 	_zoom_hold = 0.0
+	_pan_phase = 0
+	_goal_pan_pending = true
 	_apply_limits()
 	_apply_zoom(true)
 
@@ -130,9 +142,16 @@ func snap_to_target() -> void:
 	_apply_zoom(true)
 	global_position = _clamp_to_room(_target.global_position)
 	_look_offset = 0.0
+	if _goal_pan_pending:
+		_goal_pan_pending = false
+		_begin_goal_pan()
 
 
 func _physics_process(delta: float) -> void:
+	if _pan_phase != 0:
+		_step_goal_pan(delta)
+		_update_shake(delta)
+		return
 	if not is_instance_valid(_target):
 		_target = get_tree().get_first_node_in_group("player") as Node2D
 		if not is_instance_valid(_target):
@@ -176,6 +195,84 @@ func _physics_process(delta: float) -> void:
 	var alpha := 1.0 - exp(-follow_lambda * delta)
 	global_position = global_position.lerp(_clamp_to_room(want), alpha)
 	_update_shake(delta)
+
+
+func _begin_goal_pan() -> void:
+	if DisplayServer.get_name() == "headless":
+		return
+	if OS.get_environment("TORIMON_TEST") == "1" or OS.get_environment("TORIMON_SMOKE") == "1":
+		return
+	if _focus != null:
+		return
+	var goal := _find_room_goal()
+	if goal == Vector2.INF or _sees(goal):
+		return
+	_pan_from = global_position
+	_pan_to = _clamp_to_room(goal)
+	_pan_t = 0.0
+	_pan_phase = 1
+
+
+func _find_room_goal() -> Vector2:
+	var root := RoomManager.get_active_room_root()
+	if root == null or not is_instance_valid(_target):
+		return Vector2.INF
+	var best := Vector2.INF
+	var best_d := 160.0
+	for group_name in GOAL_GROUPS:
+		for n in get_tree().get_nodes_in_group(group_name):
+			if not (n is Node2D) or not root.is_ancestor_of(n):
+				continue
+			var node := n as Node2D
+			if not node.is_visible_in_tree():
+				continue
+			var d := _target.global_position.distance_to(node.global_position)
+			if d > best_d:
+				best_d = d
+				best = node.global_position
+	return best
+
+
+func _sees(world_pos: Vector2) -> bool:
+	var half := _viewport_half_extents()
+	return absf(world_pos.x - global_position.x) <= half.x - 32.0 and absf(world_pos.y - global_position.y) <= half.y - 24.0
+
+
+func _step_goal_pan(delta: float) -> void:
+	if _zoom_hold > 0.0:
+		_zoom_hold -= delta
+		if _zoom_hold <= 0.0:
+			_zoom_goal = _base_zoom
+	_zoom_now = lerpf(_zoom_now, _zoom_goal, 1.0 - exp(-zoom_lambda * delta))
+	_apply_zoom(false)
+	if _pan_phase == 1:
+		_pan_t += delta
+		var k := clampf(_pan_t / PAN_GO, 0.0, 1.0)
+		k = k * k * (3.0 - 2.0 * k)
+		global_position = _clamp_to_room(_pan_from.lerp(_pan_to, k))
+		if _pan_t >= PAN_GO:
+			_pan_phase = 2
+			_pan_t = 0.0
+	elif _pan_phase == 2:
+		_pan_t += delta
+		global_position = _clamp_to_room(_pan_to)
+		if _pan_t >= PAN_HOLD:
+			_pan_phase = 3
+			_pan_t = 0.0
+			_pan_from = global_position
+			var back := _target.global_position if is_instance_valid(_target) else _pan_from
+			_pan_to = _clamp_to_room(back)
+	elif _pan_phase == 3:
+		_pan_t += delta
+		var k2 := clampf(_pan_t / PAN_BACK, 0.0, 1.0)
+		k2 = k2 * k2 * (3.0 - 2.0 * k2)
+		global_position = _clamp_to_room(_pan_from.lerp(_pan_to, k2))
+		if _pan_t >= PAN_BACK:
+			_pan_phase = 0
+			if is_instance_valid(_target):
+				global_position = _clamp_to_room(_target.global_position)
+	else:
+		_pan_phase = 0
 
 
 func _update_shake(delta: float) -> void:

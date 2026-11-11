@@ -103,8 +103,15 @@ func play_sfx(id: StringName, volume_db: float = 0.0, pitch: float = -1.0) -> vo
 	_last_play_ms[id] = now
 	var p := _free_sfx_player()
 	p.stream = s
-	p.volume_db = volume_db
-	p.pitch_scale = pitch if pitch > 0.0 else randf_range(0.95, 1.05)
+	var pitch_base := pitch if pitch > 0.0 else 1.0
+	var vol := volume_db
+	if id == &"footstep" or id == &"land" or id == &"sword_hit":
+		pitch_base *= randf_range(0.92, 1.08)
+		vol = linear_to_db(maxf(db_to_linear(volume_db) * randf_range(0.92, 1.08), 0.0001))
+	elif pitch <= 0.0:
+		pitch_base = randf_range(0.95, 1.05)
+	p.volume_db = vol
+	p.pitch_scale = pitch_base
 	p.play()
 
 
@@ -112,14 +119,23 @@ func set_region(region: StringName) -> void:
 	if not _enabled or region == _region or not SoundBank.is_region(region):
 		return
 	_region = region
-	for kind in [&"music", &"amb"]:
-		var key := "%s:%s" % [kind, region]
-		if _streams.has(key):
-			_crossfade(kind, _streams[key])
+	var music_key := "music:%s" % String(region)
+	if _streams.has(music_key):
+		_crossfade(&"music", _streams[music_key])
+	else:
+		_prioritize(music_key, &"music", region)
+	var amb_file := _load_ogg("res://assets/audio/ambient/%s.ogg" % String(region), true)
+	if amb_file != null:
+		_crossfade(&"amb", amb_file)
+	else:
+		var amb_key := "amb:%s" % String(region)
+		if _streams.has(amb_key):
+			_crossfade(&"amb", _streams[amb_key])
 		else:
-			_prioritize(key, kind, region)
+			_prioritize(amb_key, &"amb", region)
 
 
+## Bölge ortamı: önce assets/audio/ambient/<bölge>.ogg, yoksa synth.
 func play_region_ambient(region: StringName) -> void:
 	set_region(region)
 
@@ -151,6 +167,40 @@ func set_music_enabled(enabled: bool) -> void:
 	var i := AudioServer.get_bus_index("Music")
 	if i >= 0:
 		AudioServer.set_bus_mute(i, not enabled)
+
+
+## Ölüm/uyanış: önce ogg, yoksa synth akoru.
+func play_death_stinger() -> void:
+	_play_file_or_sfx("res://assets/audio/stingers/death.ogg", &"death_chord")
+
+
+func play_wake_stinger() -> void:
+	_play_file_or_sfx("res://assets/audio/stingers/wake.ogg", &"rebirth_chord")
+
+
+func _load_ogg(path: String, looped: bool) -> AudioStream:
+	if not ResourceLoader.exists(path):
+		return null
+	var loaded: Variant = load(path)
+	if not (loaded is AudioStream):
+		return null
+	var stream := (loaded as AudioStream).duplicate() as AudioStream
+	if looped and stream != null and "loop" in stream:
+		stream.set("loop", true)
+	return stream
+
+
+func _play_file_or_sfx(path: String, fallback: StringName) -> void:
+	if not _enabled:
+		return
+	var stream := _load_ogg(path, false)
+	if stream == null:
+		play_sfx(fallback)
+		return
+	_stinger_player.stream = stream
+	_stinger_player.volume_db = -2.0
+	_stinger_player.pitch_scale = 1.0
+	_stinger_player.play()
 
 
 func stinger(id: StringName) -> void:
@@ -241,8 +291,8 @@ func _connect_hooks() -> void:
 	GameState.room_changed.connect(_on_room_changed)
 	DialogueManager.page_shown.connect(_on_page_shown)
 	DialogueManager.typing_finished.connect(_on_typing_finished)
-	DeathManager.death_started.connect(func(_r: StringName) -> void: play_sfx(&"death_chord"))
-	DeathManager.rebirth_completed.connect(func() -> void: play_sfx(&"rebirth_chord"))
+	DeathManager.death_started.connect(func(_r: StringName) -> void: play_death_stinger())
+	DeathManager.rebirth_completed.connect(func() -> void: play_wake_stinger())
 	CurseManager.curse_whisper.connect(func(_t: String) -> void: play_sfx(&"curse_whisper", -4.0))
 	CurseManager.curse_changed.connect(_on_curse_changed)
 	EndingManager.ending_reached.connect(_on_ending)
@@ -521,8 +571,8 @@ func footstep_from_anim() -> void:
 		return
 	_anim_step_ms = Time.get_ticks_msec()
 	_foot_alt = not _foot_alt
-	var base := 0.9 if _foot_alt else 0.97
-	play_sfx(&"footstep", randf_range(-9.0, -6.5), base * randf_range(0.93, 1.07))
+	var base := 0.96 if _foot_alt else 1.0
+	play_sfx(&"footstep", -8.0, base)
 
 
 func _update_footsteps(delta: float) -> void:
@@ -545,7 +595,7 @@ func _update_footsteps(delta: float) -> void:
 			## Yumuşak taş: her adımda farklı perde/şiddet, sağ-sol adım hafif farklı.
 			_foot_t = FOOT_INTERVAL * randf_range(0.92, 1.08)
 			_foot_alt = not _foot_alt
-			var base := 0.9 if _foot_alt else 0.97
-			play_sfx(&"footstep", randf_range(-9.0, -6.5), base * randf_range(0.93, 1.07))
+			var base := 0.96 if _foot_alt else 1.0
+			play_sfx(&"footstep", -8.0, base)
 	else:
 		_foot_t = minf(_foot_t, 0.06)

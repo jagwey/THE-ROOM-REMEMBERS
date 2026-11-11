@@ -18,19 +18,9 @@
         ]
       },
       {"s": "Noroi", "t": "Kim var orada?"},
-      {"s": "@shilda", "t": "İlk kez yüzümü görüyorsun. Adımı sorma."},
-      {"s": "Noroi", "t": "Burası neresi?"},
-      {"s": "@shilda", "t": "Bir nöbet. Saatler durmuş, sen durmamışsın."},
-      {"s": "Noroi", "t": "Beni tanıyor musun?"},
-      {"s": "@shilda", "t": "Tanırım. Sen beni henüz değil."},
-      {"s": "@shilda", "t": "Sağda bir kapı var. Çürüme oradan nefes alıyor."},
-      {"s": "@shilda", "t": "Kırmızı yarığa basma. Unuttuğunu geri verir, parçalayarak."},
-      {"s": "Noroi", "t": "Neden yardım ediyorsun?"},
-      {"s": "@shilda", "t": "Çünkü unutursan bir daha uyanamazsın."},
-      {"s": "@shilda", "t": "Ben burada kalmam. İz bırakırım."},
-      {"s": "Noroi", "t": "Gitme."},
-      {"s": "@shilda", "t": "Gideceğim. Yolu açtım."},
-      {"s": "Noroi", "t": "Gidiyorum. İzini kaybetmem."}
+      {"s": "@shilda", "t": "Sağda bir kapı var."},
+      {"s": "@shilda", "t": "Kırmızı yarığa basma."},
+      {"s": "@shilda", "t": "Gideceksin. Ben iz bırakırım."}
     ]
   }
 }

@@ -5,6 +5,8 @@ extends Area2D
 @export var arm_requires_mystery: bool = true
 ## Geçit tehlikeleri: tek temasta yalnızca bir kalp (ölüm döngüsü yok).
 @export var passage_one_heart_cap: bool = false
+## Tek temas öldürür. CorpseDrop varsa ceset oraya, sağlam zemine konur.
+@export var lethal: bool = false
 
 var _armed: bool = false
 var _warned: bool = false
@@ -53,6 +55,14 @@ func _process(delta: float) -> void:
 	for body in get_overlapping_bodies():
 		if not body.is_in_group("player"):
 			continue
+		if lethal:
+			if DeathManager.is_dying:
+				return
+			var drop := get_node_or_null("CorpseDrop") as Node2D
+			if drop != null and body.has_method("note_safe_floor"):
+				body.note_safe_floor(drop.global_position)
+			DeathManager.request_death(&"hazard")
+			return
 		if not _warned:
 			_warn(body)
 			return

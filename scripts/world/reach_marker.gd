@@ -5,6 +5,7 @@ extends Area2D
 
 
 func _ready() -> void:
+	add_to_group("room_goal")
 	collision_layer = 0
 	collision_mask = 2
 	monitoring = true

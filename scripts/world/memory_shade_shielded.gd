@@ -114,6 +114,8 @@ func _physics_process(delta: float) -> void:
 				if shield_sprite and _shield_active:
 					shield_sprite.position.x = _facing * 12.0
 				velocity.x = _facing * SPEED
+				if _cliff_ahead():
+					velocity.x = 0.0
 
 				if dist < 22.0 and _contact_cd <= 0.0:
 					_contact_cd = 1.5
@@ -127,6 +129,17 @@ func _physics_process(delta: float) -> void:
 			velocity.x = move_toward(velocity.x, 0.0, 200.0 * delta)
 
 	move_and_slide()
+
+
+## Çukurun kenarında durur. Labirentteki boşluğa yürümez.
+func _cliff_ahead() -> bool:
+	var space := get_world_2d().direct_space_state
+	if space == null:
+		return false
+	var x := global_position.x + _facing * 16.0
+	var q := PhysicsRayQueryParameters2D.create(Vector2(x, global_position.y - 4.0), Vector2(x, global_position.y + 48.0), 1)
+	q.exclude = [get_rid()]
+	return space.intersect_ray(q).is_empty()
 
 
 func receive_sword_hit(attacker: Node, dir: float, combo: int) -> void:
