@@ -329,3 +329,9 @@ oom_door\) <= 44.0 px mesafede -200 etkileÅŸim Ã¶ncelik bonusu eklendi.
 - [x] Bulmaca ilk çözümünde `seal_open` + "HATIRLANDI" afişi (testlerde afiş yok).
 - [x] Sürüm 1.8.1 / versionCode 33.
 
+## v1.9.0 — Derin oynanış geçişi (2026-11-11)
+- [x] Odalar: Çiçek Bahçesi (4-1-2 taş sırası, güven kapısı), Hafıza Kasası (1927/1995/Son), Üst Raflar (ses-mühür-çiçek tahtası), Ayna Labirenti (yükselen yol + soluk kırmızı yalan), Karantina (sis sonrası raf), Gözlem Balkonu (kopuk zemin).
+- [x] Hikâye: açılış kancası, saat 3:14, isim sahnesi, finalde Noroi'nin cevabı. Günlük ipucu 3 kademe (hedef / yön / açık).
+- [x] His: plaka ve kapı sarsıntısı, sunak parçacığı, çözümde lanet -8. Bölge motifleri: bahçe, kasa, karantina, labirent.
+- [x] Denetim: `room_identity_audit`. Sürüm 1.9.0 / versionCode 34.
+

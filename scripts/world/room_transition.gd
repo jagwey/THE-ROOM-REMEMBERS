@@ -339,6 +339,9 @@ func _travel(by: Node) -> void:
 	UiGate.set_cutscene(true)
 	MobileInputManager.clear_held_inputs()
 	AudioManager.play_sfx(&"door_open", -4.0)
+	var cam := tree.get_first_node_in_group("follow_camera")
+	if cam and cam.has_method("add_trauma"):
+		cam.add_trauma(0.12)
 	var player := by as Node2D
 	if player == null or not player.is_in_group("player"):
 		player = tree.get_first_node_in_group("player") as Node2D

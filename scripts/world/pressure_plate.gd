@@ -103,6 +103,13 @@ func _set_pressed(value: bool, emit_solve: bool) -> void:
 		return
 	_pressed = value
 	modulate = Color(1.2, 0.7, 0.75, 1.0) if _pressed else Color.WHITE
+	if _pressed:
+		var cam := get_tree().get_first_node_in_group("follow_camera") if is_inside_tree() else null
+		if cam and cam.has_method("add_trauma"):
+			cam.add_trauma(0.14)
+		var am := get_node_or_null("/root/AudioManager")
+		if am and am.has_method("play_sfx"):
+			am.play_sfx(&"plate_press", -6.0)
 	pressed_changed.emit(_pressed)
 	## Çözüm etkileri (mesaj, bayrak, kayıt) yalnız ilk çözümde — odaya dönüp plakaya tekrar basınca susar.
 	if _pressed and emit_solve and not PuzzleManager.is_solved(puzzle_id):

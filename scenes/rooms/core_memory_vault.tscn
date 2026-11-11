@@ -1,14 +1,10 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
 [ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore"]
 [ext_resource type="Script" path="res://scripts/world/npc_actor.gd" id="npc"]
-
-[sub_resource type="RectangleShape2D" id="Interact"]
-size = Vector2(40, 48)
-
-[sub_resource type="RectangleShape2D" id="Gate"]
-size = Vector2(24, 120)
+[ext_resource type="Script" path="res://scripts/world/sequence_shrine.gd" id="shrine"]
+[ext_resource type="Script" path="res://scripts/world/sequence_step.gd" id="step"]
 
 [node name="CoreMemoryVault" type="Node2D"]
 script = ExtResource("room")
@@ -22,36 +18,64 @@ doors = [{"x": 40.0, "to": "core_threshold", "spawn": "from_core_memory_vault"}]
 [node name="Spawns" type="Node2D" parent="."]
 
 [node name="keeper_observe" type="Marker2D" parent="Spawns"]
-position = Vector2(730, 288)
+position = Vector2(220, 288)
 
 [node name="Interactive" type="Node2D" parent="."]
 
 [node name="VaultEcho" type="Area2D" parent="Interactive"]
-position = Vector2(300.0, 288.0)
+position = Vector2(200.0, 288.0)
 script = ExtResource("npc")
 npc_id = &"vault_voice"
 idle_anim = "echo_idle"
 walk_anim = "echo_walk"
 ghostly = true
-dialogue_sets = PackedStringArray("Ses|Duyan var mı? Ben de buraya girdim, benden öncekiler gibi.;;Ses|Çekirdek hepimizin anısını yuttu. Bu benim son kaydım.;;Ses|Yüzlerce hafıza burada. Hiçbiri geri verilmedi.", "Ses|Sen sonuncusun, değil mi? Shilda'yı dinle.")
+dialogue_sets = PackedStringArray("Ses|Duyan var mı? Ben de buraya girdim, benden öncekiler gibi.;;Ses|Önce 1927. Kazı o yıl başladı.;;Ses|Sonra 1995. Kapı o yıl kapandı. En son, son kayıt.", "Ses|Yüzlerce hafıza burada. Hiçbiri geri verilmedi.;;Ses|Shilda'yı dinle. O hiç unutmadı.")
+
+[node name="VaultShrine" type="Node2D" parent="Interactive"]
+script = ExtResource("shrine")
+puzzle_id = &"core_vault_order"
+order = PackedStringArray("1927", "1995", "son")
+fail_line = "Yanlış yıl. Önce 1927, sonra 1995, en son Son."
+success_line = "Kasa ışıldadı. İçindeki ses artık duyuluyor."
+
+[node name="Year1927" type="Area2D" parent="Interactive/VaultShrine"]
+position = Vector2(420.0, 288.0)
+script = ExtResource("step")
+step_id = "1927"
+label = "1927"
+texture_path = "res://assets/layers/core_crystal.png"
+sprite_scale = 0.28
+tint = Color(0.55, 0.65, 0.85, 1)
+
+[node name="Year1995" type="Area2D" parent="Interactive/VaultShrine"]
+position = Vector2(580.0, 288.0)
+script = ExtResource("step")
+step_id = "1995"
+label = "1995"
+texture_path = "res://assets/layers/core_crystal.png"
+sprite_scale = 0.34
+tint = Color(0.72, 0.78, 1, 1)
+
+[node name="YearSon" type="Area2D" parent="Interactive/VaultShrine"]
+position = Vector2(740.0, 288.0)
+script = ExtResource("step")
+step_id = "son"
+label = "Son kayıt"
+texture_path = "res://assets/layers/core_crystal.png"
+sprite_scale = 0.42
+tint = Color(0.9, 0.35, 0.42, 1)
 
 [node name="Vault" type="Area2D" parent="Interactive"]
-position = Vector2(600.0, 288.0)
+position = Vector2(900.0, 288.0)
 script = ExtResource("lore")
 lore_id = &"memory_vault"
 texture_path = "res://assets/layers/core_crystal.png"
-sprite_scale = 0.35
-lines = PackedStringArray("Noroi|Kristal kasada binlerce ışık. Her biri birinin anısı.", "Noroi|Ortada tek bir ışık daha parlak: onun sesi.", "Noroi|Kasanın imza satırı: “Yetkili imza: ███ (kazınmış).”", "Noroi|Tesisi kilitleyen elin kimliğini hâlâ okuyamıyorum.", "Noroi|Ama Shilda… bütün bunları yıllarca hatırladı.")
+sprite_scale = 0.4
+requires_puzzle = &"core_vault_order"
+locked_lines = PackedStringArray("Noroi|Kasa karanlık. Sütunlar bir yıl sırası bekliyor.", "Ses|Önce 1927. Sonra 1995. En son, son kayıt.")
+lines = PackedStringArray("Noroi|Kristal kasada binlerce ışık. Her biri birinin anısı.", "Noroi|Ortada tek bir ışık daha parlak: onun sesi.", "Noroi|İmza satırı hâlâ kazınmış. Ama Shilda hepsini hatırladı.")
 evidence_title = "Hafıza Kasası"
-evidence_body = "Çekirdek yuttuğu bütün anıları burada saklıyor. Benden önce girenlerin son kayıtları da burada. Gerçeği gördüm."
+evidence_body = "Çekirdek yuttuğu anıları burada saklıyor. Sütunlar 1927, 1995 ve son kayıt diye açıldı. Gerçeği gördüm."
 evidence_section = "izler"
 set_progress_key = "truth_seen"
 focus_zoom = true
-
-[node name="Bloom" type="Area2D" parent="Interactive"]
-position = Vector2(860.0, 288.0)
-script = ExtResource("lore")
-lore_id = &"vault_bloom"
-texture_path = "res://assets/props/red_flower.png"
-sprite_scale = 0.7
-lines = PackedStringArray("Noroi|Kasanın dibinde tek bir taze kırmızı çiçek.", "Shilda|(uzaktan) Kırk ikinci. Bu sefer… son olsun.")

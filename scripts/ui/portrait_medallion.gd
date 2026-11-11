@@ -61,8 +61,13 @@ func show_key(new_key: StringName, animate: bool) -> void:
 		return
 	rect.texture = load("res://scripts/ui/dialogue_portraits.gd").texture_for(new_key)
 	## Ayrı asset'ler kendi siluetlerini taşır; ek karartma yalnız yedek anahtarlarda.
-	var tint := Vector3.ONE
-	if new_key == &"shilda_unknown":
+	## Aynı ışık ailesi: Noroi soğuk gümüş, Shilda sıcak, X mavi, ??? mor siluet.
+	var tint := Vector3(1.0, 0.98, 0.96)
+	if new_key == &"noroi" or new_key == &"noroi_sad":
+		tint = Vector3(0.9, 0.94, 1.05)
+	elif new_key == &"shilda":
+		tint = Vector3(1.05, 0.94, 0.9)
+	elif new_key == &"shilda_unknown":
 		tint = Vector3(0.55, 0.5, 0.7)
 	elif new_key == &"x_unknown":
 		tint = Vector3(0.75, 0.85, 1.0)

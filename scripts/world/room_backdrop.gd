@@ -113,6 +113,39 @@ func _draw_motif() -> void:
 				var lx := 90.0 + float(i4) * 180.0
 				draw_rect(Rect2(lx, 20, 3, 22), wax)
 				draw_circle(Vector2(lx + 1.5, 16), 3.0, _tc(Color(1.0, 0.82, 0.45), 0.5))
+		"bloom":
+			var petal := _tc(Color(0.85, 0.22, 0.32), 0.7)
+			var stem := _tc(Color(0.28, 0.45, 0.24), 0.65)
+			var bx := 48.0
+			var bi := 0
+			while bx < w - 24.0:
+				var bh := 18.0 + _h(float(bi), 3.0) * 22.0
+				draw_line(Vector2(bx, 250.0), Vector2(bx, 250.0 - bh), stem, 2.0)
+				draw_circle(Vector2(bx, 248.0 - bh), 4.0, petal)
+				draw_circle(Vector2(bx - 3.0, 250.0 - bh), 2.2, petal)
+				draw_circle(Vector2(bx + 3.0, 250.0 - bh), 2.2, petal)
+				bx += 54.0 + _h(float(bi), 6.0) * 28.0
+				bi += 1
+		"vault":
+			var beam := _tc(Color(0.75, 0.82, 1.0), 0.28)
+			for vi in 3:
+				var vx := w * (0.28 + float(vi) * 0.22)
+				draw_rect(Rect2(vx - 6.0, 24.0, 12.0, 150.0), beam)
+				draw_circle(Vector2(vx, 28.0), 8.0, _tc(Color(0.9, 0.35, 0.45), 0.55))
+		"quarantine":
+			var stripe := _tc(Color(0.75, 0.12, 0.16), 0.55)
+			var qx := 0.0
+			while qx < w:
+				draw_rect(Rect2(qx, 258.0, 18.0, 8.0), stripe)
+				qx += 36.0
+			draw_rect(Rect2(0, 248.0, w, 2.0), _tc(Color(0.9, 0.25, 0.28), 0.35))
+		"labyrinth":
+			var glass := _tc(Color(0.8, 0.9, 1.0), 0.4)
+			draw_line(Vector2(0, 150.0), Vector2(w, 150.0), glass, 2.0)
+			for li in int(w / 70.0):
+				var lx2 := 20.0 + float(li) * 70.0
+				draw_line(Vector2(lx2, 132.0), Vector2(lx2 + 18.0, 168.0), glass, 1.2)
+				draw_line(Vector2(lx2 + 18.0, 168.0), Vector2(lx2 + 4.0, 188.0), _tc(Color(1.0, 0.45, 0.4), 0.35), 1.2)
 		_:
 			var unknown: String = motif
 			push_warning("room_backdrop: unknown motif %s" % unknown)

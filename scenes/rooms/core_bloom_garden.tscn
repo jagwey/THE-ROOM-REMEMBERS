@@ -2,12 +2,8 @@
 
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
 [ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore"]
-
-[sub_resource type="RectangleShape2D" id="Interact"]
-size = Vector2(40, 48)
-
-[sub_resource type="RectangleShape2D" id="Gate"]
-size = Vector2(24, 120)
+[ext_resource type="Script" path="res://scripts/world/sequence_shrine.gd" id="shrine"]
+[ext_resource type="Script" path="res://scripts/world/sequence_step.gd" id="step"]
 
 [node name="CoreBloomGarden" type="Node2D"]
 script = ExtResource("room")
@@ -17,23 +13,63 @@ room_width = 960.0
 bg_region = "core"
 checkpoint = Vector2(120, 288)
 doors = [{"x": 40.0, "to": "core_seal_chamber", "spawn": "from_core_bloom_garden"}]
+platforms = PackedVector3Array(340.0, 246.0, 380.0)
 
 [node name="Interactive" type="Node2D" parent="."]
 
 [node name="Memory" type="Area2D" parent="Interactive"]
-position = Vector2(360.0, 288.0)
+position = Vector2(200.0, 288.0)
 script = ExtResource("lore")
 lore_id = &"bloom_memory"
 texture_path = "res://assets/layers/flowers.png"
 sprite_scale = 0.35
-lines = PackedStringArray("Noroi|Çekirdeğin içinde açan bir bahçe. Buraya her ölümümde bir çiçek getirilmiş.", "Shilda|Burası benim bahçem. Sen unuttukça ben buraya ekledim.")
+lines = PackedStringArray("Noroi|Çekirdeğin içinde açan bir bahçe. Her ölümümde bir çiçek ekilmiş.", "Shilda|Taşların üstündeki noktaları say. Çoktan aza, sonra kalan.")
+evidence_title = "Çiçek Bahçesi"
+evidence_body = "Shilda her ölüm için bir çiçek saklamış. Taşlar dört, bir, iki diye uyanıyor."
+evidence_section = "notlar"
+
+[node name="BloomShrine" type="Node2D" parent="Interactive"]
+script = ExtResource("shrine")
+puzzle_id = &"core_bloom_order"
+order = PackedStringArray("4", "1", "2")
+fail_line = "Yanlış taş. Önce dört, sonra bir, sonra iki."
+success_line = "Çiçekler uyandı. Şimdi konuşabilir."
+
+[node name="Step4" type="Area2D" parent="Interactive/BloomShrine"]
+position = Vector2(400.0, 246.0)
+script = ExtResource("step")
+step_id = "4"
+label = "Dört taç"
+pips = 4
+sprite_scale = 0.7
+tint = Color(0.72, 0.18, 0.28, 1)
+
+[node name="Step1" type="Area2D" parent="Interactive/BloomShrine"]
+position = Vector2(520.0, 246.0)
+script = ExtResource("step")
+step_id = "1"
+label = "Tek taç"
+pips = 1
+sprite_scale = 0.42
+tint = Color(0.95, 0.55, 0.6, 1)
+
+[node name="Step2" type="Area2D" parent="Interactive/BloomShrine"]
+position = Vector2(660.0, 246.0)
+script = ExtResource("step")
+step_id = "2"
+label = "İki taç"
+pips = 2
+sprite_scale = 0.55
+tint = Color(0.82, 0.28, 0.36, 1)
 
 [node name="Reconcile" type="Area2D" parent="Interactive"]
-position = Vector2(640.0, 288.0)
+position = Vector2(860.0, 288.0)
 script = ExtResource("lore")
 lore_id = &"bloom_reconcile"
 texture_path = "res://assets/props/red_flower.png"
 sprite_scale = 0.8
+requires_puzzle = &"core_bloom_order"
+locked_lines = PackedStringArray("Shilda|Taşlar uyuyor. Çoktan aza: dört, bir, sonra iki.", "Noroi|Önce onları uyandırayım.")
 lines = PackedStringArray("Shilda|Bana kaç kez kılıç kaldırdığını sayamıyorum. Yine de buradayım.", "Noroi|Hatırlamıyorum. Ama özür dilerim.", "Shilda|…Bu yeter. Yanındayım.")
 repeat_line = "Shilda|Yanındayım."
 evidence_title = "Çiçek Bahçesi"

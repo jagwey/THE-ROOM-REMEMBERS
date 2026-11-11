@@ -78,6 +78,10 @@ func _run() -> void:
 	await create_timer(0.3).timeout
 	check(corpse1.global_position.x > 620.0, "CHALLENGE 1", "Push 2 advances past 620px without premature clamping", "x=%.1f" % corpse1.global_position.x)
 
+	# Kefaret taşı koridorda duruyor; kelepçe testi için yolu aç (taş odada kalır).
+	var stone := rm._rooms[&"awakening"].root.get_node_or_null("WeightStone") as Node2D
+	if stone:
+		stone.global_position = Vector2(200, 288)
 	# Step 3: Push to plate at x=940
 	var plate1: Area2D = rm._rooms[&"awakening"].root.get_node("Interactive/PressurePlate")
 	check(plate1 != null, "CHALLENGE 1", "Pressure plate exists at x=940", "pos=(%.1f, %.1f)" % [plate1.global_position.x, plate1.global_position.y])

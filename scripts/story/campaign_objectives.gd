@@ -21,17 +21,17 @@ const _BY_ROOM: Dictionary = {
 	"core_threshold": "Topladığın izlerle Çekirdek'e yaklaş.",
 	"core_seal_chamber": "Tanıklıkları birleştir; son kapıyı aç.",
 	"core": "Çekirdeğe in; mührü Shilda ile birlikte kır.",
-	"awakening_balcony": "Tesisi izle. Mor mühür Ruh Kesimi ister.",
+	"awakening_balcony": "Boşluğa bak, kopuk zemini atla. Mor mühür Ruh Kesimi ister.",
 	"awakening_crypt": "Yatakların sırrını oku; defteri bul.",
 	"decay_catacombs": "Karanlıkta yalnız ölülerin ışığı yol gösterir. Sembolleri gör; mührü aç.",
 	"decay_shilda_wall": "Shilda atılınca son anda kenara çekil; duvara çarpsın.",
-	"library_upper_stacks": "Zıpla, Arşivci'yi bul; yasak kanada tırman.",
+	"library_upper_stacks": "Kitaplar: ses, mühür, çiçek. Tahta inince yasak kanada tırman.",
 	"library_forbidden_wing": "Ruh Kesimi'ni ve 1. mühür parçasını al.",
-	"experiment_quarantine": "Kırmızı sis canlıyı yer. Bedenin sana koridor açsın.",
+	"experiment_quarantine": "Sisin ortasına bir beden bırak. Rapor yüksek rafta.",
 	"experiment_core_conduit": "Yankı Sunağı'nı kullan; üç kanalı aynı anda aç.",
-	"mirrors_labyrinth": "Tavandaki aynaya bak; görünmez taşlarda yürü.",
-	"core_memory_vault": "Son kaydı dinle; bütün gerçeği gör.",
-	"core_bloom_garden": "Shilda'yı dinle; birlikte ilerleyin.",
+	"mirrors_labyrinth": "Tavana bak. Mavi taş gerçek, soluk kırmızı yalan.",
+	"core_memory_vault": "Sütunlar: 1927, 1995, sonra Son. Kasa o zaman konuşur.",
+	"core_bloom_garden": "Taşlar: dört, bir, iki. Sonra Shilda'yı dinle.",
 	"mirrors_shrine": "Gölge Atılması'nı al; kırmızı perdeden atılarak geç; 2. mühür parçası.",
 }
 
@@ -52,8 +52,8 @@ static func objective_for_room(room_id: String) -> String:
 		if PuzzleManager.is_solved(&"soul_seal_balcony"):
 			return "Mor mühür çözüldü. Mahzen ile balkon arası artık açık."
 		if _has_soul_slash():
-			return "Mor mühre Ruh Kesimi savur (Q / yıldız); mahzene in."
-		return "Tesisi izle. Mor mühür şimdilik kapalı: Ruh Kesimi Yasak Kanat'ta."
+			return "Kopuk zemini atla. Mor mühre Ruh Kesimi savur; mahzene in."
+		return "Boşluğa bak, kopuk zemini atla. Mor mühür Yasak Kanat'ta açılır."
 	var raw := String(_BY_ROOM.get(room_id, "Kayıtları incele; sağdaki geçidi takip et."))
 	var i := raw.find(" · ")
 	if i > 0 and i <= 32:

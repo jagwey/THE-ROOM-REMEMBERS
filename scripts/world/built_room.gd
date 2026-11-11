@@ -19,6 +19,8 @@ const DOOR_SCRIPT := preload("res://scripts/world/room_transition.gd")
 @export var default_spawn: Vector2 = Vector2(80, 288)
 ## Görünmez platformlar: yalnız tavandaki aynada (mirror_line etrafında simetrik) yansımaları görünür.
 @export var invisible_platforms: PackedVector3Array = PackedVector3Array()
+## Aynada görünen ama basılmayan yalan basamaklar (Vector3 x, y_top, width).
+@export var false_reflections: PackedVector3Array = PackedVector3Array()
 @export var mirror_line: float = 160.0
 
 var _glow: PointLight2D
@@ -177,7 +179,7 @@ func _build_platforms() -> void:
 
 
 func _build_invisible_platforms() -> void:
-	if invisible_platforms.is_empty():
+	if invisible_platforms.is_empty() and false_reflections.is_empty():
 		return
 	var band := Polygon2D.new()
 	band.polygon = PackedVector2Array([Vector2(0, 20), Vector2(room_width, 20), Vector2(room_width, mirror_line - 6), Vector2(0, mirror_line - 6)])
@@ -207,10 +209,21 @@ func _build_invisible_platforms() -> void:
 		var refl := _tile_strip(Vector2(p.x, 2.0 * mirror_line - p.y - 14.0), p.z)
 		refl.region_rect = Rect2(0, 0, p.z, 14)
 		refl.flip_v = true
-		refl.modulate = Color(0.75, 0.9, 1.0, 0.75)
+		refl.modulate = Color(0.75, 0.9, 1.0, 0.85)
 		refl.z_index = 2
 		add_child(refl)
 		i += 1
+	var f := 0
+	for p in false_reflections:
+		var lie := _tile_strip(Vector2(p.x, 2.0 * mirror_line - p.y - 14.0), p.z)
+		lie.name = "FalseReflection%d" % f
+		lie.region_rect = Rect2(0, 0, p.z, 14)
+		lie.flip_v = true
+		## Soluk kırmızı: telefondan mavi gerçek taşlardan ayrılır.
+		lie.modulate = Color(1.0, 0.45, 0.42, 0.42)
+		lie.z_index = 2
+		add_child(lie)
+		f += 1
 
 
 func _build_walls() -> void:

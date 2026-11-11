@@ -139,7 +139,7 @@ func _test_concurrency_race_damage_first() -> void:
 	check(not curse.possessing, "1.1: Curse possession never started post-death")
 	check(int(state.player_progress_knowledge.get("deaths", 0)) == deaths_before + 1, "1.1: Deaths incremented by exactly 1")
 	check((state.world_memory_state["corpses"] as Array).size() == corpses_before + 1, "1.1: Exactly 1 corpse placed by death")
-	check(curse.curse == 0.0, "1.1: Curse reset to 0.0 for new life")
+	check(is_equal_approx(curse.curse, 50.0), "1.1: Curse floored to 50 after death", str(curse.curse))
 	check(gate.current_layer() == gate.Layer.NONE, "1.1: UiGate returned to NONE")
 
 
@@ -174,7 +174,7 @@ func _test_concurrency_race_curse_first() -> void:
 	check(not death.is_dying, "1.2: Death never initiated")
 	check(int(state.player_progress_knowledge.get("deaths", 0)) == deaths_before, "1.2: ZERO death count increment")
 	check((state.world_memory_state["corpses"] as Array).size() == corpses_before, "1.2: ZERO corpse placed on curse possession")
-	check(curse.curse <= 30.0, "1.2: Curse reset to safe band (<= 30.0)", str(curse.curse))
+	check(is_equal_approx(curse.curse, 50.0), "1.2: Curse restored to possession safe value", str(curse.curse))
 	check(gate.current_layer() == gate.Layer.NONE, "1.2: UiGate returned to NONE")
 
 
@@ -249,7 +249,7 @@ func _test_add_curse_blocked_during_death() -> void:
 	check(blocked_in_all_phases, "2.1: add_curse(50.0) and set_curse(80.0) blocked across all death phases")
 	var touched: Array = state.world_memory_state.get("forbidden_touched", [])
 	check(not touched.has(String(test_reason)), "2.1: forbidden_touched did NOT record curse reason during death")
-	check(curse.curse == 0.0, "2.1: curse ended at 0.0 post-rebirth", str(curse.curse))
+	check(is_equal_approx(curse.curse, 50.0), "2.1: curse floored to 50 post-rebirth", str(curse.curse))
 
 
 ## Test 2.2: fail_curse_possession() called while DeathManager.is_dying
@@ -280,7 +280,7 @@ func _test_fail_curse_possession_during_death() -> void:
 	check(not death.is_dying, "2.2: Death finished")
 	check(not curse.possessing, "2.2: Curse possession never started")
 	# If curse was set to 99 during death and not reset at rebirth, check if post-rebirth curse is safe (<= 30.0)
-	check(curse.curse <= 30.0, "2.2: Post-rebirth curse is in safe band (<= 30.0), not left at critical 99.0", str(curse.curse))
+	check(is_equal_approx(curse.curse, 50.0), "2.2: Post-rebirth curse is the death floor 50, not 99", str(curse.curse))
 
 
 ## Test Suite 3: 100% Curse Possession Reload & Integrity
@@ -342,12 +342,12 @@ func _test_possession_reload_integrity() -> void:
 	check(rm.get_active_room_id() == &"library_hall", "3.1: Active room reloaded to library_hall", str(rm.get_active_room_id()))
 	check(player.global_position.distance_to(seal_pos) < 16.0, "3.1: Player restored to safe commit pos", str(player.global_position))
 
-	# 5. State B reverted
-	check(not state.has_story_flag(&"core_access_granted"), "3.1: State B story flag reverted")
-	check(not bool(state.get_world_flag(&"audit_flag_b", false)), "3.1: State B world flag reverted")
+	# 5. Kalıcı dünya: ele geçirme hikâye ve dünya bayraklarını silmez.
+	check(state.has_story_flag(&"core_access_granted"), "3.1: State B story flag persists")
+	check(bool(state.get_world_flag(&"audit_flag_b", false)), "3.1: State B world flag persists")
 
 	# 6. Curse restored to safe value <= 30.0
-	check(curse.curse <= 30.0 and curse.curse <= 25.0, "3.1: Curse restored to safe value <= 30.0", str(curse.curse))
+	check(is_equal_approx(curse.curse, 50.0), "3.1: Curse restored to possession safe value", str(curse.curse))
 
 	# 7. UiGate returned to NONE
 	check(gate.current_layer() == gate.Layer.NONE, "3.1: UiGate returned to Layer.NONE", str(gate.current_layer()))
