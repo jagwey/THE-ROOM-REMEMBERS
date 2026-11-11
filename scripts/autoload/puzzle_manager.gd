@@ -61,6 +61,10 @@ func mark_solved(puzzle_id: StringName) -> void:
 			GameState.set_world_flag(&"decay_archive_open", true)
 		&"decay_weight_latch":
 			GameState.set_world_flag(&"decay_weight_latched", true)
+		&"core_bloom_order", &"core_vault_order", &"library_shelf_order", &"mirrors_labyrinth_crossed":
+			var cm := get_node_or_null("/root/CurseManager")
+			if cm and cm.has_method("clear_curse"):
+				cm.clear_curse(8.0)
 		_:
 			pass
 	puzzle_solved.emit(puzzle_id)
@@ -117,8 +121,71 @@ const HINTS: Dictionary = {
 		"goal": "Çekirdeğin ana mührü kırılmalı ve boyut kapısı aralanmalı.",
 		"orientation": "Her iki mühür parçası birleşmeden çekirdek savunması gevşemez.",
 		"explicit": "Bekçi ile birlikte çekirdeğin merkezine yaklaş ve Ruh Kesiği ile bağı kopar."
+	},
+	&"core_bloom_order": {
+		"goal": "Bahçedeki üç taş uyanmadan çiçek konuşmuyor.",
+		"orientation": "Taşların üstündeki noktaları say. Çoktan aza, sonra kalan.",
+		"explicit": "Sıra dört, bir, iki. Yanlış taş zinciri başa sarar."
+	},
+	&"core_vault_order": {
+		"goal": "Hafıza kasası karanlık. Üç sütun bir tarih sırası istiyor.",
+		"orientation": "Önce kazının yılı, sonra senin girdiğin yıl, en son son kayıt.",
+		"explicit": "1927, sonra 1995, sonra Son. Kasa ancak o zaman açılır."
+	},
+	&"library_shelf_order": {
+		"goal": "Yasak kanada giden tahta inmiş değil.",
+		"orientation": "Arşivci üç kitabın adını sırayla söyledi.",
+		"explicit": "Ses, mühür, çiçek. Bu sıra tahtayı indirir."
+	},
+	&"mirrors_labyrinth_crossed": {
+		"goal": "Uçurumun karşısı tavandaki aynada görünüyor.",
+		"orientation": "Mavi yansımalar gerçek taş. Soluk kırmızı olan yalan.",
+		"explicit": "Kırmızı basamağa atlama. Mavi taşları izleyerek karşıya geç."
+	},
+	&"experiment_quarantine_done": {
+		"goal": "Kırmızı sis canlıyı yer. Rapor sisin ötesinde, yüksek rafta.",
+		"orientation": "Ölü beden laneti emer. Cesedini sisin ortasına bırak.",
+		"explicit": "Bedeni bulutun içine koy, güvenli koridordan geç, rafa zıpla."
 	}
 }
+
+
+## Oda -> sırayla bakılacak çözülmemiş bulmaca. Günlük ipucu bunu kullanır.
+const ROOM_PUZZLES: Dictionary = {
+	"awakening": [&"awakening_weight"],
+	"awakening_passage": [&"awakening_memory_code"],
+	"awakening_seal": [&"awakening_memory_code"],
+	"decay_weight": [&"decay_weight_latch"],
+	"decay_garden": [&"decay_archive_key"],
+	"library_page": [&"library_page_order"],
+	"library_upper_stacks": [&"library_shelf_order"],
+	"experiment_circuit": [&"experiment_circuit"],
+	"experiment_quarantine": [&"experiment_quarantine_done"],
+	"mirrors_dual": [&"mirrors_dual"],
+	"mirrors_labyrinth": [&"mirrors_labyrinth_crossed"],
+	"core_bloom_garden": [&"core_bloom_order"],
+	"core_memory_vault": [&"core_vault_order"],
+	"core": [&"core_seal"],
+}
+
+
+## Günlük açılınca kademe artar: 1 hedef, 2 yön, 3 açık cevap. Üçten sonra artmaz.
+func journal_hint_for_active_room() -> Dictionary:
+	var room := String(RoomManager.get_active_room_id())
+	var list: Array = ROOM_PUZZLES.get(room, [])
+	var pid := &""
+	for candidate in list:
+		var id := StringName(String(candidate))
+		if not is_solved(id):
+			pid = id
+			break
+	if pid == &"":
+		return {}
+	var visits: Dictionary = GameState.player_progress_knowledge.get("hint_visits", {})
+	var n := mini(int(visits.get(room, 0)) + 1, 3)
+	visits[room] = n
+	GameState.player_progress_knowledge["hint_visits"] = visits
+	return {"title": "Bu oda", "body": get_current_hint(pid, n)}
 
 
 func get_hints(puzzle_id: StringName) -> Dictionary:

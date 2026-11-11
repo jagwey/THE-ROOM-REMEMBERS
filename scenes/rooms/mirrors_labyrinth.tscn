@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
 [ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore"]
 [ext_resource type="Script" path="res://scripts/world/npc_actor.gd" id="npc"]
+[ext_resource type="Script" path="res://scripts/world/reach_marker.gd" id="reach"]
 
 [sub_resource type="RectangleShape2D" id="Interact"]
 size = Vector2(40, 48)
@@ -18,7 +19,8 @@ room_width = 1280.0
 bg_region = "mirrors"
 checkpoint = Vector2(120, 288)
 doors = [{"x": 40.0, "to": "mirrors_reverse", "spawn": "from_mirrors_labyrinth"}]
-invisible_platforms = PackedVector3Array(330.0, 268.0, 70.0, 460.0, 248.0, 70.0, 590.0, 228.0, 70.0, 720.0, 248.0, 70.0, 850.0, 268.0, 80.0)
+invisible_platforms = PackedVector3Array(290.0, 250.0, 110.0, 430.0, 214.0, 100.0, 560.0, 250.0, 100.0, 700.0, 214.0, 110.0, 850.0, 250.0, 100.0, 980.0, 270.0, 80.0)
+false_reflections = PackedVector3Array(640.0, 188.0, 64.0)
 floor_gaps = PackedVector2Array(300.0, 1000.0)
 
 [node name="Interactive" type="Node2D" parent="."]
@@ -29,7 +31,7 @@ script = ExtResource("lore")
 lore_id = &"labyrinth_hint"
 texture_path = "res://assets/layers/mirror.png"
 sprite_scale = 0.3
-lines = PackedStringArray("Noroi|Önümde uçurum. Ama tavandaki aynada… bir yol var.", "Noroi|Gerçekte görünmüyor. Yansımaya bakarak yürümeliyim.")
+lines = PackedStringArray("Noroi|Önümde uçurum. Tavandaki aynada bir yol var.", "Noroi|Mavi taşlar gerçek. Soluk kırmızı olan yalan söylüyor.")
 
 [node name="RegretEcho" type="Area2D" parent="Interactive"]
 position = Vector2(1100, 288.0)
@@ -39,6 +41,11 @@ idle_anim = "echo_idle"
 walk_anim = "echo_walk"
 ghostly = true
 dialogue_sets = PackedStringArray("Yansıma|Ben otuzuncu sendim. Mühürlerin kapandığı günü hatırlıyorum.;;Yansıma|İçeride kalanların bağırışlarını… sen hatırlamıyorsun. Şanslısın.", "Yansıma|Çıkabildik mi? Hayır. Çekirdek bizi de yuttu.;;Yansıma|Geriye bir tek Shilda kaldı. O hiç unutmadı.")
+
+[node name="Crossed" type="Area2D" parent="Interactive"]
+position = Vector2(1120.0, 288.0)
+script = ExtResource("reach")
+puzzle_id = &"mirrors_labyrinth_crossed"
 
 [node name="Shard" type="Area2D" parent="Interactive"]
 position = Vector2(1210, 288.0)

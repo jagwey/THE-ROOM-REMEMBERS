@@ -1,10 +1,10 @@
-# THE ROOM REMEMBERS — Oynanış ve Çalıştırma Rehberi (`v1.8.1` · Godot 4.7)
+# THE ROOM REMEMBERS — Oynanış ve Çalıştırma Rehberi (`v1.9.0` · Godot 4.7)
 
 ## 1. Proje Bilgileri
 - **Depo:** [`jagwey/THE-ROOM-REMEMBERS`](https://github.com/jagwey/THE-ROOM-REMEMBERS)
 - **Motor:** Godot **4.7.2** (`gl_compatibility`)
 - **Ana Sahne:** `scenes/main/main.tscn` (**F5**)
-- **Güncel Android Sürümü:** **[v1.8.1 (`TheRoomRemembers-1.8.1-android-arm64.apk`)](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.8.1)** (`com.torimon.theroomremembers`, `versionCode 33`)
+- **Güncel Android Sürümü:** **[v1.9.0 (`TheRoomRemembers-1.9.0-android-arm64.apk`)](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.9.0)** (`com.torimon.theroomremembers`, `versionCode 34`)
 
 ---
 
@@ -27,23 +27,28 @@
 
 1. **Bölge I — Uyanış Mahmuzu (`awakening`):**
    - Yerdeki **Durmuş Cep Saati**'ni incele (`3:14` ipucu) → ortada **Shilda** ile konuş → sağdaki **basınç plakasına** basarak kapıyı aç.
-   - **Gözlem Balkonu** ve **İlk Bedenler Mahzeni** yan odalarında ilk kanıtları topla.
+   - **Gözlem Balkonu**'nda kopuk zemini atla, dürbünden boşluğu izle. **İlk Bedenler Mahzeni**'nde ilk kanıtları topla.
    - **Kırık Geçit**'te kırmızı bellek yarıklarından `Dash` ile atla; ceset yankısından **`314`** kodunu öğren ve **Mühürlü Eşik**'te tuş takımına gir.
 2. **Bölge II — Çürüme Bahçesi (`decay`):**
    - **Sarmaşıklı Koridor** ve **Ağırlık Odası**'nda taşları veya önceki cesetlerini plakalara iterek geçitleri aç.
    - **Çürüme Bahçesi**'nde Shilda ile konuşup ona güvenmeyi seç (`trusted_keeper` — İyi Son için gereklidir).
 3. **Bölge III — Hafıza Kütüphanesi (`library`):**
    - **Kayıp Sayfa Odası**'nda yırtık sayfaları doğru sıraya diz.
+   - **Üst Raflar**'da kitapları ses, mühür, çiçek sırasıyla uyandır; inen tahtadan **Yasak Kanat**'a çık.
    - **Yasak Kanat**'taki sunaktan **Ruh Kesimi (`SoulSlash`)** yeteneğini kazan (mor mühürleri, sarmaşıkları ve kalkanlı gölgeleri uzaktan kırar).
    - **Tanık Odası**'ndan **`251`** mühür kodunu ve **1. Mühür Parçasını (`seal_fragment_library`)** al.
 4. **Bölge IV — Yasak Laboratuvar (`experiment`):**
+   - **Karantina**'da kırmızı sisin ortasına kendi bedenini bırak; rapor yüksek rafta.
    - **Yankı Devresi** ve **Çekirdek İletkeni**'nde `EchoAltar` kullanarak gölge ikizinle (`EchoTwin`) eşzamanlı şalterleri tetikle.
    - **`418`** mührünü açarak Aynalar Salonu'na geç.
 5. **Bölge V — Aynalar Salonu (`mirrors`):**
+   - **Ayna Labirenti**'nde tavana bak: mavi yansıma gerçek, soluk kırmızı yalan.
    - **Ayna Tapınağı**'nda **Gölge Atılması (`ShadowDash`)** yeteneğini kazan (lanet bariyerlerinden ve kalkanlı gölgelerin içinden hasar almadan geçer).
    - **`729`** mührünü çöz ve **2. Mühür Parçasını (`seal_fragment_mirrors`)** al.
 6. **Bölge VI — Bellek Çekirdeği (`core`):**
-   - **Bellek Mahzeni**'nde gerçeği gör (`truth_seen`), **Mühür Odası**'nda iki mühür parçasını birleştir ve **Çekirdek**'e in.
+   - **Bellek Mahzeni**'nde sütunları 1927, 1995, Son sırasıyla uyandır; ancak o zaman gerçeği görürsün (`truth_seen`).
+   - **Çiçek Bahçesi**'nde taşlar dört, bir, iki diye uyanır; sonra Shilda ile barışırsın.
+   - **Mühür Odası**'nda iki mühür parçasını birleştir ve **Çekirdek**'e in.
    - **Kanonik Final (BÖLÜM I SONU):** Ruh Kesiği ile ana mühür kırılır; Shilda insan formuna döner. Çıkış kapısı aralanırken Kurucu X ortaya çıkar ve boyutlar arası deneyin perdesini aralar.
 
 ---

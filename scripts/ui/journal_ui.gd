@@ -137,6 +137,11 @@ func _show_section(section: String) -> void:
 			label = "Günlük"
 	list_title.text = label
 	_entries = EchoManager.get_notes_for_section(section)
+	if section == "gunluk":
+		var hint: Dictionary = PuzzleManager.journal_hint_for_active_room()
+		if not hint.is_empty():
+			_entries = _entries.duplicate()
+			_entries.push_front(hint)
 	if section == "izler":
 		_entries = _entries.duplicate()
 		_append_world_traces(_entries)

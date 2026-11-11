@@ -110,7 +110,7 @@ func _run() -> void:
 	var main_src := FileAccess.get_file_as_string("res://scripts/main.gd")
 	var intro := main_src.substr(main_src.find("func _play_intro"), 1800)
 	var rx := RegEx.new()
-	rx.compile('say\\("([^"]*)", "(Gözlerin|Taşlar soğuk|…Yine)')
+	rx.compile('say\\("([^"]*)", "(Gözlerin|Bu oda seni|Yine bu yatak)')
 	var intro_hits := rx.search_all(intro)
 	var intro_ok := intro_hits.size() == 3
 	for m in intro_hits:

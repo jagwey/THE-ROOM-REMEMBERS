@@ -104,7 +104,7 @@ func _run() -> void:
 	await create_timer(1.5).timeout
 	var starts := 0
 	for e in shown:
-		if e["t"] == "Beni ne zamandır izliyorsun?":
+		if e["t"] == "Ne zamandır orada duruyorsun?":
 			starts += 1
 	check(starts == 1, "present late room: naming scene auto-runs exactly once (%d)" % starts)
 	await create_timer(1.0).timeout

@@ -632,18 +632,18 @@ func _run_naming_scene() -> void:
 
 ## §17 satırları (denetim bunu doğrudan kuyruğa alıp satır satır ilerletir).
 func _queue_naming_lines() -> void:
-	DialogueManager.say("Noroi", "Beni ne zamandır izliyorsun?")
+	DialogueManager.say("Noroi", "Ne zamandır orada duruyorsun?")
 	DialogueManager.say("???", "Buraya geldiğinden beri.")
-	DialogueManager.say("Noroi", "Peki neden?")
+	DialogueManager.say("Noroi", "Neden bana?")
 	DialogueManager.say("???", "Daha önce de birilerinin geldiğini gördüm.")
-	DialogueManager.say("Noroi", "Onlara ne oldu?")
+	DialogueManager.say("Noroi", "Çıkan oldu mu?")
 	DialogueManager.say("???", "Hiçbiri çıkamadı.")
-	DialogueManager.say("Noroi", "Bir adın var mı?")
+	DialogueManager.say("Noroi", "Sana ne diyorlar?")
 	DialogueManager.say("???", "Shilda.")
 	DialogueManager.say_with("Noroi", "Ben Noroi.", func(): GameState.set_shilda_named(true))
 	DialogueManager.say("Shilda", "Biliyorum.")
-	DialogueManager.say("Noroi", "Nereden?")
-	DialogueManager.say("Shilda", "Bunu sonra konuşalım.")
+	DialogueManager.say("Noroi", "Adımı nereden biliyorsun?")
+	DialogueManager.say("Shilda", "Şimdi değil. Oda senden önce konuşur.")
 
 
 func receive_player_strike() -> void:

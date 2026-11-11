@@ -1,14 +1,10 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
 [ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore"]
 [ext_resource type="Script" path="res://scripts/world/npc_actor.gd" id="npc"]
-
-[sub_resource type="RectangleShape2D" id="Interact"]
-size = Vector2(40, 48)
-
-[sub_resource type="RectangleShape2D" id="Gate"]
-size = Vector2(24, 120)
+[ext_resource type="Script" path="res://scripts/world/sequence_shrine.gd" id="shrine"]
+[ext_resource type="Script" path="res://scripts/world/sequence_step.gd" id="step"]
 
 [node name="LibraryUpperStacks" type="Node2D"]
 script = ExtResource("room")
@@ -18,26 +14,61 @@ room_width = 1280.0
 bg_region = "library"
 checkpoint = Vector2(120, 288)
 doors = [{"x": 40.0, "to": "library_hall", "spawn": "from_library_upper_stacks"}, {"x": 1200.0, "y": 108.0, "to": "library_forbidden_wing", "spawn": "from_library_upper_stacks", "req": "library_page_order", "msg": "Yasak kanadın kilidi, unutulmuş sayfanın düzenini istiyor."}]
-platforms = PackedVector3Array(150.0, 248.0, 120.0, 310.0, 208.0, 110.0, 460.0, 168.0, 110.0, 610.0, 128.0, 160.0, 820.0, 168.0, 110.0, 970.0, 128.0, 120.0, 1110.0, 128.0, 170.0)
+platforms = PackedVector3Array(150.0, 248.0, 120.0, 310.0, 208.0, 110.0, 460.0, 168.0, 110.0, 820.0, 168.0, 110.0, 970.0, 128.0, 120.0, 1110.0, 128.0, 170.0)
 
 [node name="Interactive" type="Node2D" parent="."]
 
 [node name="Librarian" type="Area2D" parent="Interactive"]
-position = Vector2(690.0, 128.0)
+position = Vector2(120.0, 288.0)
 script = ExtResource("npc")
 npc_id = &"librarian"
 idle_anim = "librarian_idle"
 walk_anim = "librarian_walk"
-wander = 40.0
-dialogue_sets = PackedStringArray("Arşivci|Yine mi sen? Rafların arasında hep aynı adımlarla yürürsün.;;Noroi|Beni tanıyor musun?;;Arşivci|Eline verdiğim kitapları ben ciltledim, gezgin.", "Arşivci|Yasak kanat yukarıda. Kapısı unutulmuş sayfanın sırasını ister.;;Arşivci|Orada bir mühür parçası ve senin ruhuna ait bir kesik saklı.", "Arşivci|Ruh Kesimi'ni alırsan geri dön. Uyanış balkonundaki mor mühür seni bekliyor.;;Arşivci|Ve hatırla: kılıç bedenleri keser. Ruh, mühürleri.")
+wander = 20.0
+dialogue_sets = PackedStringArray("Arşivci|Yine mi sen? Rafların arasında hep aynı adımlarla yürürsün.;;Noroi|Beni tanıyor musun?;;Arşivci|Eline verdiğim kitapları ben ciltledim, gezgin.", "Arşivci|Üç kitap sırayı bilir: ses, mühür, çiçek.;;Arşivci|Tahta ancak o sırada iner. Sonra yukarı tırman.", "Arşivci|Ruh Kesimi'ni alırsan geri dön. Balkondaki mor mühür seni bekliyor.;;Arşivci|Kılıç bedenleri keser. Ruh, mühürleri.")
 
 [node name="FallenBooks" type="Area2D" parent="Interactive"]
-position = Vector2(330.0, 208.0)
+position = Vector2(280.0, 288.0)
 script = ExtResource("lore")
 lore_id = &"stacks_books"
 texture_path = "res://assets/layers/books.png"
 sprite_scale = 0.35
-lines = PackedStringArray("Noroi|“Ses Arşivi Projesi — kayıp bir sesi sonsuza dek saklamak.”", "Noroi|Yazar: ███ (kazınmış). İmza okunmuyor.", "Noroi|Kenarda bir not: “Yüksek rafa çıkamazsan… bedenini basamak yap. Tek yönlü zemin unutmaz.”")
+lines = PackedStringArray("Noroi|“Ses Arşivi Projesi — kayıp bir sesi sonsuza dek saklamak.”", "Noroi|Yazarın imzası kazınmış. Kenarda üç sözcük: ses, mühür, çiçek.")
 evidence_title = "Ses Arşivi Projesi"
-evidence_body = "Çekirdek deneyi, kayıp bir sesi saklamak için başlamış. Yazarın imzası kazınmış. Kenar notu: ceset tek yönlü basamak olarak kullanılabilir."
+evidence_body = "Çekirdek deneyi kayıp bir sesi saklamak için başlamış. Yazarın imzası kazınmış. Rafların sırası: ses, mühür, çiçek."
 evidence_section = "notlar"
+
+[node name="ShelfShrine" type="Node2D" parent="Interactive"]
+script = ExtResource("shrine")
+puzzle_id = &"library_shelf_order"
+order = PackedStringArray("ses", "muhur", "cicek")
+fail_line = "Yanlış kitap. Ses, sonra mühür, sonra çiçek."
+success_line = "Tahta indi. Yasak kanat artık yukarıda."
+bridge = Vector3(560, 168, 280)
+
+[node name="BookSes" type="Area2D" parent="Interactive/ShelfShrine"]
+position = Vector2(190.0, 248.0)
+script = ExtResource("step")
+step_id = "ses"
+label = "Ses"
+texture_path = "res://assets/layers/books.png"
+sprite_scale = 0.32
+tint = Color(0.55, 0.62, 0.85, 1)
+
+[node name="BookMuhur" type="Area2D" parent="Interactive/ShelfShrine"]
+position = Vector2(400.0, 208.0)
+script = ExtResource("step")
+step_id = "muhur"
+label = "Mühür"
+texture_path = "res://assets/layers/books.png"
+sprite_scale = 0.32
+tint = Color(0.72, 0.55, 0.85, 1)
+
+[node name="BookCicek" type="Area2D" parent="Interactive/ShelfShrine"]
+position = Vector2(510.0, 168.0)
+script = ExtResource("step")
+step_id = "cicek"
+label = "Çiçek"
+texture_path = "res://assets/props/red_flower.png"
+sprite_scale = 0.5
+tint = Color(0.9, 0.35, 0.4, 1)

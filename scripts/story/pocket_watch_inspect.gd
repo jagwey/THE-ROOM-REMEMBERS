@@ -28,6 +28,7 @@ func on_interact(_by: Node) -> void:
 
 	_opening_hook()
 	DialogueManager.say("Noroi", "Saat durmuş. Ama içeriden hâlâ ses geliyor.")
+	DialogueManager.say("Noroi", "Akrep üçte. Yelkovan on dörtte donmuş.")
 	await DialogueManager.dialogue_finished
 
 	if not bool(GameState.player_progress_knowledge.get("pocket_watch_seen", false)):
@@ -47,6 +48,9 @@ func on_interact(_by: Node) -> void:
 ## Açılış kancası: ilk kez, soğuk mavi kısa ekran flaşı + saat tik / kalp atışı.
 func _opening_hook() -> void:
 	AudioManager.play_sfx(&"clock_tick", -3.0, 1.0)
+	var cam := get_tree().get_first_node_in_group("follow_camera") if is_inside_tree() else null
+	if cam and cam.has_method("add_trauma"):
+		cam.add_trauma(0.12)
 	var layer := CanvasLayer.new()
 	layer.layer = 90
 	var rect := ColorRect.new()

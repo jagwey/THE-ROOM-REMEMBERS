@@ -15,6 +15,9 @@ extends Area2D
 @export var set_progress_key: String = "" ## player_progress_knowledge[key] = true
 @export var focus_zoom: bool = false
 @export var story_flag_ids: PackedStringArray = PackedStringArray() ## okununca GameState.set_story_flag
+## Çözülmeden satırlar, kanıt ve bayrak verilmez.
+@export var requires_puzzle: StringName = &""
+@export var locked_lines: PackedStringArray = PackedStringArray()
 
 var _busy: bool = false
 
@@ -94,6 +97,16 @@ func _done() -> bool:
 
 func on_interact(_by: Node) -> void:
 	if _busy:
+		return
+	if requires_puzzle != &"" and not PuzzleManager.is_solved(requires_puzzle):
+		_busy = true
+		if locked_lines.is_empty():
+			DialogueManager.say("Noroi", "Henüz değil.")
+		else:
+			for l in locked_lines:
+				_say(l)
+		await DialogueManager.dialogue_finished
+		_busy = false
 		return
 	if _done() and repeat_line != "":
 		_say(repeat_line)

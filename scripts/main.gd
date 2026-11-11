@@ -159,9 +159,9 @@ func _play_intro() -> void:
 	if not is_inside_tree():
 		return
 	if not _continued:
-		DialogueManager.say("", "Gözlerin açılıyor. Karanlık bir nefes daha tutuyor.")
-		DialogueManager.say("", "Taşlar soğuk. Biri seni izliyor — henüz adı yok.")
-		DialogueManager.say("Noroi", "Burası neresi? Neden yatıyorum?")
+		DialogueManager.say("", "Gözlerin açılıyor. Saat durmuş. Biri nefesini tutmuş.")
+		DialogueManager.say("", "Bu oda seni tanıyor. Sen onu tanımıyorsun.")
+		DialogueManager.say("Noroi", "Burası neresi? Neden uyanamıyorum?")
 		await DialogueManager.dialogue_finished
 		if not is_inside_tree():
 			return
@@ -169,8 +169,8 @@ func _play_intro() -> void:
 		GameState.player_progress_knowledge["awakening_mystery_seen"] = true
 		return
 	else:
-		DialogueManager.say("", "…Yine buradasın. Yatak seni bekliyormuş.")
-		DialogueManager.say("Noroi", "Bir şey unuttum. Oda unutmamış.")
+		DialogueManager.say("", "Yine bu yatak. Oda saydı. Sen unuttun.")
+		DialogueManager.say("Noroi", "Bir şey eksik. Duvarlar hatırlıyor.")
 
 
 func _clear_session_loaded_flag() -> void:

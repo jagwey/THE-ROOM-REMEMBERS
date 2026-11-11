@@ -350,7 +350,8 @@ func _respawn() -> void:
 	SaveManager.save_game()
 	is_dying = false
 	_set_phase(Phase.ALIVE)
-	CurseManager.add_curse(25.0, &"death")
-	if CurseManager.curse < 50.0:
-		CurseManager.set_curse(50.0)
+	## Doğuş laneti ele geçirme başlatmaz: +25, taban 50, tavan 99.
+	## Aynı karede 100'e çıkmış değer burada yeniden ele geçirmeye dönmesin.
+	var born := clampf(maxf(CurseManager.curse + 25.0, 50.0), 0.0, CurseManager.CURSE_MAX - 1.0)
+	CurseManager.restore_curse(born)
 	rebirth_completed.emit()

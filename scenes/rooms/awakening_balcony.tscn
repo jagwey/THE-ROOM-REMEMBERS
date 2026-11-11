@@ -19,6 +19,7 @@ bg_region = "awakening"
 checkpoint = Vector2(120, 288)
 doors = [{"x": 40.0, "to": "awakening", "spawn": "from_awakening_balcony"}, {"x": 920.0, "to": "awakening_crypt", "spawn": "from_awakening_balcony", "req": "soul_seal_balcony", "msg": "Mor bir mühür kapıyı tutuyor. Buna kılıç değil, ruh gerek."}]
 platforms = PackedVector3Array(380.0, 248.0, 110.0, 410.0, 208.0, 120.0)
+floor_gaps = PackedVector2Array(660.0, 724.0)
 
 [node name="Spawns" type="Node2D" parent="."]
 
@@ -33,7 +34,7 @@ script = ExtResource("lore")
 lore_id = &"balcony_view"
 texture_path = "res://assets/props/telescope.png"
 sprite_scale = 0.9
-lines = PackedStringArray("Noroi|Kırık bir gözlem dürbünü. Camın ötesi… zemin yok.", "Noroi|Tesis karanlık bir boşlukta asılı. Dış dünya yok; yalnızca sis ve mesafe.", "Noroi|Bir anlık flaş: beyaz önlüklü biri kalabalığa emir veriyor. Yüzü kazınmış.", "Shilda|Bu balkon dışarıyı göstermez. Bizi içeride tutan boşluğu gösterir.")
+lines = PackedStringArray("Noroi|Kırık bir gözlem dürbünü. Camın ötesi… zemin yok.", "Noroi|Tesis karanlık bir boşlukta asılı. Dış dünya yok.", "Noroi|Bir flaş: beyaz önlük, kazınmış yüz, kalabalığa emir.", "Shilda|Bu balkon dışarıyı göstermez. Bizi tutan boşluğu gösterir.", "Noroi|Sağdaki taş kopmuş. Koşup atlarsam karşıya geçerim.")
 evidence_title = "Gözlem Balkonu"
 evidence_body = "Dürbünden dışarı bakınca tesisin karanlık bir boşlukta asılı olduğu görülür. Dış dünya yok; yüzü kazınmış bir yetkili anı flaş eder."
 evidence_section = "izler"

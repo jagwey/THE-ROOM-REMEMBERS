@@ -114,6 +114,14 @@ func _on_visibility_changed() -> void:
 
 func _motif() -> String:
 	var rid := String(room_id)
+	if rid == "core_bloom_garden":
+		return "bloom"
+	if rid == "core_memory_vault":
+		return "vault"
+	if rid == "experiment_quarantine":
+		return "quarantine"
+	if rid == "mirrors_labyrinth":
+		return "labyrinth"
 	if rid.begins_with("core"):
 		return "core"
 	if rid.begins_with("decay"):

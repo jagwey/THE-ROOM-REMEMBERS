@@ -551,6 +551,9 @@ func _on_skill() -> void:
 # --- Lanet %80+: kontrol teklemesi ve Çekirdek'e çekilme ---------------------------------
 
 func _apply_curse_drift(axis_x: float, delta: float) -> float:
+	## Yeni doğan oyuncu doğuş noktasından çekilmesin (hasar koruması bitene kadar).
+	if _hurt_cooldown > 0.0:
+		return axis_x
 	var c := CurseManager.curse
 	if c < 80.0:
 		return axis_x
