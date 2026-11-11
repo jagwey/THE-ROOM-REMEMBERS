@@ -221,12 +221,12 @@ collision_mask = 2
 script = ExtResource("6")
 hazard_id = &"passage_rift_strip"
 arm_requires_mystery = false
-lethal = true
+lethal = false
 ring_radius = 52.0
 ring_hole = 26.0
-ring_gap_deg = 140.0
-ring_spin = 0.55
-arm_grace = 1.5
+ring_gap_deg = 230.0
+ring_spin = 0.3
+arm_grace = 3.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hazards/MemoryStrip"]
 shape = SubResource("HazardShape")

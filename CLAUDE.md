@@ -27,6 +27,6 @@ Yan görünüşlü bellek/lanet oyunu. Kapalı kaynak, private repo. Paket: com.
 - Release'i oraya atmazsan oyuncular güncellemeyi göremez.
 
 ## Kritik kararlar
-- Güncel sürüm: v1.12.3 (kaynak: `project.godot` `config/version`; bu satır bayatlayabilir, orayı kontrol et)
+- Güncel sürüm: v1.12.4 (kaynak: `project.godot` `config/version`; bu satır bayatlayabilir, orayı kontrol et)
 - v0.10.1: awakening gate, objective, softlock korumaları, tek final (BÖLÜM I SONU / END OF PART I), core_choice kaldırıldı
 - Çalışma planı ve durum: `PROGRESS.md` (her alt görevden sonra güncelle, sıkıştırma sonrası ilk onu oku)
