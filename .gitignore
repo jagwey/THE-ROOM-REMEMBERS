@@ -6,6 +6,11 @@
 /build/
 android/build/build/
 android/build/.gradle/
+android/build/libs/
+android/build/src/release/
+android/build/res/drawable/
+android/build/res/mipmap/
+android/build/res/mipmap-*/
 .mono/
 data_*/
 .agents/
