@@ -89,8 +89,8 @@ func is_solved(puzzle_id: StringName) -> bool:
 const HINTS: Dictionary = {
 	&"awakening_weight": {
 		"goal": "Kapıyı açık tutmak için bir ağırlık gerekiyor.",
-		"orientation": "Ağırlık taşı taşınabilir; basamak plakasına kadar itilebilir.",
-		"explicit": "Taş ya da hareketsiz bir beden plakanın üzerinde durursa kapı açık kalır."
+		"orientation": "Taş yürür. Onu plakanın üstüne bırakırsan kapı açık kalır.",
+		"explicit": "Taş ya da hareketsiz bir beden plakada durursa kapı kapanmaz."
 	},
 	&"awakening_memory_code": {
 		"goal": "Taş mühür üç haneli bir bellek rezonansı bekliyor.",
@@ -164,7 +164,7 @@ const HINTS: Dictionary = {
 	},
 	&"mirrors_labyrinth_crossed": {
 		"goal": "Uçurumun karşısı tavandaki aynada görünüyor.",
-		"orientation": "Mavi yansımalar gerçek taş. Soluk kırmızı olan yalan.",
+		"orientation": "Mavi yansıma gerçek taş. Soluk kırmızı olan yalan.",
 		"explicit": "Kırmızı basamağa atlama. Mavi taşları izleyerek karşıya geç."
 	},
 	&"experiment_intake": {

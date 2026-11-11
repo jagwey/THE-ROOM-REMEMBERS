@@ -14,6 +14,7 @@ func _init() -> void:
 	vertical_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER
 	size_flags_vertical = Control.SIZE_EXPAND_FILL
 	size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	clip_contents = true
 
 
 func _ready() -> void:
@@ -27,8 +28,8 @@ func _build() -> void:
 	_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_box.add_theme_constant_override("separation", 4)
 	add_child(_box)
-	var lead := Control.new() ## metin alttan girsin
-	lead.custom_minimum_size.y = 150
+	var lead := Control.new() ## metin alttan girsin; ilk satır çerçeveye yapışmasın
+	lead.custom_minimum_size.y = 120
 	_box.add_child(lead)
 	var t := Label.new()
 	t.text = CreditsData.TITLE
@@ -43,7 +44,7 @@ func _build() -> void:
 		for l in s["lines"]:
 			_line(String(l), UiTheme.BODY, false, Palette.IVORY)
 	var tail := Control.new()
-	tail.custom_minimum_size.y = 90
+	tail.custom_minimum_size.y = 72
 	_box.add_child(tail)
 
 
@@ -52,7 +53,10 @@ func _line(text: String, size: int, bold: bool, color: Color) -> void:
 	l.text = text
 	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	l.clip_text = false
 	UiTheme.apply_outlined(l, size, bold, color)
+	## Dış çizgi, etiketin kutusunun dışında kalmasın.
+	l.custom_minimum_size.y = float(size) + 10.0
 	_box.add_child(l)
 
 

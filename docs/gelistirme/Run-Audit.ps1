@@ -13,7 +13,7 @@ $work = Join-Path ([IO.Path]::GetTempPath()) ('TorimonAudit-' + $auditId)
 $null = New-Item -ItemType Directory -Path $work
 $null = New-Item -ItemType Directory -Path $OutputPath -Force
 $output = (Resolve-Path -LiteralPath $OutputPath).Path
-foreach ($folder in @('assets', 'scenes', 'scripts', 'themes', 'data')) {
+foreach ($folder in @('assets', 'scenes', 'scripts', 'themes', 'data', 'android')) {
     Copy-Item -LiteralPath (Join-Path $source $folder) -Destination $work -Recurse
 }
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'audit.gd') -Destination $work

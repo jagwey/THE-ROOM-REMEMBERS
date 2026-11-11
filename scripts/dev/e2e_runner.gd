@@ -389,9 +389,14 @@ func _run_tier_1_feature_coverage() -> void:
 	record_check(1, 31, "POCO X6 Pro 5G Android APK build & test", arm64_enabled and package_name_ok, "arm64 enabled=%s package name=%s" % [arm64_enabled, package_name_ok], false, "M4")
 
 	# F32: Versioning & export configuration (M5)
-	var godot_v110: bool = proj_cfg.contains('config/version="1.10.0"')
-	var preset_v110: bool = exp_presets.contains('version/name="1.10.0"') and exp_presets.contains('version/code=35')
-	record_check(1, 32, "Versioning & export configuration", godot_v110 and preset_v110, "version 1.10.0 code 35 verified", false, "M5")
+	var godot_v111: bool = proj_cfg.contains('config/version="1.11.0"')
+	var preset_v111: bool = exp_presets.contains('version/name="1.11.0"') and exp_presets.contains('version/code=36')
+	var gradle_on: bool = exp_presets.contains("gradle_build/use_gradle_build=true")
+	var manifest := _read_file_text("res://android/build/src/main/AndroidManifest.xml")
+	var startup_ok: bool = manifest.contains('android:authorities="${applicationId}.androidx-startup"') and manifest.contains("androidx.startup.InitializationProvider")
+	var themed_ok: bool = FileAccess.file_exists("res://android/build/res/mipmap-anydpi-v26/themed_icon.xml")
+	var build_ver := _read_file_text("res://android/.build_version").strip_edges()
+	record_check(1, 32, "Versioning & export configuration", godot_v111 and preset_v111 and gradle_on and startup_ok and themed_ok and build_ver == "4.7.2.stable", "version 1.11.0 code 36 gradle startup=%s themed=%s build=%s" % [startup_ok, themed_ok, build_ver], false, "M5")
 
 	# F33: Git commit, tag, and GitHub Release (M5)
 	var git_clean: bool = FileAccess.file_exists("res://PROJECT.md") and FileAccess.file_exists("res://TEST_INFRA.md")

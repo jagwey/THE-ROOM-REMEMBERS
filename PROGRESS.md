@@ -355,5 +355,6 @@ oom_door\) <= 44.0 px mesafede -200 etkileÅŸim Ã¶ncelik bonusu eklendi.
 - [x] Parça 5: Perde 4 (Deney, Kabul Odası). Dosya sonra palto: Denek 14 Noroi'dir. Gözlem camı Tur 2'de (Parça 6). Sürüm artmadı.
 - [x] Parça 6: Perde 5 (Aynalar, Bedenler Galerisi, Kırık Gece) + iki geri dönüş turu. Galeri ceset sayar. 1927 izlenir. Sarnıç günlüğü ve gözlem notu Gölge Atılması ardında. Sürüm artmadı.
 - [x] Parça 7: Perde 6 (Son Merdiven) + süre ölçümü. Yankı, Ruh Kesimi ve Gölge Atılması aynı basamakta; sonra «Gidelim.» Ölçüm (`playtime_measure.gd`): 405 satır, okuma 21.6 dk, ana yol 42.6 dk, yanlarla 52.1 dk. Hedef 165–195 tutmadı; bu alt sınır, insan kaybolması değil. Sürüm 1.10.0 / versionCode 35.
-- [ ] Sürüm hazırlığı ve Play Store kontrol listesi (yalnız kullanıcı isteyince).
+- [ ] Sürüm hazırlığı ve Play Store kontrol listesi (yalnız kullanıcı isteyince). Yayın yok: THE-ROOM-REMEMBERS-release'e dokunulmadı.
+- [x] v1.11.0 / versionCode 36. Sunum geçişi: havada basamaklar (balkon dilimleri silindi; kalanlar zincir/ayak/duvar çıkması), ön plan sütunları kaldırıldı, jenerik Torimon Studio ve kenar kırpması, sürüm etiketi `config/version`, diyalog/hedef sesi, Gradle Android şablonu (`docs/gelistirme/ANDROID_APK_GECERLILIK.md`).
 

@@ -3,7 +3,9 @@
 *.translation
 *.apk
 *.aab
-build/
+/build/
+android/build/build/
+android/build/.gradle/
 .mono/
 data_*/
 .agents/

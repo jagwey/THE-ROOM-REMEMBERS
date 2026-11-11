@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://torimon_decay_weight"]
+[gd_scene load_steps=18 format=3 uid="uid://torimon_decay_weight"]
 
 [ext_resource type="Texture2D" path="res://assets/backgrounds/decay/far.png" id="1"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/decay/mid.png" id="2"]
@@ -11,7 +11,6 @@
 [ext_resource type="Script" path="res://scripts/world/gate_blocker.gd" id="8"]
 [ext_resource type="Script" path="res://scripts/world/weight_stone.gd" id="9"]
 [ext_resource type="Script" path="res://scripts/world/reset_lever.gd" id="10"]
-[ext_resource type="Texture2D" path="res://assets/layers/column.png" id="11"]
 [ext_resource type="Texture2D" path="res://assets/layers/rubble.png" id="12"]
 
 [ext_resource type="Texture2D" path="res://assets/tiles/tile_00.png" id="walk_tile"]
@@ -101,12 +100,6 @@ position = Vector2(640, 0)
 
 [node name="Decor" type="Node2D" parent="."]
 z_index = 1
-
-[node name="Column1" type="Sprite2D" parent="Decor"]
-texture_filter = 0
-position = Vector2(140, 227)
-texture = ExtResource("11")
-centered = true
 
 [node name="Rubble" type="Sprite2D" parent="Decor"]
 texture_filter = 0

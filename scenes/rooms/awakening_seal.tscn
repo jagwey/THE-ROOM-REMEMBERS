@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=3 uid="uid://torimon_awakening_seal"]
+[gd_scene load_steps=25 format=3 uid="uid://torimon_awakening_seal"]
 
 [ext_resource type="Texture2D" path="res://assets/backgrounds/decay/far.png" id="1"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/decay/mid.png" id="2"]
@@ -10,7 +10,6 @@
 [ext_resource type="Script" path="res://scripts/world/pressure_plate.gd" id="7"]
 [ext_resource type="Script" path="res://scripts/world/gate_blocker.gd" id="8"]
 [ext_resource type="Script" path="res://scripts/world/memory_seal.gd" id="9"]
-[ext_resource type="Texture2D" path="res://assets/layers/column.png" id="10"]
 [ext_resource type="Texture2D" path="res://assets/layers/vines.png" id="11"]
 [ext_resource type="Texture2D" path="res://assets/layers/rubble.png" id="12"]
 [ext_resource type="Script" path="res://scripts/world/awakening_seal_echo_recall.gd" id="14"]
@@ -104,12 +103,6 @@ position = Vector2(640, 0)
 
 [node name="Decor" type="Node2D" parent="."]
 z_index = 1
-
-[node name="Column1" type="Sprite2D" parent="Decor"]
-texture_filter = 0
-position = Vector2(120, 227)
-texture = ExtResource("10")
-centered = true
 
 [node name="Vines" type="Sprite2D" parent="Decor"]
 texture_filter = 0
