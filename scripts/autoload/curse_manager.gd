@@ -161,10 +161,15 @@ func _fail_life() -> void:
 ## Son committed kayda dön: oda + güvenli konum; kalıcı dünya ilerlemesi (world_memory_state, PuzzleManager, player_progress_knowledge) KORUNUR.
 func _reload_committed() -> void:
 	var committed_data: Variant = SaveManager._read_with_fallback(SaveManager.SAVE_PATH)
+	if not (committed_data is Dictionary):
+		## BUG-032: committed bozuk/yok -> gecerliyse resume/yedek kaydina dus (asla cokme).
+		push_warning("Committed kayıt okunamadı — resume/yedek kayda düşülüyor")
+		committed_data = SaveManager._read_with_fallback(SaveManager.resume_path())
 	var room := &"awakening"
 	var pos := GameState.DEFAULT_CHECKPOINT
 	if committed_data is Dictionary:
-		var life: Dictionary = (committed_data as Dictionary).get("character_current_life_knowledge", {})
+		var life_raw: Variant = (committed_data as Dictionary).get("character_current_life_knowledge", {})
+		var life: Dictionary = life_raw if life_raw is Dictionary else {}
 		room = StringName(str(life.get("checkpoint_room", life.get("room", &"awakening"))))
 		var cp_val: Variant = life.get("checkpoint", null)
 		if cp_val is Dictionary:

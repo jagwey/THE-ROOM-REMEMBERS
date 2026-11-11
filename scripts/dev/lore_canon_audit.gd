@@ -95,6 +95,14 @@ const TEXT_REGRESSIONS: Array[Array] = [
 	["Düzeni bozma. Kapı kapalı kalsın.", "BUG-005/X: X? konusma satiri degil iz olmali"],
 	["X? fısıltısı", "BUG-005/X: X? konusma satiri degil iz olmali"],
 	["Ruh Kesiği", "BUG-018: yetenek adi 'Ruh Kesimi'"],
+	["Unutursam bir daha uyanamazmışım", "BUG-016: awakening_vigil kanit metni JSON ile uyumsuz"],
+	["Kazı o yıl başladı", "BUG-019: X 1927'de boyutu kurdu (kazi degil)"],
+	["Kazı başladı", "BUG-019: X 1927'de boyutu kurdu (kazi degil)"],
+	["kazı başladı", "BUG-019: X 1927'de boyutu kurdu (kazi degil)"],
+	["1927 kazı", "BUG-019: X 1927'de boyutu kurdu (kazi degil)"],
+	["kazının yılı", "BUG-019: X 1927'de boyutu kurdu (kazi degil)"],
+	["Kapı o yıl kapandı", "BUG-020: 1995 = Noroi'nin giris yili, kapi yili degil"],
+	["Altmış sekiz yıl. Sayfalar", "BUG-021: 68 yil = 1927->1995 aritmetigi; gunluk 68 yil once yazildi"],
 ]
 
 

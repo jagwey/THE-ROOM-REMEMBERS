@@ -110,7 +110,7 @@ const HINTS: Dictionary = {
 	&"decay_shilda_wall_broken": {
 		"goal": "Çatlak duvar kılıçla inmez.",
 		"orientation": "Gözler kızarınca atılır. Son anda kenara çekil; duvara çarpsın.",
-		"explicit": "İkinci çarpma duvarı yıkar. Üç ölümden sonra bir çarpma yeter."
+		"explicit": "İki çarpma duvarı yıkar. Kovalamacada üç kez öldüysen tek çarpma yeter."
 	},
 	&"decay_archive_key": {
 		"goal": "Arşiv kapısı mühürlü; kilitte bir çiçek motifi yer alıyor.",
@@ -154,7 +154,7 @@ const HINTS: Dictionary = {
 	},
 	&"core_vault_order": {
 		"goal": "Hafıza kasası karanlık. Üç sütun bir tarih sırası istiyor.",
-		"orientation": "Önce kazının yılı, sonra senin girdiğin yıl, en son son kayıt.",
+		"orientation": "Önce kuruluşun yılı, sonra senin girdiğin yıl, en son son kayıt.",
 		"explicit": "1927, sonra 1995, sonra Son. Kasa ancak o zaman açılır."
 	},
 	&"library_shelf_order": {

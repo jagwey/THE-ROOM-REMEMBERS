@@ -12,13 +12,13 @@ func _ready() -> void:
 	EchoManager.register_echo("decay_archive_hint", {
 		"evidence_id": "ev_decay_archive_hint",
 		"lines": [
-			["Yankı", "Bahçe sayıları: yedi, iki, dokuz."],
+			["Yankı", "Bahçede yerdeki desen. Aklımda kalan o üç sayı."],
 			["Yankı", "Arşiv mührü bunu ister."],
 		],
 		"journal": {
 			"section": "izler",
 			"title": "Bahçe sayıları",
-			"body": "Çiçeklerin arasında 7 — 2 — 9. Arşiv kapısı için.",
+			"body": "Bahçede yerdeki desen: 7 — 2 — 9. Arşiv kapısı için.",
 			"kind": "evidence",
 		},
 		"memory_code": "729",

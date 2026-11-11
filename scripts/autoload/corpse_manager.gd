@@ -159,10 +159,11 @@ func _find_active_corpses_root() -> Node:
 	var room := String(active_id) if active_id != &"" else String(GameState.character_current_life_knowledge.get("room", &"awakening"))
 	var fallback: Node = null
 	for n in get_tree().get_nodes_in_group("corpses_root"):
-		if fallback == null:
-			fallback = n
 		var room_node := _find_room_ancestor(n)
 		if room_node == null:
+			## Odaya bağlı olmayan kök (test/ana sahne) yalnız son çare.
+			if fallback == null:
+				fallback = n
 			continue
 		var rid: StringName = room_node.get("room_id") if "room_id" in room_node else &""
 		if String(rid) == room:
@@ -187,6 +188,9 @@ func _find_room_ancestor(n: Node) -> Node:
 func rebuild_world_corpses() -> void:
 	for n in _spawned:
 		if is_instance_valid(n):
+			## Aynı karede yeniden sayılmasın diye önce ağaçtan ayır.
+			if n.get_parent():
+				n.get_parent().remove_child(n)
 			n.queue_free()
 	_spawned.clear()
 

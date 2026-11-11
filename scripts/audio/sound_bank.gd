@@ -13,7 +13,7 @@ const SFX_IDS: Array[StringName] = [
 	&"echo_record", &"echo_playback", &"ui_open", &"ui_close", &"death_chord", &"rebirth_chord",
 	&"breath", &"keeper_telegraph", &"clock_tick",
 ]
-const STINGER_IDS: Array[StringName] = [&"discovery", &"ending_bad", &"ending_good", &"ending_sever"]
+const STINGER_IDS: Array[StringName] = [&"discovery", &"ending_good"]
 const REGIONS: Array[StringName] = [&"awakening", &"decay", &"library", &"experiment", &"mirrors", &"core"]
 
 
@@ -164,13 +164,6 @@ static func recipe(id: StringName) -> Dictionary:
 				_t(0.0, 1.5, 659.25, 0.7, "bell"), _t(0.22, 1.6, 987.77, 0.55, "bell"),
 				_t(0.5, 1.5, 1318.5, 0.35, "bell"), _t(0.0, 1.8, 110, 0.3, "pad"),
 			], 0.6)
-		&"ending_bad":
-			return _r(5.0, [
-				_t(0.0, 1.8, 440, 0.6, "piano"), _t(0.8, 1.8, 349.23, 0.6, "piano"),
-				_t(1.6, 2.0, 329.63, 0.6, "piano"), _t(2.5, 2.4, 220, 0.7, "piano"),
-				_t(0.0, 4.9, 55, 0.8, "padd"), _t(0.0, 4.8, 65.4, 0.6, "padd"), _t(1.0, 3.9, 77.8, 0.4, "padd"),
-				_t(2.5, 2.5, 110, 0.4, "bell"),
-			], 0.8)
 		&"ending_good":
 			return _r(5.0, [
 				_t(0.0, 1.8, 220, 0.6, "piano"), _t(0.5, 1.8, 277.18, 0.55, "piano"),
@@ -178,14 +171,6 @@ static func recipe(id: StringName) -> Dictionary:
 				_t(2.2, 2.6, 554.37, 0.5, "piano"), _t(2.9, 2.0, 659.25, 0.5, "bell"),
 				_t(0.0, 4.8, 110, 0.5, "pad"), _t(1.0, 3.8, 164.81, 0.35, "pad"),
 			], 0.75)
-		&"ending_sever":
-			return _r(5.0, [
-				_t(0.0, 4.8, 55, 0.8, "padd"), _t(0.0, 3.0, 58.3, 0.6, "padd"),
-				_t(0.4, 2.0, 466.16, 0.45, "bell"), _t(1.1, 2.4, 311.13, 0.45, "bell"),
-				_t(2.2, 2.6, 233.08, 0.4, "bell"),
-				_n(0.0, 0.05, 1.0, 0.7, "exp", 0.01), _n(2.8, 0.05, 0.7, 0.7, "exp", 0.01),
-				_t(0.0, 0.7, 120, 1.0, "thump", 36, {"tau": 0.2}),
-			], 0.85)
 		_:
 			return {}
 
