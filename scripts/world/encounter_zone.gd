@@ -25,8 +25,16 @@ func _ready() -> void:
 	var wall := get_node_or_null(wall_path)
 	if wall and wall.has_signal("broken"):
 		wall.broken.connect(_on_wall_broken)
-	DeathManager.death_started.connect(func(_r): _running = false)
+	DeathManager.death_started.connect(_on_chase_death)
 	RoomManager.room_changed.connect(_on_room_changed)
+
+
+func _on_chase_death(_reason: StringName) -> void:
+	_running = false
+	if RoomManager.get_active_room_id() != &"decay_shilda_wall" or PuzzleManager.is_solved(puzzle_id):
+		return
+	var n := int(GameState.player_progress_knowledge.get("wall_chase_deaths", 0)) + 1
+	GameState.player_progress_knowledge["wall_chase_deaths"] = n
 
 
 func _on_room_changed(_from_room: StringName, new_room: StringName) -> void:
@@ -48,12 +56,19 @@ func _on_enter(body: Node) -> void:
 	_running = true
 	var first := not bool(GameState.player_progress_knowledge.get("encounter_%s_seen" % String(encounter_id), false))
 	GameState.player_progress_knowledge["encounter_%s_seen" % String(encounter_id)] = true
+	var fails := int(GameState.player_progress_knowledge.get("wall_chase_deaths", 0))
 	if first:
 		DialogueManager.say("Shilda", "Dur. Bu duvarın ardında… unutmaman gereken bir şey var.")
 		DialogueManager.say("Shilda", "Ama önce göster bana: benden kaçabilir misin?")
 		DialogueManager.say("Shilda", "Gözlerim kızarınca atıl. Duvarın önünde dur… ve son anda kenara çekil.")
 	else:
 		DialogueManager.say("Shilda", "Yine mi? …Atıl, Noroi.")
+	if fails >= 3:
+		DialogueManager.say("Shilda", "Duvar yoruldu. Bir çarpma yeter. Kenara çekil.")
+	elif fails == 2:
+		DialogueManager.say("Shilda", "Boş yana atıl. İkinci çarpma taşı indirir.")
+	elif fails == 1:
+		DialogueManager.say("Shilda", "Gözler kızarınca son adımda kenara çekil.")
 	var ok: bool = await DialogueManager.dialogue_finished
 	if not ok or DeathManager.is_dying:
 		_running = false

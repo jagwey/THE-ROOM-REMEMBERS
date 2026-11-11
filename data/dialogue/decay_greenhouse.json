@@ -1,0 +1,15 @@
+{
+  "room": "decay_greenhouse",
+  "sets": {
+    "shared_seal": [
+      {"s": "Noroi", "t": "Cam buğulu. İçeride kırmızı yapraklar hâlâ canlı."},
+      {"s": "@shilda", "t": "Dur orada. Mührün öteki yanını ben tutuyorum."},
+      {"s": "Noroi", "t": "Seni göremiyorum. Yalnız elini."},
+      {"s": "@shilda", "t": "Yeter. Plakaya bas. Ben bırakmam."},
+      {"s": "Noroi", "t": "Ya bırakırsan?"},
+      {"s": "@shilda", "t": "Bırakmam. Bu serayı birlikte açarız."},
+      {"s": "Noroi", "t": "Tamam. Basıyorum."},
+      {"s": "@shilda", "t": "Sağdaki duvar sırada. Orada benden kaçman gerekecek."}
+    ]
+  }
+}

@@ -29,6 +29,10 @@ func on_interact(_by: Node) -> void:
 	if _busy or DialogueManager.is_open:
 		return
 	_busy = true
+	if not GameState.is_shilda_named():
+		var keeper := get_tree().get_first_node_in_group("keeper")
+		if keeper and keeper.has_method("_run_naming_scene"):
+			await keeper._run_naming_scene()
 	DialogueManager.say("Noroi", "Kırmızı yapraklar… kurumuş. Yerde bir desen var: 7, 2, 9.")
 	var ok: bool = await DialogueManager.dialogue_finished
 	if ok:
