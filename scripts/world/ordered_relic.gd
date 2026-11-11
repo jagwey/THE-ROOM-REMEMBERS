@@ -10,6 +10,8 @@ const LorePointScript := preload("res://scripts/world/lore_point.gd")
 @export var solve_puzzle: StringName = &""
 @export var locked_line: String = "Önce öteki iz."
 @export var count_line: bool = false
+@export var need_soul: bool = false
+@export var need_dash: bool = false
 @export var evidence_title: String = ""
 @export_multiline var evidence_body: String = ""
 
@@ -33,6 +35,16 @@ func on_interact(_by: Node) -> void:
 	if _busy:
 		return
 	_busy = true
+	if need_soul and not bool(GameState.player_progress_knowledge.get("ability_soul_slash", false)):
+		DialogueManager.say("Noroi", "Son basamak Ruh Kesimi istiyor.")
+		await DialogueManager.dialogue_finished
+		_busy = false
+		return
+	if need_dash and not bool(GameState.player_progress_knowledge.get("ability_shadow_dash", false)):
+		DialogueManager.say("Noroi", "Aralık Gölge Atılması istiyor.")
+		await DialogueManager.dialogue_finished
+		_busy = false
+		return
 	var seen: Dictionary = GameState.player_progress_knowledge.get("relics", {})
 	if needs != "" and not bool(seen.get(needs, false)):
 		DialogueManager.say("Noroi", locked_line)

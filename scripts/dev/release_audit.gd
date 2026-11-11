@@ -20,6 +20,7 @@ const PUZZLE_SOURCE := {
 	"decay_greenhouse": ["decay_greenhouse", ""],
 	"library_clockroom": ["library_clockroom", ""],
 	"experiment_intake": ["experiment_intake", ""],
+	"core_ascent": ["core_ascent", ""],
 	"awakening_seal_weight": ["awakening_seal", ""],
 	"core_seal": ["core_seal_chamber", ""],
 	"core_threshold": ["core_threshold", ""],

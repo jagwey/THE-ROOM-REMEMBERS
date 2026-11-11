@@ -42,7 +42,7 @@ const _BY_ROOM: Dictionary = {
 	"mirrors_1927": "1927 gecesini izle. Dokunma. İki yankıya dön.",
 	"decay_cistern": "Islak sayfaları oku. Günlük altmış sekiz yılı tutuyor.",
 	"experiment_observation": "Camın yanındaki sayım notunu al. İmza kazınmış.",
-	"core_ascent": "Son merdiveni çık. Mühür odasına in.",
+	"core_ascent": "Yankıyı dinle. Ruh Kesimi ve Gölge Atılması varken son basamağa bas.",
 }
 
 static func _has_soul_slash() -> bool:

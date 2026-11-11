@@ -137,6 +137,11 @@ const HINTS: Dictionary = {
 		"orientation": "Aynadaki yansıma seninle zıt yönde hareket eder; iki kristali aynı anda tetikle.",
 		"explicit": "Gölge Atılması ile mesafeyi hızla kapatıp iki tarafın enerjisini dengele."
 	},
+	&"core_ascent": {
+		"goal": "Son merdiven iki yetenek ve bir yankı istiyor.",
+		"orientation": "Önce yankının durduğu basamak. Sonra Ruh Kesimi ve Gölge Atılması.",
+		"explicit": "İkisi de açıkken son basamağa dokun. Gölge mührü tutar. Gidelim."
+	},
 	&"core_seal": {
 		"goal": "Çekirdeğin ana mührü kırılmalı ve boyut kapısı aralanmalı.",
 		"orientation": "Her iki mühür parçası birleşmeden çekirdek savunması gevşemez.",
@@ -195,6 +200,7 @@ const ROOM_PUZZLES: Dictionary = {
 	"mirrors_labyrinth": [&"mirrors_labyrinth_crossed"],
 	"core_bloom_garden": [&"core_bloom_order"],
 	"core_memory_vault": [&"core_vault_order"],
+	"core_ascent": [&"core_ascent"],
 	"core": [&"core_seal"],
 }
 
