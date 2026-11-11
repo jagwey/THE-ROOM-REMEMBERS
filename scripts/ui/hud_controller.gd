@@ -887,12 +887,14 @@ func _setup_guidance() -> void:
 	_context_hint = Label.new()
 	# Alt orta: anchor ile ortali (genis ekranda da ortada).
 	_context_hint.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
-	_context_hint.offset_left = -140.0
-	_context_hint.offset_right = 140.0
-	_context_hint.offset_top = -44.0
-	_context_hint.offset_bottom = -14.0
+	_context_hint.offset_left = -220.0
+	_context_hint.offset_right = 220.0
+	_context_hint.offset_top = -52.0
+	_context_hint.offset_bottom = -16.0
 	_context_hint.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	_context_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_context_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_context_hint.clip_text = false
 	_context_hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	UiTheme.apply_outlined(_context_hint, UiTheme.BODY, true)
 	safe_area.add_child(_context_hint)

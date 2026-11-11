@@ -60,9 +60,9 @@ func _on_enter(body: Node) -> void:
 	if first:
 		DialogueManager.say("Shilda", "Dur. Bu duvarın ardında… unutmaman gereken bir şey var.")
 		DialogueManager.say("Shilda", "Ama önce göster bana: benden kaçabilir misin?")
-		DialogueManager.say("Shilda", "Gözlerim kızarınca atıl. Duvarın önünde dur… ve son anda kenara çekil.")
+		DialogueManager.say("Shilda", "Gözlerim kızarınca atıl. Duvarın önünde kal; son adımda kenara çekil.")
 	else:
-		DialogueManager.say("Shilda", "Yine mi? …Atıl, Noroi.")
+		DialogueManager.say("Shilda", "Yine mi. Atıl.")
 	if fails >= 3:
 		DialogueManager.say("Shilda", "Duvar yoruldu. Bir çarpma yeter. Kenara çekil.")
 	elif fails == 2:

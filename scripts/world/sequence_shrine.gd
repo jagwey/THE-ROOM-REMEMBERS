@@ -1,4 +1,6 @@
 extends Node2D
+
+const DRESS := preload("res://scripts/world/platform_dress.gd")
 ## Sıralı etkileşim. Çocuk sequence_step düğümleri step_id ile basınır.
 ## Yanlış adım zinciri sıfırlar; ilk doğru adım hemen yeniden sayılır.
 ## bridge.z > 1 ise çözümde oda koordinatında tek yönlü tahta iner.
@@ -144,3 +146,16 @@ func _spawn_bridge() -> void:
 	strip.z_index = 2
 	body.add_child(strip)
 	add_child(body)
+	var room: Node = self
+	while room != null and not ("room_width" in room):
+		room = room.get_parent()
+	var host: Node = room if room != null else self
+	var dress := Node2D.new()
+	dress.name = "ShelfBridgeDress"
+	dress.set_script(DRESS)
+	dress.z_index = 1
+	host.add_child(dress)
+	var rw := 1280.0
+	if "room_width" in host:
+		rw = float(host.get("room_width"))
+	dress.call("configure", bridge.x, bridge.y, bridge.z, rw, PackedVector2Array())

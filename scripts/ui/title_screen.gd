@@ -317,7 +317,14 @@ func _build_confirm_page(parent: Control) -> void:
 ## Jenerik: gotik panel içinde yavaşça kayan metin (içerik CreditsData'da).
 func _build_credits_panel() -> void:
 	_credits_panel = GothicModalPanel.new()
-	_credits_panel.setup("JENERİK", Vector2(420, 300), &"menu", 0.7)
+	_credits_panel.setup("JENERİK", Vector2(460, 320), &"menu", 0.7)
+	var inner := _credits_panel.get_node_or_null("Frame/Inner") as Control
+	if inner:
+		inner.offset_left = 26
+		inner.offset_right = -26
+		inner.offset_top = 32
+		inner.offset_bottom = -26
+	_credits_panel.body.clip_contents = true
 	add_child(_credits_panel)
 	_credits_scroll = CreditsScroll.new()
 	_credits_panel.body.add_child(_credits_scroll)

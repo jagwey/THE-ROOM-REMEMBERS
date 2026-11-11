@@ -29,7 +29,7 @@ script = ExtResource("lore")
 lore_id = &"quarantine_sign"
 texture_path = "res://assets/props/curse.png"
 sprite_scale = 0.5
-lines = PackedStringArray("Noroi|“KARANTİNA. Lanet yoğunluğu ölümcül.”", "Noroi|Kırmızı sis canlıyı yer. Ölü beden onu emer.", "Shilda|Cesedini ortaya bırak. Rapor, sisin ötesindeki rafta.")
+lines = PackedStringArray("Noroi|“KARANTİNA. Lanet yoğunluğu ölümcül.”", "Noroi|Kırmızı sis canlıyı yer. Ölü beden onu emer.", "Shilda|Ölünü sisin ortasına bırak. Rapor, ötedeki rafta.")
 
 [node name="Cloud" type="Area2D" parent="Interactive"]
 position = Vector2(660.0, 288.0)

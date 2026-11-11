@@ -5,6 +5,7 @@ extends "res://scripts/world/room_root.gd"
 
 const TILE := preload("res://assets/tiles/tile_00.png")
 const DOOR_SCRIPT := preload("res://scripts/world/room_transition.gd")
+const DRESS := preload("res://scripts/world/platform_dress.gd")
 
 @export var room_width: float = 960.0
 @export var bg_region: String = "awakening"
@@ -175,6 +176,7 @@ func _build_platforms() -> void:
 		strip.z_index = 2
 		body.add_child(strip)
 		add_child(body)
+		_add_dress("PlatformDress%d" % i, p.x, p.y, p.z, false, false)
 		i += 1
 
 
@@ -212,6 +214,7 @@ func _build_invisible_platforms() -> void:
 		refl.modulate = Color(0.75, 0.9, 1.0, 0.85)
 		refl.z_index = 2
 		add_child(refl)
+		_add_dress("MirrorDress%d" % i, p.x, 2.0 * mirror_line - p.y - 14.0, p.z, true, false)
 		i += 1
 	var f := 0
 	for p in false_reflections:
@@ -223,7 +226,17 @@ func _build_invisible_platforms() -> void:
 		lie.modulate = Color(1.0, 0.45, 0.42, 0.42)
 		lie.z_index = 2
 		add_child(lie)
+		_add_dress("LieDress%d" % f, p.x, 2.0 * mirror_line - p.y - 14.0, p.z, true, true)
 		f += 1
+
+
+func _add_dress(node_name: String, x: float, y: float, w: float, as_reflection: bool, is_lie: bool) -> void:
+	var dress := Node2D.new()
+	dress.name = node_name
+	dress.set_script(DRESS)
+	dress.z_index = 1
+	add_child(dress)
+	dress.call("configure", x, y, w, room_width, floor_gaps, as_reflection, is_lie, mirror_line)
 
 
 func _build_walls() -> void:

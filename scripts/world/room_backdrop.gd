@@ -273,9 +273,15 @@ func _draw_balcony() -> void:
 				draw_rect(Rect2(tx + tw * 0.5 - 1.0, 262.0 - th + 6.0, 2.0, 3.0), Color(0.9, 0.5, 0.4, 0.55))
 			tx += tw + 2.0
 			ti += 1
-		## Orta söve + gül pencere + iç kemer vurgusu.
-		draw_rect(Rect2(cx - 2.0, spring - 30.0, 4.0, 262.0 - spring + 30.0), stone)
-		draw_arc(Vector2(cx, spring - 56.0), 16.0, 0.0, TAU, 24, stone, 3.0)
+		## Gül pencere kemere ve söveye bağlı; boşta halka yok.
+		var rose := Vector2(cx, spring - 64.0)
+		var rose_r := 12.0
+		draw_arc(rose, rose_r, 0.0, TAU, 20, stone, 3.0)
+		draw_line(rose + Vector2(-rose_r, -2.0), Vector2(cx - 36.0, spring - 28.0), stone, 2.0)
+		draw_line(rose + Vector2(rose_r, -2.0), Vector2(cx + 36.0, spring - 28.0), stone, 2.0)
+		draw_line(rose + Vector2(0.0, -rose_r), Vector2(cx, spring - 96.0), stone, 2.0)
+		var mull_top := rose.y + rose_r - 1.0
+		draw_rect(Rect2(cx - 2.0, mull_top, 4.0, 262.0 - mull_top), stone)
 		draw_polyline(inner, stone_hi, 1.0)
 		draw_polyline(arch_points(cx, spring, 150.0, 128.0, 22), stone_dk, 1.0)
 	## Ay + hale (sol kemerin sağ üstü).
@@ -287,13 +293,12 @@ func _draw_balcony() -> void:
 	draw_rect(Rect2(0, 250.0, w, 2.0), stone_dk)
 	draw_rect(Rect2(0, 276.0, w, 12.0), stone)
 	draw_rect(Rect2(0, 276.0, w, 2.0), stone_hi)
-	var bx := 6.0
-	while bx < w:
-		draw_rect(Rect2(bx, 252.0, 5.0, 24.0), stone)
-		draw_rect(Rect2(bx, 252.0, 1.0, 24.0), stone_hi)
-		draw_circle(Vector2(bx + 2.5, 262.0), 4.0, stone)
-		draw_circle(Vector2(bx + 1.5, 261.0), 1.5, stone_hi)
-		bx += 22.0
+	var bx := 10.0
+	while bx < w - 8.0:
+		draw_rect(Rect2(bx, 250.0, 4.0, 26.0), stone)
+		draw_rect(Rect2(bx, 250.0, 1.0, 26.0), stone_hi)
+		draw_rect(Rect2(bx + 3.0, 250.0, 1.0, 26.0), stone_dk)
+		bx += 16.0
 	var pil := 0.0
 	while pil <= w:
 		draw_rect(Rect2(pil - 8.0, 236.0, 16.0, 52.0), stone)

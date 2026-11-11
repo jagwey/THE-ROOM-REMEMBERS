@@ -138,7 +138,7 @@ func _title_checks(ts: Control, tag: String, has_save: bool) -> void:
 		ts._show_page(&"main")
 	ts._open_credits()
 	check(ts._credits_panel.visible, "[%s] Jenerik opens credits panel" % tag)
-	check(CreditsData.as_text().contains("Bir Jagwey Studio oyunu") and CreditsData.as_text().contains("THE ROOM REMEMBERS"), "[%s] credits content present" % tag)
+	check(CreditsData.as_text().contains("Bir Torimon Studio oyunu") and CreditsData.as_text().contains("THE ROOM REMEMBERS") and CreditsData.as_text().contains("Jagwey"), "[%s] credits content present" % tag)
 	check(ts.back() and not ts._credits_panel.visible, "[%s] back closes credits" % tag)
 
 

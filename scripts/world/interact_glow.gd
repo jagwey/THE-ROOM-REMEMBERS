@@ -43,6 +43,7 @@ var _boost: float = 0.0
 var _base_scale: Vector2 = Vector2.ONE
 var _color: Color = COLORS[&"normal"]
 var _label: Label
+var _label_local := Vector2(-60, -36)
 var _tick: float = 0.0
 var _is_target: bool = false
 var _emph: float = 0.0
@@ -179,18 +180,19 @@ func _ready() -> void:
 		_label = Label.new()
 		_label.name = LABEL_NAME
 		_label.text = label_for(get_parent())
-		_label.size = Vector2(120, 16)
-		_label.position = Vector2(-60, top - label_gap)
 		_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		_label.autowrap_mode = TextServer.AUTOWRAP_OFF
+		_label.clip_text = false
 		_label.add_theme_font_size_override("font_size", 11)
 		_label.add_theme_color_override("font_color", _color.lerp(Color.WHITE, 0.55))
 		_label.add_theme_color_override("font_shadow_color", Color.BLACK)
 		_label.add_theme_constant_override("shadow_offset_x", 1)
 		_label.add_theme_constant_override("shadow_offset_y", 1)
 		_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		_label.z_index = 6
+		_label.z_index = 20
 		_label.visible = false
 		_label.modulate.a = 0.0
+		_label_local = Vector2(0, top - label_gap)
 		get_parent().add_child.call_deferred(_label)
 
 
@@ -284,3 +286,36 @@ func _process(delta: float) -> void:
 	if _label:
 		_label.visible = _boost > 0.01
 		_label.modulate.a = _boost
+		if _label.visible:
+			_fit_name_label()
+
+
+func _fit_name_label() -> void:
+	if not _label.is_inside_tree():
+		return
+	var font: Font = _label.get_theme_font("font")
+	if font == null:
+		font = ThemeDB.fallback_font
+	var tw := ceilf(font.get_string_size(_label.text, HORIZONTAL_ALIGNMENT_LEFT, -1, 11).x) + 12.0
+	var w := clampf(tw, 36.0, 260.0)
+	_label.size = Vector2(w, 20.0)
+	var parent := get_parent() as Node2D
+	if parent == null:
+		return
+	var desired := parent.to_global(Vector2(_label_local.x - w * 0.5, _label_local.y))
+	var view := _camera_view()
+	if view.size.x > 8.0:
+		var margin := 6.0
+		desired.x = clampf(desired.x, view.position.x + margin, maxf(view.position.x + margin, view.end.x - margin - w))
+		desired.y = clampf(desired.y, view.position.y + margin, maxf(view.position.y + margin, view.end.y - margin - _label.size.y))
+	_label.global_position = desired
+
+
+func _camera_view() -> Rect2:
+	var cam := get_viewport().get_camera_2d() if is_inside_tree() else null
+	if cam == null:
+		return Rect2()
+	var vp := get_viewport().get_visible_rect().size
+	var zoom := cam.zoom
+	var size := Vector2(vp.x / maxf(zoom.x, 0.01), vp.y / maxf(zoom.y, 0.01))
+	return Rect2(cam.get_screen_center_position() - size * 0.5, size)
