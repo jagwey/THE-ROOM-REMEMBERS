@@ -87,8 +87,8 @@ collision_mask = 0
 monitoring = false
 monitorable = true
 script = ExtResource("5")
-target_room_id = &"library_witness"
-target_spawn_id = &"from_page"
+target_room_id = &"library_clockroom"
+target_spawn_id = &"from_library_page"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BackWitness"]
 shape = SubResource("Hit")

@@ -15,10 +15,10 @@ size = Vector2(24, 120)
 script = ExtResource("room")
 room_id = &"decay_shilda_wall"
 region_id = &"decay"
-room_width = 1280.0
+room_width = 1440.0
 bg_region = "decay"
 checkpoint = Vector2(120, 288)
-doors = [{"x": 40.0, "to": "decay_garden", "spawn": "from_decay_shilda_wall"}, {"x": 1240.0, "to": "awakening_crypt", "spawn": "from_decay_shilda_wall", "req": "decay_shilda_wall_broken", "msg": "Duvar yolu kapatıyor."}]
+doors = [{"x": 40.0, "to": "decay_greenhouse", "spawn": "from_decay_shilda_wall"}, {"x": 1260.0, "to": "decay_garden", "spawn": "from_weight", "req": "decay_shilda_wall_broken", "msg": "Duvar yolu kapatıyor."}, {"x": 1400.0, "to": "awakening_crypt", "spawn": "from_decay_shilda_wall", "req": "decay_shilda_wall_broken", "msg": "Duvar yolu kapatıyor."}]
 
 [node name="Interactive" type="Node2D" parent="."]
 
@@ -43,5 +43,5 @@ texture_path = "res://assets/props/red_flower.png"
 sprite_scale = 0.8
 lines = PackedStringArray("Noroi|Duvarın ardında kurumuş kırmızı çiçekler. Yüzlerce.", "Noroi|Her birinin yanına bir sayı kazınmış. Son sayı: kırk bir.", "Shilda|Her ölümünde bir tane. Unutmamak için.")
 evidence_title = "Kırk Bir Çiçek"
-evidence_body = "Shilda her ölümüm için bir çiçek saklamış. Kırk bir kez ölmüşüm."
+evidence_body = "Her ölüm için bir çiçek saklanmış. Son sayı: kırk bir."
 evidence_section = "izler"

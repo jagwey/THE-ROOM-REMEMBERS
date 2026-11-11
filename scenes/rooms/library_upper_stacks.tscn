@@ -19,7 +19,7 @@ platforms = PackedVector3Array(150.0, 248.0, 120.0, 310.0, 208.0, 110.0, 460.0, 
 [node name="Interactive" type="Node2D" parent="."]
 
 [node name="Librarian" type="Area2D" parent="Interactive"]
-position = Vector2(120.0, 288.0)
+position = Vector2(148.0, 288.0)
 script = ExtResource("npc")
 npc_id = &"librarian"
 idle_anim = "librarian_idle"

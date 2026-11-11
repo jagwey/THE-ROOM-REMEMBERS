@@ -135,8 +135,8 @@ collision_mask = 0
 monitoring = false
 monitorable = true
 script = ExtResource("7")
-target_room_id = &"decay_weight"
-target_spawn_id = &"from_garden"
+target_room_id = &"decay_shilda_wall"
+target_spawn_id = &"from_decay_garden"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ExitToWeight"]
 shape = SubResource("TransitionHit")

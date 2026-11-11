@@ -574,7 +574,7 @@ func _run_tier_3_combinations() -> void:
 	else:
 		record_check(3, 14, "T3-03 Save/Load full state fidelity roundtrip", false, "SaveManager null or missing methods")
 
-	# T3-04: Room collision isolation across all 30 rooms
+	# T3-04: Room collision isolation across all 40 rooms
 	var leaked_colliders: Array = []
 	rm.enter_room(&"awakening", &"default")
 	await create_timer(0.1).timeout
@@ -585,7 +585,7 @@ func _run_tier_3_combinations() -> void:
 		for c in other_room.find_children("*", "CollisionObject2D", true, false):
 			if c.collision_layer != 0:
 				leaked_colliders.append("%s:%s" % [rid, c.name])
-	record_check(3, 7, "T3-04 Inactive room collision isolation (30 rooms)", leaked_colliders.is_empty(), "leaked colliders count: %d" % leaked_colliders.size())
+	record_check(3, 7, "T3-04 Inactive room collision isolation (40 rooms)", leaked_colliders.is_empty(), "leaked colliders count: %d" % leaked_colliders.size())
 
 	# T3-05: Fast travel & Region Title Card synchronization
 	var region_rooms: Array = ["awakening", "decay_garden", "library_hall", "experiment_cells", "mirrors_reverse", "core"]
@@ -633,12 +633,12 @@ func _run_tier_4_scenarios() -> void:
 	var after_corpses_count: int = gs.world_memory_state["corpses"].size()
 	record_check(4, 6, "T4-02 Death loop safe floor corpse anchor creation", after_corpses_count > before_corpses_count, "corpse recorded at safe y=%.1f" % safe_y)
 
-	# T4-03: Complete 30-room topology and reachable path graph
+	# T4-03: Complete 40-room topology and reachable path graph
 	var missing_rooms: Array = []
 	for rid in rm._rooms.keys():
 		if not rm.has_room(rid):
 			missing_rooms.append(rid)
-	record_check(4, 30, "T4-03 30-room topology and scene instantiation", missing_rooms.is_empty(), "all 30 rooms registered and reachable")
+	record_check(4, 30, "T4-03 40-room topology and scene instantiation", rm._rooms.size() == 40 and missing_rooms.is_empty(), "all 40 rooms registered and reachable (%d)" % rm._rooms.size())
 
 	# T4-04: Android POCO X6 Pro full session profile
 	var exp_cfg: String = _read_file_text("res://export_presets.cfg")

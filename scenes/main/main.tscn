@@ -1,4 +1,4 @@
-[gd_scene load_steps=39 format=3 uid="uid://torimon_main"]
+[gd_scene load_steps=49 format=3 uid="uid://torimon_main"]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/rooms/awakening.tscn" id="2"]
@@ -39,6 +39,16 @@
 [ext_resource type="PackedScene" path="res://scenes/rooms/experiment_core_conduit.tscn" id="x_experiment_core_conduit"]
 [ext_resource type="PackedScene" path="res://scenes/rooms/mirrors_labyrinth.tscn" id="x_mirrors_labyrinth"]
 [ext_resource type="PackedScene" path="res://scenes/rooms/mirrors_shrine.tscn" id="x_mirrors_shrine"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/awakening_vigil.tscn" id="x_awakening_vigil"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/decay_greenhouse.tscn" id="x_decay_greenhouse"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/decay_cistern.tscn" id="x_decay_cistern"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/library_clockroom.tscn" id="x_library_clockroom"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/library_reading_cell.tscn" id="x_library_reading_cell"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/experiment_intake.tscn" id="x_experiment_intake"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/experiment_observation.tscn" id="x_experiment_observation"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/mirrors_gallery.tscn" id="x_mirrors_gallery"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/mirrors_1927.tscn" id="x_mirrors_1927"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/core_ascent.tscn" id="x_core_ascent"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1")
@@ -160,6 +170,46 @@ visible = false
 process_mode = 4
 
 [node name="MirrorsShrine" parent="World" instance=ExtResource("x_mirrors_shrine")]
+visible = false
+process_mode = 4
+
+[node name="AwakeningVigil" parent="World" instance=ExtResource("x_awakening_vigil")]
+visible = false
+process_mode = 4
+
+[node name="DecayGreenhouse" parent="World" instance=ExtResource("x_decay_greenhouse")]
+visible = false
+process_mode = 4
+
+[node name="DecayCistern" parent="World" instance=ExtResource("x_decay_cistern")]
+visible = false
+process_mode = 4
+
+[node name="LibraryClockroom" parent="World" instance=ExtResource("x_library_clockroom")]
+visible = false
+process_mode = 4
+
+[node name="LibraryReadingCell" parent="World" instance=ExtResource("x_library_reading_cell")]
+visible = false
+process_mode = 4
+
+[node name="ExperimentIntake" parent="World" instance=ExtResource("x_experiment_intake")]
+visible = false
+process_mode = 4
+
+[node name="ExperimentObservation" parent="World" instance=ExtResource("x_experiment_observation")]
+visible = false
+process_mode = 4
+
+[node name="MirrorsGallery" parent="World" instance=ExtResource("x_mirrors_gallery")]
+visible = false
+process_mode = 4
+
+[node name="Mirrors1927" parent="World" instance=ExtResource("x_mirrors_1927")]
+visible = false
+process_mode = 4
+
+[node name="CoreAscent" parent="World" instance=ExtResource("x_core_ascent")]
 visible = false
 process_mode = 4
 

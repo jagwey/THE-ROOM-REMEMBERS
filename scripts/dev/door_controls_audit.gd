@@ -113,7 +113,7 @@ func _run() -> void:
 		[&"awakening_passage", &"awakening_seal"],
 		[&"awakening", &"awakening_balcony"],
 		[&"decay_vines", &"decay_catacombs"],
-		[&"decay_garden", &"decay_shilda_wall"],
+		[&"decay_greenhouse", &"decay_shilda_wall"],
 		[&"library_hall", &"library_upper_stacks"],
 		[&"experiment_cells", &"experiment_quarantine"],
 		[&"mirrors_reverse", &"mirrors_labyrinth"],

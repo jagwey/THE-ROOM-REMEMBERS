@@ -6,6 +6,7 @@ extends Area2D
 @export var target_room_id: StringName = &"awakening_passage"
 @export var target_spawn_id: StringName = &"default"
 @export var required_puzzle: StringName = &""
+@export var required_ability: StringName = &""
 @export var locked_message: String = "Önce bu odanın hatırasını tamamlamalıyım."
 @export var door_title: String = ""
 
@@ -196,8 +197,12 @@ func get_interact_label() -> String:
 	return "Mühürlü Kapı" if is_locked() else get_display_name()
 
 
+func _ability_blocked() -> bool:
+	return required_ability != &"" and not bool(GameState.player_progress_knowledge.get(String(required_ability), false))
+
+
 func is_locked() -> bool:
-	return required_puzzle != &"" and not PuzzleManager.is_solved(required_puzzle)
+	return _ability_blocked() or (required_puzzle != &"" and not PuzzleManager.is_solved(required_puzzle))
 
 
 func _build_visuals() -> void:
@@ -293,8 +298,11 @@ func on_interact(by: Node) -> void:
 		var idx := _locked_tries % 4
 		_locked_tries += 1
 		var msg: String = locked_message if idx == 0 else String(LOCKED_VARIANTS[idx - 1])
+		## Yetenek kilidi sabit cümle kullanır; mühür kapılarındaki LOCKED_VARIANTS döngüsü aynı kalır.
+		if _ability_blocked():
+			msg = "Bu geçit için Gölge Atılması gerek."
 		## Ruh mührü: yetenek yoksa "nerede bulunur", varsa "nasıl açılır" söylenir (genel varyantlar yanıltmasın).
-		if String(required_puzzle).begins_with("soul_seal"):
+		elif String(required_puzzle).begins_with("soul_seal"):
 			var has_slash := bool(GameState.player_progress_knowledge.get("ability_soul_slash", false))
 			if has_slash:
 				msg = "Mor mühür. Ruh Kesimi'ni savur (Q / yıldız düğmesi)."

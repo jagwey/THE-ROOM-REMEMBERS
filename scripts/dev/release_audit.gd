@@ -28,6 +28,7 @@ const PUZZLE_SOURCE := {
 	"mirrors_dual": ["mirrors_dual", ""],
 	"mirrors_reverse": ["mirrors_reverse", ""],
 	"mirrors_unbroken": ["mirrors_unbroken", ""],
+	"mirrors_gallery": ["mirrors_gallery", ""],
 	"decay_shilda_wall_broken": ["decay_shilda_wall", ""],
 	"ability_soul_slash": ["library_forbidden_wing", ""],
 	"soul_seal_balcony": ["awakening_balcony", "ability_soul_slash"],
@@ -116,7 +117,7 @@ func run() -> void:
 	var gate: Node = root.get_node("UiGate")
 	var saves: Node = root.get_node("SaveManager")
 	var player: Node2D = main.get_node("Player")
-	check_it("30 rooms registered", rm._rooms.size() == 30, rm._rooms.size())
+	check_it("40 rooms registered", rm._rooms.size() == 40, rm._rooms.size())
 	check_it("Intro waits for player", dm.is_open)
 	check_it("Story freezes threats", gate.pauses_world_threats())
 	var before := player.position
@@ -203,7 +204,7 @@ func run() -> void:
 	# Restart must clear registries and stale puzzle progress, not leave old room nodes.
 	saves.start_new_game()
 	await create_timer(0.3).timeout
-	check_it("New game reloads all rooms", rm._rooms.size() == 30 and rm.get_active_room_id() == &"awakening")
+	check_it("New game reloads all rooms", rm._rooms.size() == 40 and rm.get_active_room_id() == &"awakening")
 	check_it("New game clears prior progress", not gs.player_progress_knowledge.has("qa_roundtrip") and root.get_node("PuzzleManager").solved.is_empty())
 	var failed := checks.filter(func(c): return not c.pass).size()
 	var report := {"checks": checks, "total": checks.size(), "failed": failed, "passed": checks.size() - failed}

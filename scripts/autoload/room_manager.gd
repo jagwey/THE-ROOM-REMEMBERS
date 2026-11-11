@@ -10,25 +10,25 @@ const LEFT_SPAWN_MIN_X := 150.0
 
 ## Kalıcı oda sırası (01..N) ve Türkçe başlıklar — HUD oda başlığı bu tablodan okur.
 const ROOM_ORDER: PackedStringArray = [
-	"awakening", "awakening_balcony", "awakening_crypt", "awakening_passage", "awakening_seal",
-	"decay_vines", "decay_weight", "decay_garden", "decay_catacombs", "decay_shilda_wall",
-	"library_hall", "library_witness", "library_page", "library_upper_stacks", "library_forbidden_wing",
-	"experiment_cells", "experiment_circuit", "experiment_authority", "experiment_quarantine", "experiment_core_conduit",
-	"mirrors_reverse", "mirrors_dual", "mirrors_unbroken", "mirrors_labyrinth", "mirrors_shrine",
-	"core_threshold", "core_seal_chamber", "core_memory_vault", "core_bloom_garden", "core",
+	"awakening", "awakening_balcony", "awakening_crypt", "awakening_passage", "awakening_seal", "awakening_vigil",
+	"decay_vines", "decay_weight", "decay_greenhouse", "decay_shilda_wall", "decay_garden", "decay_catacombs", "decay_cistern",
+	"library_hall", "library_witness", "library_clockroom", "library_page", "library_upper_stacks", "library_forbidden_wing", "library_reading_cell",
+	"experiment_cells", "experiment_intake", "experiment_circuit", "experiment_authority", "experiment_quarantine", "experiment_core_conduit", "experiment_observation",
+	"mirrors_reverse", "mirrors_dual", "mirrors_gallery", "mirrors_unbroken", "mirrors_labyrinth", "mirrors_shrine", "mirrors_1927",
+	"core_threshold", "core_ascent", "core_seal_chamber", "core_memory_vault", "core_bloom_garden", "core",
 ]
 const ROOM_TITLES_TR := {
 	"awakening": "Uyanış", "awakening_balcony": "Gözlem Balkonu", "awakening_crypt": "İlk Bedenler Mahzeni",
-	"awakening_passage": "Kırık Geçit", "awakening_seal": "Mühürlü Eşik",
-	"decay_vines": "Sarmaşık Yolu", "decay_weight": "Ağırlık Salonu", "decay_garden": "Solmuş Bahçe",
-	"decay_catacombs": "Kemik Mahzeni", "decay_shilda_wall": "Çatlak Duvar",
-	"library_hall": "Hafıza Kütüphanesi", "library_witness": "Üç Tanık", "library_page": "Unutulmuş Sayfa",
-	"library_upper_stacks": "Üst Raflar", "library_forbidden_wing": "Yasak Kanat",
-	"experiment_cells": "Gözlem Hücreleri", "experiment_circuit": "Yankı Devresi", "experiment_authority": "Yetki Masası",
-	"experiment_quarantine": "Kara Tecrit Mahzeni", "experiment_core_conduit": "Ruh Damarları Kanalı",
-	"mirrors_reverse": "Ayna Geçidi", "mirrors_dual": "İki Yankı", "mirrors_unbroken": "Kırılmayan Ayna",
-	"mirrors_labyrinth": "Yansıma Labirenti", "mirrors_shrine": "Ayna Tapınağı",
-	"core_threshold": "Son Eşik", "core_seal_chamber": "Mühür Odası", "core_memory_vault": "Hafıza Kasası",
+	"awakening_passage": "Kırık Geçit", "awakening_seal": "Mühürlü Eşik", "awakening_vigil": "Nöbet Odası",
+	"decay_vines": "Sarmaşık Yolu", "decay_weight": "Ağırlık Salonu", "decay_greenhouse": "Sera", "decay_garden": "Solmuş Bahçe",
+	"decay_catacombs": "Kemik Mahzeni", "decay_shilda_wall": "Çatlak Duvar", "decay_cistern": "Sarnıç",
+	"library_hall": "Hafıza Kütüphanesi", "library_witness": "Üç Tanık", "library_clockroom": "Saatler Odası", "library_page": "Unutulmuş Sayfa",
+	"library_upper_stacks": "Üst Raflar", "library_forbidden_wing": "Yasak Kanat", "library_reading_cell": "Okuma Hücresi",
+	"experiment_cells": "Gözlem Hücreleri", "experiment_intake": "Kabul Odası", "experiment_circuit": "Yankı Devresi", "experiment_authority": "Yetki Masası",
+	"experiment_quarantine": "Kara Tecrit Mahzeni", "experiment_core_conduit": "Ruh Damarları Kanalı", "experiment_observation": "Gözlem Camı",
+	"mirrors_reverse": "Ayna Geçidi", "mirrors_dual": "İki Yankı", "mirrors_gallery": "Bedenler Galerisi", "mirrors_unbroken": "Kırılmayan Ayna",
+	"mirrors_labyrinth": "Yansıma Labirenti", "mirrors_shrine": "Ayna Tapınağı", "mirrors_1927": "Kırık Gece",
+	"core_threshold": "Son Eşik", "core_ascent": "Son Merdiven", "core_seal_chamber": "Mühür Odası", "core_memory_vault": "Hafıza Kasası",
 	"core_bloom_garden": "Çiçek Bahçesi", "core": "Çekirdek",
 }
 

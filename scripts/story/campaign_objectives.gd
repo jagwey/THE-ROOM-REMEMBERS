@@ -33,6 +33,16 @@ const _BY_ROOM: Dictionary = {
 	"core_memory_vault": "Sütunlar: 1927, 1995, sonra Son. Kasa o zaman konuşur.",
 	"core_bloom_garden": "Taşlar: dört, bir, iki. Sonra Shilda'yı dinle.",
 	"mirrors_shrine": "Gölge Atılması'nı al; kırmızı perdeden atılarak geç; 2. mühür parçası.",
+	"awakening_vigil": "Nöbet odasını geç. Sağdaki yol çürümeye iner.",
+	"decay_greenhouse": "Seradan geç. Sağda çatlak duvar var.",
+	"decay_cistern": "Sarnıca bak. Geldiğin kapıdan ağırlık salonuna dön.",
+	"library_clockroom": "Duran saatlerin arasından geç.",
+	"library_reading_cell": "Hücredeki çentikleri gör. Tanık odasına dön.",
+	"experiment_intake": "Kabul kaydının önünden geç.",
+	"experiment_observation": "Camın ardına bak. Yankı devresine dön.",
+	"mirrors_gallery": "Yansımaların arasından geç.",
+	"mirrors_1927": "Kırık geceyi izle. İki yankıya dön.",
+	"core_ascent": "Son merdiveni çık. Mühür odasına in.",
 }
 
 static func _has_soul_slash() -> bool:

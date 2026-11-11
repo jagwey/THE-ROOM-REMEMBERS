@@ -1,0 +1,14 @@
+{
+  "room": "awakening_vigil",
+  "sets": {
+    "first_meeting": [
+      {
+        "variants": [
+          {"when": {"min_deaths": 3}, "s": "@shilda", "t": "Yine buradasın. Duvar saydı."},
+          {"s": "@shilda", "t": "Dur. Bu oda seni bekliyordu."}
+        ]
+      },
+      {"s": "Noroi", "t": "Sen kimsin?"}
+    ]
+  }
+}

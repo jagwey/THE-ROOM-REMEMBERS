@@ -13,7 +13,7 @@ $work = Join-Path ([IO.Path]::GetTempPath()) ('TorimonAudit-' + $auditId)
 $null = New-Item -ItemType Directory -Path $work
 $null = New-Item -ItemType Directory -Path $OutputPath -Force
 $output = (Resolve-Path -LiteralPath $OutputPath).Path
-foreach ($folder in @('assets', 'scenes', 'scripts', 'themes')) {
+foreach ($folder in @('assets', 'scenes', 'scripts', 'themes', 'data')) {
     Copy-Item -LiteralPath (Join-Path $source $folder) -Destination $work -Recurse
 }
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'audit.gd') -Destination $work
@@ -32,7 +32,7 @@ $records = @()
 $devAudits = @(
     'lore_canon','story_flags','save_split','memory_seal','curse_reload','final_sequence',
     'save_quit','start_flow','death_loop','interact','ui_header_portrait','keeper_naming',
-    'release','controls','door','push','jump','eye_intro','room_header_fit','room_identity','save_robust',
+    'release','controls','door','push','jump','eye_intro','room_header_fit','room_identity','dialogue_data','room_graph','save_robust',
     'resume_m3','update_check','m1_stress'
 )
 $devRecords = @()

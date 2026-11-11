@@ -342,12 +342,13 @@ oom_door\) <= 44.0 px mesafede -200 etkileÅŸim Ã¶ncelik bonusu eklendi.
 - [x] Uygulama Cursor'a devredildi. İş promptu: `docs/gelistirme/06_UC_SAATLIK_HIKAYE_CURSOR_PROMPT.md` (kapı tablosu, yetenek kilidi, denetim güncellemeleri içinde). Bu oturumda kod değişmedi, commit yok.
 
 ### Yapılacaklar (Cursor)
-- [ ] Parça 1 / T1: `DialogueData` autoload + `data/dialogue/*.json` + `dialogue_data_audit` + `Run-Audit.ps1` (`'data'` kopyası) + export `include_filter`.
-- [ ] Parça 1 / T2: on iskelet oda (`built_room.gd`), `main.tscn`, `ROOM_ORDER`/`ROOM_TITLES_TR` 40, `campaign_objectives.gd`.
-- [ ] Parça 1 / T3: ana yol kapıları yeniden hedeflenir; `decay_shilda_wall` bahçeden önceye (genişlik 1440, bahçe kapısı x=1260).
-- [ ] Parça 1 / T4: `required_ability` (`room_transition.gd`) + `SIDE_DOORS` (bahçe→duvar silinir, dört yeni yan kapı).
-- [ ] Parça 1 / T5: `room_graph_audit` + eski denetimlerde 30→40 ve `decay_vines`→`awakening_vigil`.
-- [ ] Parça 1 / T6: v1.9.0 kayıt uyumu, tam denetim yeşil, 1920x1080 kontrol.
+- [x] Parça 1 / T1: `DialogueData` autoload + `data/dialogue/*.json` + `dialogue_data_audit` + `Run-Audit.ps1` (`'data'` kopyası) + export `include_filter`.
+- [x] Parça 1 / T2: on iskelet oda (`built_room.gd`), `main.tscn`, `ROOM_ORDER`/`ROOM_TITLES_TR` 40, `campaign_objectives.gd`.
+- [x] Parça 1 / T3: ana yol kapıları yeniden hedeflenir; `decay_shilda_wall` bahçeden önceye (genişlik 1440, bahçe kapısı x=1260).
+- [x] Parça 1 / T4: `required_ability` (`room_transition.gd`) + `SIDE_DOORS` (bahçe→duvar silinir, dört yeni yan kapı).
+- [x] Parça 1 / T5: `room_graph_audit` + eski denetimlerde 30→40 ve `decay_vines`→`awakening_vigil`.
+- [x] Parça 1 / T6: v1.9.0 kayıt uyumu, tam denetim yeşil (28 dev + e2e + smoke, dev_failed 0), 1920x1080 kontrol (Nöbet Odası, Çatlak Duvar, Kırık Gece). Sürüm artırılmadı.
+- Not: yankı anahtarları (devre x=320, ayna x=320) kapı x'i spec'te kalsın diye 96 px dışına alındı. Üst raflarda arşivci x=148. Kapı denetimi kapı↔kapı/etkileşim ölçer; kol-taş ve kart-mühür çiftleri eski bulmaca düzeni. Duvar ipucu ve çiçek kartında ad yok (bahçeden önce).
 - [ ] Parça 2: Perde 1 (Uyanış, Nöbet Odası'nda ilk karşılaşma).
 - [ ] Parça 3: Perde 2 (Sera, duvar kovalamacası ipuçları, bahçede ad sahnesi).
 - [ ] Parça 4: Perde 3 (Kütüphane, Saatler Odası, Okuma Hücresi).

@@ -86,8 +86,8 @@ collision_mask = 0
 monitoring = false
 monitorable = true
 script = ExtResource("5")
-target_room_id = &"mirrors_dual"
-target_spawn_id = &"from_unbroken"
+target_room_id = &"mirrors_gallery"
+target_spawn_id = &"from_mirrors_unbroken"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BackDual"]
 shape = SubResource("Hit")

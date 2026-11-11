@@ -84,8 +84,8 @@ collision_mask = 0
 monitoring = false
 monitorable = true
 script = ExtResource("5")
-target_room_id = &"core_threshold"
-target_spawn_id = &"from_seal_chamber"
+target_room_id = &"core_ascent"
+target_spawn_id = &"from_core_seal_chamber"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BackThresh"]
 shape = SubResource("Hit")

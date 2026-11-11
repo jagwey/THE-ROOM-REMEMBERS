@@ -107,7 +107,7 @@ func _run() -> void:
 	## 3) Kilitli kapı (mühür eşiği → çürüme).
 	rm.enter_room(&"awakening_seal", &"default")
 	await create_timer(0.3).timeout
-	var ldoor := _door_in(rm, &"awakening_seal", &"decay_vines")
+	var ldoor := _door_in(rm, &"awakening_seal", &"awakening_vigil")
 	check(ldoor != null, "seal room locked door found")
 	if ldoor:
 		var was_solved: bool = pm.is_solved(&"awakening_memory_code")
@@ -155,7 +155,7 @@ func _run() -> void:
 		_changes = 0
 		ldoor.on_interact(player)
 		await _wait_transition(ldoor)
-		check(rm.get_active_room_id() == &"decay_vines", "unlocked door travels (%s)" % rm.get_active_room_id())
+		check(rm.get_active_room_id() == &"awakening_vigil", "unlocked door travels (%s)" % rm.get_active_room_id())
 	## 4) Gözlem Balkonu: mahzen tarafından girilince ruh mührü oyuncuyu hapsetmemeli.
 	gate.set_story(false)
 	check(not pm.is_solved(&"soul_seal_balcony"), "balcony soul seal starts closed")
