@@ -16,7 +16,15 @@ var has_update: bool = false
 var _http: HTTPRequest
 
 
+## Google Play yapısında kendi kendini güncelleme (APK indirme bağlantısı) politika riskidir (BUG-008).
+## Play export ön ayarının "Custom Features" alanına `play_store` yazılırsa denetim ve "Güncelle" düğmesi kapanır.
+static func is_disabled_build() -> bool:
+	return OS.has_feature("play_store")
+
+
 func _ready() -> void:
+	if is_disabled_build():
+		return
 	if OS.get_environment("TORIMON_TEST") == "1" or DisplayServer.get_name() == "headless":
 		return
 	_http = HTTPRequest.new()

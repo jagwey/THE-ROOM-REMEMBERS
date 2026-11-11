@@ -71,7 +71,7 @@ func _run() -> void:
 			"deaths": 2, "shilda_named": true, "rooms_visited": ["awakening", "core_threshold"],
 			"first_corpse_line_seen": true, "lore_seen": ["crypt_ledger"],
 		},
-		"world_memory_state": {"puzzles": {"awakening_weight": true}},
+		"world_memory_state": {"puzzles": {"awakening_weight": true, "experiment_authority": true}},
 		"character_current_life_knowledge": {},
 		"hearts": 3,
 	}
@@ -82,6 +82,21 @@ func _run() -> void:
 		check(gs.has_story_flag(id), "v5 migration derives %s" % String(id))
 	check(not gs.has_story_flag(&"game_completed") and not gs.has_story_flag(&"final_seal_broken"), "v5 migration leaves underivable flags unset")
 	check(gs.player_progress_knowledge.has("deaths") and gs.world_memory_state.has("flags") and gs.world_memory_state.has("traces"), "v5 migration keeps safe defaults")
+
+	## Negatif: crypt_ledger tek başına shilda_past_discovered türetmez (itiraf experiment_authority'de)
+	var v5_ledger_only := {
+		"version": 5,
+		"player_progress_knowledge": {"deaths": 0, "rooms_visited": ["awakening"], "lore_seen": ["crypt_ledger"]},
+		"world_memory_state": {"puzzles": {"awakening_weight": true}},
+		"character_current_life_knowledge": {},
+		"hearts": 3,
+	}
+	_write(path, JSON.stringify(v5_ledger_only))
+	gs.world_memory_state = sm._new_world.duplicate(true)
+	gs.clear_story_flags()
+	check(sm.load_committed(false), "v5 ledger-only save loads")
+	check(gs.has_story_flag(&"dimension_origin_discovered"), "ledger-only v5 derives dimension_origin_discovered")
+	check(not gs.has_story_flag(&"shilda_past_discovered"), "crypt_ledger alone does not derive shilda_past_discovered")
 
 	## Eski kayıt: intro_completed var ama yeni bayraklar yok -> oynanmış kayıt mantıklı yüklenir
 	var old_mid := {

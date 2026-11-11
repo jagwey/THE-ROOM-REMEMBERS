@@ -49,7 +49,7 @@
    - **Bellek Mahzeni**'nde sütunları 1927, 1995, Son sırasıyla uyandır; ancak o zaman gerçeği görürsün (`truth_seen`).
    - **Çiçek Bahçesi**'nde taşlar dört, bir, iki diye uyanır; sonra Shilda ile barışırsın.
    - **Mühür Odası**'nda iki mühür parçasını birleştir ve **Çekirdek**'e in.
-   - **Kanonik Final (BÖLÜM I SONU):** Ruh Kesiği ile ana mühür kırılır; Shilda insan formuna döner. Çıkış kapısı aralanırken Kurucu X ortaya çıkar ve boyutlar arası deneyin perdesini aralar.
+   - **Kanonik Final (BÖLÜM I SONU):** Ruh Kesimi ile ana mühür kırılır; Shilda insan formuna döner. Çıkış kapısı aralanırken Kurucu X ortaya çıkar ve boyutlar arası deneyin perdesini aralar.
 
 ---
 

@@ -134,7 +134,7 @@ func on_interact(_by: Node) -> void:
 		seen.append(String(lore_id))
 	GameState.player_progress_knowledge["lore_seen"] = seen
 	if evidence_title != "":
-		record_evidence("ev_%s" % String(lore_id), evidence_title, evidence_body, evidence_section)
+		record_evidence("ev_%s" % String(lore_id), evidence_title, format_text(evidence_body), evidence_section)
 	if set_flag != &"":
 		GameState.set_world_flag(set_flag, true)
 	for sf in story_flag_ids:
@@ -153,7 +153,17 @@ static func shilda_is_named() -> bool:
 	return GameState.is_shilda_named()
 
 
+## Metin yer tutucuları: {deaths} = oyuncunun gerçek ölüm sayısı (GameState; en az 1, defter/duvar en az bir ölümü sayar).
+## Sahnelere sabit "kırk bir" yazılmaz; sayı oyundan gelir.
+static func format_text(text: String) -> String:
+	if not text.contains("{deaths}"):
+		return text
+	var deaths: int = maxi(1, int(GameState.player_progress_knowledge.get("deaths", 0)))
+	return text.replace("{deaths}", str(deaths))
+
+
 func _say(entry: String) -> void:
+	entry = format_text(entry)
 	var parts := entry.split("|", true, 1)
 	if parts.size() == 2:
 		var speaker := parts[0]

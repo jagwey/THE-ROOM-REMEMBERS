@@ -145,7 +145,7 @@ const HINTS: Dictionary = {
 	&"core_seal": {
 		"goal": "Çekirdeğin ana mührü kırılmalı ve boyut kapısı aralanmalı.",
 		"orientation": "Her iki mühür parçası birleşmeden çekirdek savunması gevşemez.",
-		"explicit": "Bekçi ile birlikte çekirdeğin merkezine yaklaş ve Ruh Kesiği ile bağı kopar."
+		"explicit": "Bekçi ile birlikte çekirdeğin merkezine yaklaş ve Ruh Kesimi ile bağı kopar."
 	},
 	&"core_bloom_order": {
 		"goal": "Bahçedeki üç taş uyanmadan çiçek konuşmuyor.",

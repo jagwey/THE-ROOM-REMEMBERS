@@ -321,6 +321,8 @@ func return_to_title() -> void:
 	UiGate.set_seal(false)
 	MobileInputManager.clear_held_inputs()
 	EchoManager.active_echo = &""
+	DeathManager.reset_state()
+	UiGate.set_cutscene(false)
 	CurseManager.reset_for_new_life()
 	RoomManager.reset_registry()
 	get_tree().reload_current_scene()
