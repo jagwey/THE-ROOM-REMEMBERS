@@ -215,13 +215,18 @@ evidence_section = "izler"
 [node name="Hazards" type="Node2D" parent="."]
 
 [node name="MemoryStrip" type="Area2D" parent="Hazards"]
-position = Vector2(955, 264)
+position = Vector2(920, 270)
 collision_layer = 0
 collision_mask = 2
 script = ExtResource("6")
 hazard_id = &"passage_rift_strip"
 arm_requires_mystery = false
 lethal = true
+ring_radius = 52.0
+ring_hole = 26.0
+ring_gap_deg = 140.0
+ring_spin = 0.55
+arm_grace = 1.5
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hazards/MemoryStrip"]
 shape = SubResource("HazardShape")
@@ -234,7 +239,7 @@ modulate = Color(0.85, 0.16, 0.22, 0.85)
 centered = true
 
 [node name="CorpseDrop" type="Marker2D" parent="Hazards/MemoryStrip"]
-position = Vector2(93, 24)
+position = Vector2(120, 18)
 
 [node name="Corpse" type="Node2D" parent="." groups=["corpses_root"]]
 
@@ -263,7 +268,7 @@ collision_mask = 0
 shape = SubResource("Wall")
 
 [node name="LessonMass" type="StaticBody2D" parent="."]
-position = Vector2(1170, 261)
+position = Vector2(1170, 287)
 collision_layer = 1
 collision_mask = 0
 
@@ -594,9 +599,9 @@ polygon = PackedVector2Array(0, 320, 1920, 320, 1920, 360, 0, 360)
 color = Color(0.08, 0.06, 0.1, 1)
 
 [node name="LessonFill" type="Polygon2D" parent="WalkableTerrain"]
-polygon = PackedVector2Array(1080, 222, 1260, 222, 1260, 248, 1360, 248, 1360, 266, 1460, 266, 1460, 288, 1080, 288)
+polygon = PackedVector2Array(1080, 248, 1260, 248, 1260, 248, 1360, 248, 1360, 266, 1460, 266, 1460, 288, 1080, 288)
 color = Color(0.2, 0.16, 0.24, 1)
 
 [node name="LessonLip" type="Polygon2D" parent="WalkableTerrain"]
-polygon = PackedVector2Array(1080, 222, 1260, 222, 1260, 228, 1080, 228)
+polygon = PackedVector2Array(1080, 248, 1260, 248, 1260, 254, 1080, 254)
 color = Color(0.4, 0.34, 0.46, 1)
