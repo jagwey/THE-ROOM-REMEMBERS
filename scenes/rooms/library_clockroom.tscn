@@ -1,7 +1,9 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
 [ext_resource type="Script" path="res://scripts/world/ordered_relic.gd" id="relic"]
+[ext_resource type="Texture2D" path="res://assets/trr_refresh/library/clock_1927.png" id="clock_1927"]
+[ext_resource type="Texture2D" path="res://assets/trr_refresh/library/clock_1995.png" id="clock_1995"]
 
 [node name="LibraryClockroom" type="Node2D"]
 script = ExtResource("room")
@@ -40,3 +42,15 @@ solve_puzzle = &"library_clockroom"
 locked_line = "Önce 1927 saatini dinlemeliyim."
 evidence_title = "1995 Saati"
 evidence_body = "İkinci saat 1995'te durmuş. İki gece birleşince sayfa kapısı açıldı."
+
+[node name="RelicArt" type="Sprite2D" parent="Interactive/Clock1927"]
+texture_filter = 1
+position = Vector2(0, -37)
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("clock_1927")
+
+[node name="RelicArt" type="Sprite2D" parent="Interactive/Clock1995"]
+texture_filter = 1
+position = Vector2(0, -37)
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("clock_1995")

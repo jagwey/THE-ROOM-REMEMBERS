@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS"><img src="https://img.shields.io/badge/Kaynak-v1.12.4-8B0000?style=for-the-badge&logo=godotengine&logoColor=white" alt="Kaynak v1.12.4" /></a>
+  <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS"><img src="https://img.shields.io/badge/Kaynak-v1.12.5-8B0000?style=for-the-badge&logo=godotengine&logoColor=white" alt="Kaynak v1.12.5" /></a>
   <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases"><img src="https://img.shields.io/badge/Resmi_İndirme-GitHub_Releases-5c1d3d?style=for-the-badge&logo=github" alt="All Releases" /></a>
   <a href="https://godotengine.org/"><img src="https://img.shields.io/badge/Godot_Engine-4.7.2-478CBF?style=for-the-badge&logo=godotengine&logoColor=white" alt="Godot 4.7.2" /></a>
   <img src="https://img.shields.io/badge/Dünya-6_Bölge_·_40_Oda_·_Bölüm_I-2b1838?style=for-the-badge" alt="World Scope" />
@@ -171,6 +171,8 @@ flowchart LR
 
 ## 🎨 Karakterler ve Görsel Yenileme (Shilda HD Remaster)
 
+v1.12.5 görsel düzenlemesi `assets/trr_refresh/` içinden 16 PNG kullanır. Saatler Odası, Gözlem Camı, Kırık Gece ve Sera'da yeni nesne çizimleri mevcut etkileşim noktalarına bağlanır. Kütüphane ve deney alanında duvar çizimleri dekoru taşır. Çürüme ve ayna bölgelerindeki tavan motifleri 320 piksel aralıklıdır. Diyalog çerçeveleri konuşmanın tonuna göre değişir. Finalde dört alan için ayrı ekran çizimi kullanılır.
+
 ### Shilda — Beyaz Muhafız (The White Guardian v2.0 HD)
 Shilda'nın tüm piksel sanatı 1:1 224x224 yerel ölçekte yeniden işlenmiş, 557.049 piksellik alfa sisi temizlenmiş ve 8 farklı duygusal portre eklenmiştir:
 
@@ -226,7 +228,8 @@ Depodaki tüm derlenmiş Android (`arm64-v8a`) APK paketleri düzenli olarak **[
 
 | Sürüm | Durum | APK Dosyası / İndirme | Öne Çıkan Yenilikler ve Kapsam |
 | :--- | :---: | :--- | :--- |
-| **[v1.12.4](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.12.4)** | 🟢 **Güncel** | [📥 `TheRoomRemembers-1.12.4-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.12.4/TheRoomRemembers-1.12.4-android-arm64.apk) | Kırık Geçit kolaylaştırıldı: diken halkası artık öldürmez (bir kalp hasarı, ölüm döngüsü yok), boşluk 230°, dönüş 0.3 rad/s, doğuş koruması 3 sn; v1.12.3 ile aynı imza (`versionCode 41`). |
+| **[v1.12.5](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.12.5)** | 🟢 **Güncel** | [📥 `TheRoomRemembers-1.12.5-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.12.5/TheRoomRemembers-1.12.5-android-arm64.apk) | Görsel yenileme: `assets/trr_refresh/` içinden 16 PNG (Saatler Odası, Gözlem Camı, Kırık Gece, Sera nesneleri; diyalog çerçeveleri; final alan ekranları), seyrek tavan motifleri, HUD sadeleştirme; v1.12.4 ile aynı imza (`versionCode 42`). |
+| **[v1.12.4](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.12.4)** | Önceki | [📥 `TheRoomRemembers-1.12.4-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.12.4/TheRoomRemembers-1.12.4-android-arm64.apk) | Kırık Geçit kolaylaştırıldı: diken halkası artık öldürmez (bir kalp hasarı, ölüm döngüsü yok), boşluk 230°, dönüş 0.3 rad/s, doğuş koruması 3 sn; v1.12.3 ile aynı imza (`versionCode 41`). |
 | **[v1.12.3](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.12.3)** | Önceki | [📥 `TheRoomRemembers-1.12.3-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.12.3/TheRoomRemembers-1.12.3-android-arm64.apk) | Kayıt sağlamlığı ve softlock korumaları, kanon metin düzeltmeleri (1995 yalnız Perde 3+, Shilda geçmişi Yetki Masası itirafıyla), güncelleme denetleyicisi sağlamlaştırma; v1.12.2 ile aynı imza (`versionCode 40`). |
 | **v1.12.2** | Önceki | APK bu sürümde ayrıca yayınlanır | Sol ve sağ yürüme hızı eşit; lanet kendiliğinden yürütmez; hitstop ve ölüm ağır çekimi `time_scale` değerini 1.0'a döndürür (`versionCode 39`). |
 | **v1.12.1** | Önceki | APK bu sürümde ayrıca yayınlanır | Kırık Geçit geçilebilir: taş blok zıplama yüksekliğinde, diken halkasının hitbox'ı görselle aynı, dönüş boşluğu ve halkanın dışında kontrol noktası (`versionCode 38`). |
@@ -262,7 +265,7 @@ Depodaki tüm derlenmiş Android (`arm64-v8a`) APK paketleri düzenli olarak **[
 1. **[Releases](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases)** sayfasından son sürüm `.apk` dosyasını indirin.
 2. Veya USB hata ayıklaması açık cihaza `adb` ile yükleyin:
    ```powershell
-   adb install -r TheRoomRemembers-1.12.4-android-arm64.apk
+   adb install -r TheRoomRemembers-1.12.5-android-arm64.apk
    adb shell am start -n com.torimon.theroomremembers/com.godot.game.GodotApp
    ```
 

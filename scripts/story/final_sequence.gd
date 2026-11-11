@@ -9,6 +9,13 @@ extends RefCounted
 ## Satırlar normal diyalogla ilerler. Bekleme/efekt anları, final daha önce tam izlendiyse
 ## (settings'te final_seen) ui_cancel ile hızlandırılabilir; ilk izleme atlanamaz.
 
+const DOMAIN_SCREENS := [
+	preload("res://assets/trr_refresh/screens/domain_01.png"),
+	preload("res://assets/trr_refresh/screens/domain_02.png"),
+	preload("res://assets/trr_refresh/screens/domain_03.png"),
+	preload("res://assets/trr_refresh/screens/domain_04.png"),
+]
+
 ## Son çalıştırmanın kaydı (denetim için): bayrak sırası ve görülen aşamalar.
 static var last_run: Dictionary = {}
 
@@ -258,27 +265,22 @@ func _domain_screens() -> void:
 	screens.add_child(center)
 	var grid := GridContainer.new()
 	grid.columns = 2
-	grid.add_theme_constant_override("h_separation", 6)
-	grid.add_theme_constant_override("v_separation", 6)
+	grid.add_theme_constant_override("h_separation", 12)
+	grid.add_theme_constant_override("v_separation", 10)
 	center.add_child(grid)
-	var labels := ["EXPERIMENTAL DOMAIN — 01", "DOMAIN — 02", "DOMAIN — 03", "DOMAIN — 04"]
-	for i in labels.size():
-		var panel := PanelContainer.new()
-		panel.custom_minimum_size = Vector2(200, 54)
-		var sb := StyleBoxFlat.new()
-		sb.bg_color = Color(0.02, 0.07, 0.1, 0.95)
-		sb.border_color = Color(0.55, 0.85, 1.0, 0.9)
-		sb.set_border_width_all(2)
-		sb.set_content_margin_all(10)
-		panel.add_theme_stylebox_override("panel", sb)
-		var l := Label.new()
-		l.name = "Domain%d" % (i + 1)
-		l.text = labels[i]
-		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		UiTheme.apply_outlined(l, 9, true, Color(0.7, 0.92, 1.0))
-		panel.add_child(l)
+	for i in DOMAIN_SCREENS.size():
+		var panel := TextureRect.new()
+		panel.texture = DOMAIN_SCREENS[i]
+		panel.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var label := Label.new()
+		label.name = "Domain%d" % (i + 1)
+		label.text = "DOMAIN %02d" % (i + 1)
+		label.position = Vector2(24, 80)
+		label.size = Vector2(80, 14)
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		UiTheme.apply_outlined(label, 8, true, Palette.IVORY)
+		panel.add_child(label)
 		panel.modulate.a = 0.0
 		grid.add_child(panel)
 		await _wait(0.5)

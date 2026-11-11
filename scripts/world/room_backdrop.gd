@@ -6,6 +6,9 @@ extends Node2D
 const FLOOR_Y := 288.0
 const ROOM_H := 360.0
 
+const VINE := preload("res://assets/trr_refresh/decay/spider_lily_vine.png")
+const SHARD := preload("res://assets/trr_refresh/mirrors/hanging_mirror_shard.png")
+
 var width: float = 960.0
 var tint: Color = Color(1, 1, 1, 1)
 var balcony: bool = false
@@ -58,47 +61,12 @@ func _draw_motif() -> void:
 	var w := width
 	match motif:
 		"decay":
-			var vine := _tc(Color(0.28, 0.42, 0.22), 0.55)
-			var x := 36.0
-			var i := 0
-			while x < w:
-				var h := 28.0 + _h(float(i), 2.0) * 46.0
-				draw_line(Vector2(x, 0), Vector2(x + 6.0, h), vine, 2.0)
-				draw_line(Vector2(x + 6.0, h), Vector2(x - 8.0, h + 10.0), vine, 1.5)
-				draw_line(Vector2(x + 6.0, h), Vector2(x + 16.0, h + 8.0), vine, 1.5)
-				x += 70.0 + _h(float(i), 4.0) * 40.0
-				i += 1
-		"library":
-			var wood := _tc(Color(0.45, 0.32, 0.18), 0.7)
-			var shelf_y := 18.0
-			while shelf_y < 96.0:
-				draw_rect(Rect2(8, shelf_y, w - 16.0, 3.0), wood)
-				var bx := 16.0
-				var bi := 0
-				while bx < w - 20.0:
-					var bh := 10.0 + _h(float(bi), shelf_y) * 8.0
-					var bc := _tc(Color(0.55, 0.28, 0.22), 0.45) if bi % 3 == 0 else _tc(Color(0.25, 0.22, 0.32), 0.4)
-					draw_rect(Rect2(bx, shelf_y - bh, 4.0 + _h(float(bi), 1.0) * 3.0, bh), bc)
-					bx += 8.0 + _h(float(bi), 8.0) * 6.0
-					bi += 1
-				shelf_y += 26.0
-		"experiment":
-			var glass := _tc(Color(0.55, 0.85, 0.9), 0.28)
-			var cx := 120.0
-			var i2 := 0
-			while cx < w - 40.0:
-				draw_rect(Rect2(cx, 16, 28, 78), glass)
-				draw_rect(Rect2(cx + 4, 24, 6, 52), _tc(Color(0.7, 0.95, 1.0), 0.18))
-				draw_line(Vector2(cx + 14, 16), Vector2(cx + 14, 8), glass, 2.0)
-				cx += 160.0 + _h(float(i2), 3.0) * 40.0
-				i2 += 1
+			_draw_ceiling_accents(VINE, Vector2(36, 51), 0.52)
+		"library", "experiment":
+			# Raflar ve camlar bölgenin duvar illüstrasyonunda yer alıyor.
+			pass
 		"mirrors":
-			var shard := _tc(Color(0.82, 0.88, 1.0), 0.35)
-			for i3 in int(w / 90.0) + 1:
-				var sx := float(i3) * 90.0 + 20.0
-				draw_line(Vector2(sx, 12), Vector2(sx + 22, 48), shard, 1.5)
-				draw_line(Vector2(sx + 22, 48), Vector2(sx + 6, 70), shard, 1.5)
-				draw_line(Vector2(sx + 6, 70), Vector2(sx, 12), shard, 1.0)
+			_draw_ceiling_accents(SHARD, Vector2(24, 51), 0.48)
 		"core":
 			var glow := _tc(Color(0.75, 0.15, 0.22), 0.22)
 			draw_rect(Rect2(0, 96, w, 36), glow)
@@ -149,6 +117,17 @@ func _draw_motif() -> void:
 		_:
 			var unknown: String = motif
 			push_warning("room_backdrop: unknown motif %s" % unknown)
+
+
+## Tek sıra, geniş aralık: duvar illüstrasyonuna ve geçişlere görsel alan bırakır.
+func _draw_ceiling_accents(texture: Texture2D, size: Vector2, opacity: float) -> void:
+	var spacing := 320.0
+	var left := floorf((spacing - size.x) * 0.5)
+	var color := Color(1.0, 1.0, 1.0, opacity)
+	for index in int(ceil(width / spacing)):
+		var x := left + index * spacing
+		if x + size.x <= width - 96.0:
+			draw_texture_rect(texture, Rect2(Vector2(x, 9), size), false, color)
 
 
 func _draw_ceiling() -> void:
