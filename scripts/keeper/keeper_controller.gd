@@ -40,6 +40,7 @@ const ROOM_PRESENCE := {
 	"decay_greenhouse": {"mode": "silhouette", "pos": Vector2(980, 280)},
 	"library_clockroom": {"mode": "silhouette", "pos": Vector2(640, 280)},
 	"library_reading_cell": {"mode": "present", "pos": Vector2(720, 280)},
+	"experiment_intake": {"mode": "silhouette", "pos": Vector2(980, 280)},
 	"awakening_passage": {"mode": "silhouette", "pos": Vector2(1500, 280)},
 	"awakening_balcony": {"mode": "silhouette", "pos": Vector2(820, 280)},
 	"decay_garden": {"mode": "present", "pos": Vector2(700, 280)},

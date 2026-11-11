@@ -38,7 +38,7 @@ const _BY_ROOM: Dictionary = {
 	"decay_cistern": "Sarnıca bak. Geldiğin kapıdan ağırlık salonuna dön.",
 	"library_clockroom": "Önce 1927 saatini, sonra 1995 saatini dinle.",
 	"library_reading_cell": "Duvar çentiklerini oku. İnsan günleri burada bitmiş.",
-	"experiment_intake": "Kabul kaydının önünden geç.",
+	"experiment_intake": "Önce kabul dosyasını, sonra paltoyu oku.",
 	"experiment_observation": "Camın ardına bak. Yankı devresine dön.",
 	"mirrors_gallery": "Yansımaların arasından geç.",
 	"mirrors_1927": "Kırık geceyi izle. İki yankıya dön.",

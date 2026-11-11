@@ -157,6 +157,11 @@ const HINTS: Dictionary = {
 		"orientation": "Mavi yansımalar gerçek taş. Soluk kırmızı olan yalan.",
 		"explicit": "Kırmızı basamağa atlama. Mavi taşları izleyerek karşıya geç."
 	},
+	&"experiment_intake": {
+		"goal": "Kabul masası 1995'i tutuyor.",
+		"orientation": "Önce dosya, sonra askıdaki palto.",
+		"explicit": "Denek 14'ün eşyası senin saatin. Paltoyu okuyunca devre açılır."
+	},
 	&"experiment_quarantine_done": {
 		"goal": "Kırmızı sis canlıyı yer. Rapor sisin ötesinde, yüksek rafta.",
 		"orientation": "Ölü beden laneti emer. Cesedini sisin ortasına bırak.",
@@ -177,6 +182,7 @@ const ROOM_PUZZLES: Dictionary = {
 	"library_clockroom": [&"library_clockroom"],
 	"library_page": [&"library_page_order"],
 	"library_upper_stacks": [&"library_shelf_order"],
+	"experiment_intake": [&"experiment_intake"],
 	"experiment_circuit": [&"experiment_circuit"],
 	"experiment_quarantine": [&"experiment_quarantine_done"],
 	"mirrors_dual": [&"mirrors_dual"],
