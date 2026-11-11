@@ -18,6 +18,7 @@ const PUZZLE_SOURCE := {
 	"awakening_memory_code": ["awakening_seal", ""],
 	"awakening_vigil": ["awakening_vigil", ""],
 	"decay_greenhouse": ["decay_greenhouse", ""],
+	"library_clockroom": ["library_clockroom", ""],
 	"awakening_seal_weight": ["awakening_seal", ""],
 	"core_seal": ["core_seal_chamber", ""],
 	"core_threshold": ["core_threshold", ""],

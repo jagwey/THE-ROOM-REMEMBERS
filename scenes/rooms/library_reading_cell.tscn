@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
+[ext_resource type="Script" path="res://scripts/world/ordered_relic.gd" id="relic"]
 
 [node name="LibraryReadingCell" type="Node2D"]
 script = ExtResource("room")
@@ -11,3 +12,15 @@ bg_region = "library"
 checkpoint = Vector2(120, 288)
 default_spawn = Vector2(120, 288)
 doors = [{"x": 40.0, "to": "library_witness", "spawn": "from_library_reading_cell"}]
+
+[node name="Interactive" type="Node2D" parent="."]
+
+[node name="Notches" type="Area2D" parent="Interactive"]
+position = Vector2(480, 288)
+script = ExtResource("relic")
+relic_id = "reading_notches"
+dialogue_room = &"library_reading_cell"
+dialogue_set = &"notches"
+solve_puzzle = &"library_reading_cell"
+evidence_title = "Gün Çentikleri"
+evidence_body = "Okuma hücresinin duvarı 1927 yazına kadar gün gün çentilmiş. Sonra el durmuş."

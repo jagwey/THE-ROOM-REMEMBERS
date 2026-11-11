@@ -351,7 +351,7 @@ oom_door\) <= 44.0 px mesafede -200 etkileÅŸim Ã¶ncelik bonusu eklendi.
 - Not: yankı anahtarları (devre x=320, ayna x=320) kapı x'i spec'te kalsın diye 96 px dışına alındı. Üst raflarda arşivci x=148. Kapı denetimi kapı↔kapı/etkileşim ölçer; kol-taş ve kart-mühür çiftleri eski bulmaca düzeni. Duvar ipucu ve çiçek kartında ad yok (bahçeden önce).
 - [x] Parça 2: Perde 1 (Uyanış, Nöbet Odası'nda ilk karşılaşma). Yatak odasında yüz yüze yok; taze çiçek. Geçitte kendi sesi. Nöbet sahnesi ???, ad yok, yol açılınca gölge gider. Sürüm artmadı.
 - [x] Parça 3: Perde 2 (Sera, duvar kovalamacası ipuçları, bahçede ad sahnesi). Sera plakası ortak mühür. Duvar ipucu üç kademe, üç ölümden sonra tek çarpma. Ad çiçekte açılır. Sürüm artmadı.
-- [ ] Parça 4: Perde 3 (Kütüphane, Saatler Odası, Okuma Hücresi).
+- [x] Parça 4: Perde 3 (Kütüphane, Saatler Odası, Okuma Hücresi). Saatler 1927 sonra 1995. Hücrede gün çentikleri. Sürüm artmadı.
 - [ ] Parça 5: Perde 4 (Deney, Kabul Odası, Gözlem Camı).
 - [ ] Parça 6: Perde 5 (Aynalar, Bedenler Galerisi, Kırık Gece) + iki geri dönüş turu.
 - [ ] Parça 7: Perde 6 (Son Merdiven) + toplam süre ölçümü 165–195 dk.

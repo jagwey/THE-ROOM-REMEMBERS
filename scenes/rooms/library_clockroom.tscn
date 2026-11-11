@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
+[ext_resource type="Script" path="res://scripts/world/ordered_relic.gd" id="relic"]
 
 [node name="LibraryClockroom" type="Node2D"]
 script = ExtResource("room")
@@ -10,4 +11,32 @@ room_width = 1280.0
 bg_region = "library"
 checkpoint = Vector2(120, 288)
 default_spawn = Vector2(120, 288)
-doors = [{"x": 40.0, "to": "library_witness", "spawn": "from_page"}, {"x": 1240.0, "to": "library_page", "spawn": "from_witness"}]
+doors = [{"x": 40.0, "to": "library_witness", "spawn": "from_page"}, {"x": 1240.0, "to": "library_page", "spawn": "from_witness", "req": "library_clockroom", "msg": "İki saati de dinlemeden sayfa açılmaz."}]
+
+[node name="Spawns" type="Node2D" parent="."]
+
+[node name="keeper_observe" type="Marker2D" parent="Spawns"]
+position = Vector2(640, 288)
+
+[node name="Interactive" type="Node2D" parent="."]
+
+[node name="Clock1927" type="Area2D" parent="Interactive"]
+position = Vector2(420, 288)
+script = ExtResource("relic")
+relic_id = "clock_1927"
+dialogue_room = &"library_clockroom"
+dialogue_set = &"clock_1927"
+evidence_title = "1927 Saati"
+evidence_body = "Saatler odasında bir saat 1927 gecesinde durmuş. Cep saatiyle aynı gece."
+
+[node name="Clock1995" type="Area2D" parent="Interactive"]
+position = Vector2(860, 288)
+script = ExtResource("relic")
+relic_id = "clock_1995"
+needs = "clock_1927"
+dialogue_room = &"library_clockroom"
+dialogue_set = &"clock_1995"
+solve_puzzle = &"library_clockroom"
+locked_line = "Önce 1927 saatini dinlemeliyim."
+evidence_title = "1995 Saati"
+evidence_body = "İkinci saat 1995'te, kabul yılımda durmuş. İki gece birleşince sayfa kapısı açıldı."
