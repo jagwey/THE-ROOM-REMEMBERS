@@ -108,6 +108,7 @@ func _begin_possession() -> void:
 	if DeathManager.is_dying or EndingManager.current != EndingManager.Ending.NONE:
 		return
 	possessing = true
+	release_motion_locks()
 	possession_started.emit()
 	curse_possession_started.emit()
 	curse_failed_life.emit()
@@ -130,6 +131,7 @@ func _begin_possession() -> void:
 	await overlay.finish(repeat)
 	UiGate.set_cutscene(false)
 	possessing = false
+	release_motion_locks()
 	possession_finished.emit()
 	curse_possession_finished.emit()
 
@@ -183,8 +185,14 @@ func _reload_committed() -> void:
 	SaveManager.save_game()
 
 
+## Lanet / ele geçirme hareket etkisi bırakmaz: zaman ölçeği 1.0, hız çarpanı yok.
+func release_motion_locks() -> void:
+	DeathManager.release_time_scale()
+
+
 func reset_for_new_life() -> void:
 	possessing = false
+	release_motion_locks()
 	curse = 0.0
 	if band != Band.CONTROL:
 		band = Band.CONTROL

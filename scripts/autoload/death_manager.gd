@@ -22,11 +22,44 @@ var phase: int = Phase.ALIVE
 ## Bu ölüm ilk ölüm mü (sinematik, uzun); sonrakiler hızlı.
 var cinematic: bool = false
 var _soul: Node2D = null
-## Gerçek zamanlı yavaşlatma bitişi. Daha geç biten tutuş, erken olanı geri almaz.
-var _time_hold_until_ms: int = 0
+## Tek sahip: hitstop ve ölüm ağır çekimi bu listede. Süre dolunca veya bırakılınca ölçek 1.0.
+var _time_holds: Array = []
+var _time_token: int = 0
+var _scene_root: Window = null
+
+
+func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	_scene_root = get_tree().root
+	_scene_root.child_exiting_tree.connect(_on_root_child_exiting)
+
+
+func _process(_delta: float) -> void:
+	if _time_holds.is_empty():
+		if not is_equal_approx(Engine.time_scale, 1.0):
+			Engine.time_scale = 1.0
+		return
+	_apply_time_holds()
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_APPLICATION_PAUSED or what == NOTIFICATION_APPLICATION_FOCUS_OUT:
+		release_time_scale()
+
+
+func _on_root_child_exiting(node: Node) -> void:
+	if not is_inside_tree():
+		return
+	var scene := get_tree().current_scene
+	if scene != null and node == scene:
+		release_time_scale()
 
 
 func _exit_tree() -> void:
+	if _scene_root and _scene_root.child_exiting_tree.is_connected(_on_root_child_exiting):
+		_scene_root.child_exiting_tree.disconnect(_on_root_child_exiting)
+	_scene_root = null
+	_time_holds.clear()
 	Engine.time_scale = 1.0
 
 
@@ -43,6 +76,8 @@ func request_death(reason: StringName = &"unknown", full_reset: bool = false) ->
 	## Lanet ele geçirmesi sürerken ölüm başlamaz (çukur/hasar yarışı; ceset + yatak oluşmaz).
 	if is_dying or CurseManager.possessing or EndingManager.current != EndingManager.Ending.NONE:
 		return
+	## Önceki hitstop, ölüm ağır çekiminin üstünde asılı kalmasın.
+	release_time_scale()
 	is_dying = true
 	_set_phase(Phase.DYING)
 	cinematic = not bool(GameState.player_progress_knowledge.get("first_death_seen", false))
@@ -95,21 +130,75 @@ func request_death(reason: StringName = &"unknown", full_reset: bool = false) ->
 	await _respawn()
 
 
-## scale 1'in altında, real_sec gerçek saniye. Bittiğinde time_scale her zaman 1'e döner.
+## Aktif tutuş yoksa ölçek 1.0. Sahne, ölüm sonu, diriliş, duraklatma ve lanet bitişi bunu çağırır.
+func release_time_scale() -> void:
+	_time_holds.clear()
+	_time_token += 1
+	Engine.time_scale = 1.0
+
+
+func _skip_time_holds() -> bool:
+	## Headless smoke akışı beklemez. TORIMON_TIME_HOLDS=1 gerçek tutuşu ölçer.
+	if OS.get_environment("TORIMON_TIME_HOLDS") == "1":
+		return false
+	return _fast_mode()
+
+
+## Tutuşu başlatır (senkron). Süre bitince ölçek, kalan tutuş yoksa 1.0 olur. Token, atlanırsa -1.
+func begin_time_hold(scale: float, real_sec: float) -> int:
+	if _skip_time_holds():
+		release_time_scale()
+		return -1
+	_time_token += 1
+	var token := _time_token
+	var dur := maxf(real_sec, 0.0)
+	_time_holds.append({
+		"token": token,
+		"until": Time.get_ticks_msec() + int(dur * 1000.0),
+		"scale": clampf(scale, 0.02, 1.0),
+	})
+	_apply_time_holds()
+	if dur > 0.0:
+		get_tree().create_timer(dur, true, false, true).timeout.connect(_end_time_hold.bind(token), CONNECT_ONE_SHOT)
+	else:
+		_end_time_hold(token)
+	return token
+
+
+func _end_time_hold(token: int) -> void:
+	_remove_time_hold(token)
+	_apply_time_holds()
+
+
+## scale 1'in altında, real_sec gerçek saniye. Coroutine iptal olsa da zamanlayıcı ölçeği 1'e döndürür.
 func hold_time_scale(scale: float, real_sec: float) -> void:
-	if _fast_mode():
+	var token := begin_time_hold(scale, real_sec)
+	if token < 0 or real_sec <= 0.0:
+		return
+	await get_tree().create_timer(maxf(real_sec, 0.0), true, false, true).timeout
+	_end_time_hold(token)
+
+
+func _remove_time_hold(token: int) -> void:
+	var kept: Array = []
+	for h in _time_holds:
+		if int(h.get("token", -1)) != token:
+			kept.append(h)
+	_time_holds = kept
+
+
+func _apply_time_holds() -> void:
+	var now := Time.get_ticks_msec()
+	var kept: Array = []
+	for h in _time_holds:
+		if int(h.get("until", 0)) > now:
+			kept.append(h)
+	_time_holds = kept
+	if kept.is_empty():
 		Engine.time_scale = 1.0
 		return
-	var dur := maxf(real_sec, 0.0)
-	Engine.time_scale = clampf(scale, 0.02, 1.0)
-	var until := Time.get_ticks_msec() + int(dur * 1000.0)
-	if until > _time_hold_until_ms:
-		_time_hold_until_ms = until
-	if dur > 0.0:
-		await get_tree().create_timer(dur, true, false, true).timeout
-	if Time.get_ticks_msec() + 20 >= _time_hold_until_ms:
-		Engine.time_scale = 1.0
-		_time_hold_until_ms = 0
+	## En son başlayan tutuş ölçeğin tek sahibi (iç içe hitstop / ölüm birbirini silmez, süre bitince 1.0).
+	Engine.time_scale = float(kept[kept.size() - 1]["scale"])
 
 
 func _death_presentation() -> void:
@@ -407,6 +496,7 @@ func _respawn() -> void:
 	SaveManager.save_game()
 	is_dying = false
 	_set_phase(Phase.ALIVE)
+	release_time_scale()
 	## Doğuş laneti ele geçirme başlatmaz: +25, taban 50, tavan 99.
 	## Aynı karede 100'e çıkmış değer burada yeniden ele geçirmeye dönmesin.
 	var born := clampf(maxf(CurseManager.curse + 25.0, 50.0), 0.0, CurseManager.CURSE_MAX - 1.0)

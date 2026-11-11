@@ -271,6 +271,7 @@ func _physics_process(delta: float) -> void:
 			var axis := MobileInputManager.get_move_axis()
 			axis.x = _apply_curse_drift(axis.x, delta)
 			input_x = axis.x if absf(axis.x) > 0.1 else 0.0
+			## Sol ve sağ aynı büyüklük: geri yürüme cezası ve yönlü hız çarpanı yok.
 			var target := axis.x * SPEED
 			if is_pushing() and signf(axis.x) == _facing:
 				target *= PUSH_SLOW
@@ -544,7 +545,8 @@ func _on_skill() -> void:
 	get_parent().add_child(wave)
 
 
-# --- Lanet %80+: kontrol teklemesi ve Çekirdek'e çekilme ---------------------------------
+# --- Lanet %80+: kısa takılma (yönsüz) -------------------------------------------------
+## Kasıtlı etki: seyrek stagger. Yatay hız çarpanı birikmez, girdi yokken hız üretilmez.
 
 func _apply_curse_drift(axis_x: float, delta: float) -> float:
 	## Yeni doğan oyuncu doğuş noktasından çekilmesin (hasar koruması bitene kadar).
@@ -559,8 +561,8 @@ func _apply_curse_drift(axis_x: float, delta: float) -> float:
 		_curse_jitter = randf_range(0.25, 0.8)
 		if randf() < 0.35 * strength:
 			_stagger_timer = 0.12
-	## Çekirdek hep "sağda": odanın sağ ucuna doğru zayıf çekim.
-	return clampf(axis_x + 0.35 * strength, -1.0, 1.0)
+	## Eksen olduğu gibi döner: +X çekimi sol yürüyüşü yavaşlatıyor ve boşta sağa yürütüyordu.
+	return clampf(axis_x, -1.0, 1.0)
 
 
 # --- Yardımcılar -----------------------------------------------------------------

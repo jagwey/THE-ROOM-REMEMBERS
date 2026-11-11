@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS"><img src="https://img.shields.io/badge/Kaynak-v1.12.1-8B0000?style=for-the-badge&logo=godotengine&logoColor=white" alt="Kaynak v1.12.1" /></a>
+  <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS"><img src="https://img.shields.io/badge/Kaynak-v1.12.2-8B0000?style=for-the-badge&logo=godotengine&logoColor=white" alt="Kaynak v1.12.2" /></a>
   <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases"><img src="https://img.shields.io/badge/Resmi_İndirme-GitHub_Releases-5c1d3d?style=for-the-badge&logo=github" alt="All Releases" /></a>
   <a href="https://godotengine.org/"><img src="https://img.shields.io/badge/Godot_Engine-4.7.2-478CBF?style=for-the-badge&logo=godotengine&logoColor=white" alt="Godot 4.7.2" /></a>
   <img src="https://img.shields.io/badge/Dünya-6_Bölge_·_40_Oda_·_Bölüm_I-2b1838?style=for-the-badge" alt="World Scope" />
@@ -226,7 +226,8 @@ Depodaki tüm derlenmiş Android (`arm64-v8a`) APK paketleri düzenli olarak **[
 
 | Sürüm | Durum | APK Dosyası / İndirme | Öne Çıkan Yenilikler ve Kapsam |
 | :--- | :---: | :--- | :--- |
-| **v1.12.1** | 🟢 **Güncel Kaynak** | APK bu sürümde ayrıca yayınlanır | Kırık Geçit geçilebilir: taş blok zıplama yüksekliğinde, diken halkasının hitbox'ı görselle aynı, dönüş boşluğu ve halkanın dışında kontrol noktası (`versionCode 38`). |
+| **v1.12.2** | 🟢 **Güncel Kaynak** | APK bu sürümde ayrıca yayınlanır | Sol ve sağ yürüme hızı eşit; lanet kendiliğinden yürütmez; hitstop ve ölüm ağır çekimi `time_scale` değerini 1.0'a döndürür (`versionCode 39`). |
+| **v1.12.1** | Önceki | APK bu sürümde ayrıca yayınlanır | Kırık Geçit geçilebilir: taş blok zıplama yüksekliğinde, diken halkasının hitbox'ı görselle aynı, dönüş boşluğu ve halkanın dışında kontrol noktası (`versionCode 38`). |
 | **v1.12.0** | Önceki | APK bu sürümde ayrıca yayınlanır | Kısa nöbet, ceset basamağı, vuruş ve ölüm hissi cilası, oda girişi kamerası (`versionCode 37`). |
 | **[v1.9.0](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.9.0)** | Önceki | [📥 `TheRoomRemembers-1.9.0-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.9.0) | Derin oynanış geçişi: sıralı bahçe ve kasa, yalan ayna, raf tahtası, kademeli günlük ipucu (`versionCode 34`). |
 | **[v1.8.1](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.8.1)** | Önceki | [📥 `TheRoomRemembers-1.8.1-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.8.1) | Hareket kilidi, taş itme ve kapı etkileşimi düzeltildi; bölge motifleri, diyalog cilası (`versionCode 33`). |
@@ -259,7 +260,7 @@ Depodaki tüm derlenmiş Android (`arm64-v8a`) APK paketleri düzenli olarak **[
 1. **[Releases](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases)** sayfasından son sürüm `.apk` dosyasını indirin.
 2. Veya USB hata ayıklaması açık cihaza `adb` ile yükleyin:
    ```powershell
-   adb install -r TheRoomRemembers-1.12.1-android-arm64.apk
+   adb install -r TheRoomRemembers-1.12.2-android-arm64.apk
    adb shell am start -n com.torimon.theroomremembers/com.godot.game.GodotApp
    ```
 
