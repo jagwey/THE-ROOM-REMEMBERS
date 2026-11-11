@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
+
+[node name="ExperimentObservation" type="Node2D"]
+script = ExtResource("room")
+room_id = &"experiment_observation"
+region_id = &"experiment"
+room_width = 960.0
+bg_region = "experiment"
+checkpoint = Vector2(120, 288)
+default_spawn = Vector2(120, 288)
+doors = [{"x": 40.0, "to": "experiment_circuit", "spawn": "from_experiment_observation"}]

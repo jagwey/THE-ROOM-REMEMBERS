@@ -310,7 +310,6 @@ func _test_side_doors_alignment_and_clearance() -> void:
 	const EXPECTED_DOORS := {
 		"awakening": 672.0,
 		"decay_vines": 896.0,
-		"decay_garden": 224.0,
 		"library_hall": 784.0,
 		"experiment_cells": 784.0,
 		"experiment_authority": 672.0,

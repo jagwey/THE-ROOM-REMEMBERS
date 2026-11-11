@@ -55,11 +55,14 @@ const ROOM_DEFS := {
 const SIDE_DOORS := {
 	"awakening": [{"x": 672.0, "to": "awakening_balcony"}],
 	"decay_vines": [{"x": 896.0, "to": "decay_catacombs"}],
-	"decay_garden": [{"x": 224.0, "to": "decay_shilda_wall"}],
+	"decay_weight": [{"x": 720.0, "to": "decay_cistern", "ability": "ability_shadow_dash"}],
 	"library_hall": [{"x": 784.0, "to": "library_upper_stacks"}],
+	"library_witness": [{"x": 590.0, "to": "library_reading_cell"}],
 	"experiment_cells": [{"x": 784.0, "to": "experiment_quarantine"}],
+	"experiment_circuit": [{"x": 700.0, "to": "experiment_observation", "ability": "ability_shadow_dash"}],
 	"experiment_authority": [{"x": 672.0, "to": "experiment_core_conduit"}],
 	"mirrors_reverse": [{"x": 672.0, "to": "mirrors_labyrinth"}],
+	"mirrors_dual": [{"x": 700.0, "to": "mirrors_1927", "req": "mirrors_gallery", "msg": "Galeri suskun. Önce bedenleri saymalıyım."}],
 	"mirrors_unbroken": [{"x": 784.0, "to": "mirrors_shrine"}],
 	"core_threshold": [{"x": 784.0, "to": "core_memory_vault"}],
 	"core_seal_chamber": [{"x": 784.0, "to": "core_bloom_garden"}],
@@ -91,6 +94,8 @@ func _add_side_doors() -> void:
 			door.set("target_spawn_id", StringName("from_%s" % rid))
 			if d.has("req"):
 				door.set("required_puzzle", StringName(String(d["req"])))
+			if d.has("ability"):
+				door.set("required_ability", StringName(String(d["ability"])))
 			if d.has("msg"):
 				door.set("locked_message", String(d["msg"]))
 			var cs := CollisionShape2D.new()

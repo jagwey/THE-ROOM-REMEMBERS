@@ -107,8 +107,8 @@ collision_mask = 0
 monitoring = false
 monitorable = true
 script = ExtResource("5")
-target_room_id = &"experiment_circuit"
-target_spawn_id = &"from_cells"
+target_room_id = &"experiment_intake"
+target_spawn_id = &"from_experiment_cells"
 required_puzzle = &"experiment_cells_seen"
 locked_message = "Hücrelerin kayıtlarını incelemeliyim."
 

@@ -83,8 +83,8 @@ collision_mask = 0
 monitoring = false
 monitorable = true
 script = ExtResource("5")
-target_room_id = &"experiment_cells"
-target_spawn_id = &"from_circuit"
+target_room_id = &"experiment_intake"
+target_spawn_id = &"from_experiment_circuit"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BackCells"]
 shape = SubResource("Hit")
@@ -115,7 +115,7 @@ puzzle_id = &"experiment_circuit"
 intro_text = "Sunağa dokun: altı saniye boyunca yaptığın her şeyi oda hatırlar. Soldaki plakaya bas; yankın orada dururken sen sağdaki kristale koş."
 solved_text = "İki devre birleşti. Sağdaki yetki odası açıldı."
 switch_kinds = PackedStringArray("plate", "lever")
-switch_positions = PackedVector2Array(-180, 32, 230, 0)
+switch_positions = PackedVector2Array(-180, 32, 320, 0)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/CircuitBeat"]
 shape = SubResource("Interact")

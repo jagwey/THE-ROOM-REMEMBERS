@@ -107,8 +107,8 @@ collision_mask = 0
 monitoring = false
 monitorable = true
 script = ExtResource("5")
-target_room_id = &"library_page"
-target_spawn_id = &"from_witness"
+target_room_id = &"library_clockroom"
+target_spawn_id = &"from_library_witness"
 required_puzzle = &"library_witnesses"
 locked_message = "Saat, çiçek ve mühür tanıklıklarını birleştirmeliyim."
 

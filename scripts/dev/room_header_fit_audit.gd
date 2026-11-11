@@ -28,7 +28,7 @@ func _run() -> void:
 	var font: Font = theme.font_bold if theme.font_bold else ThemeDB.fallback_font
 	var fsize := 12 # hud.tscn RoomHeaderLabel font_size
 	var ids: Array = rm.ROOM_TITLES_TR.keys()
-	check(ids.size() == 30, "30 room titles (%d)" % ids.size())
+	check(ids.size() == 40, "40 room titles (%d)" % ids.size())
 	var widest := 0.0
 	var widest_id := ""
 	for rid in ids:

@@ -147,8 +147,8 @@ collision_mask = 0
 monitoring = false
 monitorable = true
 script = ExtResource("13")
-target_room_id = &"decay_vines"
-target_spawn_id = &"default"
+target_room_id = &"awakening_vigil"
+target_spawn_id = &"from_awakening_seal"
 required_puzzle = &"awakening_memory_code"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ExitToDecay"]

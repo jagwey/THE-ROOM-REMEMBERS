@@ -100,8 +100,8 @@ collision_mask = 0
 monitoring = false
 monitorable = true
 script = ExtResource("5")
-target_room_id = &"core_seal_chamber"
-target_spawn_id = &"from_threshold"
+target_room_id = &"core_ascent"
+target_spawn_id = &"from_core_threshold"
 required_puzzle = &"core_threshold"
 locked_message = "Son eşiğin hatırasını tamamlamalıyım."
 

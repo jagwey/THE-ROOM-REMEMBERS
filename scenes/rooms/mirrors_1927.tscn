@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
+
+[node name="Mirrors1927" type="Node2D"]
+script = ExtResource("room")
+room_id = &"mirrors_1927"
+region_id = &"mirrors"
+room_width = 960.0
+bg_region = "mirrors"
+checkpoint = Vector2(120, 288)
+default_spawn = Vector2(120, 288)
+doors = [{"x": 40.0, "to": "mirrors_dual", "spawn": "from_mirrors_1927"}]

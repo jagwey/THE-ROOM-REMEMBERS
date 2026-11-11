@@ -132,8 +132,8 @@ collision_mask = 0
 monitoring = false
 monitorable = true
 script = ExtResource("5")
-target_room_id = &"awakening_seal"
-target_spawn_id = &"from_decay"
+target_room_id = &"awakening_vigil"
+target_spawn_id = &"from_decay_vines"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ExitToSeal"]
 shape = SubResource("TransitionHit")

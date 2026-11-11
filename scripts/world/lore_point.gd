@@ -149,7 +149,10 @@ static func shilda_is_named() -> bool:
 func _say(entry: String) -> void:
 	var parts := entry.split("|", true, 1)
 	if parts.size() == 2:
-		DialogueManager.say(parts[0], parts[1]) ## "Shilda"/"???" kartı DialogueManager çözer
+		var speaker := parts[0]
+		if speaker == "Shilda" or speaker == "@shilda":
+			speaker = GameState.keeper_speaker_name()
+		DialogueManager.say(speaker, parts[1])
 	else:
 		DialogueManager.say("Noroi", entry)
 
