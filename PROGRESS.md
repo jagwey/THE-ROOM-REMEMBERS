@@ -254,7 +254,7 @@ Dal: cursor/playable-story-flow-8e4e · Sürüm: v1.2.0 (versionCode 16)
 - Referans görsellere göre (gümüş saç, kırmızı lanetli göz, kırık-beyaz pelerin, siyah üniforma) mevcut 20 frame yeniden boyandı; yüz artık cilt tonlu (eski "bembeyaz yüz" sorunu). Layout aynı: 384x480, 4x5, 96x96 → `noroi.tres` değişmeden çalışır.
 - Çıktı: `out/noroi_v2/noroi_v2_assets.zip` (sheet, frame_00..19, 384x384 portre, animasyon GIF önizlemeleri, OKUBENI.txt). Oyundaki asset'ler henüz DEĞİŞTİRİLMEDİ; commit yok.
 - Bilinen eksik: hurt/death (14-15) frame'lerinde yüz görünmüyor (yalnız saç rengi değişti).
-- Kullanıcı v2 recolor'ı "kalitesiz" diye REDDETTİ. Sıradaki yol: AI ile referanstan yeni sprite sheet üretimi (PixelLab üyeliği yok → Gemini/Flow görsel üretimi, kullanıcı PNG verir, ben 96x96 grid/tres/zip'e çeviririm).
+- Kullanıcı v2 recolor'ı "kalitesiz" diye REDDETTİ. Sıradaki yol: AI ile referanstan yeni sprite sheet üretimi (PixelLab üyeliği yok → Gemini/Flow görsel üretimi, kullanıcı PNG verir, ben 96x96 grid/tres/zip'e çeviririm). 2026-11-11: PixelLab denemesi iptal edildi (ücretsiz deneme bitmiş, kredi harcanmadı, oyun dosyaları değişmedi).
 
 
 ## Kapsamlı Oyun Denetimi & Kalite Artırma — Milestone 1, 2, 3 & E2E Tamamlandı (2026-11-10)
@@ -334,4 +334,25 @@ oom_door\) <= 44.0 px mesafede -200 etkileÅŸim Ã¶ncelik bonusu eklendi.
 - [x] Hikâye: açılış kancası, saat 3:14, isim sahnesi, finalde Noroi'nin cevabı. Günlük ipucu 3 kademe (hedef / yön / açık).
 - [x] His: plaka ve kapı sarsıntısı, sunak parçacığı, çözümde lanet -8. Bölge motifleri: bahçe, kasa, karantina, labirent.
 - [x] Denetim: `room_identity_audit`. Sürüm 1.9.0 / versionCode 34.
+
+## Üç saatlik hikâye — tasarım (2026-11-11)
+- [x] Spec yazıldı: `docs/superpowers/specs/2026-11-11-uc-saatlik-hikaye-design.md` (30→40 oda, 6 perde, 2 geri dönüş turu, oda başına diyalog JSON'u, 7 parça). Kod değişmedi, commit yok.
+- [x] Spec onaylandı (kullanıcı uygulamaya geç dedi).
+- [x] v1.9.0 headless denetim: `Run-Audit.ps1` 26/26 geçti, `dev_failed: 0`. Yapılmadı: insan oynanışı, 1920x1080 görüntü kontrolü, mevcut diyalog kalite okuması.
+- [x] Uygulama Cursor'a devredildi. İş promptu: `docs/gelistirme/06_UC_SAATLIK_HIKAYE_CURSOR_PROMPT.md` (kapı tablosu, yetenek kilidi, denetim güncellemeleri içinde). Bu oturumda kod değişmedi, commit yok.
+
+### Yapılacaklar (Cursor)
+- [ ] Parça 1 / T1: `DialogueData` autoload + `data/dialogue/*.json` + `dialogue_data_audit` + `Run-Audit.ps1` (`'data'` kopyası) + export `include_filter`.
+- [ ] Parça 1 / T2: on iskelet oda (`built_room.gd`), `main.tscn`, `ROOM_ORDER`/`ROOM_TITLES_TR` 40, `campaign_objectives.gd`.
+- [ ] Parça 1 / T3: ana yol kapıları yeniden hedeflenir; `decay_shilda_wall` bahçeden önceye (genişlik 1440, bahçe kapısı x=1260).
+- [ ] Parça 1 / T4: `required_ability` (`room_transition.gd`) + `SIDE_DOORS` (bahçe→duvar silinir, dört yeni yan kapı).
+- [ ] Parça 1 / T5: `room_graph_audit` + eski denetimlerde 30→40 ve `decay_vines`→`awakening_vigil`.
+- [ ] Parça 1 / T6: v1.9.0 kayıt uyumu, tam denetim yeşil, 1920x1080 kontrol.
+- [ ] Parça 2: Perde 1 (Uyanış, Nöbet Odası'nda ilk karşılaşma).
+- [ ] Parça 3: Perde 2 (Sera, duvar kovalamacası ipuçları, bahçede ad sahnesi).
+- [ ] Parça 4: Perde 3 (Kütüphane, Saatler Odası, Okuma Hücresi).
+- [ ] Parça 5: Perde 4 (Deney, Kabul Odası, Gözlem Camı).
+- [ ] Parça 6: Perde 5 (Aynalar, Bedenler Galerisi, Kırık Gece) + iki geri dönüş turu.
+- [ ] Parça 7: Perde 6 (Son Merdiven) + toplam süre ölçümü 165–195 dk.
+- [ ] Sürüm hazırlığı ve Play Store kontrol listesi (yalnız kullanıcı isteyince).
 
