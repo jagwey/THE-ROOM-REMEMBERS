@@ -14,6 +14,8 @@ var _sword_hint_done: bool = false
 
 
 func _ready() -> void:
+	if int(GameState.player_progress_knowledge.get("wall_chase_deaths", 0)) >= 3:
+		max_hits = 1
 	add_to_group("cracked_wall")
 	collision_layer = 1 | 32
 	collision_mask = 0

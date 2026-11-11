@@ -102,6 +102,16 @@ const HINTS: Dictionary = {
 		"orientation": "Zemindeki plaka ağırlıkla tetiklenir; karşıdaki mekanizma sürgüyü yakalar.",
 		"explicit": "Ağır kütleyi plakanın tam üzerine sürükleyerek sürgüyü kalıcı olarak kilitle."
 	},
+	&"decay_greenhouse": {
+		"goal": "Sera mührü iki el istiyor.",
+		"orientation": "Camın ötesindeki gölge bir yanı tutuyor. Senin basman gereken bir plaka var.",
+		"explicit": "Ortadaki plakaya bas. Uzaktaki el mührü bırakmaz."
+	},
+	&"decay_shilda_wall_broken": {
+		"goal": "Çatlak duvar kılıçla inmez.",
+		"orientation": "Gözler kızarınca atılır. Son anda kenara çekil; duvara çarpsın.",
+		"explicit": "İkinci çarpma duvarı yıkar. Üç ölümden sonra bir çarpma yeter."
+	},
 	&"decay_archive_key": {
 		"goal": "Arşiv kapısı mühürlü; kilitte bir çiçek motifi yer alıyor.",
 		"orientation": "Bahçedeki kırmızı yaprakları incele ve Bekçi'nin güvenini kazan.",
@@ -156,6 +166,8 @@ const ROOM_PUZZLES: Dictionary = {
 	"awakening_passage": [&"awakening_memory_code"],
 	"awakening_seal": [&"awakening_memory_code"],
 	"decay_weight": [&"decay_weight_latch"],
+	"decay_greenhouse": [&"decay_greenhouse"],
+	"decay_shilda_wall": [&"decay_shilda_wall_broken"],
 	"decay_garden": [&"decay_archive_key"],
 	"library_page": [&"library_page_order"],
 	"library_upper_stacks": [&"library_shelf_order"],

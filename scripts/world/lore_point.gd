@@ -6,6 +6,8 @@ extends Area2D
 @export var texture_path: String = "res://assets/props/photograph.png"
 @export var sprite_scale: float = 0.6
 @export var lines: PackedStringArray = PackedStringArray()
+@export var dialogue_room: StringName = &""
+@export var dialogue_set: StringName = &""
 @export var repeat_line: String = ""
 @export var evidence_title: String = ""
 @export_multiline var evidence_body: String = ""
@@ -116,8 +118,13 @@ func on_interact(_by: Node) -> void:
 		var cam := get_tree().get_first_node_in_group("follow_camera")
 		if cam and cam.has_method("zoom_to"):
 			cam.zoom_to(1.22, 2.5)
-	for l in lines:
-		_say(l)
+	if dialogue_set != &"":
+		var spoken: Array = DialogueData.get_set(dialogue_room if dialogue_room != &"" else RoomManager.get_active_room_id(), dialogue_set)
+		for line in spoken:
+			DialogueManager.say(String(line[0]), String(line[1]))
+	else:
+		for l in lines:
+			_say(l)
 	var ok: bool = await DialogueManager.dialogue_finished
 	_busy = false
 	if not ok:
