@@ -531,7 +531,19 @@ func _set_blocker(enabled: bool) -> void:
 
 func _show_hint(text: String) -> void:
 	hint.text = text
+	hint.clip_text = false
 	hint.visible = true
+	## 104×128 kare, offset (0,-51): tepe yaklaşık y=-115. Etiket gövdenin üstünde, kırpılmadan.
+	var top := -115.0
+	if sprite and sprite.sprite_frames and String(sprite.animation) != "" and sprite.sprite_frames.has_animation(sprite.animation):
+		var tex := sprite.sprite_frames.get_frame_texture(sprite.animation, sprite.frame)
+		if tex:
+			top = sprite.offset.y - tex.get_height() * absf(sprite.scale.y) * 0.5
+	var w := maxf(168.0, float(text.length()) * 8.0)
+	hint.offset_left = -w * 0.5
+	hint.offset_right = w * 0.5
+	hint.offset_bottom = top - 8.0
+	hint.offset_top = hint.offset_bottom - 22.0
 
 
 ## Shilda yalnız sakinken konuşulabilir (savaş modunda etkileşim hedefi olmaz).

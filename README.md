@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS"><img src="https://img.shields.io/badge/Kaynak-v1.12.0-8B0000?style=for-the-badge&logo=godotengine&logoColor=white" alt="Kaynak v1.12.0" /></a>
+  <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS"><img src="https://img.shields.io/badge/Kaynak-v1.12.1-8B0000?style=for-the-badge&logo=godotengine&logoColor=white" alt="Kaynak v1.12.1" /></a>
   <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS/releases"><img src="https://img.shields.io/badge/T%C3%BCm_S%C3%BCr%C3%BCmler-9_Aktif_Paket-5c1d3d?style=for-the-badge&logo=github" alt="All Releases" /></a>
   <a href="https://godotengine.org/"><img src="https://img.shields.io/badge/Godot_Engine-4.7.2-478CBF?style=for-the-badge&logo=godotengine&logoColor=white" alt="Godot 4.7.2" /></a>
   <img src="https://img.shields.io/badge/D%C3%BCnya-6_B%C3%B6lge_%C2%B7_40_Oda_%C2%B7_B%C3%B6l%C3%BCm_I-2b1838?style=for-the-badge" alt="World Scope" />
@@ -48,11 +48,12 @@ Oyuncu **Noroi** olarak ne adını ne de neden bu yıkık tesiste tutulduğunu b
 
 Depodaki tüm derlenmiş Android (`arm64-v8a`) APK sürümleri aktif olarak **[GitHub Releases](https://github.com/jagwey/THE-ROOM-REMEMBERS/releases)** sayfasında sunulmaktadır.
 
-> **Kaynak sürüm:** **v1.12.0** (`versionCode 37`). Son yayımlanmış APK: [**v1.9.0**](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.9.0).
+> **Kaynak sürüm:** **v1.12.1** (`versionCode 38`). Son yayımlanmış APK: [**v1.9.0**](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.9.0).
 
 | Sürüm | Durum | APK Dosyası / İndirme | Öne Çıkan Yenilikler ve Kapsam |
 | :--- | :---: | :--- | :--- |
-| **v1.12.0** | 🟢 **Güncel (kaynak)** | APK bu sürümde ayrıca yayınlanır | Kısa nöbet, ceset basamağı, vuruş ve ölüm hissi, oda girişi kamerası (`versionCode 37`). |
+| **v1.12.1** | 🟢 **Güncel (kaynak)** | APK bu sürümde ayrıca yayınlanır | Kırık Geçit geçilebilir: taş blok zıplama yüksekliğinde, diken halkasının hitbox'ı görselle aynı ve dönüş boşluğu var, kontrol noktası halkanın dışında (`versionCode 38`). |
+| **v1.12.0** | Önceki kaynak | APK bu sürümde ayrıca yayınlanır | Kısa nöbet, ceset basamağı, vuruş ve ölüm hissi, oda girişi kamerası (`versionCode 37`). |
 | **[v1.9.0](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.9.0)** | Önceki | [📥 `TheRoomRemembers-1.9.0-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.9.0) | Derin oynanış geçişi: sıralı bahçe ve kasa, yalan ayna, raf tahtası, kademeli günlük ipucu, final cevabı (`versionCode 34`). |
 | **[v1.8.1](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.8.1)** | Önceki | [📥 `TheRoomRemembers-1.8.1-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.8.1) | Hareket kilidi, taş itme ve kapı etkileşimi düzeltildi; bölge motifleri, diyalog cilası, bulmaca ödül afişi (`versionCode 33`). |
 | **[v1.8.0](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.8.0)** | Önceki | [📥 `TheRoomRemembers-1.8.0-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.8.0) | Kapı sonrası joystick restorasyonu, door_controls audit, Bölüm II teaser, ???/X? portreleri (`versionCode 32`). |

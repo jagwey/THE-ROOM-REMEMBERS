@@ -22,13 +22,14 @@ texture_filter = 0
 centered = true
 
 [node name="HintLabel" type="Label" parent="."]
-offset_left = -48.0
-offset_top = -94.0
-offset_right = 48.0
-offset_bottom = -74.0
+offset_left = -84.0
+offset_top = -140.0
+offset_right = 84.0
+offset_bottom = -118.0
 theme_override_colors/font_color = Color(0.882, 0.827, 0.82, 1)
 theme_override_font_sizes/font_size = 10
 horizontal_alignment = 1
+clip_text = false
 text = ""
 
 [node name="Blocker" type="StaticBody2D" parent="."]
