@@ -1,0 +1,13 @@
+{
+  "room": "mirrors_1927",
+  "sets": {
+    "echo": [
+      {"s": "Noroi", "t": "Gece kendi kendine oynuyor. Ben karışamıyorum."},
+      {"s": "Noroi", "t": "Bir kadın bağırıyor. Ses kesiliyor. Saat duruyor."},
+      {"s": "@shilda", "t": "O kadın bendim. Dokunma. Bu gece izlenir."},
+      {"s": "Noroi", "t": "Seni kurtaramıyorum."},
+      {"s": "@shilda", "t": "Kurtaramazsın. Ama bu sefer yanında kalabilirsin."},
+      {"s": "Noroi", "t": "İzledim. Geri dönüyorum."}
+    ]
+  }
+}

@@ -9,6 +9,7 @@ const LorePointScript := preload("res://scripts/world/lore_point.gd")
 @export var dialogue_set: StringName = &""
 @export var solve_puzzle: StringName = &""
 @export var locked_line: String = "Önce öteki iz."
+@export var count_line: bool = false
 @export var evidence_title: String = ""
 @export_multiline var evidence_body: String = ""
 
@@ -44,6 +45,13 @@ func on_interact(_by: Node) -> void:
 		var lines: Array = DialogueData.get_set(dialogue_room, dialogue_set)
 		for line in lines:
 			DialogueManager.say(String(line[0]), String(line[1]))
+	if count_line:
+		var deaths := int(GameState.player_progress_knowledge.get("deaths", 0))
+		var bodies := 0
+		var corpses: Variant = GameState.world_memory_state.get("corpses", [])
+		if corpses is Array:
+			bodies = (corpses as Array).size()
+		DialogueManager.say("Noroi", "Duvar %d beden tutuyor. Ben %d ölüm hatırlıyorum." % [bodies, deaths])
 	var ok: bool = await DialogueManager.dialogue_finished
 	if ok:
 		if evidence_title != "":

@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
+[ext_resource type="Script" path="res://scripts/world/ordered_relic.gd" id="relic"]
 
 [node name="MirrorsGallery" type="Node2D"]
 script = ExtResource("room")
@@ -10,4 +11,22 @@ room_width = 1280.0
 bg_region = "mirrors"
 checkpoint = Vector2(120, 288)
 default_spawn = Vector2(120, 288)
-doors = [{"x": 40.0, "to": "mirrors_dual", "spawn": "from_unbroken"}, {"x": 1240.0, "to": "mirrors_unbroken", "spawn": "from_dual"}]
+doors = [{"x": 40.0, "to": "mirrors_dual", "spawn": "from_unbroken"}, {"x": 1240.0, "to": "mirrors_unbroken", "spawn": "from_dual", "req": "mirrors_gallery", "msg": "Önce duvardaki bedenleri say."}]
+
+[node name="Spawns" type="Node2D" parent="."]
+
+[node name="keeper_observe" type="Marker2D" parent="Spawns"]
+position = Vector2(900, 288)
+
+[node name="Interactive" type="Node2D" parent="."]
+
+[node name="MirrorWall" type="Area2D" parent="Interactive"]
+position = Vector2(560, 288)
+script = ExtResource("relic")
+relic_id = "gallery_wall"
+dialogue_room = &"mirrors_gallery"
+dialogue_set = &"reflections"
+solve_puzzle = &"mirrors_gallery"
+count_line = true
+evidence_title = "Bedenler Duvarı"
+evidence_body = "Galeride her cam bir ölümü tutuyor. Duvar, hatırladığımdan fazla beden sayıyor."

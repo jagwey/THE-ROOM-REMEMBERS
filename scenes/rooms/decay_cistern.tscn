@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
+[ext_resource type="Script" path="res://scripts/world/ordered_relic.gd" id="relic"]
 
 [node name="DecayCistern" type="Node2D"]
 script = ExtResource("room")
@@ -11,3 +12,15 @@ bg_region = "decay"
 checkpoint = Vector2(120, 288)
 default_spawn = Vector2(120, 288)
 doors = [{"x": 40.0, "to": "decay_weight", "spawn": "from_decay_cistern"}]
+
+[node name="Interactive" type="Node2D" parent="."]
+
+[node name="WetPages" type="Area2D" parent="Interactive"]
+position = Vector2(480, 288)
+script = ExtResource("relic")
+relic_id = "cistern_diary"
+dialogue_room = &"decay_cistern"
+dialogue_set = &"diary"
+solve_puzzle = &"decay_cistern"
+evidence_title = "Islak Günlük"
+evidence_body = "Sarnıçtaki sayfalar altmış sekiz yılı tutuyor. İnsan eliyle yazılmış, suda kalmış."

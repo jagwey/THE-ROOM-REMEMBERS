@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
+[ext_resource type="Script" path="res://scripts/world/ordered_relic.gd" id="relic"]
 
 [node name="ExperimentObservation" type="Node2D"]
 script = ExtResource("room")
@@ -11,3 +12,15 @@ bg_region = "experiment"
 checkpoint = Vector2(120, 288)
 default_spawn = Vector2(120, 288)
 doors = [{"x": 40.0, "to": "experiment_circuit", "spawn": "from_experiment_observation"}]
+
+[node name="Interactive" type="Node2D" parent="."]
+
+[node name="GlassNotes" type="Area2D" parent="Interactive"]
+position = Vector2(480, 288)
+script = ExtResource("relic")
+relic_id = "observation_notes"
+dialogue_room = &"experiment_observation"
+dialogue_set = &"notes"
+solve_puzzle = &"experiment_observation"
+evidence_title = "Sayım Notu"
+evidence_body = "Gözlem camının masasında Denek 14'ün ölümleri sayılı. İmza kazınmış. Yüz yok."
