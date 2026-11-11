@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=3 uid="uid://torimon_awakening"]
+[gd_scene load_steps=35 format=3 uid="uid://torimon_awakening"]
 
 [ext_resource type="Texture2D" path="res://assets/backgrounds/awakening/far.png" id="1"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/awakening/mid.png" id="2"]
@@ -22,6 +22,7 @@
 [ext_resource type="Script" path="res://scripts/world/room_transition.gd" id="22"]
 [ext_resource type="Script" path="res://scripts/story/awakening_room.gd" id="23"]
 [ext_resource type="Script" path="res://scripts/story/pocket_watch_inspect.gd" id="24"]
+[ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore_flower"]
 [ext_resource type="Texture2D" path="res://assets/props/pressure_plate.png" id="26"]
 
 [ext_resource type="Texture2D" path="res://assets/tiles/tile_00.png" id="walk_tile"]
@@ -201,6 +202,17 @@ script = ExtResource("24")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/PocketWatchInspect"]
 shape = SubResource("PocketWatchShape")
+
+[node name="FreshFlower" type="Area2D" parent="Interactive"]
+position = Vector2(520, 288)
+script = ExtResource("lore_flower")
+lore_id = &"awakening_fresh_flower"
+texture_path = "res://assets/props/red_flower.png"
+sprite_scale = 0.7
+lines = PackedStringArray("Noroi|Taze bir kırmızı çiçek. Bu odada hiçbir şey taze olmamalı.", "Noroi|Biri buradan az önce geçmiş. İz ıslak.")
+evidence_title = "Taze Çiçek"
+evidence_body = "Uyanış odasında kurumamış bir kırmızı çiçek var. Biri önden geçmiş."
+evidence_section = "izler"
 
 [node name="PressurePlate" type="Area2D" parent="Interactive"]
 position = Vector2(940, 300)

@@ -16,6 +16,7 @@ func check_it(label: String, value: bool, detail: Variant = "") -> void:
 ## Bulmacanın çözüldüğü oda + (varsa) önkoşul bulmacası/yeteneği. Kapı grafiği softlock analizi için.
 const PUZZLE_SOURCE := {
 	"awakening_memory_code": ["awakening_seal", ""],
+	"awakening_vigil": ["awakening_vigil", ""],
 	"awakening_seal_weight": ["awakening_seal", ""],
 	"core_seal": ["core_seal_chamber", ""],
 	"core_threshold": ["core_threshold", ""],
