@@ -127,6 +127,11 @@ const HINTS: Dictionary = {
 		"orientation": "Sayfa kenarlarındaki tarih damgaları ve yanık izleri olayların sırasını gösterir.",
 		"explicit": "İlk deney başlangıcından mühürlerin kapandığı felaket gününe kadar olayları sırala."
 	},
+	&"mirrors_gallery": {
+		"goal": "Camlar ölü bedenlerini tutuyor.",
+		"orientation": "Duvar, hatırladığından fazla ceset sayar.",
+		"explicit": "Ortadaki duvarı dinle. Sayıyı kabul edince kırılmayan ayna açılır."
+	},
 	&"mirrors_dual": {
 		"goal": "İkiz aynaların arkasındaki geçit eşzamanlı rezonans istiyor.",
 		"orientation": "Aynadaki yansıma seninle zıt yönde hareket eder; iki kristali aynı anda tetikle.",
@@ -186,6 +191,7 @@ const ROOM_PUZZLES: Dictionary = {
 	"experiment_circuit": [&"experiment_circuit"],
 	"experiment_quarantine": [&"experiment_quarantine_done"],
 	"mirrors_dual": [&"mirrors_dual"],
+	"mirrors_gallery": [&"mirrors_gallery"],
 	"mirrors_labyrinth": [&"mirrors_labyrinth_crossed"],
 	"core_bloom_garden": [&"core_bloom_order"],
 	"core_memory_vault": [&"core_vault_order"],

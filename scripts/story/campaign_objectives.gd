@@ -35,13 +35,13 @@ const _BY_ROOM: Dictionary = {
 	"mirrors_shrine": "Gölge Atılması'nı al; kırmızı perdeden atılarak geç; 2. mühür parçası.",
 	"awakening_vigil": "Gölgeyle konuş. Yolu gösterince sağdaki kapı açılır.",
 	"decay_greenhouse": "Gölge uzaktan mührü tutuyor. Plakaya bas.",
-	"decay_cistern": "Sarnıca bak. Geldiğin kapıdan ağırlık salonuna dön.",
 	"library_clockroom": "Önce 1927 saatini, sonra 1995 saatini dinle.",
 	"library_reading_cell": "Duvar çentiklerini oku. İnsan günleri burada bitmiş.",
 	"experiment_intake": "Önce kabul dosyasını, sonra paltoyu oku.",
-	"experiment_observation": "Camın ardına bak. Yankı devresine dön.",
-	"mirrors_gallery": "Yansımaların arasından geç.",
-	"mirrors_1927": "Kırık geceyi izle. İki yankıya dön.",
+	"mirrors_gallery": "Duvarın saydığı bedenleri dinle. Sonra kırılmayan aynaya geç.",
+	"mirrors_1927": "1927 gecesini izle. Dokunma. İki yankıya dön.",
+	"decay_cistern": "Islak sayfaları oku. Günlük altmış sekiz yılı tutuyor.",
+	"experiment_observation": "Camın yanındaki sayım notunu al. İmza kazınmış.",
 	"core_ascent": "Son merdiveni çık. Mühür odasına in.",
 }
 

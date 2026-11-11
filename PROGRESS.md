@@ -353,7 +353,7 @@ oom_door\) <= 44.0 px mesafede -200 etkileÅŸim Ã¶ncelik bonusu eklendi.
 - [x] Parça 3: Perde 2 (Sera, duvar kovalamacası ipuçları, bahçede ad sahnesi). Sera plakası ortak mühür. Duvar ipucu üç kademe, üç ölümden sonra tek çarpma. Ad çiçekte açılır. Sürüm artmadı.
 - [x] Parça 4: Perde 3 (Kütüphane, Saatler Odası, Okuma Hücresi). Saatler 1927 sonra 1995. Hücrede gün çentikleri. Sürüm artmadı.
 - [x] Parça 5: Perde 4 (Deney, Kabul Odası). Dosya sonra palto: Denek 14 Noroi'dir. Gözlem camı Tur 2'de (Parça 6). Sürüm artmadı.
-- [ ] Parça 6: Perde 5 (Aynalar, Bedenler Galerisi, Kırık Gece) + iki geri dönüş turu.
+- [x] Parça 6: Perde 5 (Aynalar, Bedenler Galerisi, Kırık Gece) + iki geri dönüş turu. Galeri ceset sayar. 1927 izlenir. Sarnıç günlüğü ve gözlem notu Gölge Atılması ardında. Sürüm artmadı.
 - [ ] Parça 7: Perde 6 (Son Merdiven) + toplam süre ölçümü 165–195 dk.
 - [ ] Sürüm hazırlığı ve Play Store kontrol listesi (yalnız kullanıcı isteyince).
 
