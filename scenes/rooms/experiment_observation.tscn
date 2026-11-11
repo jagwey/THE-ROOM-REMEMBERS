@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
 [ext_resource type="Script" path="res://scripts/world/ordered_relic.gd" id="relic"]
+[ext_resource type="Texture2D" path="res://assets/trr_refresh/lab/observation_clipboard.png" id="clipboard"]
 
 [node name="ExperimentObservation" type="Node2D"]
 script = ExtResource("room")
@@ -24,3 +25,9 @@ dialogue_set = &"notes"
 solve_puzzle = &"experiment_observation"
 evidence_title = "Sayım Notu"
 evidence_body = "Gözlem camının masasında Denek 14'ün ölümleri sayılı. İmza kazınmış. Yüz yok."
+
+[node name="RelicArt" type="Sprite2D" parent="Interactive/GlassNotes"]
+texture_filter = 1
+position = Vector2(0, -20)
+scale = Vector2(0.68, 0.68)
+texture = ExtResource("clipboard")

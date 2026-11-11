@@ -35,22 +35,13 @@ var _btn_touch: Dictionary = {}
 var _buttons_by_name: Dictionary = {}
 var _journal: CanvasLayer
 
-## Panel PNG ana çerçeve (alpha bileşen); alttaki süs hariç.
-## Kaynak: docs/.../panel_olcumleri.json → dialogue [62,3,257,115)
-const DIALOGUE_ATLAS := Rect2(61, 2, 197, 114)
-## Sigil süsü (atlas bölgesi içinde): sütun aralığı, satır sayısı, yedek düz kenar şeridi.
-const SIGIL_X0 := 76
-const SIGIL_X1 := 135
-const SIGIL_ROWS := 46
-const SIGIL_SRC_X := 44
-const SIGIL_SRC_W := 32
-
 var _seal_buffer: String = ""
 var _seal_waiting: bool = false
 var _seal_result: String = ""
 const PortraitsLib := preload("res://scripts/ui/dialogue_portraits.gd")
 const MedallionScript := preload("res://scripts/ui/portrait_medallion.gd")
 const DIALOGUE_MARGIN_BASE := 30
+const MEDALLION_POS := Vector2(22, 52)
 var _medallion: Control
 var _portrait_speaker: String = "~none~"
 var _portrait_inset: float = 0.0
@@ -124,49 +115,18 @@ func _setup_textures() -> void:
 	btn_skill.ring_icon = load("res://assets/props/slash.png")
 	btn_jump.texture_normal = null
 	btn_journal.texture_normal = load("res://assets/hud/journal.png")
-	if dialogue_panel:
-		_build_dialogue_frame()
-		if _skin_key == &"~":
-			dialogue_panel.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	dialogue_panel.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	dialogue_continue.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	_apply_dialogue_skin("")
 
 
-## dialogue.png üst orta "sigil" süsü yatayda gerilince bozulur: sigil sütunları düz kenarla
-## değiştirilir ve süs ayrı (gerilmeyen) bir TextureRect olarak üstte çizilir.
-## v1.5: konuşmacıya göre yüksek çözünürlüklü gotik çerçeve + isimlik (Shilda kırmızı diken,
-## Noroi beyaz çiçek, diğerleri gümüş). Bulunamazsa eski piksel çerçeveye düşer.
-const DIALOGUE_SKINS := {
-	&"default": ["res://assets/panels/dialogue_skins/dialogue_default.png", ""],
-	&"shilda": ["res://assets/panels/dialogue_skins/dialogue_warning.png", "res://assets/panels/dialogue_skins/name_shilda.png"],
-	## Ad bilinmeyen Shilda: aynı çerçeve/isimlik, plakada "???" yazılı.
-	&"shilda_unknown": ["res://assets/panels/dialogue_skins/dialogue_warning.png", "res://assets/panels/dialogue_skins/name_unknown.png"],
-	&"noroi": ["res://assets/panels/dialogue_skins/dialogue_memory.png", "res://assets/panels/dialogue_skins/name_noroi.png"],
-}
-## Panel boyutu (çerçeve görselleri ~3.27:1; 540x165 oranı korur, esneme <%1).
-const DIALOGUE_SIZE := Vector2(540, 165)
-const NAMEPLATE_H := 32.0
-const NAMEPLATE_POS := Vector2(100.0, 26.0)
-const MEDALLION_POS := Vector2(22, 52)
-## Adsız anlatıcı satırları: portre yok, varsayılan çerçeve, isimlik/konuşmacı yok.
+const DIALOGUE_DEFAULT := preload("res://assets/trr_refresh/dialogue/dialogue_default.png")
+const DIALOGUE_MEMORY := preload("res://assets/trr_refresh/dialogue/dialogue_memory.png")
+const DIALOGUE_WARNING := preload("res://assets/trr_refresh/dialogue/dialogue_warning.png")
+const DIALOGUE_NEXT := preload("res://assets/trr_refresh/dialogue/next_arrow.png")
+const DIALOGUE_LAST := preload("res://assets/trr_refresh/dialogue/last_line_diamond.png")
+## Adsız anlatıcı satırları: portre ve konuşmacı etiketi yok.
 const NARRATOR_NAMES := ["", "Sistem", "Kayıt"]
-var _skin_cache: Dictionary = {}
-var _skin_key: StringName = &"~"
-var _nameplate: TextureRect
-
-
-func _smooth_tex(path: String) -> Texture2D:
-	if path == "":
-		return null
-	if _skin_cache.has(path):
-		return _skin_cache[path]
-	var base := load(path) as Texture2D
-	var out: Texture2D = base
-	if base:
-		var img := base.get_image()
-		if img != null and not img.is_empty() and not img.is_compressed():
-			img.generate_mipmaps()
-			out = ImageTexture.create_from_image(img)
-	_skin_cache[path] = out
-	return out
 
 
 func _skin_for(speaker: String) -> StringName:
@@ -184,103 +144,22 @@ func _is_narrator(speaker: String) -> bool:
 	return NARRATOR_NAMES.has(speaker.strip_edges())
 
 
-## Çerçeve + isimlik konuşmacıya göre anında değişir (Shilda=uyarı, Noroi=anı, diğer=varsayılan).
 func _apply_dialogue_skin(speaker: String) -> void:
-	var key := _skin_for(speaker)
-	if dialogue_panel == null:
-		return
-	if key != _skin_key:
-		var paths: Array = DIALOGUE_SKINS[key]
-		var frame := _smooth_tex(paths[0])
-		if frame == null:
-			return
-		_skin_key = key
-		dialogue_panel.texture = frame
-		dialogue_panel.patch_margin_left = 0
-		dialogue_panel.patch_margin_top = 0
-		dialogue_panel.patch_margin_right = 0
-		dialogue_panel.patch_margin_bottom = 0
-		dialogue_panel.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
-		var sigil := dialogue_panel.get_node_or_null("Sigil")
-		if sigil:
-			sigil.queue_free()
-		if _nameplate == null:
-			_nameplate = TextureRect.new()
-			_nameplate.name = "Nameplate"
-			_nameplate.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			_nameplate.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-			_nameplate.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT
-			_nameplate.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
-			dialogue_panel.add_child(_nameplate)
-		var plate := _smooth_tex(paths[1])
-		_nameplate.texture = plate
-		_nameplate.visible = plate != null
-		if plate:
-			var w := NAMEPLATE_H * float(plate.get_width()) / maxf(1.0, float(plate.get_height()))
-			_nameplate.position = NAMEPLATE_POS
-			_nameplate.size = Vector2(w, NAMEPLATE_H)
-	_apply_dialogue_layout(speaker)
+	match _skin_for(speaker):
+		&"shilda", &"shilda_unknown":
+			dialogue_panel.texture = DIALOGUE_WARNING
+		&"noroi":
+			dialogue_panel.texture = DIALOGUE_MEMORY
+		_:
+			dialogue_panel.texture = DIALOGUE_DEFAULT
 
-
-## Konuşmacı etiketi / isimlik / metin hizası: boş "ölü satır" kalmaz, metin alanı sabit yükseklikte.
-func _apply_dialogue_layout(speaker: String) -> void:
 	var narrator := _is_narrator(speaker)
-	var has_plate := _nameplate != null and _nameplate.texture != null and not narrator
-	if _nameplate:
-		_nameplate.visible = has_plate
-	dialogue_speaker.visible = not narrator and not has_plate
-	dialogue_speaker.modulate.a = 1.0
-	var margin := get_node_or_null("SafeArea/Dialogue/Margin") as MarginContainer
-	if margin:
-		var top := 62   # isimlik altında
-		var bottom := 20
-		if narrator:
-			top = 41
-			bottom = 41
-		elif not has_plate:
-			top = 35    # konuşmacı etiketi ilk satır
-		margin.add_theme_constant_override("margin_top", top)
-		margin.add_theme_constant_override("margin_bottom", bottom)
-		margin.add_theme_constant_override("margin_right", 44)
+	dialogue_speaker.visible = not narrator
+	var margin := $SafeArea/Dialogue/Margin as MarginContainer
+	margin.add_theme_constant_override("margin_top", 38 if narrator else 28)
+	margin.add_theme_constant_override("margin_bottom", 38 if narrator else 20)
+	margin.add_theme_constant_override("margin_right", 44)
 	dialogue_text.vertical_alignment = VERTICAL_ALIGNMENT_CENTER if narrator else VERTICAL_ALIGNMENT_TOP
-
-
-func _build_dialogue_frame() -> void:
-	_apply_dialogue_skin("")
-	if _skin_key != &"~":
-		return
-	var src: Texture2D = load("res://assets/panels/dialogue.png")
-	var region := Rect2i(int(DIALOGUE_ATLAS.position.x), int(DIALOGUE_ATLAS.position.y), int(DIALOGUE_ATLAS.size.x), int(DIALOGUE_ATLAS.size.y))
-	var img: Image = src.get_image() if src else null
-	if img == null or img.is_empty() or img.is_compressed():
-		var atlas := AtlasTexture.new()
-		atlas.atlas = src
-		atlas.region = DIALOGUE_ATLAS
-		dialogue_panel.texture = atlas
-		return
-	var base: Image = img.get_region(region)
-	var patched: Image = base.duplicate()
-	for y in range(0, SIGIL_ROWS):
-		for x in range(SIGIL_X0, SIGIL_X1):
-			patched.set_pixel(x, y, base.get_pixel(SIGIL_SRC_X + (x - SIGIL_X0) % SIGIL_SRC_W, y))
-	dialogue_panel.texture = ImageTexture.create_from_image(patched)
-	var sigil := TextureRect.new()
-	sigil.name = "Sigil"
-	var at := AtlasTexture.new()
-	at.atlas = src
-	at.region = Rect2(region.position.x + SIGIL_X0, region.position.y, SIGIL_X1 - SIGIL_X0, SIGIL_ROWS)
-	sigil.texture = at
-	sigil.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	sigil.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	sigil.stretch_mode = TextureRect.STRETCH_SCALE
-	sigil.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	sigil.anchor_left = 0.5
-	sigil.anchor_right = 0.5
-	sigil.offset_left = -float(SIGIL_X1 - SIGIL_X0) * 0.5
-	sigil.offset_right = float(SIGIL_X1 - SIGIL_X0) * 0.5
-	sigil.offset_top = 0.0
-	sigil.offset_bottom = float(SIGIL_ROWS)
-	dialogue_panel.add_child(sigil)
 
 
 func _setup_seal_pad() -> void:
@@ -487,10 +366,9 @@ func _on_dialogue_page(speaker: String, text: String, page_index: int, page_coun
 	_update_control_visibility()
 
 
-## Devam oku (next_arrow.png): yazı bitince görünür, hafif yukarı-aşağı nabız. Son sayfada soluk.
+## Yazı bitince devam oku veya son satır işareti görünür.
 func _set_continue(show_arrow: bool, more: bool) -> void:
-	if dialogue_continue.texture == null:
-		dialogue_continue.texture = _smooth_tex("res://assets/panels/dialogue_skins/next_arrow.png")
+	dialogue_continue.texture = DIALOGUE_NEXT if more else DIALOGUE_LAST
 	dialogue_continue.visible = show_arrow
 	dialogue_continue.modulate.a = 1.0 if more else 0.6
 	if _continue_tween and _continue_tween.is_valid():

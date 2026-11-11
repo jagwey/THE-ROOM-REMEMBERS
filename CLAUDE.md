@@ -25,8 +25,9 @@ Yan görünüşlü bellek/lanet oyunu. Kapalı kaynak, private repo. Paket: com.
 - Her sürümde: `project.godot` `config/version` + `export_presets.cfg` `version/code` (+1) ve `version/name` artır → APK derle → `TheRoomRemembers-X.Y.Z-android-arm64.apk`.
 - Yayın: `gh release create vX.Y.Z <apk> --repo jagwey/THE-ROOM-REMEMBERS-release --title vX.Y.Z --notes "..."` (tag `v` önekli, APK asset adı `.apk` ile bitsin). İsteğe bağlı aynı APK private repoya da.
 - Release'i oraya atmazsan oyuncular güncellemeyi göremez.
+- **Release temizliği (ZORUNLU, GitHub 2 GB sınırı):** her iki repoda (`THE-ROOM-REMEMBERS-release` ve `THE-ROOM-REMEMBERS`) en fazla güncel sürüm + 3 eski sürüm kalır. Yeni release yayınlandıktan sonra en yeni 4'ten eskilerini sil: `gh release delete vX.Y.Z --repo <repo> --cleanup-tag --yes`. Silmeden önce `gh release list --repo <repo>` ile kontrol et; `latest` asla silinmez.
 
 ## Kritik kararlar
-- Güncel sürüm: v1.12.4 (kaynak: `project.godot` `config/version`; bu satır bayatlayabilir, orayı kontrol et)
+- Güncel sürüm: v1.12.5 (kaynak: `project.godot` `config/version`; bu satır bayatlayabilir, orayı kontrol et)
 - v0.10.1: awakening gate, objective, softlock korumaları, tek final (BÖLÜM I SONU / END OF PART I), core_choice kaldırıldı
 - Çalışma planı ve durum: `PROGRESS.md` (her alt görevden sonra güncelle, sıkıştırma sonrası ilk onu oku)
