@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
+[ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore"]
 
 [node name="AwakeningVigil" type="Node2D"]
 script = ExtResource("room")
@@ -16,3 +17,15 @@ doors = [{"x": 40.0, "to": "awakening_seal", "spawn": "from_decay"}, {"x": 1240.
 
 [node name="keeper_observe" type="Marker2D" parent="Spawns"]
 position = Vector2(640, 288)
+
+[node name="Interactive" type="Node2D" parent="."]
+
+[node name="VigilTrace" type="Area2D" parent="Interactive"]
+position = Vector2(480, 288)
+script = ExtResource("lore")
+lore_id = &"vigil_who"
+texture_path = "res://assets/props/memory_echo.png"
+lines = PackedStringArray("Noroi|Kimdi o? Neden yardım etti?", "Noroi|Adımı sormamı istemedi. Beni tanıdığını söyledi.", "Noroi|Unutursam bir daha uyanamazmışım. Bu yüzden iz bırakıyor.")
+evidence_title = "Nöbetin İzi"
+evidence_body = "Gölge adını vermedi. Beni tanıdığını söyledi. Unutursam bir daha uyanamazmışım; bu yüzden yardım etti."
+evidence_section = "izler"

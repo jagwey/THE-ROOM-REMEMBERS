@@ -131,6 +131,13 @@ func get_active_room_id() -> StringName:
 	return _current
 
 
+func get_active_room_root() -> Node2D:
+	var entry: Variant = _rooms.get(_current, null)
+	if entry == null:
+		return null
+	return (entry as Dictionary).get("root") as Node2D
+
+
 func get_active_room_bounds() -> Rect2:
 	var b := get_room_bounds(_current)
 	if b.size.x <= 0.0 or b.size.y <= 0.0:
@@ -493,7 +500,7 @@ func _setup_m3_mechanics(room_id: StringName, root: Node2D, spawns: Dictionary) 
 		"experiment_cells": [Vector2(650, 288)],
 		"experiment_circuit": [Vector2(480, 288)],
 		"mirrors_reverse": [Vector2(480, 288)],
-		"mirrors_labyrinth": [Vector2(520, 288)],
+		"mirrors_labyrinth": [Vector2(1060, 288)],
 	}
 	if SHIELDED_SHADES.has(rid):
 		var shield_scene := load("res://scenes/world/memory_shade_shielded.tscn") as PackedScene

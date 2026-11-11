@@ -21,6 +21,8 @@ var _carrier: Node2D = null
 var _last_safe: Vector2 = Vector2.ZERO
 const CARRY_OFFSET := Vector2(-3, -50)
 var is_anchored: bool = false
+var _stepped: bool = false
+var _land_fx_ms: int = -4000
 
 
 func _ready() -> void:
@@ -190,7 +192,9 @@ func _floor_y_at(x: float, ref_y: float) -> Variant:
 
 func _physics_process(_delta: float) -> void:
 	if _carrier == null:
+		_poll_step()
 		return
+	_stepped = false
 	if not is_instance_valid(_carrier):
 		_carrier = null
 		_release(_last_safe)
@@ -485,11 +489,11 @@ static func make_light_texture() -> Texture2D:
 
 
 func set_anchored(value: bool) -> void:
-	is_anchored = value
 	set_anchoring(value, &"")
 
 
 func set_anchoring(value: bool, plate_id: StringName = &"") -> void:
+	var was_anchored := is_anchored
 	is_anchored = value
 	if _data is Dictionary:
 		_data["anchored"] = value
@@ -505,6 +509,39 @@ func set_anchoring(value: bool, plate_id: StringName = &"") -> void:
 				c["anchored"] = false
 				c["anchoring"] = false
 			break
+	if value and not was_anchored:
+		_land_feedback()
+
+
+func _poll_step() -> void:
+	var on := _player_on_top()
+	if on and not _stepped:
+		_land_feedback()
+	_stepped = on
+
+
+func _player_on_top() -> bool:
+	var p := get_tree().get_first_node_in_group("player") as CharacterBody2D
+	if p == null or not p.is_on_floor():
+		return false
+	var top := global_position.y - 15.0
+	if absf(p.global_position.y - top) > 12.0:
+		return false
+	return absf(p.global_position.x - global_position.x) <= 20.0
+
+
+func _land_feedback() -> void:
+	var now := Time.get_ticks_msec()
+	if now - _land_fx_ms < 180:
+		return
+	_land_fx_ms = now
+	var cam := get_tree().get_first_node_in_group("follow_camera")
+	if cam and cam.has_method("add_trauma"):
+		cam.add_trauma(0.16)
+	var am := get_node_or_null("/root/AudioManager")
+	if am and am.has_method("play_sfx"):
+		am.play_sfx(&"land", -4.0)
+	_spawn_dust(1.0)
 
 
 func _persist_position() -> void:

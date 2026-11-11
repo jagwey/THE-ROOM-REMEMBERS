@@ -16,10 +16,10 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.9.0"><img src="https://img.shields.io/badge/Son_S%C3%BCr%C3%BCm_(APK)-v1.9.0-8B0000?style=for-the-badge&logo=android&logoColor=white" alt="Latest Release v1.9.0" /></a>
+  <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS"><img src="https://img.shields.io/badge/Kaynak-v1.12.0-8B0000?style=for-the-badge&logo=godotengine&logoColor=white" alt="Kaynak v1.12.0" /></a>
   <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS/releases"><img src="https://img.shields.io/badge/T%C3%BCm_S%C3%BCr%C3%BCmler-9_Aktif_Paket-5c1d3d?style=for-the-badge&logo=github" alt="All Releases" /></a>
   <a href="https://godotengine.org/"><img src="https://img.shields.io/badge/Godot_Engine-4.7.2-478CBF?style=for-the-badge&logo=godotengine&logoColor=white" alt="Godot 4.7.2" /></a>
-  <img src="https://img.shields.io/badge/D%C3%BCnya-6_B%C3%B6lge_%C2%B7_30_Oda_%C2%B7_B%C3%B6l%C3%BCm_I-2b1838?style=for-the-badge" alt="World Scope" />
+  <img src="https://img.shields.io/badge/D%C3%BCnya-6_B%C3%B6lge_%C2%B7_40_Oda_%C2%B7_B%C3%B6l%C3%BCm_I-2b1838?style=for-the-badge" alt="World Scope" />
 </p>
 
 > **Kapalı kaynak / proprietary.** Bu depo **private** tutulur; kaynak kod paylaşılmaz. Oyunculara yalnızca derlenmiş APK, public [THE-ROOM-REMEMBERS-release](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases) deposundan dağıtılır. © TORIMON — All rights reserved.
@@ -48,11 +48,12 @@ Oyuncu **Noroi** olarak ne adını ne de neden bu yıkık tesiste tutulduğunu b
 
 Depodaki tüm derlenmiş Android (`arm64-v8a`) APK sürümleri aktif olarak **[GitHub Releases](https://github.com/jagwey/THE-ROOM-REMEMBERS/releases)** sayfasında sunulmaktadır.
 
-> **Önerilen Güncel Sürüm:** [**v1.9.0 (`TheRoomRemembers-1.9.0-android-arm64.apk`)**](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.9.0) — Bahçe, kasa, üst raflar ve ayna labirenti yeniden oynanır; açılış ve final sıkılaştı; günlük ipuçları kademeli.
+> **Kaynak sürüm:** **v1.12.0** (`versionCode 37`). Son yayımlanmış APK: [**v1.9.0**](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.9.0).
 
 | Sürüm | Durum | APK Dosyası / İndirme | Öne Çıkan Yenilikler ve Kapsam |
 | :--- | :---: | :--- | :--- |
-| **[v1.9.0](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.9.0)** | 🟢 **Güncel (Latest)** | [📥 `TheRoomRemembers-1.9.0-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.9.0) | Derin oynanış geçişi: sıralı bahçe ve kasa, yalan ayna, raf tahtası, kademeli günlük ipucu, final cevabı (`versionCode 34`). |
+| **v1.12.0** | 🟢 **Güncel (kaynak)** | APK bu sürümde ayrıca yayınlanır | Kısa nöbet, ceset basamağı, vuruş ve ölüm hissi, oda girişi kamerası (`versionCode 37`). |
+| **[v1.9.0](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.9.0)** | Önceki | [📥 `TheRoomRemembers-1.9.0-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.9.0) | Derin oynanış geçişi: sıralı bahçe ve kasa, yalan ayna, raf tahtası, kademeli günlük ipucu, final cevabı (`versionCode 34`). |
 | **[v1.8.1](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.8.1)** | Önceki | [📥 `TheRoomRemembers-1.8.1-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.8.1) | Hareket kilidi, taş itme ve kapı etkileşimi düzeltildi; bölge motifleri, diyalog cilası, bulmaca ödül afişi (`versionCode 33`). |
 | **[v1.8.0](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.8.0)** | Önceki | [📥 `TheRoomRemembers-1.8.0-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.8.0) | Kapı sonrası joystick restorasyonu, door_controls audit, Bölüm II teaser, ???/X? portreleri (`versionCode 32`). |
 | **[v1.7.0](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.7.0)** | Önceki | [📥 `TheRoomRemembers-1.7.0-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.7.0) | Shilda HD Remaster, 3 katmanlı hafıza, tek kanonik final (`versionCode 31`). |
@@ -112,18 +113,18 @@ Oyun, her ölümde neyin silinip neyin kalacağını katı bir mimariyle ayırı
 
 ---
 
-## 🗺️ Dünya Atlası: 6 Ana Bölge ve 30 Bağlı Oda
+## 🗺️ Dünya Atlası: 6 Ana Bölge ve 40 Bağlı Oda
 
-Oyun dünyası, birbirine ana koridorlar, mühürlü kapılar, yan odalar ve **Çatlak Ayna (`Cracked Mirror`)** hızlı seyahat noktalarıyla bağlı **6 atmosferik bölge** ve **30 sahneden** oluşur:
+Oyun dünyası, birbirine ana koridorlar, mühürlü kapılar, yan odalar ve **Çatlak Ayna (`Cracked Mirror`)** hızlı seyahat noktalarıyla bağlı **6 atmosferik bölge** ve **40 sahneden** (`scenes/rooms/`) oluşur:
 
 | Bölge | Görsel Atmosfer | Odalar ve Temel Bulmacalar |
 | :--- | :---: | :--- |
-| **I. UYANIŞ MAHMUZU**<br/>*(`awakening`)* | <img src="assets/backgrounds/awakening/far.png" width="220" alt="Uyanış Mahmuzu" /> | **Odalar:** `Uyanış`, `Gözlem Balkonu`, `İlk Bedenler Mahzeni`, `Kırık Geçit`, `Mühürlü Eşik`<br/>**Odak:** Cep saati (`314`), ilk basınç plakası, Shilda ile ilk karşılaşma, kırmızı yarıklardan kaçış ve ilk bellek mührü. |
-| **II. ÇÜRÜME BAHÇESİ**<br/>*(`decay`)* | <img src="assets/backgrounds/decay/far.png" width="220" alt="Çürüme Bahçesi" /> | **Odalar:** `Sarmaşıklı Koridor`, `Yeraltı Mezarlığı`, `Çürüme Bahçesi`, `Shilda'nın Duvarı`, `Ağırlık Odası`<br/>**Odak:** Kızıl çiçek kanıtları, hibrit taş/ceset ağırlık bulmacaları, sarmaşık kapıları ve Shilda'ya güven seçimi (`trusted_keeper`). |
-| **III. HAFIZA KÜTÜPHANESİ**<br/>*(`library`)* | <img src="assets/backgrounds/library/far.png" width="220" alt="Hafıza Kütüphanesi" /> | **Odalar:** `Kütüphane Girişi`, `Üst Raflar`, `Kayıp Sayfa Odası`, `Yasak Kanat`, `Tanık Odası`<br/>**Odak:** Yırtık sayfa sıralama bulmacası, **Ruh Kesimi (`SoulSlash`)** yeteneğinin kazanılması, `251` mührü ve ilk mühür parçası (`seal_fragment_library`). |
-| **IV. YASAK LABORATUVAR**<br/>*(`experiment`)* | <img src="assets/backgrounds/experiment/far.png" width="220" alt="Yasak Laboratuvar" /> | **Odalar:** `Deney Hücreleri`, `Karantina Koğuşu`, `Yankı Devresi`, `Otorite Kayıt Odası`, `Çekirdek İletkeni`<br/>**Odak:** `EchoAltar` & `EchoTwin` ile eşzamanlı devre bulmacaları, zehirli lanet bulutları, `418` mührü ve deney kayıtları. |
-| **V. AYNALAR SALONU**<br/>*(`mirrors`)* | <img src="assets/backgrounds/mirrors/far.png" width="220" alt="Aynalar Salonu" /> | **Odalar:** `Ters Yansıma`, `Ayna Labirenti`, `Ayna Tapınağı`, `İkili Ayna`, `Kırılmamış Ayna`<br/>**Odak:** **Gölge Atılması (`ShadowDash`)** yeteneğinin kazanılması, kalkanlı Bellek Gölgeleri, `729` mührü ve ikinci mühür parçası (`seal_fragment_mirrors`). |
-| **VI. BELLEK ÇEKİRDEĞİ**<br/>*(`core`)* | <img src="assets/backgrounds/core/far.png" width="220" alt="Bellek Çekirdeği" /> | **Odalar:** `Çekirdek Eşiği`, `Mühür Odası`, `Bellek Mahzeni`, `Çiçeklenme Bahçesi`, `Çekirdek`<br/>**Odak:** İki mühür parçasının birleştirilmesi, geçmişin tam hakikati (`truth_seen`) ve Shilda ile birlikte kırılan son mühür. |
+| **I. UYANIŞ MAHMUZU**<br/>*(`awakening`)* | <img src="assets/backgrounds/awakening/far.png" width="220" alt="Uyanış Mahmuzu" /> | **Odalar (6):** `Uyanış`, `Gözlem Balkonu`, `İlk Bedenler Mahzeni`, `Kırık Geçit`, `Mühürlü Eşik`, `Nöbet Odası`<br/>**Odak:** Cep saati (`314`), ilk basınç plakası, Shilda ile ilk karşılaşma, kırmızı yarıklardan kaçış ve ilk bellek mührü. |
+| **II. ÇÜRÜME BAHÇESİ**<br/>*(`decay`)* | <img src="assets/backgrounds/decay/far.png" width="220" alt="Çürüme Bahçesi" /> | **Odalar (7):** `Sarmaşık Yolu`, `Ağırlık Salonu`, `Sera`, `Çatlak Duvar`, `Solmuş Bahçe`, `Kemik Mahzeni`, `Sarnıç`<br/>**Odak:** Kızıl çiçek kanıtları, hibrit taş/ceset ağırlık bulmacaları, sarmaşık kapıları ve Shilda'ya güven seçimi (`trusted_keeper`). |
+| **III. HAFIZA KÜTÜPHANESİ**<br/>*(`library`)* | <img src="assets/backgrounds/library/far.png" width="220" alt="Hafıza Kütüphanesi" /> | **Odalar (7):** `Hafıza Kütüphanesi`, `Üç Tanık`, `Saatler Odası`, `Unutulmuş Sayfa`, `Üst Raflar`, `Yasak Kanat`, `Okuma Hücresi`<br/>**Odak:** Yırtık sayfa sıralama bulmacası, **Ruh Kesimi (`SoulSlash`)** yeteneğinin kazanılması, `251` mührü ve ilk mühür parçası (`seal_fragment_library`). |
+| **IV. YASAK LABORATUVAR**<br/>*(`experiment`)* | <img src="assets/backgrounds/experiment/far.png" width="220" alt="Yasak Laboratuvar" /> | **Odalar (7):** `Gözlem Hücreleri`, `Kabul Odası`, `Yankı Devresi`, `Yetki Masası`, `Kara Tecrit Mahzeni`, `Ruh Damarları Kanalı`, `Gözlem Camı`<br/>**Odak:** `EchoAltar` & `EchoTwin` ile eşzamanlı devre bulmacaları, zehirli lanet bulutları, `418` mührü ve deney kayıtları. |
+| **V. AYNALAR SALONU**<br/>*(`mirrors`)* | <img src="assets/backgrounds/mirrors/far.png" width="220" alt="Aynalar Salonu" /> | **Odalar (7):** `Ayna Geçidi`, `İki Yankı`, `Bedenler Galerisi`, `Kırılmayan Ayna`, `Yansıma Labirenti`, `Ayna Tapınağı`, `Kırık Gece`<br/>**Odak:** **Gölge Atılması (`ShadowDash`)** yeteneğinin kazanılması, kalkanlı Bellek Gölgeleri, `729` mührü ve ikinci mühür parçası (`seal_fragment_mirrors`). |
+| **VI. BELLEK ÇEKİRDEĞİ**<br/>*(`core`)* | <img src="assets/backgrounds/core/far.png" width="220" alt="Bellek Çekirdeği" /> | **Odalar (6):** `Son Eşik`, `Son Merdiven`, `Mühür Odası`, `Hafıza Kasası`, `Çiçek Bahçesi`, `Çekirdek`<br/>**Odak:** İki mühür parçasının birleştirilmesi, geçmişin tam hakikati (`truth_seen`) ve Shilda ile birlikte kırılan son mühür. |
 
 <p align="center">
   <img src="media/readme/02-passage.png" alt="Kırık Geçit Koridoru" width="400" />
@@ -160,7 +161,7 @@ Proje, **Godot 4.7.2 (`GL Compatibility` mobil/masaüstü ortak işleyici)** üz
 flowchart TD
     subgraph Autoloads["🧠 Autoload Tekilleri (scripts/autoload/)"]
         GS["GameState<br/>(3 Katmanlı Hafıza & Can)"]
-        RM["RoomManager<br/>(30 Oda Kaydı & Geçişler)"]
+        RM["RoomManager<br/>(40 Oda Kaydı & Geçişler)"]
         DM["DeathManager<br/>(5 Fazlı Ölüm & Ruh Göçü)"]
         CM["CorpseManager<br/>(Ceset & Yankı İzi Kaydı)"]
         CuM["CurseManager<br/>(Lanet %0-100 & Berraklık)"]
@@ -222,7 +223,7 @@ THE-ROOM-REMEMBERS/
 │   └── tiles/                   # Zemin ve duvar piksel-art karo setleri
 ├── scenes/
 │   ├── main/main.tscn           # Kök sahne (WorldRoot, Player, FollowCamera, UI katmanları)
-│   ├── rooms/                   # 30 bağlı oda sahnesi (awakening, decay, library, experiment, mirrors, core)
+│   ├── rooms/                   # 40 bağlı oda sahnesi (awakening, decay, library, experiment, mirrors, core)
 │   ├── player/ & keeper/        # Noroi ve Shilda sahneleri
 │   ├── world/                   # Fiziksel ceset, çatlak ayna ve Bellek Gölgesi (Memory Shade) sahneleri
 │   └── ui/                      # HUD, Günlük (Journal), Bölge Kartı, Lanet VFX sahneleri (final: scripts/story/final_sequence.gd)
@@ -275,7 +276,7 @@ THE-ROOM-REMEMBERS/
 4. Türkçe hızlı oynanış rehberi için [`PLAY_TR.md`](PLAY_TR.md) dosyasına göz atabilirsiniz.
 
 ### 3. Otomatik QA ve Denetim Testlerini Çalıştırma (`scripts/dev/`)
-Projede 30 odanın kapı grafiğini, softlock olasılıklarını, kayıt/yükleme bütünlüğünü, ölüm döngüsünü ve kontrolleri doğrulayan kapsamlı bir **Headless QA Test Altyapısı** bulunur:
+Projede 40 odanın kapı grafiğini, softlock olasılıklarını, kayıt/yükleme bütünlüğünü, ölüm döngüsünü ve kontrolleri doğrulayan kapsamlı bir **Headless QA Test Altyapısı** bulunur:
 
 ```powershell
 # 107 noktalı tam sürüm ve oda/kapı grafiği denetimi

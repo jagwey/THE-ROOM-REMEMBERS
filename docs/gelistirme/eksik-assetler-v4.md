@@ -32,7 +32,23 @@ Kareler geldiğinde yalnız `_update_anim()` içinde faz → animasyon eşlemesi
 - `observe`, `walk`, `attack`, `grieve` var. Eksik: `talk` (2–3 kare), `hurt` (1–2), dönüş (turn) 2 kare.
 
 ## Ses / müzik
-- Tüm ses şu an **prosedürel** (`scripts/audio/sound_bank.gd`); `assets/` altında hiç .ogg/.wav/.mp3 yok.
+- Tüm ses şu an **prosedürel** (`scripts/audio/sound_bank.gd`); `assets/` altında hiç .ogg/.wav/.mp3 yok. Yer tutucu dosya koyma.
 - Müzik 01–16 dosyaları **YOK**. Gelirse önerilen yol: `assets/audio/music/01_title.ogg` … `16_*.ogg`.
   - 01 başlık ekranı, diğerleri bölge sırasına göre (awakening, decay, archive, garden, core, ending…).
 - Eksik gerçek SFX (prosedürel yerine): ayak (taş/ahşap), iniş, kapı açılma/mühür kırılma, Shilda nefes/çığlık, sayfa çevirme.
+
+### Beklenen ogg adları (v1.12.0)
+Kod dosya varsa onu çalar, yoksa synth'e düşer. Dosyalar depoya konmaz.
+
+| Dosya | Ne zaman |
+|---|---|
+| `assets/audio/ambient/awakening.ogg` | Uyanış ortamı |
+| `assets/audio/ambient/decay.ogg` | Çürüme ortamı |
+| `assets/audio/ambient/library.ogg` | Kütüphane ortamı |
+| `assets/audio/ambient/experiment.ogg` | Deney ortamı |
+| `assets/audio/ambient/mirrors.ogg` | Aynalar ortamı |
+| `assets/audio/ambient/core.ogg` | Çekirdek ortamı |
+| `assets/audio/stingers/death.ogg` | Ölüm vuruşu |
+| `assets/audio/stingers/wake.ogg` | Uyanış vuruşu |
+
+Ortam döngüsü `play_region_ambient` / `set_region` içinden okunur. Ölüm `play_death_stinger`, uyanış `play_wake_stinger`. `footstep`, `land`, `sword_hit` perde ve şiddeti ±%8 rastgele.

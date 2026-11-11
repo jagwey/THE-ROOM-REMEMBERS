@@ -19,7 +19,7 @@ const APEX_SPEED := 60.0
 const APEX_GRAVITY_MULT := 0.55
 const LAND_SFX_SPEED := 160.0
 const MAX_FALL := 520.0
-const HITSTOP := 0.04 ## 35-45 ms
+const HITSTOP := 0.06 ## ~60 ms
 const SKILL_COOLDOWN := 0.8
 ## Fizik katmanları: 1 dünya · 2 oyuncu · 4 tehlike · 8 etkileşim · 16 lanet bariyeri · 32 kırılabilir
 const LAYER_CURSE_BARRIER := 16
@@ -452,15 +452,11 @@ func _on_hit_confirm(target: Node, trauma: float) -> void:
 	if target is Node2D:
 		at = ((target as Node2D).global_position + at) * 0.5
 	_spawn_sparks(at)
-	_hitstop(HITSTOP if _combo < 2 else 0.045)
+	_hitstop(HITSTOP)
 
 
 func _hitstop(duration: float) -> void:
-	if DisplayServer.get_name() == "headless":
-		return
-	Engine.time_scale = 0.05
-	await get_tree().create_timer(duration, true, false, true).timeout
-	Engine.time_scale = 1.0
+	await DeathManager.hold_time_scale(0.05, duration)
 
 
 func _spawn_dust(at: Vector2, k: float) -> void:
@@ -842,6 +838,11 @@ func respawn_at(pos: Vector2) -> void:
 	visible = true
 	sprite.play("idle")
 	# Kilit rebirth_completed ile kalkar; erken açılma olmasın.
+
+
+func note_safe_floor(p: Vector2) -> void:
+	_last_safe_floor_pos = p
+	_safe_floor_pos = p
 
 
 func get_last_safe_floor_pos() -> Vector2:

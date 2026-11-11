@@ -389,15 +389,15 @@ func _run_tier_1_feature_coverage() -> void:
 	record_check(1, 31, "POCO X6 Pro 5G Android APK build & test", arm64_enabled and package_name_ok, "arm64 enabled=%s package name=%s" % [arm64_enabled, package_name_ok], false, "M4")
 
 	# F32: Versioning & export configuration (M5)
-	var godot_v111: bool = proj_cfg.contains('config/version="1.11.0"')
-	var preset_v111: bool = exp_presets.contains('version/name="1.11.0"') and exp_presets.contains('version/code=36')
+	var godot_v111: bool = proj_cfg.contains('config/version="1.12.0"')
+	var preset_v111: bool = exp_presets.contains('version/name="1.12.0"') and exp_presets.contains('version/code=37')
 	var gradle_on: bool = exp_presets.contains("gradle_build/use_gradle_build=true")
 	var mono_icon: bool = exp_presets.contains('launcher_icons/adaptive_monochrome_432x432="res://assets/icon/icon_foreground.png"')
 	var manifest := _read_file_text("res://android/build/src/main/AndroidManifest.xml")
 	var startup_ok: bool = manifest.contains('android:authorities="${applicationId}.androidx-startup"') and manifest.contains("androidx.startup.InitializationProvider")
 	var themed_ok: bool = FileAccess.file_exists("res://android/build/res/mipmap-anydpi-v26/themed_icon.xml")
 	var build_ver := _read_file_text("res://android/.build_version").strip_edges()
-	record_check(1, 32, "Versioning & export configuration", godot_v111 and preset_v111 and gradle_on and mono_icon and startup_ok and themed_ok and build_ver == "4.7.2.stable", "version 1.11.0 code 36 gradle mono=%s startup=%s themed=%s build=%s" % [mono_icon, startup_ok, themed_ok, build_ver], false, "M5")
+	record_check(1, 32, "Versioning & export configuration", godot_v111 and preset_v111 and gradle_on and mono_icon and startup_ok and themed_ok and build_ver == "4.7.2.stable", "version 1.12.0 code 37 gradle mono=%s startup=%s themed=%s build=%s" % [mono_icon, startup_ok, themed_ok, build_ver], false, "M5")
 
 	# F33: Git commit, tag, and GitHub Release (M5)
 	var git_clean: bool = FileAccess.file_exists("res://PROJECT.md") and FileAccess.file_exists("res://TEST_INFRA.md")
@@ -639,6 +639,84 @@ func _run_tier_4_scenarios() -> void:
 	var after_corpses_count: int = gs.world_memory_state["corpses"].size()
 	record_check(4, 6, "T4-02 Death loop safe floor corpse anchor creation", after_corpses_count > before_corpses_count, "corpse recorded at safe y=%.1f" % safe_y)
 
+	# T4-05: Awakening passage corpse ledge — solid, unreachable from the floor, reachable from a corpse.
+	rm.enter_room(&"awakening_passage", &"from_awakening")
+	await create_timer(0.05).timeout
+	var passage: Node2D = (rm._rooms[&"awakening_passage"] as Dictionary)["root"]
+	var ledge_body := passage.get_node_or_null("LessonMass") as StaticBody2D
+	var ledge_shape := passage.get_node_or_null("LessonMass/CollisionShape2D") as CollisionShape2D
+	var rift := passage.get_node_or_null("Hazards/MemoryStrip") as Area2D
+	var drop := passage.get_node_or_null("Hazards/MemoryStrip/CorpseDrop") as Node2D
+	var floor_body := passage.get_node_or_null("Floor") as StaticBody2D
+	var floor_shape := passage.get_node_or_null("Floor/CollisionShape2D") as CollisionShape2D
+	var corpse_scene := load("res://scenes/world/corpse.tscn") as PackedScene
+	var corpse_probe: Node2D = null
+	var corpse_col: CollisionShape2D = null
+	if corpse_scene:
+		corpse_probe = corpse_scene.instantiate()
+		corpse_col = corpse_probe.get_node_or_null("CollisionShape2D") as CollisionShape2D
+	var player_script = load("res://scripts/player/player_controller.gd")
+	var consts: Dictionary = player_script.get_script_constant_map()
+	var jump_h := _held_jump_height(float(consts["JUMP_VELOCITY"]), float(consts["GRAVITY"]), float(consts["APEX_GRAVITY_MULT"]), float(consts["APEX_SPEED"]))
+	var ledge_ok := false
+	var ledge_detail := "missing lesson geometry"
+	if ledge_body and ledge_shape and ledge_shape.shape is RectangleShape2D and floor_body and floor_shape and floor_shape.shape is RectangleShape2D and rift and drop and corpse_col and corpse_col.shape is RectangleShape2D:
+		var lrect := ledge_shape.shape as RectangleShape2D
+		var frect := floor_shape.shape as RectangleShape2D
+		var crect := corpse_col.shape as RectangleShape2D
+		var floor_top := floor_body.global_position.y + floor_shape.position.y - frect.size.y * 0.5
+		var ledge_top := ledge_body.global_position.y + ledge_shape.position.y - lrect.size.y * 0.5
+		var ledge_left := ledge_body.global_position.x + ledge_shape.position.x - lrect.size.x * 0.5
+		var corpse_boost := -corpse_col.position.y + crect.size.y * 0.5
+		var one_way := ledge_shape.one_way_collision
+		var above_floor := floor_top - ledge_top
+		var from_corpse := (floor_top - corpse_boost) - ledge_top
+		var rift_shape := rift.get_node_or_null("CollisionShape2D") as CollisionShape2D
+		var drop_clear := true
+		if rift_shape and rift_shape.shape is RectangleShape2D:
+			var rr := rift_shape.shape as RectangleShape2D
+			var rift_left := rift.global_position.x + rift_shape.position.x - rr.size.x * 0.5
+			var rift_right := rift_left + rr.size.x
+			drop_clear = drop.global_position.x > rift_right + 8.0 and absf(drop.global_position.y - floor_top) <= 8.0
+		var reach_x := drop.global_position.x + 80.0 >= ledge_left
+		ledge_ok = (not one_way) and bool(rift.get("lethal")) and above_floor > jump_h + 4.0 and from_corpse < jump_h - 4.0 and from_corpse > 8.0 and drop_clear and reach_x and ledge_body.collision_layer == 1
+		ledge_detail = "jump=%.1f wall=%.1f from_corpse=%.1f boost=%.1f lethal=%s oneway=%s drop=%s" % [jump_h, above_floor, from_corpse, corpse_boost, rift.get("lethal"), one_way, drop.global_position]
+	if corpse_probe:
+		corpse_probe.free()
+	record_check(4, 6, "T4-05 Passage corpse ledge is solid and corpse-only", ledge_ok, ledge_detail)
+
+	var stacks: Node = (rm._rooms[&"library_upper_stacks"] as Dictionary)["root"]
+	var shelf_door: Node2D = null
+	for d in stacks.find_children("*", "Area2D", true, false):
+		if d.get("target_room_id") == &"library_forbidden_wing":
+			shelf_door = d
+			break
+	var door_on_shelf := false
+	if shelf_door:
+		var plats: PackedVector3Array = stacks.get("platforms")
+		for p in plats:
+			if absf(shelf_door.position.y - p.y) <= 2.0 and shelf_door.position.x >= p.x and shelf_door.position.x <= p.x + p.z:
+				door_on_shelf = true
+	record_check(4, 30, "T4-06 Upper stacks goal door sits on a shelf", door_on_shelf, "door y=%s" % (shelf_door.position.y if shelf_door else "missing"))
+
+	rm.enter_room(&"mirrors_labyrinth", &"default")
+	await create_timer(0.05).timeout
+	var lab: Node2D = (rm._rooms[&"mirrors_labyrinth"] as Dictionary)["root"]
+	var shade: Node2D = null
+	for s in lab.find_children("*", "CharacterBody2D", true, false):
+		if s.is_in_group("memory_shade"):
+			shade = s
+			break
+	var shade_grounded := false
+	if shade:
+		shade_grounded = true
+		var gaps: PackedVector2Array = lab.get("floor_gaps")
+		for g in gaps:
+			if shade.position.x > g.x + 8.0 and shade.position.x < g.y - 8.0:
+				shade_grounded = false
+		shade_grounded = shade_grounded and shade.position.y >= 280.0 and shade.position.y <= 300.0
+	record_check(4, 30, "T4-07 Labyrinth shade stands on solid ground", shade_grounded, "shade=%s" % (shade.position if shade else "missing"))
+
 	# T4-03: Complete 40-room topology and reachable path graph
 	var missing_rooms: Array = []
 	for rid in rm._rooms.keys():
@@ -653,6 +731,20 @@ func _run_tier_4_scenarios() -> void:
 	var arm64_ok: bool = exp_cfg.contains("architectures/arm64-v8a=true")
 	var vibrate_ok: bool = exp_cfg.contains("permissions/vibrate=true")
 	record_check(4, 31, "T4-04 Android POCO X6 Pro 5G deployment configuration profile", orientation_ok and arm64_ok and vibrate_ok, "sensor landscape=%s arm64=%s vibrate=%s" % [orientation_ok, arm64_ok, vibrate_ok])
+
+
+func _held_jump_height(v0: float, gravity: float, apex_mult: float, apex_speed: float) -> float:
+	var h := 0.0
+	var v := v0
+	if absf(v) > apex_speed:
+		var vf := -apex_speed
+		h += (v * v - vf * vf) / (2.0 * gravity)
+		v = vf
+	var apex_g := gravity * apex_mult
+	if apex_g <= 0.0:
+		return h
+	h += (v * v) / (2.0 * apex_g)
+	return h
 
 
 # ==============================================================================
