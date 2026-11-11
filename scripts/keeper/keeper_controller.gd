@@ -43,6 +43,7 @@ const ROOM_PRESENCE := {
 	"experiment_intake": {"mode": "silhouette", "pos": Vector2(980, 280)},
 	"mirrors_gallery": {"mode": "present", "pos": Vector2(900, 280)},
 	"mirrors_1927": {"mode": "silhouette", "pos": Vector2(760, 280)},
+	"core_ascent": {"mode": "present", "pos": Vector2(980, 280)},
 	"awakening_passage": {"mode": "silhouette", "pos": Vector2(1500, 280)},
 	"awakening_balcony": {"mode": "silhouette", "pos": Vector2(820, 280)},
 	"decay_garden": {"mode": "present", "pos": Vector2(700, 280)},

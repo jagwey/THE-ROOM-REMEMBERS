@@ -354,6 +354,6 @@ oom_door\) <= 44.0 px mesafede -200 etkileÅŸim Ã¶ncelik bonusu eklendi.
 - [x] Parça 4: Perde 3 (Kütüphane, Saatler Odası, Okuma Hücresi). Saatler 1927 sonra 1995. Hücrede gün çentikleri. Sürüm artmadı.
 - [x] Parça 5: Perde 4 (Deney, Kabul Odası). Dosya sonra palto: Denek 14 Noroi'dir. Gözlem camı Tur 2'de (Parça 6). Sürüm artmadı.
 - [x] Parça 6: Perde 5 (Aynalar, Bedenler Galerisi, Kırık Gece) + iki geri dönüş turu. Galeri ceset sayar. 1927 izlenir. Sarnıç günlüğü ve gözlem notu Gölge Atılması ardında. Sürüm artmadı.
-- [ ] Parça 7: Perde 6 (Son Merdiven) + toplam süre ölçümü 165–195 dk.
+- [x] Parça 7: Perde 6 (Son Merdiven) + süre ölçümü. Yankı, Ruh Kesimi ve Gölge Atılması aynı basamakta; sonra «Gidelim.» Ölçüm (`playtime_measure.gd`): 405 satır, okuma 21.6 dk, ana yol 42.6 dk, yanlarla 52.1 dk. Hedef 165–195 tutmadı; bu alt sınır, insan kaybolması değil. Sürüm 1.10.0 / versionCode 35.
 - [ ] Sürüm hazırlığı ve Play Store kontrol listesi (yalnız kullanıcı isteyince).
 
