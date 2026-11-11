@@ -173,6 +173,33 @@ func _run() -> void:
 	check(fresh != null and int(fresh["player_progress_knowledge"]["deaths"]) == 0, "d2: new game save written with deaths 0")
 	check(not FileAccess.file_exists(path + ".prev") and not FileAccess.file_exists(path + ".bak"), "d2: old game backups removed after successful new game")
 
+	## (e) BUG-031: yetenek/mühür parçası commit_save ile kalıcı; Ana Menüye Dön (discard_resume) sonrası Devam Et korur.
+	sm.delete_all_save_files()
+	_reset_state(gs, sm)
+	gs.player_progress_knowledge["qa_ability"] = true
+	sm.save_game()
+	check(sm.commit_save(&"ability_pickup"), "e1: ability pickup commit written")
+	sm.discard_resume()
+	_reset_state(gs, sm)
+	check(sm.load_game(false) and gs.player_progress_knowledge.get("qa_ability", false) == true, "e1: ability survives discard_resume + Continue")
+
+	## (f) BUG-032: committed bozuksa _reload_committed resume kaydina duser (cokme yok, warning).
+	sm.delete_all_save_files()
+	_reset_state(gs, sm)
+	gs.character_current_life_knowledge["checkpoint_room"] = "awakening_vigil"
+	check(sm.save_game(), "f: resume written")
+	_write(path, "garbage")
+	_write(path + ".prev", "garbage")
+	_write(path + ".bak", "garbage")
+	check(sm._read_save(path) == null and sm._read_with_fallback(rpath) is Dictionary, "f1: committed unreadable, resume valid")
+	var cm := root.get_node("CurseManager")
+	cm._reload_committed()
+	check(String(gs.character_current_life_knowledge.get("checkpoint_room", "")) == "awakening_vigil", "f2: _reload_committed fell back to resume checkpoint (no crash)")
+	sm.delete_all_save_files()
+	_reset_state(gs, sm)
+	cm._reload_committed()
+	check(true, "f3: _reload_committed with no saves does not crash")
+
 	sm.delete_all_save_files()
 	print("ROBUSTNESS failures=", failures)
 	quit(1 if failures else 0)

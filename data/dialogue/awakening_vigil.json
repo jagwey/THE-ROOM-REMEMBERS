@@ -5,7 +5,7 @@
       {
         "variants": [
           {"when": {"min_deaths": 3}, "s": "@shilda", "t": "Yine buradasın. Duvar saydı."},
-          {"s": "@shilda", "t": "Dur. Bu oda seni bekliyordu."}
+          {"s": "@shilda", "t": "Dur. Bu oda seni unutmadı. Sen odayı unutmuşsun."}
         ]
       },
       {"s": "Noroi", "t": "Sen kimsin?"}
@@ -13,7 +13,7 @@
     "meeting": [
       {
         "variants": [
-          {"when": {"min_deaths": 3}, "s": "@shilda", "t": "Yine buradasın. Duvar saydı."},
+          {"when": {"min_deaths": 3}, "s": "@shilda", "t": "Bir daha geldin. Duvar bu sefer sesli saydı."},
           {"s": "@shilda", "t": "Dur."}
         ]
       },

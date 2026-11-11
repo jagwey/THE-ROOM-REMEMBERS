@@ -72,4 +72,6 @@ func on_interact(_by: Node) -> void:
 		am.stinger(&"discovery")
 	_spr.modulate = Color(0.4, 0.38, 0.45, 0.5)
 	SaveManager.save_game()
+	## BUG-031: yetenek / mühür parçası kalıcıdır; Ana Menüye Dön resume'u atsa da kaybolmasın.
+	SaveManager.commit_save(&"ability_pickup")
 	await DialogueManager.dialogue_finished

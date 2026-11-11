@@ -12,12 +12,12 @@ var last_ending: Ending = Ending.NONE
 var _locked: bool = false
 
 
-## Final için: çekirdek mührü çözülmüş, iki mühür parçası toplanmış, Ruh Kesiği açık.
+## Final için: çekirdek mührü çözülmüş, iki mühür parçası toplanmış, Ruh Kesimi açık.
 func can_begin_final() -> bool:
 	return PuzzleManager.is_solved(&"core_seal") and has_both_shards() and has_soul_slash()
 
 
-## Ruh Kesiği (mührü kıran güç). Oyuncu henüz yoksa world flag'e bakılır.
+## Ruh Kesimi (mührü kıran güç). Oyuncu henüz yoksa world flag'e bakılır.
 func has_soul_slash() -> bool:
 	return bool(GameState.player_progress_knowledge.get("ability_soul_slash", false))
 

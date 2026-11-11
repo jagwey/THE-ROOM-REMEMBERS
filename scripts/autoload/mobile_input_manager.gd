@@ -243,10 +243,18 @@ func _autosave_only() -> void:
 		return
 	if DeathManager.is_dying or UiGate.current_layer() == UiGate.Layer.ENDING:
 		return
+	if _unsafe_to_autosave():
+		return
 	SaveManager.save_resume_point()
 
 
 var _last_autosave_frame: int = -100
+
+const _ROOM_TRANSITION := preload("res://scripts/world/room_transition.gd")
+
+## Possession veya kapı geçişi sırasında konum/oda uyuşmayabilir; kayıt atlanır.
+func _unsafe_to_autosave() -> bool:
+	return CurseManager.possessing or _ROOM_TRANSITION.is_transitioning()
 
 ## Uygulama arka plana geçince ilerlemeyi yaz ve oyunu duraklat (telefon araması, ana ekran).
 func _autosave_and_pause() -> void:
@@ -260,6 +268,8 @@ func _autosave_and_pause() -> void:
 	if menu and menu.has_method("is_title_open") and menu.is_title_open():
 		return
 	if DeathManager.is_dying or UiGate.current_layer() == UiGate.Layer.ENDING:
+		return
+	if _unsafe_to_autosave():
 		return
 	SaveManager.save_resume_point()
 	if menu and menu.has_method("open_menu") and UiGate.current_layer() == UiGate.Layer.NONE:

@@ -136,7 +136,7 @@ func _library_witness() -> void:
 
 	if ev.has("ev_witness_clock") and ev.has("ev_witness_flower") and ev.has("ev_witness_seal"):
 
-		DialogueManager.say("Noroi", "1927'de kazı başladı. Son kayıt 1995'te düşülmüş.")
+		DialogueManager.say("Noroi", "1927'de boyut kuruldu. Son kayıt 1995'te düşülmüş.")
 		DialogueManager.say("Noroi", "Deney önce, kapı sonra, mühür en son. Kod… iki, beş, bir.")
 		DialogueManager.say("Noroi", "Felaketi mühür başlatmamış. İçeride tutmuş.")
 		var understood: bool = await DialogueManager.dialogue_finished
@@ -284,7 +284,6 @@ func _mirrors_unbroken() -> void:
 	PuzzleManager.mark_solved(&"mirrors_unbroken")
 
 	GameState.set_world_flag(&"core_path_open", true)
-	GameState.learn_memory_code("mirrors_unbroken", "729")
 
 	var cam := get_tree().get_first_node_in_group("follow_camera")
 	var door_fx: Node2D = null

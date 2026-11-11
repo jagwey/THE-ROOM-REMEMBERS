@@ -1,6 +1,6 @@
 class_name FinalSequence
 extends RefCounted
-## BÖLÜM I SONU — tek final (spec §8, §31, §32): Ruh Kesiği ile ana mühür kırılır, Shilda insan formuna
+## BÖLÜM I SONU — tek final (spec §8, §31, §32): Ruh Kesimi ile ana mühür kırılır, Shilda insan formuna
 ## döner, X belirir, ekranlar DOMAIN 01-04'ü gösterir, X çekirdek parçasını alır ve geçide girer.
 ## Sonra THE ROOM REMEMBERS / END OF PART I, jenerik, game_completed, commit_save(&"final"), başlık.
 ##
@@ -167,7 +167,7 @@ func _seal_break() -> void:
 		ln.default_color = Color(0.85, 0.12, 0.2, 0.9)
 		ln.points = PackedVector2Array([Vector2.ZERO, Vector2(cos(a), sin(a)) * 70.0])
 		_bonds.add_child(ln)
-	## Ruh Kesiği dalgası kristale doğru
+	## Ruh Kesimi dalgası kristale doğru
 	if _player != null:
 		var dir := 1.0 if cpos.x >= _player.global_position.x else -1.0
 		var wave := Area2D.new()

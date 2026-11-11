@@ -2,9 +2,9 @@
   "room": "core_ascent",
   "sets": {
     "echo": [
-      {"s": "Noroi", "t": "Merdiven her adımda bir ölümü sayıyor."},
+      {"s": "Noroi", "t": "Merdiven her adımda bir ölümümü sayıyor. Ben hangisini unuttum?"},
       {"s": "@shilda", "t": "Yankı burada. Saat, çiçek, mühür. Hepsi aynı basamakta."},
-      {"s": "Noroi", "t": "Ruh Kesimi mührü, Gölge Atılması aralığı."},
+      {"s": "Noroi", "t": "Ruh Kesimi mührü açar, Gölge Atılması aralığı geçer."},
       {"s": "@shilda", "t": "İkisi de sende olunca ben son mührü tutarım."}
     ],
     "go": [

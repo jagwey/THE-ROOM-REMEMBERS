@@ -25,7 +25,7 @@ const _BY_ROOM: Dictionary = {
 	"awakening_crypt": "Yataklar boş değil. Sır duvarda, defterde.",
 	"decay_catacombs": "Karanlıkta yol, ölülerin ışığıdır. Sembolleri gör; mühür uyanır.",
 	"decay_shilda_wall": "Gözleri kızarınca son adımda kenara çekil. Duvar onun çarpmasıyla iner.",
-	"library_upper_stacks": "Raflar bir sıra biliyor: ses, mühür, çiçek. Tahta inince yukarı tırman.",
+	"library_upper_stacks": "Raflar bir sıra biliyor: ses, mühür, çiçek. Sıra doğruysa tahta iner; inince yukarı tırman.",
 	"library_forbidden_wing": "Burada bir kesik asılı. Onu al; mührün ilk yarısı da burada.",
 	"experiment_quarantine": "Sis canlıyı yer, ölüyü emer. Rapor, sisin ötesinde, yüksek rafta.",
 	"experiment_core_conduit": "Üç kanal aynı anda açık kalmalı. Yankın bir kolu tutsun.",
@@ -41,7 +41,7 @@ const _BY_ROOM: Dictionary = {
 	"mirrors_gallery": "Duvar, unuttuğun bedenleri sayıyor. Sonra kırılmayan aynaya geç.",
 	"mirrors_1927": "1927 gecesi kendi kendine oynuyor. Dokunma. Sonra geri dön.",
 	"decay_cistern": "Suyun üstündeki sayfalar bir ömür tutuyor. Oku, göğsüne koy.",
-	"experiment_observation": "Camın bu yanında bir sayım notu var. İmza kazınmış. Yine de al.",
+	"experiment_observation": "Camın bu yanındaki masada bir sayım notu var. İmza kazınmış. Yine de al.",
 	"core_ascent": "Yankıyı dinle. İki güç de sende olunca son basamak seni çağırır.",
 }
 

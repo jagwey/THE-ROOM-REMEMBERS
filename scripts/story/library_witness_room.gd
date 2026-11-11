@@ -6,7 +6,7 @@ func _ready() -> void:
 	EchoManager.register_echo("witness_clock", {
 		"evidence_id": "ev_witness_clock",
 		"lines": [
-			["Yankı", "…tik. 1927. Kazı başladı."],
+			["Yankı", "…tik. 1927. Boyut kuruldu."],
 			["Yankı", "Zaman burada durdu. Kapı henüz açıktı."],
 		],
 		"journal": {
@@ -40,7 +40,7 @@ func _ready() -> void:
 		"journal": {
 			"section": "izler",
 			"title": "Tanık: Mühür",
-			"body": "Koruma mührü olaydan sonra devreye girmiş. Kod: 251. Kronoloji: 1927 kazı → deney → 1995 giriş.",
+			"body": "Koruma mührü olaydan sonra devreye girmiş. Kod: 251. Kronoloji: 1927 kuruluş → deney → 1995 giriş.",
 			"kind": "evidence",
 		},
 		"memory_code": "",

@@ -23,18 +23,22 @@ Test = headless SceneTree denetimi (izole kopya, `TORIMON_TEST=1`). Gerçek ciha
 | BUG-013 | HATA DEĞİL | Çalışma zamanında konuşmacı zaten "???" gösteriyor |
 | BUG-014 | HATA DEĞİL | "Gölge" anonim takma ad, zaten maskeli |
 | BUG-015 | DÜZELTİLDİ (metin) | `{deaths}` yer tutucusu (`lore_point.gd`, en az 1); `lore_canon_audit` |
-| BUG-016, 019, 020, 021, 023 | AÇIK | Yapısal/yaratıcı karar gerektirir; oynanmadan yazılan yeni içerik kanonu/softlock riskini artırır, bu tur bilerek dokunulmadı |
+| BUG-016 | DÜZELTİLDİ | `awakening_vigil.tscn` kanıt metni JSON diyaloğuyla hizalandı; `lore_canon_audit` regresyonu |
+| BUG-019 | DÜZELTİLDİ | "Kazı" → "boyut kuruldu/kuruluş" (`core_memory_vault.tscn`, `puzzle_manager.gd`, `library_witness_room.gd`, `story_beat.gd`) |
+| BUG-020 | DÜZELTİLDİ | 1995 = Noroi'nin giriş yılı; kasa sesi "Kapı o yıl kapandı" → "Biri o yıl içeri girdi" |
+| BUG-021 | DÜZELTİLDİ | `decay_cistern.json` "Altmış sekiz yıl önce yazıldı" (1927→1995 = 68) |
+| BUG-023 | DÜZELTİLDİ | `story_beat.gd` gizli ikinci 729 öğretimi kaldırıldı; bahçe yankısı geri çağrı; ders yalnız `decay_flower_evidence.gd` |
 | BUG-024 | AÇIK (karar: vaat düşür) | Tempo 42,6 dk ↔ 165–195 dk. İnsan testi ve tasarlanmış içerik olmadan uzatma yapılmadı; mağaza metni süre vaat etmiyor (`STORE_LISTING_DRAFT.md`) |
 | BUG-017 | DÜZELTİLDİ (metin) | `experiment_observation.json` |
 | BUG-018 | DÜZELTİLDİ | "Ruh Kesimi" her yerde (yalnız 2 dosyada yorum satırında "Kesiği" kaldı) |
 | BUG-022 | KISMEN | "Araştırma Yardımcısı S." düzeltildi; "Gölge olmadan önce" kısmı AÇIK |
 | BUG-024 | AÇIK (karar: vaat düşür) | Tempo kararı verildi: doğrulanmamış içerik eklenmedi, mağaza metni süre vaat etmiyor; gerçek uzatma insan testi sonrası |
 | BUG-030 | KISMEN | (b) `start_new_game` eski kaydı silmiyor: yeniden üretildi + düzeltildi. (a) `_write_atomic` sonuç denetimi savunma amaçlı eklendi, yeniden üretilemedi |
-| BUG-031 | AÇIK | Tasarım kararı gerektirir |
-| BUG-032 | AÇIK, anlatıldığı gibi üretilemedi | Kod uyanışa değil canlı checkpoint'e düşüyor |
+| BUG-031 | DÜZELTİLDİ | `ability_pickup.gd` alımda `commit_save(&"ability_pickup")`; `save_robustness_audit` (e) |
+| BUG-032 | DÜZELTİLDİ | `curse_manager._reload_committed` bozuk committed'da resume/yedeğe düşer + `push_warning`; `save_robustness_audit` (f) |
 | BUG-037 | DÜZELTİLDİ | `journal_map.gd` yorum "40 oda" |
 | BUG-043 | DÜZELTİLDİ (CLAUDE.md); README/PROGRESS güncellendi | |
-| BUG-045 | AÇIK (bilinçli) | `.uid` dosyaları takipsiz; commit kullanıcı isteyince |
+| BUG-045 | KONTROL EDİLDİ | `.uid` dosyaları mevcut (`ordered_relic.gd.uid` `scripts/world/` altında); commit kullanıcı isteyince |
 | BUG-046 | DÜZELTİLDİ | `move_time` `Run-Audit.ps1` listesinde |
 | Diğerleri (033–036, 038–042, 044, 047, 050–052) | AÇIK | Dokunulmadı |
 
@@ -89,16 +93,16 @@ Not: Play için gizlilik politikası, lisans/kredi belgeleri ve derlenmiş paket
 | BUG-030 | `_write_atomic` yazma sonucunu denetlemiyor; `start_new_game` eski committed save'i yeni commit başarılı olmadan siliyor | STATİK |
 | BUG-031 | Yetenek/mühür parçası alımları yalnız resume save yazıyor; "Ana Menüye Dön" bu ilerlemeyi siliyor | STATİK |
 | BUG-032 | `_reload_committed` bozuk committed save'de sessizce uyanışa düşüyor | STATİK |
-| BUG-033 | Arka plan/odak kaybı otomatik kaydı olası possession veya kapı geçişi sırasında çalışıyor | STATİK |
+| BUG-033 | Arka plan/odak kaybı otomatik kaydı olası possession veya kapı geçişi sırasında çalışıyor | DÜZELTİLDİ v1.13.0 (`_unsafe_to_autosave`) |
 | BUG-034 | `OS.shell_open` URL doğrulanmıyor (düşük risk) | STATİK |
-| BUG-035 | Ceset yeniden kurulumunda çift sayım ve yanlış oda yedeği | STATİK |
+| BUG-035 | Ceset yeniden kurulumunda çift sayım ve yanlış oda yedeği | DÜZELTİLDİ v1.13.0 (remove_child + odasız kök yedeği) |
 | BUG-036 | `.claude/worktrees/...` için `.gdignore` yok | STATİK |
 | BUG-037 | `journal_map.gd:18` "30 oda" yorumu (gerçek 40) | STATİK |
 | BUG-038 | `library_witness_room.gd` BOM | STATİK |
-| BUG-039 | `sound_bank.gd` eski `ending_*` stinger'ları | STATİK |
+| BUG-039 | `sound_bank.gd` eski `ending_*` stinger'ları | DÜZELTİLDİ v1.13.0 (ending_bad/sever kaldırıldı) |
 | BUG-040 | Aşırı uzun kanıt metinleri | STATİK |
 | BUG-041 | Tekrar eden bekçi satırları | STATİK |
-| BUG-042 | "Bu hücreyi unutmam" tekrarı/uygunluğu | STATİK |
+| BUG-042 | "Bu hücreyi unutmam" tekrarı/uygunluğu | ÇÖZÜLDÜ v1.13.0 (replik yeniden yazıldı) |
 | BUG-043 | CLAUDE.md "v0.10.1" (gerçek 1.12.2); PROGRESS.md/README.md v1.11.x–1.12.2 bölümleri yok | KOD |
 | BUG-044 | PROGRESS.md satır ~286–309 mojibake (kasıtlı dokunulmadı) | KOD |
 | BUG-045 | `scripts/dev/playtime_measure.gd.uid` ve `ordered_relic.gd.uid` takip edilmiyor | git |
