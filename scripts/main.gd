@@ -110,7 +110,7 @@ func _add_side_doors() -> void:
 
 
 func _ready() -> void:
-	Engine.time_scale = 1.0
+	DeathManager.release_time_scale()
 	RenderingServer.set_default_clear_color(Palette.VOID)
 	_continued = false
 	GameState.session_loaded_from_save = false

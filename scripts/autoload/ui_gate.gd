@@ -76,6 +76,7 @@ func set_title(active: bool) -> void:
 
 func set_pause_menu(active: bool) -> void:
 	_set_flag(&"pause_menu", active, func(v): _pause_menu = v)
+	DeathManager.release_time_scale()
 
 
 ## Göz açma vb. kısa sinematik: girdi, HUD ve diyalog ilerletme kapalı.

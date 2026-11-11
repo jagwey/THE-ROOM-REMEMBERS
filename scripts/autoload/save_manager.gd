@@ -19,7 +19,7 @@ var _new_world: Dictionary
 var _new_life: Dictionary
 
 func _ready() -> void:
-	Engine.time_scale = 1.0
+	DeathManager.release_time_scale()
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(SAVE_PATH.get_base_dir()))
 	_new_progress = GameState.player_progress_knowledge.duplicate(true)
 	_new_world = GameState.world_memory_state.duplicate(true)
@@ -32,7 +32,7 @@ func resume_path() -> String:
 
 
 func start_new_game() -> void:
-	Engine.time_scale = 1.0
+	DeathManager.release_time_scale()
 	# Explicit menu confirmation precedes this action; keep a backup.
 	if FileAccess.file_exists(SAVE_PATH):
 		DirAccess.copy_absolute(ProjectSettings.globalize_path(SAVE_PATH), ProjectSettings.globalize_path(SAVE_PATH + ".bak"))
