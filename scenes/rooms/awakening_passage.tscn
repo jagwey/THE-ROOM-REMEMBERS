@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://torimon_awakening_passage"]
+[gd_scene load_steps=20 format=3 uid="uid://torimon_awakening_passage"]
 
 [ext_resource type="Texture2D" path="res://assets/backgrounds/decay/far.png" id="1"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/decay/mid.png" id="2"]
@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://scripts/world/room_transition.gd" id="5"]
 [ext_resource type="Script" path="res://scripts/world/memory_hazard.gd" id="6"]
 [ext_resource type="Script" path="res://scripts/world/echo_interactable.gd" id="7"]
+[ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore_self"]
 [ext_resource type="Texture2D" path="res://assets/layers/column.png" id="8"]
 [ext_resource type="Texture2D" path="res://assets/layers/rubble.png" id="9"]
 [ext_resource type="Texture2D" path="res://assets/layers/vines.png" id="10"]
@@ -222,6 +223,16 @@ echo_id = &"awakening_rift_echo"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/RiftEchoStone"]
 shape = SubResource("TransitionHit")
+
+[node name="OwnVoice" type="Area2D" parent="Interactive"]
+position = Vector2(980, 288)
+script = ExtResource("lore_self")
+lore_id = &"passage_own_voice"
+texture_path = "res://assets/props/memory_echo.png"
+lines = PackedStringArray("Noroi|Yarıktan kendi sesim geliyor. Bu ölüm değil. Bir öncekisi.", "Noroi|Unutmuşum. Oda unutmamış.")
+evidence_title = "Kendi Sesim"
+evidence_body = "Kırık geçidin yarığı, önceki bir ölümümden kalan kendi sesimi çalıyor."
+evidence_section = "izler"
 
 [node name="Hazards" type="Node2D" parent="."]
 

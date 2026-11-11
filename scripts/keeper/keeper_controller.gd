@@ -1,4 +1,6 @@
 extends CharacterBody2D
+
+const LorePointScript := preload("res://scripts/world/lore_point.gd")
 ## Bekçi — senaryolu koruyucu. Klasik düşman değil. Erken oyunda öldürmez.
 
 enum Mode { OBSERVE, WARN, INTERVENE, MOURNING, INTIMACY, COMBAT }
@@ -33,7 +35,8 @@ const STRIKES_TO_BAD := 3
 ## Oda başına Shilda varlığı: present (etkileşimli), silhouette (arka planda izler), yoksa gizli.
 ## Oda sahnesinde Spawns/keeper_observe (veya keeper_intervene / keeper_ambush) Marker2D varsa konum onu kullanır.
 const ROOM_PRESENCE := {
-	"awakening": {"mode": "present", "pos": Vector2(480, 280)},
+	"awakening": {"mode": "hidden", "pos": Vector2(480, 280)},
+	"awakening_vigil": {"mode": "present", "pos": Vector2(640, 280)},
 	"awakening_passage": {"mode": "silhouette", "pos": Vector2(1500, 280)},
 	"awakening_balcony": {"mode": "silhouette", "pos": Vector2(820, 280)},
 	"decay_garden": {"mode": "present", "pos": Vector2(700, 280)},
@@ -127,8 +130,10 @@ func place_for_room(room_id: StringName) -> void:
 	_auto_naming_running = false
 	var rid := String(room_id)
 	var def: Dictionary = ROOM_PRESENCE.get(rid, {"mode": "hidden", "pos": Vector2(480, 280)})
-	## Uyanış odasında ilk ölümden önce Shilda yok.
-	if rid == "awakening" and not GameState.has_story_flag(&"first_death_completed"):
+	## Uyanış yatağı yalnız iz. Yüz yüze karşılaşma nöbet odasında.
+	if rid == "awakening":
+		def = {"mode": "hidden", "pos": def["pos"]}
+	if rid == "awakening_vigil" and bool(GameState.player_progress_knowledge.get("vigil_parted", false)):
 		def = {"mode": "hidden", "pos": def["pos"]}
 	var late_room := false
 	for pre in NAME_FALLBACK_PREFIXES:
@@ -553,9 +558,22 @@ func on_interact(_by: Node) -> void:
 		set_mode(Mode.OBSERVE)
 		SaveManager.save_game()
 		return
-	## İlk gerçek konuşma = isim sahnesi. Ad söylenene dek ilk etkileşim bunu tetikler.
+	## Ad yalnız bahçede (veya geç bölge yedeğinde) açılır. Nöbet odası yüz yüze ama adsızdır.
 	if not GameState.is_shilda_named():
-		await _run_naming_scene()
+		var rid := String(RoomManager.get_active_room_id())
+		if rid == "awakening_vigil" and not bool(GameState.player_progress_knowledge.get("vigil_parted", false)):
+			await _run_vigil_meeting()
+			return
+		var late := false
+		for pre in NAME_FALLBACK_PREFIXES:
+			if rid.begins_with(pre):
+				late = true
+				break
+		if rid == "decay_garden" or late:
+			await _run_naming_scene()
+			return
+		_queue_stage_talk(rid)
+		await _await_dialogue_or_smoke()
 		return
 	var active_room := String(RoomManager.get_active_room_id())
 	if active_room == "awakening":
@@ -615,6 +633,24 @@ func _queue_stage_talk(room: String) -> void:
 
 
 ## Isim sahnesi: "???" konusur; "Ben Noroi." satirindan itibaren ad bilinir, kart "Shilda" olur.
+## Perde 1 sonu: yüz yüze, konuşan ???. Ad söylenmez. Yol açılır, gölge gider.
+func _run_vigil_meeting() -> void:
+	_busy = true
+	var lines: Array = DialogueData.get_set(&"awakening_vigil", &"meeting")
+	for line in lines:
+		DialogueManager.say(String(line[0]), String(line[1]))
+	await _await_dialogue_or_smoke()
+	_busy = false
+	if DialogueManager.is_open:
+		return
+	PuzzleManager.mark_solved(&"awakening_vigil")
+	LorePointScript.record_evidence("ev_vigil_meeting", "Nöbet", "Nöbet odasında bir gölge yolu gösterdi ve gitti. Adını söylemedi.", "izler")
+	GameState.player_progress_knowledge["vigil_parted"] = true
+	GameState.player_progress_knowledge["seen_keeper"] = true
+	place_for_room(&"awakening_vigil")
+	SaveManager.save_game()
+
+
 func _run_naming_scene() -> void:
 	_busy = true
 	_queue_naming_lines()

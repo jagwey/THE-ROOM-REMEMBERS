@@ -349,7 +349,7 @@ oom_door\) <= 44.0 px mesafede -200 etkileÅŸim Ã¶ncelik bonusu eklendi.
 - [x] Parça 1 / T5: `room_graph_audit` + eski denetimlerde 30→40 ve `decay_vines`→`awakening_vigil`.
 - [x] Parça 1 / T6: v1.9.0 kayıt uyumu, tam denetim yeşil (28 dev + e2e + smoke, dev_failed 0), 1920x1080 kontrol (Nöbet Odası, Çatlak Duvar, Kırık Gece). Sürüm artırılmadı.
 - Not: yankı anahtarları (devre x=320, ayna x=320) kapı x'i spec'te kalsın diye 96 px dışına alındı. Üst raflarda arşivci x=148. Kapı denetimi kapı↔kapı/etkileşim ölçer; kol-taş ve kart-mühür çiftleri eski bulmaca düzeni. Duvar ipucu ve çiçek kartında ad yok (bahçeden önce).
-- [ ] Parça 2: Perde 1 (Uyanış, Nöbet Odası'nda ilk karşılaşma).
+- [x] Parça 2: Perde 1 (Uyanış, Nöbet Odası'nda ilk karşılaşma). Yatak odasında yüz yüze yok; taze çiçek. Geçitte kendi sesi. Nöbet sahnesi ???, ad yok, yol açılınca gölge gider. Sürüm artmadı.
 - [ ] Parça 3: Perde 2 (Sera, duvar kovalamacası ipuçları, bahçede ad sahnesi).
 - [ ] Parça 4: Perde 3 (Kütüphane, Saatler Odası, Okuma Hücresi).
 - [ ] Parça 5: Perde 4 (Deney, Kabul Odası, Gözlem Camı).
