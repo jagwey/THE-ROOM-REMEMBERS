@@ -117,6 +117,11 @@ const HINTS: Dictionary = {
 		"orientation": "Bahçedeki kırmızı yaprakları incele ve Bekçi'nin güvenini kazan.",
 		"explicit": "Bekçi ile barış içinde konuşup çiçeğin anısını günlüğüne kaydet; kilit açılır."
 	},
+	&"library_clockroom": {
+		"goal": "İki saat iki geceyi tutuyor.",
+		"orientation": "Önce 1927, sonra 1995. Cep saatin aynı geceyi bilir.",
+		"explicit": "Soldaki saati dinle, sonra sağdakini. Sayfa kapısı açılır."
+	},
 	&"library_page_order": {
 		"goal": "Dağılmış arşiv sayfaları doğru kronolojiye dizilmeli.",
 		"orientation": "Sayfa kenarlarındaki tarih damgaları ve yanık izleri olayların sırasını gösterir.",
@@ -169,6 +174,7 @@ const ROOM_PUZZLES: Dictionary = {
 	"decay_greenhouse": [&"decay_greenhouse"],
 	"decay_shilda_wall": [&"decay_shilda_wall_broken"],
 	"decay_garden": [&"decay_archive_key"],
+	"library_clockroom": [&"library_clockroom"],
 	"library_page": [&"library_page_order"],
 	"library_upper_stacks": [&"library_shelf_order"],
 	"experiment_circuit": [&"experiment_circuit"],

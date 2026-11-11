@@ -1,0 +1,15 @@
+{
+  "room": "library_reading_cell",
+  "sets": {
+    "notches": [
+      {"s": "Noroi", "t": "Duvar gün gün çentilmiş. Bir insan eli."},
+      {"s": "Noroi", "t": "Son çentik 1927 yazı. Sonra boşluk."},
+      {"s": "@shilda", "t": "O boşluktan önce ben de buradaydım. Kitap okurdum."},
+      {"s": "Noroi", "t": "Sen… insan mıydın?"},
+      {"s": "@shilda", "t": "Adımı biliyorsun. Gerisini oda saklar."},
+      {"s": "Noroi", "t": "Çentikler titriyor. Saymayı bıraktığın gün."},
+      {"s": "@shilda", "t": "O gün sesimi kaybettim. Saat de durdu."},
+      {"s": "Noroi", "t": "Geri döneceğim. Bu hücreyi unutmam."}
+    ]
+  }
+}
