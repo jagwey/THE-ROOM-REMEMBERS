@@ -251,7 +251,7 @@ func _mirrors_dual() -> void:
 	if PuzzleManager.is_solved(&"mirrors_dual"):
 		DialogueManager.say("Noroi", "İki iz birleşti. Yol açık.")
 		return
-	DialogueManager.say("Shilda", "Yankın bu anahtarı altı saniye tutar. Sağdaki kristale yetiş.")
+	DialogueManager.say("Shilda", "Yankın bu anahtarı sekiz saniye tutar. Sağdaki kristale yetiş.")
 	DialogueManager.say("Shilda", "Yetişemezsen yeniden dene. Bu oda affeder.")
 	var ok: bool = await DialogueManager.dialogue_finished
 	if not ok:

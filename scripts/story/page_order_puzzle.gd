@@ -22,7 +22,7 @@ func _build_ui() -> void:
 	panel.name = "Panel"
 	panel.setup("Unutulmuş sayfa — sırayı kur", Vector2(470, 330))
 	add_child(panel)
-	panel.add_label("Tanıkların seslerini hatırla: çiçek, saat, mühür.", UiTheme.HINT)
+	panel.add_label("Tanıkları hatırla: önce deney, sonra kapı, en son mühür.", UiTheme.HINT)
 	for i in 3:
 		var lab := Label.new()
 		lab.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -156,13 +156,15 @@ func _success_flow() -> void:
 		SaveManager.save_game()
 		var cam := get_tree().get_first_node_in_group("follow_camera")
 		var door: Node2D = null
-		for n in get_tree().get_nodes_in_group("room_door"):
-			if n is Node2D and "target_room_id" in n and String(n.get("target_room_id")) == "library_forbidden_wing":
-				door = n as Node2D
-				break
-		if cam and cam.has_method("focus_pulse"):
-			var at: Vector2 = door.global_position + Vector2(0, -40) if door else Vector2(900, 248)
-			cam.focus_pulse(at)
+		var idx := RoomManager.ROOM_ORDER.find("library_page")
+		if idx >= 0 and idx + 1 < RoomManager.ROOM_ORDER.size():
+			var next_room: String = RoomManager.ROOM_ORDER[idx + 1]
+			for n in get_tree().get_nodes_in_group("room_door"):
+				if n is Node2D and "target_room_id" in n and String(n.get("target_room_id")) == next_room:
+					door = n as Node2D
+					break
+		if cam and cam.has_method("focus_pulse") and door:
+			cam.focus_pulse(door.global_position + Vector2(0, -40))
 		var am := get_node_or_null("/root/AudioManager")
 		if am:
 			am.play_sfx(&"seal_open")

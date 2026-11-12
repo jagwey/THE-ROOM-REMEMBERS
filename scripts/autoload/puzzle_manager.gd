@@ -155,7 +155,7 @@ const HINTS: Dictionary = {
 	},
 	&"library_page_order": {
 		"goal": "Dağılmış arşiv sayfaları doğru kronolojiye dizilmeli.",
-		"orientation": "Sayfa kenarlarındaki tarih damgaları ve yanık izleri olayların sırasını gösterir.",
+		"orientation": "Tanıkları hatırla: önce deney, sonra kapı, en son mühür.",
 		"explicit": "İlk deney başlangıcından mühürlerin kapandığı felaket gününe kadar olayları sırala."
 	},
 	&"mirrors_gallery": {
@@ -180,7 +180,7 @@ const HINTS: Dictionary = {
 	},
 	&"core_bloom_order": {
 		"goal": "Bahçedeki üç taş uyanmadan çiçek konuşmuyor.",
-		"orientation": "Taşların üstündeki noktaları say. Çoktan aza, sonra kalan.",
+		"orientation": "Taşlardaki noktaları say: önce en çok, sonra en az, sonra kalan.",
 		"explicit": "Sıra dört, bir, iki. Yanlış taş zinciri başa sarar."
 	},
 	&"core_vault_order": {

@@ -6,7 +6,6 @@ extends SceneTree
 ## 3. Room 1 softlock: hazard decoupled from plate, WeightStone present at (840, 288), bounds [600, 1000], pushable
 ## 4. SIDE_DOORS grid alignment (bay=224 multiples/arch centers) and >= 120px clearance from interactables
 ## 5. Inward return spawn points (48px inward from door center into room)
-## 6. Cleanup of core_portal.gd references
 
 var failures := 0
 var total_checks := 0
@@ -92,7 +91,6 @@ func _run() -> void:
 	print("\n==================================================")
 	print("TEST SECTION 6: CORE PORTAL CLEANUP")
 	print("==================================================")
-	_test_core_portal_cleanup()
 
 	print("\n==================================================")
 	print("M3 AUDIT SUMMARY: Total checks = %d | Failures = %d" % [total_checks, failures])
@@ -388,13 +386,3 @@ func _test_return_spawn_coordinates() -> void:
 				var expected_x := door_x + expected_inward
 				check(is_equal_approx(spawn_pos.x, expected_x), "%s %s spawn X is 48px inward (%f)" % [rid, sname, expected_x], spawn_pos.x)
 				check(is_equal_approx(spawn_pos.y, 288.0), "%s %s spawn Y is 288.0" % [rid, sname], spawn_pos.y)
-
-
-func _test_core_portal_cleanup() -> void:
-	# 1. Check awakening.tscn does not contain core_portal.gd
-	var awk_text = FileAccess.get_file_as_string("res://scenes/rooms/awakening.tscn")
-	check(not awk_text.contains("core_portal.gd"), "awakening.tscn has NO core_portal.gd references")
-
-	# 2. Check interact_glow.gd does not contain core_portal.gd
-	var ig_text = FileAccess.get_file_as_string("res://scripts/world/interact_glow.gd")
-	check(not ig_text.contains("core_portal.gd"), "interact_glow.gd has NO core_portal.gd references")

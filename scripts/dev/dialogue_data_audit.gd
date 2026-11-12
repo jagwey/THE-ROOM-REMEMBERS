@@ -75,6 +75,7 @@ func _run() -> void:
 	check(missing.is_empty(), "eksik set boş dizi")
 	var missing_file: Array = data.get_set(&"yok_boyle_oda", &"first_meeting")
 	check(missing_file.is_empty(), "eksik dosya boş dizi")
+	_check_phase0_text()
 	print("DIALOGUE done failures=", failures)
 	quit(1 if failures else 0)
 
@@ -101,3 +102,45 @@ func _words(entry: Variant) -> int:
 		if not part.is_empty():
 			n += 1
 	return n
+
+
+func _scan_text(dir_path: String, needles: Array, hits: Array) -> void:
+	var d := DirAccess.open(dir_path)
+	if d == null:
+		return
+	for f in d.get_files():
+		if not (f.ends_with(".gd") or f.ends_with(".tscn")):
+			continue
+		var path := dir_path.path_join(f)
+		if path.ends_with("dialogue_data_audit.gd"):
+			continue
+		var t := FileAccess.get_file_as_string(path)
+		for n in needles:
+			if t.contains(String(n)):
+				hits.append("%s:%s" % [path, n])
+	for sub in d.get_directories():
+		_scan_text(dir_path.path_join(sub), needles, hits)
+
+
+func _check_phase0_text() -> void:
+	var pm := root.get_node("PuzzleManager")
+	var bloom := String(pm.get_hints(&"core_bloom_order").get("orientation", ""))
+	check(bloom.contains("en çok") and bloom.contains("en az") and not bloom.contains("Çoktan aza"), "bloom_hint_matches_order", bloom)
+	var altar_script: GDScript = load("res://scripts/world/echo_altar.gd")
+	var altar: Node = altar_script.new()
+	var rs: float = altar.record_seconds
+	altar.free()
+	var hits: Array = []
+	_scan_text("res://scenes", ["record_seconds", "altı saniye", "Altı saniye"], hits)
+	_scan_text("res://scripts", ["altı saniye", "Altı saniye"], hits)
+	check(is_equal_approx(rs, 8.0) and hits.is_empty(), "record_seconds_single", [rs, hits])
+	var fc: Array = []
+	_scan_text("res://scenes", ["Forward" + "Circuit"], fc)
+	_scan_text("res://scripts", ["Forward" + "Circuit"], fc)
+	check(fc.is_empty(), "no_forward_circuit", fc)
+	var page := String(pm.get_hints(&"library_page_order").get("orientation", ""))
+	var i1 := page.find("deney")
+	var i2 := page.find("kapı")
+	var i3 := page.find("mühür")
+	check(i1 >= 0 and i2 > i1 and i3 > i2 and not page.contains("Mühül"), "page_hint_matches_order", page)
+	check(not FileAccess.file_exists("res://scripts/world/core_portal.gd"), "core_portal_gone")
