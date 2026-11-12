@@ -4,6 +4,10 @@ extends StaticBody2D
 @export var open_flag: StringName = &"awakening_door_opened"
 ## Hangi bulmaca çözülünce açılır (boşsa sadece bayrak).
 @export var puzzle_listen: StringName = &"awakening_weight"
+## Boş değilse puzzle_listen yerine kullanılır: listedeki HER id çözülmüş/canlı olunca açılır.
+@export var puzzle_listen_all: PackedStringArray = []
+## Eski kayıt: bu id çözülmüşse yeni çoklu şart aranmadan açık.
+@export var legacy_puzzle: StringName = &""
 ## true ise yalnızca puzzle ile açılır (bayrak/legacy tek başına yetmez).
 @export var ignore_world_flag: bool = false
 @onready var shape: CollisionShape2D = $CollisionShape2D
@@ -49,8 +53,23 @@ func _notification(what: int) -> void:
 		_reset_side()
 
 
+func _listen_ids() -> PackedStringArray:
+	if not puzzle_listen_all.is_empty():
+		return puzzle_listen_all
+	if puzzle_listen != &"":
+		return PackedStringArray([String(puzzle_listen)])
+	return PackedStringArray()
+
+
+func _all_solved(ids: PackedStringArray) -> bool:
+	for id in ids:
+		if not PuzzleManager.is_solved(StringName(id)):
+			return false
+	return true
+
+
 func _is_open() -> bool:
-	if puzzle_listen != &"" and (PuzzleManager.is_solved(puzzle_listen) or PuzzleManager.is_live(puzzle_listen)):
+	if PuzzleManager.gate_open(_listen_ids(), legacy_puzzle):
 		return true
 	if ignore_world_flag:
 		return false
@@ -67,13 +86,13 @@ func _on_flag(f: StringName, value: Variant) -> void:
 
 
 func _on_puzzle(puzzle_id: StringName) -> void:
-	if puzzle_id == puzzle_listen:
+	if _listen_ids().has(String(puzzle_id)):
 		_pulse_open()
-		_apply(true)
+		_apply(_is_open())
 
 
 func _on_live(puzzle_id: StringName, live: bool) -> void:
-	if puzzle_id != puzzle_listen or not is_inside_tree():
+	if not _listen_ids().has(String(puzzle_id)) or not is_inside_tree():
 		return
 	var parent_vis := get_parent() as CanvasItem
 	var audible := (parent_vis == null or parent_vis.is_visible_in_tree()) and Time.get_ticks_msec() >= _grace_until_ms
@@ -89,7 +108,8 @@ func _on_live(puzzle_id: StringName, live: bool) -> void:
 
 
 func _physics_process(_delta: float) -> void:
-	if puzzle_listen == &"" or PuzzleManager.is_solved(puzzle_listen) or not PuzzleManager.is_live(puzzle_listen):
+	var ids := _listen_ids()
+	if ids.is_empty() or _all_solved(ids) or not PuzzleManager.gate_open(ids):
 		_entry_side = 0
 		_last_player_x = NAN
 		return
@@ -109,7 +129,8 @@ func _physics_process(_delta: float) -> void:
 		_entry_side = side
 	elif side != _entry_side:
 		_entry_side = 0
-		PuzzleManager.mark_solved(puzzle_listen)
+		for id in ids:
+			PuzzleManager.mark_solved(StringName(id))
 		SaveManager.save_game()
 
 

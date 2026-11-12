@@ -9,6 +9,8 @@ extends Area2D
 @export var intro_line: String = "…Üzerinde çizikler var, bir kod mu bu?"
 @export var solved_line: String = "Mühür… gevşedi."
 @export var wrong_line: String = "…Yanlış, mühür kımıldamadı."
+## true ise yanlış kod girişi lanete +1 ekler.
+@export var penalize_wrong: bool = false
 
 var _busy: bool = false
 var _session: int = 0
@@ -88,11 +90,18 @@ func on_interact(_by: Node) -> void:
 			am.play_sfx(&"seal_open")
 		SaveManager.save_game()
 	else:
+		_apply_wrong_penalty()
 		DialogueManager.say("Noroi", wrong_line)
 		if reaction == &"unknown":
 			DialogueManager.say("Noroi", "Bir yerde… bir yankı bunu söylemiş olmalı.")
 		await DialogueManager.dialogue_finished
 	_busy = false
+
+
+## penalize_wrong açıksa yanlış kod lanete +1 yazar.
+func _apply_wrong_penalty() -> void:
+	if penalize_wrong:
+		CurseManager.add_curse(1.0)
 
 
 ## Alt sınıflar dünya bayrağı vb. için override eder.

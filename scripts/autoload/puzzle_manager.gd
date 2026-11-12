@@ -107,6 +107,18 @@ func is_live(puzzle_id: StringName) -> bool:
 	return bool(_live.get(String(puzzle_id), false))
 
 
+## Çoklu plaka kapısı: eski kayıt (legacy_id çözülmüş) VEYA listedeki her ID çözülmüş/canlı.
+func gate_open(all_ids: PackedStringArray, legacy_id: StringName = &"") -> bool:
+	if legacy_id != &"" and is_solved(legacy_id):
+		return true
+	if all_ids.is_empty():
+		return false
+	for id in all_ids:
+		if not (is_solved(StringName(id)) or is_live(StringName(id))):
+			return false
+	return true
+
+
 const HINTS: Dictionary = {
 	&"decay_catacombs": {
 		"goal": "Karanlıkta yol, ölülerin ışığıdır.",

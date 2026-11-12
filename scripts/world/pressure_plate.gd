@@ -10,6 +10,8 @@ signal pressed_changed(is_pressed: bool)
 @export var overlap_slack: float = 8.0
 ## Eski davranış: basınca kalıcı çözülür (yalnız oyuncunun kendi basması gereken plakalar; Faz 2'de saksı tasarımına geçer).
 @export var latch_on_press: bool = false
+## false ise weight_stone gövdesi ağırlık saymaz (yalnız ceset; accept_player kuralı aynen).
+@export var accept_stone: bool = true
 
 var _pressed: bool = false
 
@@ -94,7 +96,7 @@ func _recompute() -> void:
 func _weight_of(b: Node) -> int:
 	if b.is_in_group("corpse") and b.has_method("get_weight"):
 		return int(b.get_weight())
-	if b.is_in_group("weight_stone") and b.has_method("get_weight"):
+	if accept_stone and b.is_in_group("weight_stone") and b.has_method("get_weight"):
 		return int(b.get_weight())
 	if b.is_in_group("echo_twin_body"):
 		return 1
