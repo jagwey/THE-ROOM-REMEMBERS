@@ -78,7 +78,7 @@ func _run() -> void:
 					close_pairs.append("%s %s↔%s %.0f" % [rid, points[i].name, points[j].name, dist])
 	check(bad_doors.is_empty(), "her kapının hedef odası ve spawn'ı var", bad_doors)
 	check(close_pairs.is_empty(), "kapı/etkileşim 96 px'ten yakın değil", close_pairs)
-	check(ability_doors.size() == 2, "iki Gölge Atılması kapısı", ability_doors.size())
+	check(ability_doors.size() == 1, "tek Gölge Atılması kapısı (sarnıç şartsız)", ability_doors.size())
 	var player: Node2D = current_scene.get_node("Player")
 	for rid in rm._rooms.keys():
 		rm.enter_room(rid, &"default")
@@ -95,13 +95,13 @@ func _run() -> void:
 	for door in ability_doors:
 		if door.is_locked():
 			locked_count += 1
-	check(locked_count == 2, "yetenek yokken iki kapı kilitli", locked_count)
+	check(locked_count == 1, "yetenek yokken atılma kapısı kilitli", locked_count)
 	gs.player_progress_knowledge["ability_shadow_dash"] = true
 	var open_count := 0
 	for door in ability_doors:
 		if not door.is_locked():
 			open_count += 1
-	check(open_count == 2, "yetenek varken iki kapı açık", open_count)
+	check(open_count == 1, "yetenek varken atılma kapısı açık", open_count)
 	var walked := true
 	var walk_detail := ""
 	for i in MAIN_PATH.size() - 1:
