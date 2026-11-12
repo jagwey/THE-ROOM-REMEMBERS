@@ -33,6 +33,7 @@ func _run() -> void:
 	await _dialogue()
 	await _shade_water()
 	await _rooms_01_03()
+	await _rooms_01_03_fix1()
 	quit(1 if failures > 0 else 0)
 
 
@@ -640,3 +641,196 @@ func _rooms_01_03() -> void:
 		_unsolve(["awakening_crypt_pages"])
 	rm.enter_room(&"awakening", &"default")
 	await create_timer(0.3).timeout
+
+
+# ---------------------------------------------------------------- Oda 01-03 fix1
+func _rooms_01_03_fix1() -> void:
+	var rm := root.get_node("RoomManager")
+	var pm := root.get_node("PuzzleManager")
+	var gs := root.get_node("GameState")
+	var cm := root.get_node("CorpseManager")
+	var dm := root.get_node("DialogueManager")
+	dm.clear()
+	# ---- balkon: sutun yuksekligi gercek fizik sabitleriyle ----
+	rm.enter_room(&"awakening_balcony", &"default")
+	await create_timer(0.4).timeout
+	var bal: Node = _room_root(&"awakening_balcony")
+	var pc: Dictionary = load("res://scripts/player/player_controller.gd").get_script_constant_map()
+	var jump_v := absf(float(pc["JUMP_VELOCITY"]))
+	var grav := float(pc["GRAVITY"])
+	var apex := jump_v * jump_v / (2.0 * grav)
+	var corpse_inst := (load("res://scenes/world/corpse.tscn") as PackedScene).instantiate()
+	var ccs := corpse_inst.get_node("CollisionShape2D") as CollisionShape2D
+	var corpse_top := -(ccs.position.y - (ccs.shape as RectangleShape2D).size.y / 2.0)
+	corpse_inst.free()
+	var floor_y := 288.0
+	var pillars: Array = []
+	for n in ["PillarNear", "PillarFar"]:
+		var pn := bal.get_node_or_null(n) as StaticBody2D
+		check(pn != null and pn.collision_layer == 1, "bal_%s_solid_layer1" % n)
+		if pn == null:
+			return
+		var psz := ((pn.get_node("CollisionShape2D") as CollisionShape2D).shape as RectangleShape2D).size
+		var h := floor_y - (pn.position.y - psz.y / 2.0)
+		var edges := Vector2(pn.position.x - psz.x / 2.0, pn.position.x + psz.x / 2.0)
+		pillars.append({"h": h, "edges": edges})
+		check(h > apex + 4.0, "bal_%s_unreachable_without_corpse (H %.1f > apex %.1f)" % [n, h, apex])
+		check(h < corpse_top + apex - 4.0, "bal_%s_reachable_with_corpse (H %.1f < %.1f)" % [n, h, corpse_top + apex - 4.0])
+	var gap := Vector2(660.0, 724.0)
+	check((pillars[0]["edges"] as Vector2).y <= gap.x and gap.x - (pillars[0]["edges"] as Vector2).y <= 8.0, "bal_near_pillar_directly_before_gap")
+	check((pillars[1]["edges"] as Vector2).x >= gap.y and (pillars[1]["edges"] as Vector2).x - gap.y <= 8.0, "bal_far_pillar_directly_after_gap")
+	var tn: Node = bal.find_child("StepThornNear", true, false)
+	var tf: Node = bal.find_child("StepThornFar", true, false)
+	check(tn != null and tf != null and tn.is_in_group("blood_thorn") and tf.is_in_group("blood_thorn"), "bal_both_step_thorns_exist")
+	if tn != null and tf != null:
+		var ne: Vector2 = pillars[0]["edges"]
+		var fe: Vector2 = pillars[1]["edges"]
+		check(tn.anchor_x < ne.x and ne.x - tn.anchor_x <= 24.0, "bal_near_thorn_anchor_within_24_of_pillar")
+		check(tf.anchor_x > fe.y and tf.anchor_x - fe.y <= 24.0, "bal_far_thorn_anchor_within_24_of_pillar")
+		check(tn.position.x < ne.x and tf.position.x > fe.y, "bal_thorns_on_correct_sides")
+		check(tn.puzzle_hint != tf.puzzle_hint and not pm.is_solved(tf.puzzle_hint), "bal_far_thorn_not_blocked_by_crossed")
+	var zone: Node2D = bal.find_child("CrossedZone", true, false)
+	check(zone != null and zone.position.x >= 780.0, "bal_crossed_zone_x_ge_780")
+	var obs: Node2D = bal.get_node_or_null("Spawns/keeper_observe")
+	check(obs != null and obs.position.x >= 760.0, "bal_keeper_observe_still_clear")
+	# ceset bosluga itilemez
+	_clear_corpses()
+	cm.record_corpse_at(Vector2(640, 288), &"audit")
+	await create_timer(0.2).timeout
+	var bc: Node2D = null
+	for c in get_nodes_in_group("corpse"):
+		bc = c as Node2D
+	if bc != null:
+		bc.global_position = Vector2(618, 288)
+		bc._push(1.0, null)
+		await create_timer(0.4).timeout
+		check(bc.global_position.x < gap.x - 10.0, "bal_corpse_not_pushable_into_gap_or_pillar (x %.1f)" % bc.global_position.x)
+	var tele: Node = bal.find_child("BalconyTelescope", true, false)
+	var lore_tele: Node = bal.get_node_or_null("Interactive/Telescope")
+	check(tele != null and lore_tele != null and tele.position.x >= 390.0 and absf(tele.position.x - lore_tele.position.x) >= 90.0, "bal_telescope_echo_x_ge_390_clear_of_lore")
+	_clear_corpses()
+	# ---- metinler ----
+	var ids := [&"awakening_corpse_plate", &"awakening_balcony_crossed", &"awakening_crypt_pages", &"awakening_crypt_bed", &"awakening_weight"]
+	var len_ok := true
+	for id in ids:
+		var hh: Dictionary = pm.get_hints(id)
+		for k in ["goal", "orientation", "explicit"]:
+			var tx := String(hh.get(k, ""))
+			if tx.length() > 70 or tx.length() == 0:
+				len_ok = false
+				print("PHASE2 HINT too long/empty: ", id, " ", k, " ", tx.length())
+		if not String(hh.get("explicit", "")).ends_with("."):
+			len_ok = false
+	check(len_ok, "hints_len_le_70_and_period")
+	check(String(pm.get_hints(&"awakening_balcony_crossed")["explicit"]).contains("basamak"), "hint_balcony_mentions_step")
+	check(not _objective("awakening_balcony").contains("köprüle"), "objective_balcony_no_bridge_wording")
+	check(_objective("awakening_balcony").contains("basamak"), "objective_balcony_step_wording")
+	# ---- hedef: legacy ceset adimi ----
+	_unsolve(["awakening_weight", "awakening_corpse_plate"])
+	gs.player_progress_knowledge["pocket_watch_seen"] = true
+	var obj_fresh := _objective("awakening")
+	check(obj_fresh.contains("bedenini plakaya bırak") and not obj_fresh.contains("cesedini"), "objective_aw_new_wording")
+	pm.mark_solved(&"awakening_weight")
+	var obj_legacy := _objective("awakening")
+	check(not obj_legacy.contains("plakaya bırak"), "objective_aw_legacy_skips_corpse_step")
+	_unsolve(["awakening_weight", "awakening_corpse_plate"])
+	# ---- kripta metinleri ----
+	rm.enter_room(&"awakening_crypt", &"default")
+	await create_timer(0.3).timeout
+	var cr: Node = _room_root(&"awakening_crypt")
+	var shrine: Node = cr.find_child("PagesShrine", true, false)
+	var tablet: Node = cr.find_child("RingTablet", true, false)
+	var succ := String(shrine.success_line) if shrine != null else ""
+	var tl := ""
+	if tablet != null:
+		tl = String(tablet.lines[0])
+	check(succ.contains("Taşın kenarında bir rakam belirdi") and tl.contains("Taşın kenarında bir rakam belirdi"), "crypt_digit_wording_aligned")
+	# ---- gercek dikenle ceset + plaka ----
+	rm.enter_room(&"awakening", &"default")
+	await create_timer(0.5).timeout
+	var player: Node2D = current_scene.get_node("Player")
+	var aw: Node = _room_root(&"awakening")
+	var thorn: Node = aw.find_child("AwakeningThorn", true, false)
+	_clear_corpses()
+	_unsolve(["awakening_weight", "awakening_corpse_plate"])
+	gs.set_world_flag(&"awakening_door_opened", false)
+	player.global_position = Vector2(thorn.global_position.x - 30.0, 288.0)
+	await create_timer(0.3).timeout
+	thorn.on_interact(player)
+	dm.clear()
+	check(thorn._armed, "thorn_first_interact_arms")
+	thorn.on_interact(player)
+	var live := false
+	for i in 40:
+		await create_timer(0.25).timeout
+		if pm.is_live(&"awakening_corpse_plate"):
+			live = true
+			break
+	check(live, "thorn_real_path_corpse_plate_live")
+	var cs: Array = gs.world_memory_state["corpses"]
+	var anchored_ok := cs.size() == 1 and bool((cs[0] as Dictionary).get("anchored", false)) and String((cs[0] as Dictionary).get("anchor_plate", "")) == "awakening_corpse_plate"
+	check(anchored_ok, "thorn_real_path_corpse_anchored_to_plate (n=%d)" % cs.size())
+	# ---- set_anchoring + setup_from_data ----
+	var cn: Node2D = null
+	for c in get_nodes_in_group("corpse"):
+		cn = c as Node2D
+	if cn != null:
+		cn.set_anchoring(true, &"plate_A")
+		cn.set_anchoring(false, &"plate_B")
+		check(cn.is_anchored and cn._anchor_plate == &"plate_A", "anchoring_release_from_other_plate_ignored")
+		cn.set_anchoring(false, &"plate_A")
+		check(not cn.is_anchored and cn._anchor_plate == &"", "anchoring_release_from_own_plate_works")
+		var d: Dictionary = (cn._data as Dictionary).duplicate()
+		d["anchored"] = true
+		d["anchor_plate"] = "plate_A"
+		cn.setup_from_data(d)
+		check(cn._anchor_plate == &"plate_A", "setup_from_data_restores_anchor_plate")
+		cn.set_anchoring(false, &"plate_B")
+		check(cn.is_anchored, "restored_anchor_plate_still_guards_release")
+	# ---- kirpma ----
+	_clear_corpses()
+	_unsolve(["awakening_corpse_plate"])
+	var ids3: Array = []
+	for i in 3:
+		ids3.append(cm.record_corpse_at(Vector2(300 + i * 40, 288), &"audit"))
+		await create_timer(0.03).timeout
+	var list: Array = gs.world_memory_state["corpses"]
+	check(list.size() == 3, "trim_setup_three_corpses")
+	(list[0] as Dictionary)["anchored"] = true
+	(list[0] as Dictionary)["anchoring"] = true
+	(list[0] as Dictionary)["anchor_plate"] = "awakening_corpse_plate"
+	pm.mark_solved(&"awakening_corpse_plate")
+	await create_timer(0.03).timeout
+	cm.record_corpse_at(Vector2(460, 288), &"audit")
+	var after_ids: Array = []
+	for c in gs.world_memory_state["corpses"]:
+		after_ids.append(String((c as Dictionary).get("id", "")))
+	check(after_ids.size() == 3 and not after_ids.has(ids3[0]), "trim_evicts_anchor_of_solved_plate_first")
+	# korunan: plaka cozulmemis -> ankrajli ceset kalir
+	_clear_corpses()
+	_unsolve(["awakening_corpse_plate"])
+	ids3.clear()
+	for i in 3:
+		ids3.append(cm.record_corpse_at(Vector2(300 + i * 40, 288), &"audit"))
+		await create_timer(0.03).timeout
+	list = gs.world_memory_state["corpses"]
+	(list[0] as Dictionary)["anchored"] = true
+	(list[0] as Dictionary)["anchoring"] = true
+	(list[0] as Dictionary)["anchor_plate"] = "awakening_corpse_plate"
+	## Bekleme yok: plaka yoklaması sahte ankrajı (ceset plakada degil) bırakır.
+	cm.record_corpse_at(Vector2(460, 288), &"audit")
+	after_ids.clear()
+	for c in gs.world_memory_state["corpses"]:
+		after_ids.append(String((c as Dictionary).get("id", "")))
+	check(after_ids.has(ids3[0]) and not after_ids.has(ids3[1]), "trim_keeps_anchor_of_unsolved_plate")
+	_clear_corpses()
+	_unsolve(["awakening_corpse_plate"])
+
+
+func _objective(room: String) -> String:
+	var gs := root.get_node("GameState")
+	var prev: Variant = gs.character_current_life_knowledge.get("room", &"")
+	gs.character_current_life_knowledge["room"] = StringName(room)
+	var t: String = gs.get_current_objective()
+	gs.character_current_life_knowledge["room"] = prev
+	return t

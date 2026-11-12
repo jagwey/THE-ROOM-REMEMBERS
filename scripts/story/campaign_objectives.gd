@@ -21,7 +21,7 @@ const _BY_ROOM: Dictionary = {
 	"core_threshold": "İzler sende. Shilda ile konuş, sonra mühür odasına geç.",
 	"core_seal_chamber": "Tanıklıklar birleşince son kapı nefes alır.",
 	"core": "Aşağı in. Mührü Shilda ile birlikte kır.",
-	"awakening_balcony": "Boşluğu cesetle köprüle, teleskoba bak.",
+	"awakening_balcony": "Sütunlara bedenini basamak yap, karşıya geç.",
 	"awakening_crypt": "Sayfaları tarih sırasına diz; bedenini yatağa bırak.",
 	"decay_catacombs": "Çiçekli bedenin ışığıyla yürü. Sembolleri oku, mührü aç.",
 	"decay_shilda_wall": "Gözleri kızarınca son adımda kenara çekil. Duvarı o yıkar.",
@@ -45,10 +45,6 @@ const _BY_ROOM: Dictionary = {
 	"core_ascent": "Sunağa dokun, plakaya yürü ve bekle; yankın tutarken kapıdan geç.",
 }
 
-static func _has_soul_slash() -> bool:
-	return bool(GameState.player_progress_knowledge.get("ability_soul_slash", false))
-
-
 static func get_objective(room_id: String) -> String:
 	return objective_for_room(room_id)
 
@@ -60,7 +56,7 @@ static func objective_for_room(room_id: String) -> String:
 	if room_id == "awakening_balcony":
 		if PuzzleManager.is_solved(&"awakening_balcony_crossed"):
 			return "Karşıya geçtin. Kapı açık, mahzene in."
-		return "Boşluğu cesetle köprüle, teleskoba bak."
+		return "Sütunlara bedenini basamak yap, karşıya geç."
 	if room_id == "awakening_crypt":
 		var pages := PuzzleManager.is_solved(&"awakening_crypt_pages")
 		var bed := PuzzleManager.is_solved(&"awakening_crypt_bed")
@@ -94,8 +90,10 @@ static func _awakening_objective() -> String:
 		steps.append("Gölgeyle konuş")
 	if not (PuzzleManager.is_solved(&"awakening_weight") or PuzzleManager.is_live(&"awakening_weight")):
 		steps.append("taşı plakaya it")
-	if not (PuzzleManager.is_solved(&"awakening_corpse_plate") or PuzzleManager.is_live(&"awakening_corpse_plate")):
-		steps.append("cesedini ceset plakasına bırak")
+	## Eski kayıt: taş plakası çözülmüşse kapı zaten açık, ceset adımı gerekmez.
+	var legacy_open := PuzzleManager.is_solved(&"awakening_weight")
+	if not legacy_open and not (PuzzleManager.is_solved(&"awakening_corpse_plate") or PuzzleManager.is_live(&"awakening_corpse_plate")):
+		steps.append("bedenini plakaya bırak")
 	if steps.is_empty():
 		return "Kırık Geçit açık. Kırmızı yarıklara basma."
 	var first := steps[0]

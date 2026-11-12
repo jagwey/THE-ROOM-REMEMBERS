@@ -102,7 +102,7 @@ script = ExtResource("shrine")
 puzzle_id = &"awakening_crypt_pages"
 order = PackedStringArray("p_mar", "p_jun", "p_dec")
 fail_line = "Sayfalar birbirini tutmuyor. Tarihleri baştan sıralamalıyım."
-success_line = "Tarihler yerine oturdu. Sayfaların arasından bir rakam düştü."
+success_line = "Tarihler yerine oturdu. Taşın kenarında bir rakam belirdi."
 
 [node name="PageDec" type="Area2D" parent="Interactive/PagesShrine"]
 position = Vector2(150, 288)
@@ -134,7 +134,7 @@ script = ExtResource("lore")
 lore_id = &"crypt_ring_tablet"
 texture_path = "res://assets/props/memory_frame.png"
 sprite_scale = 0.6
-lines = PackedStringArray("Noroi|Sayfalar sıraya girince kenarda bir rakam belirdi: bir.", "Noroi|Üç, bir… halkanın ikinci hanesi bu.")
+lines = PackedStringArray("Noroi|Taşın kenarında bir rakam belirdi: bir.", "Noroi|Üç, bir… halkanın ikinci hanesi bu.")
 locked_lines = PackedStringArray("Noroi|Taşın üstünde tarihler karışık. Sayfaları sıraya dizmeliyim.")
 requires_puzzle = &"awakening_crypt_pages"
 evidence_title = "Halkanın İkinci Hanesi"

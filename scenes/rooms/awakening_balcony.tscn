@@ -1,12 +1,19 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
 [ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore"]
 [ext_resource type="Script" path="res://scripts/world/echo_point.gd" id="echo"]
 [ext_resource type="Script" path="res://scripts/world/crossing_zone.gd" id="cross"]
+[ext_resource type="Script" path="res://scripts/world/blood_thorn.gd" id="thorn"]
 
 [sub_resource type="RectangleShape2D" id="Interact"]
 size = Vector2(40, 48)
+
+[sub_resource type="RectangleShape2D" id="Pillar"]
+size = Vector2(20, 64)
+
+[sub_resource type="RectangleShape2D" id="PlateShape"]
+size = Vector2(40, 16)
 
 [sub_resource type="RectangleShape2D" id="Cross"]
 size = Vector2(40, 120)
@@ -41,7 +48,7 @@ evidence_section = "izler"
 focus_zoom = true
 
 [node name="Photo" type="Area2D" parent="Interactive"]
-position = Vector2(590, 288.0)
+position = Vector2(500, 288.0)
 script = ExtResource("lore")
 lore_id = &"balcony_photo"
 texture_path = "res://assets/props/photograph.png"
@@ -51,7 +58,7 @@ evidence_body = "Fotoğrafta yanımdaki kişinin yüzü kazınmış. Notta: Sesi
 evidence_section = "notlar"
 
 [node name="BalconyTelescope" type="Area2D" parent="Interactive"]
-position = Vector2(350, 268)
+position = Vector2(400, 268)
 script = ExtResource("echo")
 echo_id = &"balcony_telescope"
 
@@ -69,3 +76,53 @@ puzzle_id = &"awakening_balcony_crossed"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/CrossedZone"]
 shape = SubResource("Cross")
+
+[node name="PillarNear" type="StaticBody2D" parent="."]
+position = Vector2(646, 256)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PillarNear"]
+shape = SubResource("Pillar")
+
+[node name="ColorRect" type="ColorRect" parent="PillarNear"]
+offset_left = -10.0
+offset_top = -32.0
+offset_right = 10.0
+offset_bottom = 32.0
+color = Color(0.17, 0.14, 0.19, 1)
+
+[node name="PillarFar" type="StaticBody2D" parent="."]
+position = Vector2(738, 256)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PillarFar"]
+shape = SubResource("Pillar")
+
+[node name="ColorRect" type="ColorRect" parent="PillarFar"]
+offset_left = -10.0
+offset_top = -32.0
+offset_right = 10.0
+offset_bottom = 32.0
+color = Color(0.17, 0.14, 0.19, 1)
+
+[node name="StepThornNear" type="Area2D" parent="Interactive"]
+position = Vector2(600, 290)
+script = ExtResource("thorn")
+anchor_x = 618.0
+puzzle_hint = &"balcony_step_near"
+body_line = "Sütun benden uzun. Bedenim dibine düşerse basamak olur."
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/StepThornNear"]
+shape = SubResource("PlateShape")
+
+[node name="StepThornFar" type="Area2D" parent="Interactive"]
+position = Vector2(820, 290)
+script = ExtResource("thorn")
+anchor_x = 770.0
+puzzle_hint = &"balcony_step_far"
+body_line = "Dönüş için de bir basamak lazım. Bedenim sütunun dibinde kalır."
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/StepThornFar"]
+shape = SubResource("PlateShape")

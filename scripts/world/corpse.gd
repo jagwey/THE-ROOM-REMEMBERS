@@ -60,6 +60,7 @@ func setup_from_data(data: Dictionary) -> void:
 	else:
 		global_position = Vector2.ZERO
 	is_anchored = bool(data.get("anchored", false)) or bool(data.get("anchoring", false))
+	_anchor_plate = StringName(String(data.get("anchor_plate", "")))
 	var seen: Array = GameState.player_progress_knowledge.get("echoes_seen", [])
 	_echo_done = seen.has(String(echo_id))
 	if sprite:

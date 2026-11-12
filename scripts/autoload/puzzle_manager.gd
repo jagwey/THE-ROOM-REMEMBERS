@@ -142,12 +142,12 @@ const HINTS: Dictionary = {
 	&"awakening_corpse_plate": {
 		"goal": "Kapı iki ağırlık istiyor: biri taş, biri beden.",
 		"orientation": "Kırmızı kristal bedeni plakada bırakır. Taş ise öbür plakada durur.",
-		"explicit": "Taşı sağdaki plakaya it, kristale iki kez dokun; bedenin soldaki plakada kalır."
+		"explicit": "Taşı sağdaki plakaya it, kristale iki kez dokun."
 	},
 	&"awakening_balcony_crossed": {
 		"goal": "Kapı boşluğun karşı yakasında.",
-		"orientation": "Boşluğu aş; dürbünde eski bir yolun izi var.",
-		"explicit": "Boşluğun üstünden karşı kıyıya geç; kapı orada."
+		"orientation": "Sütunlar sana fazla uzun; basamak olacak bir şey gerek.",
+		"explicit": "Kristale iki kez dokun, bedenin basamak olsun; sütunlardan geç."
 	},
 	&"awakening_crypt_pages": {
 		"goal": "Defter sayfaları karışık duruyor.",

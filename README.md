@@ -185,7 +185,7 @@ Kemik Mahzeni girişinde (x≈150) tükenmez bir çiçek kaynağı durur. Çiçe
 - **Oda başlıkları (T1'de kesinleşti, tek kaynak `RoomManager.ROOM_TITLES_TR`):** `experiment_quarantine` → "Karantina Mahzeni", `mirrors_1927` → "1927 Gecesi".
 - **Öne çıkan değişiklikler:** X'in kimliği `mirrors_1927` sonunda açılır ("Bana X deyin"); bölge kartı "Uyanış Mahmuzu" → "Uyanış Odası"; "███" → "[kazınmış]".
 - **Durum:** yayınlanmadı; rozet ve indirme bağlantıları v1.13.0'da kalır.
-- **Faz 2 odalar 01-03 (T4):** Uyanış Odası kapısı taş plakası + yalnız-ceset plaka ister (ilk ölüm dersi: plakadaki dikenli kök); Gözlem Balkonu ruh mührünü kaybetti, boşluğun ötesindeki geçiş alanı kapıyı açar, teleskop halka kodunun ilk hanesini (3) gösterir; Mahzen'de defter sayfaları tarih sırasına dizilir, yataktaki ceset anıyı açar ve 2.-3. haneleri (1, 4) verir. Eski `soul_seal_balcony` kayıtları geçerli kalır.
+- **Faz 2 odalar 01-03 (T4):** Uyanış Odası kapısı taş plakası + yalnız-ceset plaka ister (ilk ölüm dersi: plakadaki dikenli kök); Gözlem Balkonu ruh mührünü kaybetti; boşluğun iki yanındaki sütunlar (64 px) düz zıplamayla aşılamaz, kan kristaliyle ölüp bedenini basamak yaparak geçilir (dönüş için karşı yakada ikinci kristal), karşıdaki geçiş alanı kapıyı açar, teleskop halka kodunun ilk hanesini (3) gösterir; Mahzen'de defter sayfaları tarih sırasına dizilir, yataktaki ceset anıyı açar ve 2.-3. haneleri (1, 4) verir. Eski `soul_seal_balcony` kayıtları geçerli kalır.
 
 ### v1.14.0 (hazır, yayınlanmadı) — Faz 0 kritik düzeltmeler
 - **Canlı plaka kuralı:** plaka yalnız üstünde ağırlık varken kapıyı açar; içinden geçince kapı kalıcı çözülür ve kaydedilir (`PuzzleManager.set_live/is_live`).

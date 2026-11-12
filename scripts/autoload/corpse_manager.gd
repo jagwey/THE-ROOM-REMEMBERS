@@ -97,7 +97,12 @@ func _trim_excess() -> void:
 		var idx := -1
 		for i in corpses.size():
 			var c: Dictionary = corpses[i] as Dictionary
-			if not bool(c.get("anchoring", false)) and not bool(c.get("anchored", false)):
+			var held := bool(c.get("anchoring", false)) or bool(c.get("anchored", false))
+			## Çözülmüş plakaya bağlı ceset artık bulmacayı tutmuyor: kırpılabilir.
+			var plate := String(c.get("anchor_plate", ""))
+			if held and plate != "" and PuzzleManager.is_solved(StringName(plate)):
+				held = false
+			if not held:
 				idx = i
 				break
 		if idx < 0:
