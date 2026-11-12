@@ -36,6 +36,8 @@ func _ready() -> void:
 	if reset_until_solved != &"":
 		RoomManager.room_changed.connect(_on_room_changed)
 		DeathManager.rebirth_completed.connect(_reset_if_needed)
+		## Kayıttan doğrudan bu odaya devam (apply_initial_room room_changed yaymaz): oda görünür olunca da sıfırla.
+		visibility_changed.connect(_reset_if_needed)
 		_reset_if_needed()
 
 

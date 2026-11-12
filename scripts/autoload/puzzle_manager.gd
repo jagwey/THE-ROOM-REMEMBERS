@@ -33,6 +33,10 @@ func _sync_legacy_flags_into_puzzles() -> void:
 	if bool(pz.get("soul_seal_balcony", false)) and not bool(pz.get("awakening_balcony_crossed", false)):
 		pz["awakening_balcony_crossed"] = true
 		changed = true
+	## Eski kayıt: geçit halkaları yoktu; mühür odası bulmacası çözülmüşse geçit zaten aşılmış sayılır.
+	if (bool(pz.get("awakening_seal_weight", false)) or bool(pz.get("awakening_memory_code", false))) and not bool(pz.get("awakening_passage_rings", false)):
+		pz["awakening_passage_rings"] = true
+		changed = true
 	if changed:
 		GameState.knowledge_changed.emit(&"world")
 

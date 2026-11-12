@@ -37,6 +37,7 @@ func _run() -> void:
 	await _rooms_04_06()
 	await _rooms_07_10()
 	await _rooms_11_13()
+	await _softlock()
 	quit(1 if failures > 0 else 0)
 
 
@@ -1875,3 +1876,226 @@ func _objective(room: String) -> String:
 	var t: String = gs.get_current_objective()
 	gs.character_current_life_knowledge["room"] = prev
 	return t
+
+
+
+const SL_ROOMS := ["awakening", "awakening_balcony", "awakening_crypt", "awakening_passage", "awakening_seal", "awakening_vigil", "decay_vines", "decay_weight", "decay_greenhouse", "decay_shilda_wall", "decay_garden", "decay_catacombs", "decay_cistern"]
+## v1.15 kayitlarinda var olan bulmaca ID'leri (oda 01-13).
+const SL_LEGACY := ["awakening_weight", "soul_seal_balcony", "awakening_seal_weight", "awakening_memory_code", "awakening_vigil", "decay_vine_shortcut", "decay_weight_latch", "decay_greenhouse", "decay_shilda_wall_broken", "decay_archive_key", "decay_catacomb_seal", "decay_cistern"]
+
+
+func _plate_live(p: Node) -> bool:
+	return root.get_node("PuzzleManager").is_live(p.puzzle_id)
+
+
+## Odadaki room_transition kapilari (target_room_id; yan kapilar main.gd'de, burada yok).
+func _doors_of(room: Node) -> Array:
+	var out: Array = []
+	for n in room.find_children("*", "Area2D", true, false):
+		if "target_room_id" in n and n.has_method("is_locked"):
+			out.append(n)
+	return out
+
+
+func _gates_of(room: Node) -> Array:
+	var out: Array = []
+	for n in room.find_children("*", "StaticBody2D", true, false):
+		if "legacy_puzzle" in n and n.has_method("_is_open"):
+			out.append(n)
+	return out
+
+
+func _softlock() -> void:
+	var gs := root.get_node("GameState")
+	var pm := root.get_node("PuzzleManager")
+	var rm := root.get_node("RoomManager")
+	var cm := root.get_node("CorpseManager")
+	var dm := root.get_node("DialogueManager")
+	# ---- (a) v1.15 tarzi kayit: legacy ID'ler cozulu, yeni ID'ler yok -> ana yol kapilari acik ----
+	_clear_corpses()
+	var all_ids: Array = []
+	for r in SL_ROOMS:
+		for id in pm.ROOM_PUZZLES.get(r, []):
+			if not all_ids.has(String(id)):
+				all_ids.append(String(id))
+	for extra in ["awakening_balcony_crossed", "awakening_crypt_pages", "awakening_crypt_bed", "awakening_corpse_plate", "awakening_seal_second", "awakening_vigil_trace", "decay_weight_corpse", "decay_cistern_drain", "decay_garden_bloom", "catacomb_bridge_thorn", "awakening_passage_rings"]:
+		if not all_ids.has(extra):
+			all_ids.append(extra)
+	_unsolve(all_ids)
+	_unsolve(SL_LEGACY)
+	gs.set_world_flag(&"awakening_door_opened", false)
+	for id in SL_LEGACY:
+		(gs.world_memory_state["puzzles"] as Dictionary)[id] = true
+	pm.sync_from_world()
+	var locked: Array = []
+	var closed: Array = []
+	var ndoors := 0
+	var ngates := 0
+	for r in SL_ROOMS:
+		rm.enter_room(StringName(r), &"default")
+		await create_timer(0.25).timeout
+		var rr := _room_root(StringName(r))
+		for d in _doors_of(rr):
+			ndoors += 1
+			if d.is_locked():
+				locked.append("%s/%s" % [r, String(d.name)])
+		for g in _gates_of(rr):
+			ngates += 1
+			## legacy_puzzle'li kapi ya da dinledigi id'lerin hepsi legacy kumede olan kapi
+			var ids: PackedStringArray = g._listen_ids()
+			var legacy_only: bool = g.legacy_puzzle != &""
+			if not legacy_only and not ids.is_empty():
+				legacy_only = true
+				for id in ids:
+					if not SL_LEGACY.has(String(id)):
+						legacy_only = false
+			if legacy_only and not g._is_open():
+				closed.append("%s/%s" % [r, String(g.name)])
+	check(ndoors >= 20 and ngates >= 5, "softlock_a_scanned_doors_and_gates (%d doors, %d gates)" % [ndoors, ngates])
+	check(locked.is_empty(), "softlock_a_v115_save_all_doors_unlocked %s" % str(locked))
+	check(closed.is_empty(), "softlock_a_v115_save_all_legacy_gates_open %s" % str(closed))
+	_unsolve(SL_LEGACY)
+	pm.sync_from_world()
+	# ---- (b) muhur: iki plaka cesetle dolu, uc ceset siniri; bir plaka bosalirsa yeniden doldurulabilir ----
+	_unsolve(["awakening_seal_weight", "awakening_seal_second", "awakening_memory_code", "awakening_corpse_plate"])
+	_clear_corpses()
+	rm.enter_room(&"awakening_seal", &"default")
+	await create_timer(0.4).timeout
+	var seal := _room_root(&"awakening_seal")
+	var sp1: Node = seal.find_child("PressurePlate", true, false)
+	var sp2: Node = seal.find_child("PressurePlate2", true, false)
+	var sgate: Node = seal.find_child("SideGate", true, false)
+	if sp1 != null and sp2 != null and sgate != null:
+		_corpse_at(sp1.global_position.x, 288.0)
+		await create_timer(0.1).timeout
+		_corpse_at(sp2.global_position.x, 288.0)
+		await create_timer(0.4).timeout
+		check(_plate_live(sp1) and _plate_live(sp2) and sgate._is_open(), "softlock_b_two_corpses_fill_both_plates_gate_open")
+		_corpse_at(100.0, 288.0)
+		await create_timer(0.4).timeout
+		var lst: Array = gs.world_memory_state["corpses"]
+		check(lst.size() <= cm.MAX_CORPSES and _plate_live(sp1) and _plate_live(sp2), "softlock_b_third_corpse_within_cap_plates_stay (%d corpses)" % lst.size())
+		## bir plaka cesedi kirpildi/kayboldu: plaka bosalir, kapi kapanir
+		var removed: Dictionary = {}
+		for i in lst.size():
+			var c: Dictionary = lst[i] as Dictionary
+			if absf(float((c.get("position", {}) as Dictionary).get("x", 0.0)) - sp1.global_position.x) < 20.0:
+				removed = c
+				lst.remove_at(i)
+				break
+		cm.rebuild_world_corpses()
+		await create_timer(0.5).timeout
+		check(not removed.is_empty() and not _plate_live(sp1) and not sgate._is_open(), "softlock_b_plate_empties_when_its_corpse_gone")
+		## oyuncu olmeden tek yeni ceset ile yeniden doldurabilir (toplam <= 3)
+		_corpse_at(sp1.global_position.x, 288.0)
+		await create_timer(0.5).timeout
+		lst = gs.world_memory_state["corpses"]
+		check(_plate_live(sp1) and _plate_live(sp2) and sgate._is_open() and lst.size() <= cm.MAX_CORPSES, "softlock_b_refill_plate_with_one_corpse (%d corpses)" % lst.size())
+	else:
+		check(false, "softlock_b_seal_nodes_found")
+	_clear_corpses()
+	_unsolve(["awakening_seal_weight", "awakening_seal_second"])
+	# ---- (c) sarnic: bos tahliye plakasi, seviye 0 yok; P2/P3 toplanir; P1 icin ceset yeniden konur ----
+	_unsolve(["decay_cistern", "decay_cistern_drain"])
+	for k in ["cistern_page_1", "cistern_page_2", "cistern_page_3"]:
+		gs.set_world_flag(StringName(k), false)
+	gs.set_world_flag(&"cistern_level", 1)
+	rm.enter_room(&"decay_garden", &"default")
+	await create_timer(0.3).timeout
+	rm.enter_room(&"decay_cistern", &"default")
+	await create_timer(0.4).timeout
+	var cis: Node = _room_root(&"decay_cistern")
+	var w: Node = cis.find_child("Water", true, false)
+	var dplate: Node = cis.find_child("DrainPlate", true, false)
+	var pgs: Array = []
+	for n in cis.find_children("*", "Area2D", true, false):
+		if n.is_in_group("cistern_page"):
+			pgs.append(n)
+	pgs.sort_custom(func(a, b): return int(a.page_id) < int(b.page_id))
+	var player: Node2D = current_scene.get_node("Player")
+	if w != null and dplate != null and pgs.size() == 3:
+		check(not _plate_live(dplate), "softlock_c_drain_plate_starts_empty")
+		w.step(-1)
+		w.step(-1)
+		check(w.level == 1, "softlock_c_empty_plate_blocks_level_0")
+		w.step(1)
+		pgs[1].on_interact(player)
+		w.step(1)
+		pgs[2].on_interact(player)
+		check(bool(gs.get_world_flag(&"cistern_page_2", false)) and bool(gs.get_world_flag(&"cistern_page_3", false)), "softlock_c_p2_p3_collectible_with_plate_empty")
+		check(not bool(gs.get_world_flag(&"cistern_page_1", false)) and not pm.is_solved(&"decay_cistern"), "softlock_c_p1_still_missing_not_solved")
+		## P1: ceset tahliye plakasina konur -> seviye 0 -> topla
+		_corpse_at(dplate.global_position.x, 288.0)
+		await create_timer(0.5).timeout
+		check(_plate_live(dplate), "softlock_c_corpse_opens_drain")
+		w.step(-1)
+		w.step(-1)
+		w.step(-1)
+		check(w.level == 0, "softlock_c_level_0_with_drain_open")
+		pgs[0].on_interact(player)
+		check(bool(gs.get_world_flag(&"cistern_page_1", false)), "softlock_c_p1_collected_after_corpse")
+		## ceset kayboldu: tahliye kapanir, su 1'e doner; ceset yeniden konup P1'e inilebilir (sayfalar kalir)
+		gs.set_world_flag(&"cistern_page_1", false)
+		_clear_corpses()
+		await create_timer(0.5).timeout
+		check(not _plate_live(dplate) and w.level == 1, "softlock_c_lost_corpse_closes_drain_level_1")
+		_corpse_at(dplate.global_position.x, 288.0)
+		await create_timer(0.5).timeout
+		w.step(-1)
+		check(_plate_live(dplate) and w.level == 0, "softlock_c_corpse_replaced_level_0_reachable")
+		pgs[0].on_interact(player)
+		await create_timer(0.2).timeout
+		check(pm.is_solved(&"decay_cistern"), "softlock_c_all_pages_solve_after_replace")
+	else:
+		check(false, "softlock_c_cistern_nodes_found")
+	_clear_corpses()
+	_unsolve(["decay_cistern", "decay_cistern_drain"])
+	for k in ["cistern_page_1", "cistern_page_2", "cistern_page_3"]:
+		gs.set_world_flag(StringName(k), false)
+	# ---- (1) Kayitla dogrudan sarnica devam (apply_initial_room): seviye 3 -> 1, sayfalar kalir ----
+	gs.set_world_flag(&"cistern_page_2", true)
+	rm.enter_room(&"decay_garden", &"default")
+	await create_timer(0.3).timeout
+	if w != null:
+		gs.set_world_flag(&"cistern_level", 3)
+		w.level = 3
+		rm.apply_initial_room(&"decay_cistern", &"checkpoint", false)
+		await process_frame
+		check(w.level == 1 and int(gs.get_world_flag(&"cistern_level", 1)) == 1, "softlock_resume_in_cistern_level3_resets_to_1")
+		check(bool(gs.get_world_flag(&"cistern_page_2", false)), "softlock_resume_in_cistern_keeps_pages")
+	gs.set_world_flag(&"cistern_page_2", false)
+	# ---- (d) cozum sonrasi yeniden giris: kapilar acik, secim tekrar sorulmaz ----
+	for r in SL_ROOMS:
+		for id in pm.ROOM_PUZZLES.get(r, []):
+			pm.mark_solved(StringName(String(id)))
+	pm.mark_solved(&"awakening_corpse_plate")
+	pm.mark_solved(&"awakening_seal_second")
+	pm.mark_solved(&"decay_cistern_drain")
+	pm.mark_solved(&"awakening_vigil")
+	var locked2: Array = []
+	for r in SL_ROOMS:
+		rm.enter_room(&"awakening", &"default")
+		await create_timer(0.1).timeout
+		rm.enter_room(StringName(r), &"default")
+		await create_timer(0.25).timeout
+		for d in _doors_of(_room_root(StringName(r))):
+			if d.is_locked():
+				locked2.append("%s/%s" % [r, String(d.name)])
+	check(locked2.is_empty(), "softlock_d_reentry_after_solve_doors_open %s" % str(locked2))
+	gs.player_progress_knowledge["vigil_talk_done"] = true
+	gs.player_progress_knowledge["vigil_parted"] = true
+	var keepers := get_nodes_in_group("keeper")
+	if keepers.size() > 0:
+		rm.enter_room(&"awakening_vigil", &"default")
+		await create_timer(0.4).timeout
+		var asked: int = await _answer_vigil(dm, [1, 1, 1], keepers[0])
+		check(asked == 0, "softlock_d_vigil_not_reasked_after_solve (%d)" % asked)
+	else:
+		check(false, "softlock_d_keeper_found")
+	gs.player_progress_knowledge.erase("vigil_talk_done")
+	gs.player_progress_knowledge.erase("vigil_parted")
+	gs.player_progress_knowledge.erase("vigil_answers")
+	_unsolve(all_ids)
+	_unsolve(SL_LEGACY)
+	_clear_corpses()
+	dm.clear()

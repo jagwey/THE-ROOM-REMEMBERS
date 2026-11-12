@@ -138,7 +138,8 @@ func _on_curse_stagger() -> void:
 func _near_hazard() -> bool:
 	for grp in [&"curse_cloud", &"blood_thorn"]:
 		for n in get_tree().get_nodes_in_group(grp):
-			if n is Node2D and (n as Node2D).global_position.distance_to(global_position) < 96.0:
+			## Gizli odaların tehlikeleri (odalar aynı koordinatta üst üste) sayılmaz.
+			if n is Node2D and (n as Node2D).is_visible_in_tree() and (n as Node2D).global_position.distance_to(global_position) < 96.0:
 				return true
 	for n in get_tree().get_nodes_in_group(&"pit"):
 		if n is Node2D and (n as Node2D).is_visible_in_tree() and _near_pit(n as Node2D):

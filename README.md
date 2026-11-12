@@ -178,6 +178,13 @@ flowchart LR
 ### Katakomb çiçeği ve Sarnıç (Faz 0)
 Kemik Mahzeni girişinde (x≈150) tükenmez bir çiçek kaynağı durur. Çiçek elde ölürsen ceset çiçeği taşır ve fener gibi yanar; karanlık yol aydınlanır. Çiçek hayat başınadır, ölümde cesede geçer ve elden silinir. Sarnıç yan kapısı artık yetenek istemez.
 
+### Bölüm I–II odaları (v1.16.0) — Faz 2 bulmaca yeniden tasarımı
+- **Yeni bulmacalar (oda 01–13):** Uyanış Odası ceset plakası + dikenli kök; Gözlem Balkonu'nda ceset basamağı; Kırık Geçit'te 3-1-4 halka sırası; Mühür Odası'nda iki plaka (iki ayrı beden); Sarmaşık, Ağırlık, Sera, Shilda Duvarı yeniden kuruldu; Bahçe'de 7-2-9 çiçek sırası; Katakomb çiçek kaynağı; Sarnıç'ta tahliye plakası ve su seviyesi.
+- **Yeni bileşenler:** `gate_blocker` (bulmaca çözülene kadar geçit kapalı), `sequence_shrine` (sıralı dokunuş, yanlışta sıfırlama), `hidden_symbol` (ışıkta okunan işaret), `water_level` + `valve` (su seviyesi, tahliye bağlantısı), `choice/ask` (`DialogueManager.ask`, seçimli diyalog; şimdilik yalnız Shilda nöbeti), `PuzzleManager.LEGACY_ROOM_DONE` (eski kayıtlardaki çözümler yeni bulmaca kimliklerine taşınır).
+- **Softlock güvencesi:** `phase2_rooms_audit` `_softlock()` — v1.15 kaydında 01–13 ana yol kapıları açık, mühür plakası boşaltılıp yeniden doldurulabilir, Sarnıç'ta tahliye boşken seviye 0'a inilemez ve ceset yeniden konabilir, çözülmüş odaya dönüşte kapılar açık ve nöbet sorusu tekrar sorulmaz. Kayıttan doğrudan Sarnıç'a devam edince su seviyesi sıfırlanır.
+- **Düzeltmeler:** gizli odaların diken/lanet bulutları oyuncuya sayılmıyor (`_near_hazard`); eski kayıtta geçit halkaları mühür çözülmüşse çözülmüş sayılır.
+- **Playtest:** oda başına süre otomatik ölçülmez; kullanıcı ölçer (spec §10). Sürüm: `project.godot` 1.16.0, `version/code` 46, yayınlanmadı.
+
 ### v1.15.0 (hazır, yayınlanmadı) — Faz 1 diyalog yeniden yazımı
 - **Kapsam:** tüm oda, Shilda/Gölge, sistem ve arayüz metinleri sade Türkçeye yeniden yazıldı (T3–T6). Oda/puzzle/flag/relic ID'leri, `when` koşulları, bulmaca çözümleri değişmedi. Sürüm: `project.godot` 1.15.0, `version/code` 45.
 - **Lint kuralları (`dialogue_lint_audit`, T1):** `three_dots` ("..." yerine "…"), `banned_word` (hatıra/bellek yasak), `english_residue` (`BÖLGE %02d`, `BÖLÜM I SONU` vb. kalıntı yok), `json_shilda_speaker`, `line_length`, `hint_length` (HUD ipucu en çok 70 karakter), `speaker_format`, `unknown_placeholder`.
