@@ -315,6 +315,8 @@ func is_shilda_trusted() -> bool:
 ## Nöbet odası seçimlerinden biriken güven (negatif = şüphe). Kayıtlı: player_progress_knowledge["vigil_trust"].
 func add_vigil_trust(delta: int) -> void:
 	player_progress_knowledge["vigil_trust"] = get_vigil_trust() + delta
+	if player_progress_knowledge.get("shilda_trust") is Dictionary:
+		player_progress_knowledge["shilda_trust"]["vigil_trust"] = get_vigil_trust()
 	knowledge_changed.emit(&"player")
 
 

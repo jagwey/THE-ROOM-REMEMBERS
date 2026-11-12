@@ -160,11 +160,11 @@ func _dialogue() -> void:
 	await process_frame
 	check(dm.is_open and dm.has_choices(), "ask_opens_with_choices")
 	check(gate.blocks_movement(), "ask_locks_movement")
-	dm.choose(1)
+	dm.choose_now(1)
 	check(_picked == 1, "choose_emits_choice_made_1")
 	check(not dm.is_open, "choose_closes_box")
 	check(not gate.blocks_movement(), "choose_unlocks_movement")
-	dm.choose(0) ## kapalıyken etkisiz
+	dm.choose_now(0) ## kapalıyken etkisiz
 	check(_picked == 1, "choose_when_closed_ignored")
 	dm.choice_made.disconnect(_on_pick)
 	# --- vigil trust ---
@@ -177,7 +177,7 @@ func _dialogue() -> void:
 	check(gs.get_vigil_trust() == 0, "vigil_trust_reset_before_load")
 	var loaded: bool = sm.load_game(false)
 	check(saved and loaded and gs.get_vigil_trust() == 2, "vigil_trust_survives_save_load")
-	# --- trust eşiği: skor 2 (eşik 3 altı) -> +1 güven eşiği geçirir ---
+	# --- trust eşiği: sayaçlar skor 2 verir (echo + çiçek; eşik 3), +1 vigil eşiği geçirir ---
 	gs.add_vigil_trust(-2)
 	gs.player_progress_knowledge.erase("keeper_hurt")
 	gs.player_progress_knowledge.erase("keeper_withdrew")
@@ -230,7 +230,7 @@ func _dialogue_lifecycle() -> void:
 	dm.choice_made.connect(_on_made_chain)
 	await process_frame
 	dm.ask("@shilda", "one", PackedStringArray(["A", "B"]))
-	dm.choose(0)
+	dm.choose_now(0)
 	check(dm.is_open and dm.has_choices() and _shown_count == 2, "chained_ask_from_handler_keeps_second_prompt")
 	dm.choice_made.disconnect(_on_made_chain)
 	dm.clear()
@@ -247,21 +247,41 @@ func _dialogue_lifecycle() -> void:
 	await process_frame
 	dm.ask("@shilda", "d1", PackedStringArray(["A", "B"]))
 	dm.ask("@shilda", "d2", PackedStringArray(["C", "D"]))
-	dm.choose(0)
-	dm.choose(0)
+	dm.choose_now(0)
+	dm.choose_now(0)
 	check(_made.size() == 1 and dm.has_choices(), "double_choose_same_frame_answers_once")
 	dm.clear()
 	# aralık dışı
 	_made.clear()
 	dm.ask("@shilda", "r", PackedStringArray(["A", "B"]))
-	dm.choose(5)
-	dm.choose(-1)
+	dm.choose_now(5)
+	dm.choose_now(-1)
 	check(_made.is_empty() and dm.has_choices(), "out_of_range_choose_ignored")
-	# klavye: yazım bitip koruma süresi geçince vurgulu seçenek
+	# klavye (advance): yazım tamamlanıp 150 ms koruma geçince vurgulu seçenek seçilir
 	await create_timer(0.3).timeout
 	dm.move_choice(1)
 	dm.advance() ## yazım sürüyorsa önce sayfayı tamamlar
 	await create_timer(0.2).timeout
 	dm.advance()
 	check(_made == [1] and not dm.is_open, "keyboard_advance_picks_highlighted")
+	dm.clear()
+	# kuyruktaki asklar dahil her iptal bir kez bildirilir
+	_cancelled = 0
+	dm.ask("@shilda", "q1", PackedStringArray(["A"]))
+	dm.ask("@shilda", "q2", PackedStringArray(["B"]))
+	dm.ask("@shilda", "q3", PackedStringArray(["C"]))
+	dm.clear()
+	check(_cancelled == 3, "clear_cancels_shown_and_queued_asks (%d)" % _cancelled)
+	# gerçek çift dokunuş: choose() zaman korumalı, choose_now() atlar
+	_made.clear()
+	await process_frame
+	dm.ask("@shilda", "g1", PackedStringArray(["A"]))
+	dm.ask("@shilda", "g2", PackedStringArray(["B"]))
+	dm.choose_now(0) ## g2 şimdi gösterildi
+	await process_frame
+	dm.choose(0)
+	check(_made.size() == 1 and dm.has_choices(), "choose_within_guard_ignored")
+	await create_timer(0.2).timeout
+	dm.choose(0)
+	check(_made.size() == 2 and not dm.is_open, "choose_after_guard_accepted")
 	dm.clear()

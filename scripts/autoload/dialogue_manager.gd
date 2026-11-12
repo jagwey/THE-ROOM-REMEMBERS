@@ -83,7 +83,16 @@ func move_choice(delta: int) -> void:
 
 
 ## Buton, klavye (advance) ve test aynı yolu kullanır.
+## Zaman koruması (CHOICE_INPUT_GUARD_MS, `choices_shown`'dan itibaren) buton yolunu da kapsar:
+## gösterimden hemen sonraki çift dokunuş sıradaki istemi cevaplamaz.
 func choose(index: int) -> void:
+	if Time.get_ticks_msec() - _shown_ms < CHOICE_INPUT_GUARD_MS:
+		return
+	choose_now(index)
+
+
+## Zaman korumasını atlar (yalnız audit/test kullanır; aynı-kare koruması ve diğer kontroller geçerli).
+func choose_now(index: int) -> void:
 	if not is_open or _options.is_empty() or not _choices_live or index < 0 or index >= _options.size():
 		return
 	var frame := Engine.get_process_frames()
@@ -259,8 +268,13 @@ func advance() -> void:
 
 func clear() -> void:
 	## İptal — tamamlanma sinyali YOK.
+	var dropped := 0 ## ekrandaki + sırada bekleyen her ask bir kez iptal bildirir
+	if not _options.is_empty():
+		dropped += 1
+	for entry in _queue:
+		if not (entry.get("options", PackedStringArray()) as PackedStringArray).is_empty():
+			dropped += 1
 	_queue.clear()
-	var had_choice := not _options.is_empty()
 	_options = PackedStringArray()
 	_choices_live = false
 	_pages = PackedStringArray()
@@ -272,8 +286,8 @@ func clear() -> void:
 		is_open = false
 		last_was_whisper = false
 		UiGate.set_story(false)
-	choices_cleared.emit()
-	if had_choice:
+		choices_cleared.emit()
+	for i in dropped:
 		choice_cancelled.emit()
 
 
