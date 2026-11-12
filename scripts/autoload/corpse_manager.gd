@@ -119,7 +119,7 @@ func _trim_excess() -> void:
 			"room": old.get("room", "awakening"),
 		}
 		traces.append(trace)
-		if kind == "flower":
+		if kind == "flower" and not bool(old.get("has_flower", false)):
 			GameState.world_memory_state["flowers_left"] = int(GameState.world_memory_state["flowers_left"]) + 1
 		trace_added.emit(trace)
 

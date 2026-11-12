@@ -466,6 +466,7 @@ func _deserialize_life(raw: Variant) -> Dictionary:
 		"interacted": [],
 		"dialogue_flags": {},
 		"warned_hazard": false,
+		"flower_in_hand": false,
 	}
 	if typeof(raw) != TYPE_DICTIONARY:
 		return base

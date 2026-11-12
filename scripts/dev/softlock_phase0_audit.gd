@@ -44,6 +44,7 @@ func _run() -> void:
 		check(false, "flower_source_reusable (no source)")
 		quit(1)
 		return
+	check((src as CollisionObject2D).collision_layer == 8, "flower_source_interact_layer_8")
 	src.on_interact(player)
 	await process_frame
 	check(bool(state.character_current_life_knowledge.get("flower_in_hand", false)), "flower_picked_up")
@@ -65,7 +66,34 @@ func _run() -> void:
 	src.on_interact(player)
 	await process_frame
 	check(plain and bool(state.character_current_life_knowledge.get("flower_in_hand", false)), "flower_source_reusable")
+	# eski kayıt: flower_in_hand anahtarı yok -> false
+	var sv := root.get_node("SaveManager")
+	var loaded: Dictionary = sv._deserialize_life({"room": "decay_catacombs"})
+	check(loaded.has("flower_in_hand") and not bool(loaded["flower_in_hand"]), "old_life_without_flower_key_loads_false")
+	_trim_cases(cm, state)
+	# ölüm yolu: DeathManager.request_death çiçeği cesede aktarır
+	state.character_current_life_knowledge["flower_in_hand"] = true
+	var dmgr := root.get_node("DeathManager")
+	dmgr.request_death(&"thorn")
+	await create_timer(0.3).timeout
+	var corpses: Array = state.world_memory_state["corpses"]
+	var last: Dictionary = corpses[corpses.size() - 1] if corpses.size() > 0 else {}
+	check(bool(last.get("has_flower", false)) and not bool(state.character_current_life_knowledge.get("flower_in_hand", false)), "death_manager_transfers_flower")
 	quit(1 if failures > 0 else 0)
+
+
+func _trim_cases(cm: Node, state: Node) -> void:
+	var corpses: Array = state.world_memory_state["corpses"]
+	for with_flower in [true, false]:
+		corpses.clear()
+		state.world_memory_state["traces"].clear()
+		for i in range(cm.MAX_CORPSES + 1):
+			corpses.append({"id": "t%d" % i, "room": "decay_catacombs", "position": {"x": 0, "y": 0}, "has_flower": with_flower and i == 0})
+		var before := int(state.world_memory_state["flowers_left"])
+		cm._trim_excess()
+		var delta := int(state.world_memory_state["flowers_left"]) - before
+		check(delta == (0 if with_flower else 1), "trim_flower_count_%s" % ("no_double" if with_flower else "plain_counts"))
+	corpses.clear()
 
 
 func _static_checks() -> void:
@@ -77,6 +105,10 @@ func _static_checks() -> void:
 	var pm := root.get_node("PuzzleManager")
 	var hint: Variant = pm.HINTS.get(&"decay_catacombs", null)
 	check(hint is Dictionary and str((hint as Dictionary).get("orientation", "")) != "", "catacomb_hint_exists")
+	for k in [&"decay_catacombs", &"decay_catacomb_seal"]:
+		var h: Variant = pm.HINTS.get(k, {})
+		var ok: bool = h is Dictionary and str(h.get("orientation", "")) != "" and str(h.get("orientation", "")).length() <= 70 and str(h.get("explicit", "")) != "" and str(h.get("explicit", "")).length() <= 90
+		check(ok, "hint_lengths_%s" % String(k))
 	var main_src := FileAccess.get_file_as_string("res://scripts/main.gd")
 	var line := ""
 	for l in main_src.split("\n"):
