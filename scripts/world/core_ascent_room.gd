@@ -7,7 +7,17 @@ const SUB_PUZZLES: Array[StringName] = [&"core_ascent_seal", &"core_ascent_gap",
 
 func _ready() -> void:
 	super._ready()
-	GameState.room_changed.connect(func(_r: StringName = &""): sync_legacy_solved())
+	if not GameState.room_changed.is_connected(_on_room_changed):
+		GameState.room_changed.connect(_on_room_changed)
+	sync_legacy_solved()
+
+
+func _exit_tree() -> void:
+	if GameState.room_changed.is_connected(_on_room_changed):
+		GameState.room_changed.disconnect(_on_room_changed)
+
+
+func _on_room_changed(_room: StringName = &"") -> void:
 	sync_legacy_solved()
 
 

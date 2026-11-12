@@ -39,12 +39,12 @@ position = Vector2(300, 288)
 script = ExtResource("soul")
 puzzle_id = &"core_ascent_seal"
 back_side = 1
-refusal_line = "Mühür ruh istiyor. Ruh Kesimi Yasak Kanat'ta bekliyor; oraya dönmeliyim."
+refusal_line = "Mühür ruh istiyor. Ruh Kesimi Yasak Kanat'ta bekliyor; oraya gitmeliyim."
 
 [node name="CurseBarrier" type="StaticBody2D" parent="Interactive"]
 position = Vector2(616, 288)
 script = ExtResource("barrier")
-refusal_line = "Kırmızı perde beni itiyor. Gölge Atılması Ayna Tapınağı'nda; oraya dönmeliyim."
+refusal_line = "Kırmızı perde beni itiyor. Gölge Atılması Ayna Tapınağı'nda; oraya gitmeliyim."
 
 [node name="EchoStep" type="Area2D" parent="Interactive"]
 position = Vector2(720, 288)
