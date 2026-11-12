@@ -31,6 +31,7 @@ func _run() -> void:
 	root.get_node("UiGate").set_story(false)
 	await _components()
 	await _dialogue()
+	await _shade_water()
 	quit(1 if failures > 0 else 0)
 
 
@@ -285,3 +286,115 @@ func _dialogue_lifecycle() -> void:
 	dm.choose(0)
 	check(_made.size() == 2 and not dm.is_open, "choose_after_guard_accepted")
 	dm.clear()
+
+
+var _reached_ids: Array = []
+var _level_events: Array = []
+
+
+func _on_reached(id: StringName) -> void:
+	_reached_ids.append(id)
+
+
+func _on_level(l: int) -> void:
+	_level_events.append(l)
+
+
+func _shade_water() -> void:
+	var scene: Node = current_scene
+	var gs := root.get_node("GameState")
+	var player := Node2D.new()
+	player.add_to_group("player")
+	player.global_position = Vector2(5000, 5000)
+	scene.add_child(player)
+	var shade_script := load("res://scripts/world/trace_shade.gd")
+	var water_script := load("res://scripts/world/water_level.gd")
+	var valve_script := load("res://scripts/world/valve.gd")
+	check(shade_script != null and water_script != null and valve_script != null, "shade_water_scripts_load")
+	if shade_script == null or water_script == null or valve_script == null:
+		player.queue_free()
+		return
+	# --- trace_shade (gercek) ---
+	var shade: Node2D = Node2D.new()
+	shade.set_script(shade_script)
+	shade.shade_id = &"s_real"
+	shade.waypoints = PackedVector2Array([Vector2(7000, 0), Vector2(7200, 0)])
+	shade.speed = 200.0
+	shade.wait_radius = 96.0
+	shade.global_position = Vector2(6900, 0)
+	scene.add_child(shade)
+	shade.reached.connect(_on_reached)
+	shade.start()
+	await create_timer(1.0).timeout
+	check(shade.global_position.distance_to(Vector2(7000, 0)) < 8.0 and _reached_ids.is_empty(), "shade_waits_at_first_waypoint_when_player_far")
+	player.global_position = Vector2(7050, 0)
+	await create_timer(1.2).timeout
+	check(_reached_ids == [&"s_real"], "shade_reached_emitted_when_player_near")
+	shade.queue_free()
+	# --- trace_shade (sahte) ---
+	_reached_ids.clear()
+	var fake: Node2D = Node2D.new()
+	fake.set_script(shade_script)
+	fake.shade_id = &"s_fake"
+	fake.fake = true
+	fake.fake_line = "…Burada değildi."
+	fake.waypoints = PackedVector2Array([Vector2(7000, 100)])
+	fake.speed = 400.0
+	fake.global_position = Vector2(6900, 100)
+	scene.add_child(fake)
+	fake.reached.connect(_on_reached)
+	fake.start()
+	await create_timer(2.5).timeout
+	check(_reached_ids.is_empty(), "fake_shade_does_not_emit_reached")
+	check((not is_instance_valid(fake)) or (not fake.visible) or fake.modulate.a < 0.05, "fake_shade_faded_out")
+	root.get_node("DialogueManager").clear()
+	if is_instance_valid(fake):
+		fake.queue_free()
+	player.global_position = Vector2(5000, 5000)
+	# --- water_level ---
+	gs.world_memory_state["flags"].erase("p2w_level")
+	var water: Node2D = Node2D.new()
+	water.set_script(water_script)
+	water.puzzle_key = &"p2w"
+	water.level_y = PackedFloat32Array([400.0, 300.0, 200.0, 100.0])
+	water.start_level = 1
+	scene.add_child(water)
+	water.level_changed.connect(_on_level)
+	check(water.level == 1, "water_starts_at_start_level")
+	water.step(1)
+	water.step(1)
+	water.step(1)
+	check(water.level == 3, "water_clamps_at_3")
+	water.step(-5)
+	check(water.level == 1, "water_step_minus5_drain_closed_stops_at_1")
+	water.set_drain(true)
+	water.step(-1)
+	check(water.level == 0, "water_drain_open_allows_level_0")
+	water.set_drain(false)
+	check(water.level == 1, "water_drain_closing_returns_to_1")
+	check(_level_events.size() > 0 and _level_events[-1] == 1, "water_level_changed_emitted")
+	var raft := water.get_node_or_null("Raft")
+	check(raft is AnimatableBody2D and raft.sync_to_physics, "water_raft_animatable_sync")
+	await create_timer(1.2).timeout
+	check(raft != null and absf(raft.position.y - 300.0) < 1.0, "water_raft_tweens_to_level_y")
+	# valve
+	var valve := Area2D.new()
+	valve.set_script(valve_script)
+	valve.delta = 1
+	scene.add_child(valve)
+	valve.water = valve.get_path_to(water)
+	valve.on_interact(player)
+	check(water.level == 2, "valve_interact_steps_water")
+	check(valve.has_method("on_interact") and valve.collision_layer == 8, "valve_uses_interact_convention")
+	# kalicilik
+	check(gs.get_world_flag(&"p2w_level", -1) == 2, "water_level_persisted_in_flag")
+	var water2: Node2D = Node2D.new()
+	water2.set_script(water_script)
+	water2.puzzle_key = &"p2w"
+	water2.level_y = PackedFloat32Array([400.0, 300.0, 200.0, 100.0])
+	water2.start_level = 1
+	scene.add_child(water2)
+	check(water2.level == 2, "water_level_restored_from_flag")
+	gs.world_memory_state["flags"].erase("p2w_level")
+	for n in [water, water2, valve, player]:
+		n.queue_free()
