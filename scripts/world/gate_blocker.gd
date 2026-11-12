@@ -73,7 +73,7 @@ func _on_puzzle(puzzle_id: StringName) -> void:
 
 
 func _on_live(puzzle_id: StringName, live: bool) -> void:
-	if puzzle_id != puzzle_listen:
+	if puzzle_id != puzzle_listen or not is_inside_tree():
 		return
 	var parent_vis := get_parent() as CanvasItem
 	var audible := (parent_vis == null or parent_vis.is_visible_in_tree()) and Time.get_ticks_msec() >= _grace_until_ms
