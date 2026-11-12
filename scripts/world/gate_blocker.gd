@@ -87,7 +87,8 @@ func _on_flag(f: StringName, value: Variant) -> void:
 
 func _on_puzzle(puzzle_id: StringName) -> void:
 	if _listen_ids().has(String(puzzle_id)):
-		_pulse_open()
+		if _is_open():
+			_pulse_open()
 		_apply(_is_open())
 
 
@@ -96,7 +97,7 @@ func _on_live(puzzle_id: StringName, live: bool) -> void:
 		return
 	var parent_vis := get_parent() as CanvasItem
 	var audible := (parent_vis == null or parent_vis.is_visible_in_tree()) and Time.get_ticks_msec() >= _grace_until_ms
-	if live:
+	if live and _is_open():
 		_pulse_open()
 	if audible:
 		feedback_count += 1
