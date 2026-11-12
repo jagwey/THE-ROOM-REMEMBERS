@@ -1,6 +1,6 @@
 [gd_scene load_steps=11 format=3]
 
-[ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
+[ext_resource type="Script" path="res://scripts/world/core_ascent_room.gd" id="room"]
 [ext_resource type="Script" path="res://scripts/world/ordered_relic.gd" id="relic"]
 [ext_resource type="Script" path="res://scripts/world/soul_seal.gd" id="soul"]
 [ext_resource type="Script" path="res://scripts/world/curse_barrier.gd" id="barrier"]
@@ -22,8 +22,7 @@ room_id = &"core_ascent"
 region_id = &"core"
 room_width = 1280.0
 bg_region = "core"
-platforms = PackedVector3Array(360, 250, 70, 440, 212, 70, 560, 288, 112)
-floor_gaps = PackedVector2Array(560, 672)
+platforms = PackedVector3Array(360, 250, 70, 440, 212, 70, 520, 250, 70)
 checkpoint = Vector2(120, 288)
 default_spawn = Vector2(120, 288)
 doors = [{"x": 40.0, "to": "core_threshold", "spawn": "from_seal_chamber"}, {"x": 1240.0, "to": "core_seal_chamber", "spawn": "from_threshold", "req": "core_ascent", "msg": "Ruh Kesimi, Gölge Atılması ve yankı aynı basamakta durmalı."}]
@@ -113,5 +112,7 @@ dialogue_room = &"core_ascent"
 dialogue_set = &"go"
 solve_puzzle = &"core_ascent"
 locked_line = "Önce yankının durduğu basamağı dinlemeliyim."
+soul_refusal_line = "Son basamak Ruh Kesimi istiyor. Yasak Kanat'ta öğrenmiştim; oraya dönmeliyim."
+dash_refusal_line = "Perde Gölge Atılması istiyor. Ayna Tapınağı'nda bulmuştum; oraya dönmeliyim."
 evidence_title = "Gidelim"
 evidence_body = "İki yetenek ve yankı birleşince gölge son mührü tuttu. Birlikte mühür odasına inilir."

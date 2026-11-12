@@ -12,6 +12,9 @@ const LorePointScript := preload("res://scripts/world/lore_point.gd")
 @export var count_line: bool = false
 @export var need_soul: bool = false
 @export var need_dash: bool = false
+## Boşsa varsayılan satır. Yeteneğin alındığı odanın adını içerebilir.
+@export var soul_refusal_line: String = ""
+@export var dash_refusal_line: String = ""
 @export var evidence_title: String = ""
 @export_multiline var evidence_body: String = ""
 
@@ -36,12 +39,12 @@ func on_interact(_by: Node) -> void:
 		return
 	_busy = true
 	if need_soul and not bool(GameState.player_progress_knowledge.get("ability_soul_slash", false)):
-		DialogueManager.say("Noroi", "Son basamak Ruh Kesimi istiyor.")
+		DialogueManager.say("Noroi", soul_refusal_line if soul_refusal_line != "" else "Son basamak Ruh Kesimi istiyor.")
 		await DialogueManager.dialogue_finished
 		_busy = false
 		return
 	if need_dash and not bool(GameState.player_progress_knowledge.get("ability_shadow_dash", false)):
-		DialogueManager.say("Noroi", "Aralık Gölge Atılması istiyor.")
+		DialogueManager.say("Noroi", dash_refusal_line if dash_refusal_line != "" else "Aralık Gölge Atılması istiyor.")
 		await DialogueManager.dialogue_finished
 		_busy = false
 		return

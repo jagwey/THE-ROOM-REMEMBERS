@@ -44,6 +44,7 @@ func _ready() -> void:
 	var tw := sigil.create_tween().set_loops()
 	tw.tween_property(sigil, "modulate:a", 0.5, 0.9)
 	tw.tween_property(sigil, "modulate:a", 1.0, 0.9)
+	PuzzleManager.puzzle_solved.connect(func(id: StringName): if id == puzzle_id and _shape.disabled == false: _open(false))
 	if PuzzleManager.is_solved(puzzle_id):
 		_open(false)
 	elif back_side != 0:
