@@ -29,7 +29,7 @@ npc_id = &"vault_voice"
 idle_anim = "echo_idle"
 walk_anim = "echo_walk"
 ghostly = true
-dialogue_sets = PackedStringArray("Ses|Duyan var mı? Ben de buraya girdim, benden öncekiler gibi.;;Ses|Önce 1927. Boyut o yıl kuruldu.;;Ses|Sonra 1995. Biri o yıl içeri girdi. En son, son kayıt.", "Ses|Yüzlerce hafıza burada. Hiçbiri geri verilmedi.;;Ses|Shilda'yı dinle. O hiç unutmadı.")
+dialogue_sets = PackedStringArray("Ses|Duyan var mı? Ben de buraya girdim, benden öncekiler gibi.;;Ses|Önce 1927. Boyut o yıl kuruldu.;;Ses|Sonra 1995. Biri o yıl içeri girdi. En son, son kayıt.", "Ses|Sayısız hafıza burada. Hiçbiri geri verilmedi.;;Ses|Unutmayı yasaklayan kişi, tesisi kendi seçimiyle içeriden kilitledi.;;Ses|Shilda'yı dinle. O hiç unutmadı.")
 
 [node name="VaultShrine" type="Node2D" parent="Interactive"]
 script = ExtResource("shrine")

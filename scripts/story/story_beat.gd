@@ -110,7 +110,7 @@ func _library_hall() -> void:
 
 		return
 
-	_evidence("ev_catalog_conflict", "Kazınmış imzalar", "Yüzlerce kişi bu yere girmiş. Hepsinin kaydında imza kazınmış. En sonda bir yıl var: 1995.", "open_question", "notlar")
+	_evidence("ev_catalog_conflict", "Kazınmış imzalar", "Sayısız kişi bu yere girmiş. Hepsinin kaydında imza kazınmış. En sonda bir yıl var: 1995.", "open_question", "notlar")
 
 	PuzzleManager.mark_solved(&"library_catalog")
 
@@ -166,10 +166,10 @@ func _library_page() -> void:
 func _experiment_cells() -> void:
 
 	DialogueManager.say("Kayıt", "Hafıza koruma deneyi. Amaç: kaybedilenlerin seslerini saklamak.")
-	DialogueManager.say("Kayıt", "Denek 14: Noroi. Kurucu imza: X (kazınmış).")
+	DialogueManager.say("Kayıt", "Denek 14: Noroi. Kurucu imza: ███ (kazınmış).")
 
 	DialogueManager.say("Noroi", "Ben… denektim. Kurucu ben değilim.")
-	DialogueManager.say("Shilda", "X başlattı. Sen içeride kaldın. Ben kapıda bekledim.")
+	DialogueManager.say("Shilda", "Kurucu başlattı. Sen içeride kaldın. Ben kapıda bekledim.")
 	DialogueManager.say("Shilda", "Sesler bedenlerinden koptu. Oda onları sakladı.")
 	DialogueManager.say("Shilda", "Kimseyi feda etmeyeceğiz. Sağdaki devrede yankın bir anahtarı tutacak.")
 	DialogueManager.say("Shilda", "Sen de diğerini açacaksın. Bu sefer birlikte.")

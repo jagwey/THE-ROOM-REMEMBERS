@@ -36,7 +36,7 @@ const _BY_ROOM: Dictionary = {
 	"awakening_vigil": "Gölge yüzünü gösteriyor. Onu dinle; sağdaki kapı açılır.",
 	"decay_greenhouse": "Camın ötesinde bir el mührü tutuyor. Plaka senin.",
 	"library_clockroom": "İki saat, iki gece. Önce 1927, sonra 1995.",
-	"library_reading_cell": "Duvar gün gün çentilmiş. İnsan günleri burada bitmiş.",
+	"library_reading_cell": "Duvar gün gün çentilmiş. Sayılan günler burada bitmiş.",
 	"experiment_intake": "Önce kabul dosyası. Sonra askıdaki palto. İkisi de 1995'i biliyor.",
 	"mirrors_gallery": "Duvar, unuttuğun bedenleri sayıyor. Sonra kırılmayan aynaya geç.",
 	"mirrors_1927": "1927 gecesi kendi kendine oynuyor. Dokunma. Sonra geri dön.",
