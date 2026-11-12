@@ -11,6 +11,8 @@ signal typing_finished
 signal choices_shown(options: PackedStringArray) ## istem satırı son sayfaya gelince HUD butonları gösterir
 signal choice_selected(index: int) ## klavye vurgusu değişti (HUD yenilesin)
 signal choice_made(index: int)
+signal choices_cleared ## HUD butonlarını kaldırır (seçim, iptal, bitiş, sayfa yeniden kurulumu)
+signal choice_cancelled ## bekleyen ask() cevapsız düştü (ölüm, yükleme, oda değişimi, menü)
 
 var _queue: Array[Dictionary] = []
 var is_open: bool = false
@@ -18,6 +20,10 @@ var last_was_whisper: bool = false
 var generation: int = 0
 var _options: PackedStringArray = PackedStringArray()
 var _choice_sel: int = 0
+var _choices_live: bool = false ## seçenekler gösterildi; choose() ancak o zaman geçerli
+var _shown_ms: int = 0
+var _last_choose_frame: int = -1
+const CHOICE_INPUT_GUARD_MS := 150
 
 ## Aktif satırın sayfaları
 var _pages: PackedStringArray = []
@@ -52,6 +58,8 @@ func whisper(speaker: String, text: String) -> void:
 
 ## Seçimli istem: satır gösterilir, ardından `options` butonları çıkar; oyuncu seçene dek diyalog
 ## ilerlemez (hareket kilidi normal diyalogla aynı: UiGate.set_story). Sonuç `choice_made(index)`.
+## DİKKAT: istem ölüm/yükleme/oda değişimi/menü ile iptal edilebilir; çağıranlar `choice_cancelled`
+## sinyalini de ele almalı (aksi halde cevap hiç gelmez).
 func ask(speaker: String, prompt: String, options: PackedStringArray) -> void:
 	if options.is_empty():
 		say(speaker, prompt)
@@ -76,10 +84,16 @@ func move_choice(delta: int) -> void:
 
 ## Buton, klavye (advance) ve test aynı yolu kullanır.
 func choose(index: int) -> void:
-	if not is_open or _options.is_empty() or index < 0 or index >= _options.size():
+	if not is_open or _options.is_empty() or not _choices_live or index < 0 or index >= _options.size():
 		return
+	var frame := Engine.get_process_frames()
+	if frame == _last_choose_frame:
+		return ## çift dokunuş: aynı karede ikinci seçim sıradaki istemi cevaplamasın
+	_last_choose_frame = frame
 	_options = PackedStringArray()
 	_choice_sel = 0
+	_choices_live = false
+	choices_cleared.emit()
 	_show_next() ## sıra boşsa diyaloğu kapatır ve kilidi kaldırır
 	choice_made.emit(index)
 
@@ -152,7 +166,14 @@ func _begin_page() -> void:
 		_typing = false
 		typing_finished.emit()
 	if not _options.is_empty() and _page_index == _pages.size() - 1:
+		_choices_live = true
+		_shown_ms = Time.get_ticks_msec()
 		choices_shown.emit(_options)
+	else:
+		var was_live := _choices_live
+		_choices_live = false
+		if was_live or not _options.is_empty():
+			choices_cleared.emit()
 
 
 func _schedule_headless_auto() -> void:
@@ -229,6 +250,8 @@ func advance() -> void:
 		_begin_page()
 		return
 	if not _options.is_empty():
+		if Time.get_ticks_msec() - _shown_ms < CHOICE_INPUT_GUARD_MS:
+			return ## etkileş tuşuna basılı tutma/ezme yanlış seçim yapmasın
 		choose(_choice_sel) ## etkileş tuşu = vurgulu seçenek
 		return
 	_show_next()
@@ -237,7 +260,9 @@ func advance() -> void:
 func clear() -> void:
 	## İptal — tamamlanma sinyali YOK.
 	_queue.clear()
+	var had_choice := not _options.is_empty()
 	_options = PackedStringArray()
+	_choices_live = false
 	_pages = PackedStringArray()
 	_page_index = 0
 	_typing = false
@@ -247,9 +272,13 @@ func clear() -> void:
 		is_open = false
 		last_was_whisper = false
 		UiGate.set_story(false)
+	choices_cleared.emit()
+	if had_choice:
+		choice_cancelled.emit()
 
 
 func _finish(completed: bool) -> void:
+	choices_cleared.emit()
 	is_open = false
 	last_was_whisper = false
 	_typing = false

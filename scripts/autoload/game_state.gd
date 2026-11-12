@@ -285,6 +285,7 @@ func get_shilda_trust_state() -> Dictionary:
 			"strikes_dealt": 0,
 			"reconciled": false,
 		}
+	player_progress_knowledge["shilda_trust"]["vigil_trust"] = get_vigil_trust() ## yansıtma; kaynak: player_progress_knowledge["vigil_trust"]
 	return player_progress_knowledge["shilda_trust"]
 
 

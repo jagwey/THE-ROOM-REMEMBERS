@@ -79,7 +79,7 @@ func _ready() -> void:
 	DialogueManager.typing_finished.connect(_on_typing_finished)
 	DialogueManager.choices_shown.connect(_on_choices_shown)
 	DialogueManager.choice_selected.connect(_refresh_choice_highlight)
-	DialogueManager.choice_made.connect(_hide_choices.unbind(1))
+	DialogueManager.choices_cleared.connect(_hide_choices)
 	dialogue_panel.visible = false
 	_apply_default_hint()
 	btn_journal.pressed.connect(_toggle_journal)

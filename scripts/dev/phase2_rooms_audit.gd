@@ -168,7 +168,6 @@ func _dialogue() -> void:
 	check(_picked == 1, "choose_when_closed_ignored")
 	dm.choice_made.disconnect(_on_pick)
 	# --- vigil trust ---
-	var before: bool = gs.is_shilda_trusted()
 	check(gs.get_vigil_trust() == 0, "vigil_trust_starts_zero")
 	gs.add_vigil_trust(2)
 	check(gs.get_vigil_trust() == 2, "vigil_trust_add_2")
@@ -178,8 +177,91 @@ func _dialogue() -> void:
 	check(gs.get_vigil_trust() == 0, "vigil_trust_reset_before_load")
 	var loaded: bool = sm.load_game(false)
 	check(saved and loaded and gs.get_vigil_trust() == 2, "vigil_trust_survives_save_load")
-	check(gs.is_shilda_trusted() or not before, "trust_plus2_not_lower_than_before")
+	# --- trust eşiği: skor 2 (eşik 3 altı) -> +1 güven eşiği geçirir ---
 	gs.add_vigil_trust(-2)
-	gs.add_vigil_trust(-10)
+	gs.player_progress_knowledge.erase("keeper_hurt")
+	gs.player_progress_knowledge.erase("keeper_withdrew")
+	gs.player_progress_knowledge.erase("trusted_keeper")
+	var t: Dictionary = gs.get_shilda_trust_state()
+	t["warnings_heeded"] = 0
+	t["warnings_breached"] = 1
+	t["echoes_completed"] = 1
+	t["flowers_respected"] = true
+	t["sanctuary_peace"] = false
+	t["reconciled"] = false
+	check(gs.get_vigil_trust() == 0 and not gs.is_shilda_trusted(), "trust_just_below_threshold")
+	check(int(gs.get_shilda_trust_state().get("vigil_trust", -1)) == 0, "trust_state_exposes_vigil_trust")
+	gs.add_vigil_trust(1)
+	check(gs.is_shilda_trusted(), "vigil_plus1_flips_trust_true")
+	gs.add_vigil_trust(-3)
 	check(not gs.is_shilda_trusted(), "negative_vigil_trust_causes_suspicion")
 	gs.player_progress_knowledge.erase("vigil_trust")
+	gs.player_progress_knowledge.erase("shilda_trust")
+	await _dialogue_lifecycle()
+
+
+var _shown_count := 0
+var _made: Array = []
+var _cancelled := 0
+
+
+func _on_shown(_o) -> void:
+	_shown_count += 1
+
+
+func _on_made_chain(i: int) -> void:
+	_made.append(i)
+	if _made.size() == 1:
+		root.get_node("DialogueManager").ask("@shilda", "again", PackedStringArray(["X", "Y"]))
+
+
+func _on_cancel() -> void:
+	_cancelled += 1
+
+
+func _dialogue_lifecycle() -> void:
+	var dm := root.get_node("DialogueManager")
+	dm.clear()
+	dm.choices_shown.connect(_on_shown)
+	dm.choice_cancelled.connect(_on_cancel)
+	# zincirli ask: choice_made içinden ikinci ask
+	_shown_count = 0
+	_made.clear()
+	dm.choice_made.connect(_on_made_chain)
+	await process_frame
+	dm.ask("@shilda", "one", PackedStringArray(["A", "B"]))
+	dm.choose(0)
+	check(dm.is_open and dm.has_choices() and _shown_count == 2, "chained_ask_from_handler_keeps_second_prompt")
+	dm.choice_made.disconnect(_on_made_chain)
+	dm.clear()
+	# iptal sinyali tam bir kez
+	_cancelled = 0
+	dm.ask("@shilda", "c", PackedStringArray(["A", "B"]))
+	dm.clear()
+	check(_cancelled == 1, "clear_during_ask_emits_cancelled_once")
+	dm.clear()
+	check(_cancelled == 1, "clear_without_ask_does_not_cancel")
+	# çift choose + sıradaki ask
+	_made.clear()
+	dm.choice_made.connect(func(i): _made.append(i))
+	await process_frame
+	dm.ask("@shilda", "d1", PackedStringArray(["A", "B"]))
+	dm.ask("@shilda", "d2", PackedStringArray(["C", "D"]))
+	dm.choose(0)
+	dm.choose(0)
+	check(_made.size() == 1 and dm.has_choices(), "double_choose_same_frame_answers_once")
+	dm.clear()
+	# aralık dışı
+	_made.clear()
+	dm.ask("@shilda", "r", PackedStringArray(["A", "B"]))
+	dm.choose(5)
+	dm.choose(-1)
+	check(_made.is_empty() and dm.has_choices(), "out_of_range_choose_ignored")
+	# klavye: yazım bitip koruma süresi geçince vurgulu seçenek
+	await create_timer(0.3).timeout
+	dm.move_choice(1)
+	dm.advance() ## yazım sürüyorsa önce sayfayı tamamlar
+	await create_timer(0.2).timeout
+	dm.advance()
+	check(_made == [1] and not dm.is_open, "keyboard_advance_picks_highlighted")
+	dm.clear()
