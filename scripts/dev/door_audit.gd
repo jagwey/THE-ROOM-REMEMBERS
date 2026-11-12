@@ -180,6 +180,30 @@ func _run() -> void:
 	Input.action_release(&"ui_left")
 	dm.clear()
 	check(player.global_position.x < 780.0, "player walks past the seal from crypt side (%.0f → %.0f)" % [start_x, player.global_position.x])
+	## 5) Ayna Tapınağı yan kapısı: bulunabilir olmalı, dönüş spawn'ı sahnede tanımlı olmalı.
+	var shrine_scene := load("res://scenes/rooms/mirrors_shrine.tscn") as PackedScene
+	var st := shrine_scene.get_state()
+	var scene_has_spawn := false
+	for i in st.get_node_count():
+		if st.get_node_name(i) == &"from_mirrors_unbroken":
+			scene_has_spawn = true
+	check(scene_has_spawn, "shrine_spawn_exists: mirrors_shrine scene defines from_mirrors_unbroken")
+	var sdoor := _door_in(rm, &"mirrors_unbroken", &"mirrors_shrine")
+	check(sdoor != null and sdoor.name == &"Side_mirrors_shrine", "shrine side door present in mirrors_unbroken")
+	if sdoor:
+		check(sdoor.door_title == "Ayna Tapınağı" and sdoor.get_node_or_null("DoorLabel") != null \
+				and sdoor.get_node_or_null("DoorInnerLight") != null \
+				and sdoor.get_node_or_null("DoorMark") != null, "shrine_door_marked: title + label + glow + mark")
+	var missing: Array = []
+	var main_script: Script = current_scene.get_script()
+	for rid in main_script.get_script_constant_map()["SIDE_DOORS"].keys():
+		for d in main_script.get_script_constant_map()["SIDE_DOORS"][rid]:
+			var tgt := StringName(String(d["to"]))
+			if not rm.has_room(tgt):
+				missing.append("%s(room)" % tgt)
+			elif not ((rm._rooms[tgt] as Dictionary)["spawns"] as Dictionary).has(StringName("from_%s" % rid)):
+				missing.append("%s<-%s" % [tgt, rid])
+	check(missing.is_empty(), "all_side_doors_have_spawn %s" % str(missing))
 	print("DOOR_AUDIT failures=", failures)
 	sm.delete_all_save_files()
 	quit(1 if failures else 0)

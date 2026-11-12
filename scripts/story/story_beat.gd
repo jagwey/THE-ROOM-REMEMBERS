@@ -271,6 +271,7 @@ func _mirrors_unbroken() -> void:
 	DialogueManager.say("Noroi", "Döngüyü sürdürmemi de susmanı kabul etmemi de isteyemezsin.")
 	DialogueManager.say("Noroi", "Ama gerçeği saklamadan yanımda durabilirsin.")
 	DialogueManager.say("Shilda", "Çekirdekte son mühür var. Onu birlikte açacağız.")
+	DialogueManager.say("Shilda", "İnmeden önce Ayna Tapınağı'na uğra. Gölgen orada seni bekliyor.")
 	DialogueManager.say("Noroi", "Artık gerçeği biliyorum. Sağdaki geçidi açıyorum.")
 
 	var ok: bool = await DialogueManager.dialogue_finished

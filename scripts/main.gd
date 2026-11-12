@@ -63,10 +63,37 @@ const SIDE_DOORS := {
 	"experiment_authority": [{"x": 672.0, "to": "experiment_core_conduit"}],
 	"mirrors_reverse": [{"x": 672.0, "to": "mirrors_labyrinth"}],
 	"mirrors_dual": [{"x": 700.0, "to": "mirrors_1927", "req": "mirrors_gallery", "msg": "Galeri suskun. Önce bedenleri saymalıyım."}],
-	"mirrors_unbroken": [{"x": 784.0, "to": "mirrors_shrine"}],
+	"mirrors_unbroken": [{"x": 784.0, "to": "mirrors_shrine", "title": "Ayna Tapınağı", "mark": true}],
 	"core_threshold": [{"x": 784.0, "to": "core_memory_vault"}],
 	"core_seal_chamber": [{"x": 784.0, "to": "core_bloom_garden"}],
 }
+
+
+## Keşfedilmesi gereken yan kapıya soluk, nabız atan ek ışık (başlık etiketi kapının kendisinde).
+func _add_door_mark(door: Area2D) -> void:
+	var mark := Sprite2D.new()
+	mark.name = "DoorMark"
+	var gt := GradientTexture2D.new()
+	gt.width = 64
+	gt.height = 64
+	gt.fill = GradientTexture2D.FILL_RADIAL
+	gt.fill_from = Vector2(0.5, 0.5)
+	gt.fill_to = Vector2(1.0, 0.5)
+	var grad := Gradient.new()
+	grad.set_color(0, Color(0.7, 0.55, 1.0, 0.35))
+	grad.set_color(1, Color(0.5, 0.35, 0.9, 0.0))
+	gt.gradient = grad
+	mark.texture = gt
+	var mat := CanvasItemMaterial.new()
+	mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	mark.material = mat
+	mark.position = Vector2(0, -60)
+	mark.scale = Vector2(2.4, 3.2)
+	mark.z_index = 1
+	door.add_child(mark)
+	var tw := mark.create_tween().set_loops()
+	tw.tween_property(mark, "modulate:a", 0.45, 1.4)
+	tw.tween_property(mark, "modulate:a", 1.0, 1.4)
 
 
 func _add_side_doors() -> void:
@@ -103,7 +130,11 @@ func _add_side_doors() -> void:
 			rect.size = Vector2(44, 96)
 			cs.shape = rect
 			door.add_child(cs)
+			if d.has("title"):
+				door.set("door_title", String(d["title"]))
 			parent.add_child(door)
+			if d.get("mark", false):
+				_add_door_mark(door)
 			var spawns: Dictionary = entry["spawns"]
 			var inward := 48.0 if float(d["x"]) < bounds.size.x * 0.5 else -48.0
 			spawns[StringName("from_%s" % target)] = Vector2(float(d["x"]) + inward, 288.0)

@@ -23,6 +23,9 @@ doors = [{"x": 40.0, "to": "mirrors_unbroken", "spawn": "from_mirrors_shrine"}]
 
 [node name="Spawns" type="Node2D" parent="."]
 
+[node name="from_mirrors_unbroken" type="Marker2D" parent="Spawns"]
+position = Vector2(88, 288)
+
 [node name="keeper_observe" type="Marker2D" parent="Spawns"]
 position = Vector2(170, 288)
 
