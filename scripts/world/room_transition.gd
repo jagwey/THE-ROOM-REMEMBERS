@@ -7,7 +7,7 @@ extends Area2D
 @export var target_spawn_id: StringName = &"default"
 @export var required_puzzle: StringName = &""
 @export var required_ability: StringName = &""
-@export var locked_message: String = "Önce bu odanın hatırasını tamamlamalıyım."
+@export var locked_message: String = "Önce bu odanın anısını tamamlamalıyım."
 @export var door_title: String = ""
 ## Etiketi dikeyde kaydır (yakın iki kapının etiketi üst üste binmesin diye).
 @export var label_dy: float = 0.0

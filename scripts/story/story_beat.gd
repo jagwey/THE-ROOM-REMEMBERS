@@ -165,7 +165,7 @@ func _library_page() -> void:
 
 func _experiment_cells() -> void:
 
-	DialogueManager.say("Kayıt", "Hatıra koruma deneyi. Amaç: kaybedilenlerin seslerini saklamak.")
+	DialogueManager.say("Kayıt", "Hafıza koruma deneyi. Amaç: kaybedilenlerin seslerini saklamak.")
 	DialogueManager.say("Kayıt", "Denek 14: Noroi. Kurucu imza: X (kazınmış).")
 
 	DialogueManager.say("Noroi", "Ben… denektim. Kurucu ben değilim.")
@@ -182,7 +182,7 @@ func _experiment_cells() -> void:
 
 	PuzzleManager.mark_solved(&"experiment_cells_seen")
 
-	_evidence("ev_cells_demo", "Hatıra bağı", "İçimdeki lanet bir deneyden doğmuş. Bir patlamadan sonra bozulmuş ve gelen herkese tutunmuş.", "evidence", "notlar")
+	_evidence("ev_cells_demo", "Hafıza bağı", "İçimdeki lanet bir deneyden doğmuş. Bir patlamadan sonra bozulmuş ve gelen herkese tutunmuş.", "evidence", "notlar")
 
 	SaveManager.save_game()
 

@@ -102,7 +102,7 @@ script = ExtResource("5")
 target_room_id = &"core_threshold"
 target_spawn_id = &"from_mirrors"
 required_puzzle = &"mirrors_unbroken"
-locked_message = "Gölge ile son hatırayı konuşmalıyım."
+locked_message = "Gölge ile son anıyı konuşmalıyım."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ForwardCore"]
 shape = SubResource("Hit")

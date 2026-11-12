@@ -3,15 +3,6 @@ extends Area2D
 ## Keşfedilen bölgesel aynalar world_memory_state["unlocked_mirrors"] içine kaydedilir.
 ## Oyuncu etkileşime geçtiğinde açık aynalar arasında hızlı geçiş (RoomManager.enter_room) yapılmasını sağlar.
 
-const MIRROR_NAMES := {
-	"awakening_balcony": "Uyanış Balkonu",
-	"awakening": "Uyanış Odası",
-	"decay_garden": "Çürüme Bahçesi",
-	"library_hall": "Hafıza Kütüphanesi",
-	"experiment_cells": "Deney Hücreleri",
-	"mirrors_reverse": "Aynalar Salonu",
-}
-
 @export var mirror_id: StringName = &""
 @export var display_name: String = ""
 
@@ -31,7 +22,7 @@ func _ready() -> void:
 		mirror_id = _resolve_room_id()
 
 	if display_name == "":
-		display_name = MIRROR_NAMES.get(String(mirror_id), String(mirror_id))
+		display_name = RoomManager.ROOM_TITLES_TR.get(String(mirror_id), String(mirror_id))
 
 	_setup_visuals()
 
@@ -112,7 +103,7 @@ func on_interact(by: Node) -> void:
 func _open_travel_modal(destinations: Array) -> void:
 	if _panel == null:
 		_panel = GothicModalPanel.new()
-		_panel.setup("Çatlak Bellek Aynası — Hızlı Seyahat", Vector2(360, 220))
+		_panel.setup("Çatlak Ayna — Hızlı Seyahat", Vector2(360, 220))
 		add_child(_panel)
 		# UiGate kilidi görünürlüğe bağlı: düğme, Esc veya başka yoldan kapanınca bırakılır.
 		_panel.visibility_changed.connect(func(): UiGate.set_story(_panel.visible))
@@ -126,7 +117,7 @@ func _open_travel_modal(destinations: Array) -> void:
 
 	for dest in destinations:
 		var dest_str := String(dest)
-		var dest_name: String = MIRROR_NAMES.get(dest_str, dest_str)
+		var dest_name: String = RoomManager.ROOM_TITLES_TR.get(dest_str, dest_str)
 		_panel.add_button(dest_name, func():
 			_panel.hide()
 			_travel_to(dest_str)

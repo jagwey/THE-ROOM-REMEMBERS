@@ -22,20 +22,20 @@ const KIND_BY_SCRIPT := {
 }
 const LABEL_BY_SCRIPT := {
 	"decay_flower_evidence.gd": "Kırmızı Çiçek", "flower_inspect.gd": "Kırmızı Çiçek",
-	"pocket_watch_inspect.gd": "Cep Saati", "trace_marker.gd": "Hatıra İzi",
+	"pocket_watch_inspect.gd": "Cep Saati", "trace_marker.gd": "Anı İzi",
 	"echo_point.gd": "Yankı", "echo_interactable.gd": "Yankı", "awakening_seal_echo_recall.gd": "Yankı Nişi",
 	"echo_altar.gd": "Yankı Sunağı", "echo_switch.gd": "Yankı Anahtarı", "code_seal_base.gd": "Mühür",
 	"blood_thorn.gd": "Kan Dikeni", "core_crystal.gd": "Çekirdek Kristali", 
 	"mirror_relay.gd": "Ayna", "reset_lever.gd": "Kol",
 	"vine_puzzle_lever.gd": "Kol", "vine_interact.gd": "Sarmaşık", "archive_door.gd": "Arşiv Kapısı",
-	"story_beat.gd": "Hatıra", "keeper_controller.gd": "Shilda", "cracked_mirror.gd": "Çatlak Bellek Aynası",
+	"story_beat.gd": "Anı", "keeper_controller.gd": "Shilda", "cracked_mirror.gd": "Çatlak Ayna",
 	"shilda_garden_trust.gd": "Shilda", "evidence_card.gd": "Kayıt", "ability_pickup.gd": "Sunak",
 }
 const LORE_LABEL_BY_TEXTURE := {
 	"photograph": "Eski Fotoğraf", "memory_echo": "Anı Yankısı", "red_flower": "Kırmızı Çiçek", "flowers": "Kırmızı Çiçek",
 	"books": "Eski Günlük", "bookshelf": "Eski Günlük", "mirror": "Ayna", "mirror_shards": "Ayna Kırığı",
 	"candles": "Mumlar", "candlestick": "Şamdan", "key": "Anahtar", "seal": "Mühür", "curse": "Lanet İzi",
-	"body_echo": "Hatıra İzi", "core_crystal": "Çekirdek Kristali",
+	"body_echo": "Anı İzi", "core_crystal": "Çekirdek Kristali",
 }
 
 var _phase: float = 0.0
@@ -105,7 +105,7 @@ static func kind_for(n: Node) -> StringName:
 	return KIND_BY_SCRIPT.get(_script_file(n), &"normal")
 
 
-## Kısa isim etiketi ("Eski Günlük", "Kırmızı Çiçek", "Hatıra İzi", "Mühürlü Kapı"...).
+## Kısa isim etiketi ("Eski Günlük", "Kırmızı Çiçek", "Anı İzi", "Mühürlü Kapı"...).
 static func label_for(n: Node) -> String:
 	if n == null:
 		return ""

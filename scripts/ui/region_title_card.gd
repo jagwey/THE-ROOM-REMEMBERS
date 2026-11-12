@@ -4,12 +4,12 @@ extends CanvasLayer
 
 ## Bölge adları tek kaynak: kart başlığı (büyük harf), günlük haritası ve hedefler "name" alanını kullanır.
 const REGION_CARDS := {
-	"awakening": {"name": "Uyanış Mahmuzu", "title": "UYANIŞ MAHMUZU", "sub": "İlk Hatıra"},
+	"awakening": {"name": "Uyanış Mahmuzu", "title": "UYANIŞ MAHMUZU", "sub": "İlk Anı"},
 	"decay": {"name": "Çürüme Bahçesi", "title": "ÇÜRÜME BAHÇESİ", "sub": "Zamanın Çürüttüğü Kökler"},
 	"library": {"name": "Hafıza Kütüphanesi", "title": "HAFIZA KÜTÜPHANESİ", "sub": "Yazılı Günahlar"},
 	"experiment": {"name": "Kara Deney Mahzeni", "title": "KARA DENEY MAHZENİ", "sub": "Ruhun Parçalandığı Yer"},
 	"mirrors": {"name": "Aynalar Salonu", "title": "AYNALAR SALONU", "sub": "Ters Yansımalar"},
-	"core": {"name": "Bellek Çekirdeği", "title": "BELLEK ÇEKİRDEĞİ", "sub": "Son Karar"},
+	"core": {"name": "Hafıza Çekirdeği", "title": "HAFIZA ÇEKİRDEĞİ", "sub": "Son Karar"},
 }
 
 

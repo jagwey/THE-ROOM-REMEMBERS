@@ -1,8 +1,8 @@
 class_name FinalSequence
 extends RefCounted
 ## BÖLÜM I SONU — tek final (spec §8, §31, §32): Ruh Kesimi ile ana mühür kırılır, Shilda insan formuna
-## döner, X belirir, ekranlar DOMAIN 01-04'ü gösterir, X çekirdek parçasını alır ve geçide girer.
-## Sonra THE ROOM REMEMBERS / END OF PART I, jenerik, game_completed, commit_save(&"final"), başlık.
+## döner, X belirir, ekranlar BÖLGE 01-04'ü gösterir, X çekirdek parçasını alır ve geçide girer.
+## Sonra THE ROOM REMEMBERS / BÖLÜM I SONU, jenerik, game_completed, commit_save(&"final"), başlık.
 ##
 ## YER TUTUCU görseller (sprite yok): Shilda insan formu = soluk/doygunsuz ton + parıltı geçişi,
 ## X = FinalXActor siluet (uzun, koyu, soğuk beyaz ışık).
@@ -73,21 +73,21 @@ func play(tree: SceneTree, fast_mode: bool = false) -> void:
 	await _seal_break()
 	await _shilda_human()
 	await _say([
-		["Shilda", "Ellerim..."],
+		["Shilda", "Ellerim…"],
 		["Noroi", "Shilda?"],
-		["Shilda", "Sanırım... sonunda bitti."],
+		["Shilda", "Sanırım… sonunda bitti."],
 		["Noroi", "Gidelim."],
 		["Shilda", "Kapıda ışık var. Bu sefer gerçek."],
 	])
 	await _exit_door_opens()
 	await _wait(0.8)
 	await _say([[DialogueManager.UNKNOWN_VOICE, "Demek sonunda başardınız."]])
-	await _say([["Shilda", "Bu ses..."]])
+	await _say([["Shilda", "Bu ses…"]])
 	await _x_enters()
 	await _say([
-		["Shilda", "Kurucu...?"],
+		["Shilda", "Kurucu…?"],
 		["X", "Merhaba, Shilda."],
-		["Shilda", "Yaşıyorsunuz..."],
+		["Shilda", "Yaşıyorsunuz…"],
 		["X", "Elbette."],
 		["Shilda", "Yıllarca sizi aradım. İnsanlar öldü. Ben de sayılırım."],
 		["X", "Biliyorum."],
@@ -102,9 +102,9 @@ func play(tree: SceneTree, fast_mode: bool = false) -> void:
 	await _say([
 		["X", "Bu bir deneydi."],
 		["X", "Sessizlik veriydi. Siz, sonuç."],
-		["Shilda", "Bunca insan..."],
+		["Shilda", "Bunca insan…"],
 		["X", "Hepsi verinin parçasıydı."],
-		["X", "Ama siz..."],
+		["X", "Ama siz…"],
 		["X", "Şimdiye kadarki en başarılı deneklerim sizsiniz."],
 	])
 	await _domain_screens()
@@ -121,7 +121,7 @@ func play(tree: SceneTree, fast_mode: bool = false) -> void:
 	])
 	await _portal_leave()
 	await _say([
-		["Shilda", "Noroi... beni duyuyor musun?"],
+		["Shilda", "Noroi… beni duyuyor musun?"],
 		["Noroi", "Duyuyorum. Bu sefer adın aklımda kalacak."],
 		["Shilda", "O zaman yürü. Oda bizi bekleyemez."],
 	])
@@ -275,7 +275,7 @@ func _domain_screens() -> void:
 		panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		var label := Label.new()
 		label.name = "Domain%d" % (i + 1)
-		label.text = "DOMAIN %02d" % (i + 1)
+		label.text = "BÖLGE %02d" % (i + 1)
 		label.position = Vector2(24, 80)
 		label.size = Vector2(80, 14)
 		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -376,7 +376,7 @@ func _title_card() -> void:
 	box.add_child(t1)
 	var t2 := Label.new()
 	t2.name = "PartLabel"
-	t2.text = "END OF PART I"
+	t2.text = "BÖLÜM I SONU"
 	t2.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	UiTheme.apply_outlined(t2, 20, true, Palette.CRIMSON.lightened(0.35))
 	box.add_child(t2)
@@ -393,7 +393,7 @@ func _title_card() -> void:
 	await _part_two_teaser()
 
 
-## Jenerik öncesi Bölüm II kancası (post-credits hook değil; END OF PART I kartından hemen sonra).
+## Jenerik öncesi Bölüm II kancası (post-credits hook değil; BÖLÜM I SONU kartından hemen sonra).
 func _part_two_teaser() -> void:
 	_stage(&"part_two_teaser")
 	var box := VBoxContainer.new()

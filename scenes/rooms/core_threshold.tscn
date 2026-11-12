@@ -103,7 +103,7 @@ script = ExtResource("5")
 target_room_id = &"core_ascent"
 target_spawn_id = &"from_core_threshold"
 required_puzzle = &"core_threshold"
-locked_message = "Son eşiğin hatırasını tamamlamalıyım."
+locked_message = "Son eşiğin anısını tamamlamalıyım."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ForwardSeal"]
 shape = SubResource("Hit")

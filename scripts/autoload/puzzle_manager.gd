@@ -124,7 +124,7 @@ const HINTS: Dictionary = {
 		"explicit": "Taş ya da hareketsiz bir beden plakada durursa kapı kapanmaz."
 	},
 	&"awakening_memory_code": {
-		"goal": "Taş mühür üç haneli bir bellek rezonansı bekliyor.",
+		"goal": "Taş mühür üç haneli bir hafıza rezonansı bekliyor.",
 		"orientation": "Geçitteki yarıkta geçmişten kalan bir ses yankılanıyor.",
 		"explicit": "Yarıktaki fısıltıyı dinle; zihninde canlanan üç sembolü sırayla gir."
 	},

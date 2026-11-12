@@ -1,6 +1,6 @@
 extends SceneTree
 ## Tek final denetimi (v3): enum yalniz NONE/PART_ONE; Shilda olmez; dizi bayrak sirasi
-## final_seal_broken -> x_revealed -> game_completed; END OF PART I + kredi gosterilir; final_seen yazilir.
+## final_seal_broken -> x_revealed -> game_completed; BÖLÜM I SONU + kredi gosterilir; final_seen yazilir.
 ## Calistir: TORIMON_TEST=1 godot --headless --path . -s res://scripts/dev/final_sequence_audit.gd
 var failures := 0
 var FS: GDScript
@@ -23,17 +23,17 @@ func check(ok: bool, label: String, detail: Variant = "") -> void:
 ## Gercekten gosterilen diyalog satirlari (sira korunarak) beklenen final satirlariyla eslesir.
 func _check_lines_in_order() -> void:
 	var expected: Array = [
-		["Shilda", "Ellerim..."], ["Noroi", "Shilda?"],
-		["Shilda", "Sanırım... sonunda bitti."], ["Noroi", "Gidelim."],
-		[UNKNOWN, "Demek sonunda başardınız."], ["Shilda", "Bu ses..."],
-		["Shilda", "Kurucu...?"], ["X", "Merhaba, Shilda."], ["X", "Biliyorum."],
+		["Shilda", "Ellerim…"], ["Noroi", "Shilda?"],
+		["Shilda", "Sanırım… sonunda bitti."], ["Noroi", "Gidelim."],
+		[UNKNOWN, "Demek sonunda başardınız."], ["Shilda", "Bu ses…"],
+		["Shilda", "Kurucu…?"], ["X", "Merhaba, Shilda."], ["X", "Biliyorum."],
 		["X", "Her şeyi kaydettim."], ["Noroi", "Bizi burada bıraktın."],
 		["X", "Bu bir deneydi."],
 		["X", "Şimdiye kadarki en başarılı deneklerim sizsiniz."],
 		["X", "İlk boyuttan çıkmanız beklediğimden uzun sürdü."],
 		["Shilda", "Noroi!"], ["X", "İhtiyacım olan şeyi aldım."],
 		["X", "Çünkü henüz işiniz bitmemişti."],
-		["Shilda", "Noroi... beni duyuyor musun?"]]
+		["Shilda", "Noroi… beni duyuyor musun?"]]
 	var at := 0
 	var missing: Array = []
 	var shilda_tag := "Shilda" if root.get_node("GameState").is_shilda_named() else "???"
@@ -122,7 +122,7 @@ func _run() -> void:
 	check(bool(r.get("human", false)), "Shilda human form shown")
 	check(bool(r.get("x_seen", false)), "X appeared")
 	check(int(r.get("domains", 0)) == 4, "4 domain screens", r.get("domains"))
-	check(bool(r.get("end_label", false)), "END OF PART I label")
+	check(bool(r.get("end_label", false)), "BÖLÜM I SONU label")
 	check(bool(r.get("part_label", false)), "THE ROOM REMEMBERS label")
 	check(bool(r.get("part_two_teaser", false)), "Bölüm II teaser shown")
 	check(bool(r.get("credits", false)), "credits shown")

@@ -25,9 +25,9 @@ const ROOM_TITLES_TR := {
 	"library_hall": "Hafıza Kütüphanesi", "library_witness": "Üç Tanık", "library_clockroom": "Saatler Odası", "library_page": "Unutulmuş Sayfa",
 	"library_upper_stacks": "Üst Raflar", "library_forbidden_wing": "Yasak Kanat", "library_reading_cell": "Okuma Hücresi",
 	"experiment_cells": "Gözlem Hücreleri", "experiment_intake": "Kabul Odası", "experiment_circuit": "Yankı Devresi", "experiment_authority": "Yetki Masası",
-	"experiment_quarantine": "Kara Tecrit Mahzeni", "experiment_core_conduit": "Ruh Damarları Kanalı", "experiment_observation": "Gözlem Camı",
+	"experiment_quarantine": "Karantina Mahzeni", "experiment_core_conduit": "Ruh Damarları Kanalı", "experiment_observation": "Gözlem Camı",
 	"mirrors_reverse": "Ayna Geçidi", "mirrors_dual": "İki Yankı", "mirrors_gallery": "Bedenler Galerisi", "mirrors_unbroken": "Kırılmayan Ayna",
-	"mirrors_labyrinth": "Yansıma Labirenti", "mirrors_shrine": "Ayna Tapınağı", "mirrors_1927": "Kırık Gece",
+	"mirrors_labyrinth": "Yansıma Labirenti", "mirrors_shrine": "Ayna Tapınağı", "mirrors_1927": "1927 Gecesi",
 	"core_threshold": "Son Eşik", "core_ascent": "Son Merdiven", "core_seal_chamber": "Mühür Odası", "core_memory_vault": "Hafıza Kasası",
 	"core_bloom_garden": "Çiçek Bahçesi", "core": "Çekirdek",
 }

@@ -23,6 +23,8 @@ var _section: String = "gunluk"
 var _entries: Array = []
 var _selected_index: int = -1
 
+## Ceset dönüşümü iz türlerinin Türkçe adları; bilinmeyen tür "İz".
+const TRACE_KIND_TR := {"flower": "Çiçek İzi", "silhouette": "Silüet İzi", "stain": "Leke İzi"}
 const JOURNAL_ATLAS := Rect2(63, 2, 193, 128)
 const INK := Color(0.239, 0.071, 0.125)
 const INK_SOFT := Color(0.36, 0.17, 0.22)
@@ -232,7 +234,7 @@ func _append_world_traces(notes: Array) -> void:
 	for t in GameState.world_memory_state.get("traces", []):
 		if t is Dictionary:
 			notes.append({
-				"title": "İz: %s" % String(t.get("kind", "?")),
+				"title": String(TRACE_KIND_TR.get(String(t.get("kind", "")), "İz")),
 				"body": "Fazla cesetten kalan iz. Oda unutmaz.",
 			})
 
