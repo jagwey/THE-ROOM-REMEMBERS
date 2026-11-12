@@ -9,7 +9,12 @@
 [ext_resource type="Script" path="res://scripts/world/room_transition.gd" id="7"]
 [ext_resource type="Script" path="res://scripts/story/decay_flower_evidence.gd" id="8"]
 [ext_resource type="Script" path="res://scripts/story/shilda_garden_trust.gd" id="9"]
-[ext_resource type="Script" path="res://scripts/world/decay_archive_seal.gd" id="10"]
+[ext_resource type="Script" path="res://scripts/world/sequence_shrine.gd" id="shrine"]
+[ext_resource type="Script" path="res://scripts/world/sequence_step.gd" id="step"]
+[ext_resource type="Script" path="res://scripts/world/blood_thorn.gd" id="thorn"]
+[ext_resource type="Script" path="res://scripts/world/hidden_symbol.gd" id="symbol"]
+[ext_resource type="Script" path="res://scripts/world/flower_source.gd" id="flower_src"]
+[ext_resource type="Texture2D" path="res://assets/props/red_flower.png" id="flower_tex"]
 [ext_resource type="Script" path="res://scripts/world/gate_blocker.gd" id="11"]
 
 [ext_resource type="Texture2D" path="res://assets/tiles/tile_00.png" id="walk_tile"]
@@ -156,20 +161,78 @@ script = ExtResource("9")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ShildaGarden"]
 shape = SubResource("TransitionHit")
 
-[node name="ArchiveSeal" type="Area2D" parent="Interactive"]
-position = Vector2(700, 264)
-collision_layer = 8
-collision_mask = 0
-monitoring = false
-monitorable = true
-script = ExtResource("10")
+[node name="GardenFlower" type="Area2D" parent="Interactive"]
+position = Vector2(240, 288)
+script = ExtResource("flower_src")
+hint_line = "Çiçekle ölürsem bedenim yanar; yaprak sayıları o ışıkta okunur."
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ArchiveSeal"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/GardenFlower"]
 shape = SubResource("SealShape")
 
-[node name="Sprite2D" type="Sprite2D" parent="Interactive/ArchiveSeal"]
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/GardenFlower"]
+texture_filter = 1
+position = Vector2(0, -16)
+scale = Vector2(0.32, 0.32)
+texture = ExtResource("flower_tex")
+
+[node name="BloomThorn" type="Area2D" parent="Interactive"]
+position = Vector2(410, 290)
+script = ExtResource("thorn")
+anchor_x = 625.0
+puzzle_hint = &"decay_garden_bloom"
+body_line = "Dokunursam ölürüm; çiçek taşırsam bedenim yapraklara ışık tutar."
+solved_line = "Diken sustu, çiçekler zaten açtı."
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BloomThorn"]
+shape = SubResource("SealShape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/BloomThorn"]
 texture_filter = 0
 centered = true
+
+[node name="BloomShrine" type="Node2D" parent="Interactive"]
+script = ExtResource("shrine")
+puzzle_id = &"decay_garden_bloom"
+order = PackedStringArray("7", "2", "9")
+penalize_wrong = true
+fail_line = "Çiçekler kapandı. Yaprak sırasını baştan denemeliyim."
+success_line = "Çiçekler sırayla açtı. Arşiv kapısı gevşedi."
+
+[node name="Bloom2" type="Area2D" parent="Interactive/BloomShrine"]
+position = Vector2(676, 288)
+script = ExtResource("step")
+step_id = "2"
+label = "Çiçek"
+
+[node name="Bloom9" type="Area2D" parent="Interactive/BloomShrine"]
+position = Vector2(720, 288)
+script = ExtResource("step")
+step_id = "9"
+label = "Çiçek"
+
+[node name="Bloom7" type="Area2D" parent="Interactive/BloomShrine"]
+position = Vector2(764, 288)
+script = ExtResource("step")
+step_id = "7"
+label = "Çiçek"
+
+[node name="Petal2" type="Node2D" parent="Interactive"]
+position = Vector2(676, 224)
+script = ExtResource("symbol")
+symbol_text = "2"
+reveal_radius = 220.0
+
+[node name="Petal9" type="Node2D" parent="Interactive"]
+position = Vector2(720, 224)
+script = ExtResource("symbol")
+symbol_text = "9"
+reveal_radius = 220.0
+
+[node name="Petal7" type="Node2D" parent="Interactive"]
+position = Vector2(764, 224)
+script = ExtResource("symbol")
+symbol_text = "7"
+reveal_radius = 220.0
 
 [node name="ArchiveDoor" type="StaticBody2D" parent="Interactive"]
 position = Vector2(820, 268)
@@ -177,7 +240,9 @@ collision_layer = 1
 collision_mask = 0
 script = ExtResource("11")
 open_flag = &"decay_archive_open"
-puzzle_listen = &"decay_archive_key"
+puzzle_listen = &""
+puzzle_listen_all = PackedStringArray("decay_garden_bloom")
+legacy_puzzle = &"decay_archive_key"
 ignore_world_flag = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ArchiveDoor"]

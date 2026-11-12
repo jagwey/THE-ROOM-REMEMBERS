@@ -340,15 +340,15 @@ func receive_sword_hit(_attacker, _dir, combo):
 	pit_corpse.set("_echo_done", true)
 	dm.clear()
 
-	# In decay_catacombs, second floor gap exists between x=820 and x=900.
-	# Corpse starts at x=790. Push step is 60. Target would be x=850 (inside the pit gap!).
+	# In decay_catacombs, second floor gap exists between x=750 and x=1030.
+	# Corpse starts at x=720. Push step is 60. Target would be x=780 (inside the pit gap!).
 	# Downward raycast at x=850 finds no floor on layer 1, halting corpse with "…Uçurumun kenarında durdu."
-	pit_corpse.global_position = Vector2(790, 288)
+	pit_corpse.global_position = Vector2(720, 288)
 	pit_corpse.call("_push", 1.0)
 	await create_timer(0.05).timeout
 	dm.advance()
 	check(dm.is_open and dm.get("_full_line").contains("Uçurumun kenarında durdu"), "Corpse push at ledge edge detects pit: 'Uçurumun kenarında durdu'")
-	check(pit_corpse.global_position.x == 790.0, "Corpse did not move off edge into pit (x=%.1f)" % pit_corpse.global_position.x)
+	check(pit_corpse.global_position.x == 720.0, "Corpse did not move off edge into pit (x=%.1f)" % pit_corpse.global_position.x)
 	dm.clear()
 	pit_corpse.queue_free()
 

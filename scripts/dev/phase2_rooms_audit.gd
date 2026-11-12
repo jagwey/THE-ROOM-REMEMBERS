@@ -36,6 +36,7 @@ func _run() -> void:
 	await _rooms_01_03_fix1()
 	await _rooms_04_06()
 	await _rooms_07_10()
+	await _rooms_11_13()
 	quit(1 if failures > 0 else 0)
 
 
@@ -1421,7 +1422,9 @@ func _rooms_07_10() -> void:
 		pm.mark_solved(StringName(eid))
 	var hint_seen: Dictionary = {}
 	var dup_hint := false
-	for rid2 in ["decay_vines", "decay_weight", "decay_greenhouse", "decay_shilda_wall"]:
+	for rid2 in ["decay_vines", "decay_weight", "decay_greenhouse", "decay_shilda_wall", "decay_garden", "decay_catacombs", "decay_cistern"]:
+		if not (root.get_node("RoomManager")._rooms as Dictionary).has(StringName(rid2)):
+			continue
 		var rr: Node = _room_root(StringName(rid2))
 		if rr == null:
 			continue
@@ -1495,6 +1498,237 @@ func _rooms_07_10() -> void:
 	check(_objective("decay_greenhouse").find("Plakaya bas") == -1, "objective_greenhouse_no_player_plate_text")
 	_clear_corpses()
 	_unsolve(["decay_vines", "decay_greenhouse", "decay_greenhouse_pot", "decay_weight_latch", "decay_weight_corpse"])
+	dm.clear()
+
+
+func _rooms_11_13() -> void:
+	var rm := root.get_node("RoomManager")
+	var pm := root.get_node("PuzzleManager")
+	var gs := root.get_node("GameState")
+	var cur := root.get_node("CurseManager")
+	var dm := root.get_node("DialogueManager")
+	var sm := root.get_node("SaveManager")
+	var cm := root.get_node("CorpseManager")
+	var player: Node2D = current_scene.get_node("Player")
+	dm.clear()
+	_clear_corpses()
+	# ---- 11 garden ----
+	_unsolve(["decay_garden_bloom", "decay_archive_key"])
+	gs.set_world_flag(&"decay_archive_open", false)
+	rm.enter_room(&"decay_garden", &"default")
+	await create_timer(0.4).timeout
+	var g: Node = _room_root(&"decay_garden")
+	var shrine: Node = g.find_child("BloomShrine", true, false)
+	check(shrine != null and shrine.has_method("press"), "garden_bloom_shrine_exists")
+	check(g.find_child("ArchiveSeal", true, false) == null, "garden_archive_keypad_removed")
+	var door: Node = g.find_child("ArchiveDoor", true, false)
+	if shrine != null:
+		check(Array(shrine.order) == ["7", "2", "9"] and shrine.puzzle_id == &"decay_garden_bloom", "garden_shrine_order_729")
+		check(bool(shrine.penalize_wrong), "garden_shrine_penalizes")
+	check(door != null and Array(door.puzzle_listen_all) == ["decay_garden_bloom"] and door.legacy_puzzle == &"decay_archive_key", "garden_door_listens_bloom_with_legacy")
+	check(g.find_child("ShildaGarden", true, false) != null, "garden_shilda_kept")
+	if shrine != null and door != null:
+		check(not door._is_open(), "garden_door_closed_before_bloom")
+		var before: float = float(cur.get("curse"))
+		shrine.press("2", null)
+		check(float(cur.get("curse")) > before, "garden_wrong_bloom_penalizes")
+		shrine.press("7", null)
+		shrine.press("2", null)
+		shrine.press("9", null)
+		await create_timer(0.2).timeout
+		check(pm.is_solved(&"decay_garden_bloom") and pm.is_solved(&"decay_archive_key"), "garden_bloom_solves_bloom_and_archive_key")
+		check(bool(gs.get_world_flag(&"decay_archive_open", false)), "garden_bloom_sets_archive_open_flag")
+		check(door._is_open(), "garden_door_open_after_bloom")
+	var petals: Array = []
+	for n in g.find_children("*", "Node2D", true, false):
+		if n.is_in_group("hidden_symbol"):
+			petals.append(n)
+	var texts: Array = []
+	for pn in petals:
+		texts.append(String(pn.symbol_text))
+	texts.sort()
+	check(texts == ["2", "7", "9"], "garden_petals_are_hidden_symbols_279")
+	var steps := 0
+	for n in g.find_children("*", "Area2D", true, false):
+		if n.has_method("on_interact") and "step_id" in n:
+			steps += 1
+	check(steps == 3, "garden_three_bloom_steps")
+	var okp := petals.size() == 3
+	var bthorn: Node = g.find_child("BloomThorn", true, false)
+	check(bthorn != null and bthorn.puzzle_hint == &"decay_garden_bloom", "garden_bloom_thorn_hint")
+	if bthorn != null and okp:
+		for pn in petals:
+			var d: Vector2 = pn.global_position - Vector2(bthorn.anchor_x, 288.0)
+			var best := Vector2(d.x, maxf(0.0, absf(d.y) - 120.0)).length()
+			if best > 0.6 * float(pn.reveal_radius) + 0.2 * 0.4 * float(pn.reveal_radius) - 1.0:
+				okp = false
+	else:
+		okp = false
+	check(okp, "garden_one_flower_corpse_reads_all_petals")
+	_unsolve(["decay_garden_bloom", "decay_archive_key"])
+	gs.set_world_flag(&"decay_archive_open", false)
+	if door != null:
+		check(not door._is_open(), "garden_door_closed_after_reset")
+		check(not pm.journal_hint_for_active_room().is_empty(), "garden_hint_when_unsolved")
+		pm.mark_solved(&"decay_archive_key")
+		check(door._is_open(), "garden_legacy_archive_key_opens_door")
+		check(pm.journal_hint_for_active_room().is_empty(), "garden_legacy_skips_journal_hint")
+	_unsolve(["decay_garden_bloom", "decay_archive_key"])
+	gs.set_world_flag(&"decay_archive_open", false)
+	# ---- 12 catacombs ----
+	_unsolve(["decay_catacomb_seal"])
+	rm.enter_room(&"decay_catacombs", &"default")
+	await create_timer(0.4).timeout
+	var cat: Node = _room_root(&"decay_catacombs")
+	var fsrc: Node = cat.find_child("FlowerSource", true, false)
+	check(fsrc != null and fsrc.has_method("on_interact"), "cata_flower_source_exists")
+	var syms: Array = []
+	var s6: Node = null
+	for n in cat.find_children("*", "Node2D", true, false):
+		if n.is_in_group("hidden_symbol"):
+			syms.append(n.global_position.x)
+			if String(n.memory_code_key) == "catacomb":
+				s6 = n
+	syms.sort()
+	check(syms.size() == 3, "cata_three_symbols")
+	var spaced := syms.size() == 3
+	for i in range(syms.size() - 1):
+		if syms[i + 1] - syms[i] < 200.0:
+			spaced = false
+	check(spaced, "cata_symbols_ge_200_apart")
+	check(s6 != null and String(s6.memory_code_value) == "586", "cata_seal_code_586_kept")
+	var seal: Node = cat.find_child("CatacombSeal", true, false)
+	check(seal != null and String(seal.story_code) == "586", "cata_seal_story_code_586")
+	var gaps: PackedVector2Array = cat.floor_gaps
+	var pcm: Dictionary = load("res://scripts/player/player_controller.gd").get_script_constant_map()
+	var speed := float(pcm["SPEED"])
+	var grav := float(pcm["GRAVITY"])
+	var jv := absf(float(pcm["JUMP_VELOCITY"]))
+	var coyote := float(pcm["COYOTE_TIME"])
+	var apex_spd := float(pcm["APEX_SPEED"])
+	var apex_mult := float(pcm["APEX_GRAVITY_MULT"])
+	var dash_reach := float(pcm["DASH_SPEED"]) * float(pcm["DASH_TIME"])
+	var vy := -jv
+	var yy := 0.0
+	var air_t := 0.0
+	while air_t < 3.0:
+		var gm := apex_mult if absf(vy) < apex_spd else 1.0
+		vy += grav * gm / 60.0
+		yy += vy / 60.0
+		air_t += 1.0 / 60.0
+		if yy >= 0.0:
+			break
+	var reach_max := speed * (air_t + coyote) + dash_reach + 28.0
+	var ci := (load("res://scenes/world/corpse.tscn") as PackedScene).instantiate()
+	var ccs := ci.get_node("CollisionShape2D") as CollisionShape2D
+	var cw := (ccs.shape as RectangleShape2D).size.x
+	ci.free()
+	var wide := Vector2.ZERO
+	for gv in gaps:
+		if gv.y - gv.x > wide.y - wide.x:
+			wide = gv
+	check(wide.y - wide.x > reach_max, "cata_big_gap_unjumpable (%.0f > %.1f)" % [wide.y - wide.x, reach_max])
+	var half := (wide.y - wide.x - cw) * 0.5
+	check(half < speed * air_t - 8.0, "cata_gap_halves_jumpable_with_corpse (%.1f < %.1f)" % [half, speed * air_t - 8.0])
+	var th: Node = cat.find_child("Thorn", true, false)
+	check(th != null and th.is_in_group("blood_thorn") and th.puzzle_hint == &"decay_catacomb_seal", "cata_thorn_hint")
+	if th != null:
+		check(th.anchor_x - cw * 0.5 > wide.x and th.anchor_x + cw * 0.5 < wide.y, "cata_thorn_anchor_inside_gap")
+		check(bool(th.hold_corpse) and float(th.anchor_y) >= 0.0, "cata_thorn_holds_corpse")
+		check(th.position.x < wide.x, "cata_thorn_before_gap")
+		check(not pm.is_solved(th.puzzle_hint), "cata_thorn_hint_unsolved")
+		_clear_corpses()
+		cm.record_corpse_at(Vector2(th.anchor_x, th.anchor_y), &"thorn")
+		th._hold_last_corpse()
+		var cl: Array = gs.world_memory_state["corpses"]
+		var held := false
+		var ok_pos := false
+		if cl.size() > 0:
+			var c: Dictionary = cl.back()
+			held = bool(c.get("anchored", false)) and not bool(c.get("usable_for_puzzle", true)) and String(c.get("anchor_plate", "")) != ""
+			ok_pos = absf(float((c.get("position", {}) as Dictionary).get("x", 0.0)) - th.anchor_x) < 1.0
+		check(held and ok_pos, "cata_bridge_corpse_anchored_not_pickable_in_gap")
+		check(th._bridge_exists(), "cata_thorn_detects_existing_bridge")
+	_clear_corpses()
+	var hc: Dictionary = pm.get_hints(&"decay_catacomb_seal")
+	check(hc.size() > 0 and String(hc.get("explicit", "")).length() <= 90, "cata_hints_ok")
+	# ---- 13 cistern ----
+	_unsolve(["decay_cistern", "decay_cistern_drain"])
+	for k in ["cistern_page_1", "cistern_page_2", "cistern_page_3"]:
+		gs.set_world_flag(StringName(k), false)
+	gs.set_world_flag(&"cistern_level", 1)
+	rm.enter_room(&"decay_cistern", &"default")
+	await create_timer(0.4).timeout
+	var cis: Node = _room_root(&"decay_cistern")
+	var water: Node = cis.find_child("Water", true, false)
+	check(water != null and water.has_method("set_drain") and int(water.start_level) == 1, "cist_water_level_start1")
+	var deltas: Array = []
+	for n in cis.find_children("*", "Area2D", true, false):
+		if n.is_in_group("valve"):
+			deltas.append(int(n.delta))
+	deltas.sort()
+	check(deltas == [-1, 1, 1], "cist_three_valves_plus1_plus1_minus1")
+	var plate: Node = cis.find_child("DrainPlate", true, false)
+	check(plate != null and plate.puzzle_id == &"decay_cistern_drain" and not plate.accept_player and not plate.accept_stone, "cist_drain_plate_corpse_only")
+	var rawtxt := FileAccess.get_file_as_string("res://scenes/rooms/decay_cistern.tscn")
+	check(rawtxt.find("need_dash") == -1 and rawtxt.find("need_soul") == -1, "cist_no_ability_requirement")
+	check(rawtxt.find("solve_puzzle") == -1, "cist_wetpages_no_direct_solve")
+	var pages: Array = []
+	for n in cis.find_children("*", "Area2D", true, false):
+		if n.is_in_group("cistern_page"):
+			pages.append(n)
+	pages.sort_custom(func(a, b): return int(a.page_id) < int(b.page_id))
+	check(pages.size() == 3, "cist_three_pages")
+	if water != null and pages.size() == 3 and plate != null:
+		check(water.level == 1, "cist_starts_level_1")
+		pages[0].on_interact(player)
+		check(not bool(gs.get_world_flag(&"cistern_page_1", false)), "cist_p1_unreachable_above_level0")
+		water.set_drain(true)
+		water.step(-1)
+		check(water.level == 0, "cist_level0_with_drain")
+		pages[0].on_interact(player)
+		check(bool(gs.get_world_flag(&"cistern_page_1", false)), "cist_p1_collect_level0")
+		water.set_drain(false)
+		check(water.level == 1, "cist_drain_closed_returns_level1")
+		water.step(1)
+		check(water.level == 2, "cist_level2")
+		pages[1].on_interact(player)
+		check(not pm.is_solved(&"decay_cistern"), "cist_two_pages_do_not_solve")
+		water.step(1)
+		pages[2].on_interact(player)
+		await create_timer(0.2).timeout
+		check(pm.is_solved(&"decay_cistern"), "cist_three_pages_solve")
+		var rt: Dictionary = sm._deserialize_world(sm._serialize_world(gs.world_memory_state))
+		var fl: Dictionary = rt.get("flags", {})
+		check(bool(fl.get("cistern_page_1", false)) and bool(fl.get("cistern_page_2", false)) and bool(fl.get("cistern_page_3", false)), "cist_pages_persist_save_roundtrip")
+	_unsolve(["decay_cistern"])
+	for k in ["cistern_page_1", "cistern_page_2", "cistern_page_3"]:
+		gs.set_world_flag(StringName(k), false)
+	check(not pm.journal_hint_for_active_room().is_empty(), "cist_hint_when_unsolved")
+	pm.mark_solved(&"decay_cistern")
+	check(pm.journal_hint_for_active_room().is_empty(), "cist_legacy_solved_skips_hint")
+	# ---- thorns 11-13 ----
+	var seen: Dictionary = {}
+	for rid3 in ["decay_garden", "decay_catacombs", "decay_cistern"]:
+		var rr3: Node = _room_root(StringName(rid3))
+		for t in rr3.find_children("*", "Area2D", true, false):
+			if t.is_in_group("blood_thorn"):
+				check(not seen.has(t.puzzle_hint), "thorn_%s_unique_hint" % String(t.name))
+				seen[t.puzzle_hint] = true
+				check(not pm.is_solved(t.puzzle_hint) or t.puzzle_hint == &"decay_cistern", "thorn_%s_hint_live" % String(t.name))
+	check(seen.has(&"decay_garden_bloom") and seen.has(&"decay_cistern_drain") and seen.has(&"decay_catacomb_seal"), "thorns_1113_use_room_puzzles")
+	for id in [&"decay_garden_bloom", &"decay_cistern", &"decay_catacomb_seal", &"decay_catacombs"]:
+		var hh: Dictionary = pm.get_hints(id)
+		var ok4 := hh.size() > 0 and hh.has("goal")
+		for k in ["goal", "orientation"]:
+			var tl := String(hh.get(k, "")).length()
+			if tl > 70 or tl == 0:
+				ok4 = false
+		check(ok4, "hints_%s_len_ok_1113" % String(id))
+	for rid4 in ["decay_garden", "decay_catacombs", "decay_cistern"]:
+		check(_objective(rid4).length() > 0 and _objective(rid4).length() <= 70, "objective_%s_le70" % rid4)
+	_clear_corpses()
+	_unsolve(["decay_garden_bloom", "decay_archive_key", "decay_catacomb_seal", "decay_cistern", "decay_cistern_drain"])
 	dm.clear()
 
 

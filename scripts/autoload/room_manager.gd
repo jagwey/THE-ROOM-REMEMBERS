@@ -484,7 +484,7 @@ func _setup_m3_mechanics(room_id: StringName, root: Node2D, spawns: Dictionary) 
 	# 2. Walking Shades setup (F22)
 	const WALKING_SHADES := {
 		"decay_garden": [Vector2(420, 288)],
-		"decay_catacombs": [Vector2(260, 288), Vector2(750, 288)],
+		"decay_catacombs": [Vector2(260, 288), Vector2(690, 288)],
 		"experiment_cells": [Vector2(350, 288)],
 	}
 	if WALKING_SHADES.has(rid):

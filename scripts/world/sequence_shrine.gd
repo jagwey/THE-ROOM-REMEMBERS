@@ -11,6 +11,8 @@ const DRESS := preload("res://scripts/world/platform_dress.gd")
 @export var success_line: String = ""
 ## x, y_top, width. width <= 1 ise tahta yok.
 @export var bridge: Vector3 = Vector3.ZERO
+## Açıksa yanlış adım (zinciri yeniden başlatmayan) lanete +1 yazar.
+@export var penalize_wrong: bool = false
 
 var _progress: int = 0
 
@@ -53,8 +55,11 @@ func press(step_id: String, source: Node = null) -> void:
 		if source and source.has_method("set_lit"):
 			source.set_lit(true)
 		_tick(source)
-	elif fail_line != "":
-		DialogueManager.say("Noroi", fail_line)
+	else:
+		if penalize_wrong:
+			CurseManager.add_curse(1.0)
+		if fail_line != "":
+			DialogueManager.say("Noroi", fail_line)
 
 
 func _set_all_lit(on: bool) -> void:

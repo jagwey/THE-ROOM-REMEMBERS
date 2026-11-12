@@ -5,6 +5,9 @@ extends Area2D
 const PICK_LINE := "Solgun çiçek elimde ışık gibi duruyor."
 const HELD_LINE := "Çiçek zaten elimde…"
 
+## Doluysa çiçeği aldıktan sonra söylenen ipucu satırı (<=70 karakter, fiille biter).
+@export var hint_line: String = ""
+
 
 func _ready() -> void:
 	collision_layer = 8
@@ -22,3 +25,5 @@ func on_interact(_by: Node) -> void:
 		return
 	life["flower_in_hand"] = true
 	DialogueManager.say("Noroi", PICK_LINE)
+	if hint_line != "":
+		DialogueManager.say("Noroi", hint_line)

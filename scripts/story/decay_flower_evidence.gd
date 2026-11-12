@@ -5,6 +5,7 @@ var _busy: bool = false
 
 
 func _ready() -> void:
+	PuzzleManager.puzzle_solved.connect(_on_puzzle_solved)
 	collision_layer = 8
 	collision_mask = 0
 	monitoring = false
@@ -34,7 +35,13 @@ func on_interact(_by: Node) -> void:
 		if keeper and keeper.has_method("_run_naming_scene"):
 			await keeper._run_naming_scene()
 	DialogueManager.say("Noroi", "Kurumuş kırmızı yapraklar, yerde bir desen var: 7, 2, 9.")
-	var ok: bool = await DialogueManager.dialogue_finished
-	if ok:
-		GameState.learn_memory_code("decay_archive", "729")
+	await DialogueManager.dialogue_finished
 	_busy = false
+
+
+## Çiçek dizisi çözülünce eski arşiv-anahtarı yan etkileri: anahtar çözülür (kapı bayrağı) ve 729 öğrenilir.
+func _on_puzzle_solved(id: StringName) -> void:
+	if id != &"decay_garden_bloom":
+		return
+	GameState.learn_memory_code("decay_archive", "729")
+	PuzzleManager.mark_solved(&"decay_archive_key")

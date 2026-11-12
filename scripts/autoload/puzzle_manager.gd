@@ -126,8 +126,18 @@ func gate_open(all_ids: PackedStringArray, legacy_id: StringName = &"") -> bool:
 const HINTS: Dictionary = {
 	&"decay_catacombs": {
 		"goal": "Karanlıkta yol, ölülerin ışığıdır.",
-		"orientation": "Çiçeği al, sonra dikende öl. Çiçekli beden ışık olur.",
-		"explicit": "Girişteki çiçeği al, dikene dokun. Cesedin fener gibi yanar; onu yola taşı."
+		"orientation": "Çiçeği al, dikende öl. Uçurumda beden köprü olur.",
+		"explicit": "Çiçeği al, çukurdaki dikene dokun; beden köprü ve ışık olur, üstünden geç."
+	},
+	&"decay_garden_bloom": {
+		"goal": "Çiçeklerin açış sırası kapıyı açar.",
+		"orientation": "Çiçekli bedenle yaprak sayılarını oku, sırayla dokun.",
+		"explicit": "Çiçek al, dikende öl; yaprakları oku, tacı sırayla aç."
+	},
+	&"decay_cistern": {
+		"goal": "Üç ıslak sayfa sarnıcın farklı katlarında.",
+		"orientation": "Vanalarla suyu oynat; çukur dibi için tahliyeyi bedenle tut.",
+		"explicit": "Sayfalar dipte, sağ rafta, sol rafta. Dibe inmek için suyu boşalt."
 	},
 	&"decay_catacomb_seal": {
 		"goal": "Karanlıkta yol, ölülerin ışığıdır.",
@@ -294,7 +304,9 @@ const ROOM_PUZZLES: Dictionary = {
 	"decay_weight": [&"decay_weight_latch", &"decay_weight_corpse"],
 	"decay_greenhouse": [&"decay_greenhouse"],
 	"decay_shilda_wall": [&"decay_shilda_wall_broken"],
-	"decay_garden": [&"decay_archive_key"],
+	"decay_garden": [&"decay_garden_bloom"],
+	"decay_catacombs": [&"decay_catacomb_seal"],
+	"decay_cistern": [&"decay_cistern"],
 	"library_clockroom": [&"library_clockroom"],
 	"library_page": [&"library_page_order"],
 	"library_upper_stacks": [&"library_shelf_order"],
@@ -316,6 +328,8 @@ const LEGACY_ROOM_DONE: Dictionary = {
 	"decay_vines": [&"decay_vine_shortcut"],
 	"decay_weight": [&"decay_weight_latch"],
 	"decay_greenhouse": [&"decay_greenhouse"],
+	"decay_garden": [&"decay_archive_key"],
+	"decay_cistern": [&"decay_cistern"],
 }
 
 

@@ -8,6 +8,12 @@ extends Area2D
 @export var body_line: String = "Dokunursam ölürüm. Ama beden… burada, plakanın üstünde kalır."
 @export var solved_line: String = "Kristal sustu. Beden plakayı tutuyor."
 
+## >= 0 ise ölüm anında beden bu y'de (zemin üstü) kalır; boşluğun üstüne köprü için.
+@export var anchor_y: float = -1.0
+## Açıksa beden köprü olarak sabitlenir (alınamaz) ve zaten bir köprü varsa diken yeniden ölümü vermez.
+@export var hold_corpse: bool = false
+@export var hold_id: StringName = &"corpse_bridge"
+
 var _armed: bool = false
 
 
@@ -38,6 +44,9 @@ func on_interact(by: Node) -> void:
 	if PuzzleManager.is_solved(puzzle_hint) or PuzzleManager.is_live(puzzle_hint):
 		DialogueManager.say("Noroi", solved_line)
 		return
+	if hold_corpse and _bridge_exists():
+		DialogueManager.say("Noroi", solved_line)
+		return
 	if not _armed:
 		_armed = true
 		DialogueManager.say("Noroi", "Kırmızı kristal… dikenleri nabız gibi atıyor.")
@@ -56,4 +65,30 @@ func on_interact(by: Node) -> void:
 	var cam := get_tree().get_first_node_in_group("follow_camera")
 	if cam and cam.has_method("add_trauma"):
 		cam.add_trauma(0.5)
+	if anchor_y >= 0.0 and player != null and player.has_method("note_safe_floor"):
+		player.note_safe_floor(Vector2(anchor_x, anchor_y))
 	DeathManager.request_death(&"thorn")
+	if hold_corpse:
+		_hold_last_corpse()
+
+
+func _bridge_exists() -> bool:
+	var corpses: Array = GameState.world_memory_state.get("corpses", [])
+	var room := String(GameState.character_current_life_knowledge.get("room", ""))
+	for c in corpses:
+		if String((c as Dictionary).get("anchor_plate", "")) == String(hold_id) and String((c as Dictionary).get("room", room)) == room:
+			return true
+	return false
+
+
+## Son kaydedilen bedeni köprü olarak sabitle: alınamaz, anchor_plate boş olmadığı için plaka hesapları dokunmaz.
+func _hold_last_corpse() -> void:
+	var corpses: Array = GameState.world_memory_state.get("corpses", [])
+	if corpses.is_empty():
+		return
+	var c: Dictionary = corpses.back()
+	c["anchored"] = true
+	c["anchoring"] = true
+	c["anchor_plate"] = String(hold_id)
+	c["usable_for_puzzle"] = false
+	CorpseManager.rebuild_world_corpses()

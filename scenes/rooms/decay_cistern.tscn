@@ -1,26 +1,159 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
-[ext_resource type="Script" path="res://scripts/world/ordered_relic.gd" id="relic"]
+[ext_resource type="Script" path="res://scripts/world/water_level.gd" id="water"]
+[ext_resource type="Script" path="res://scripts/world/valve.gd" id="valve"]
+[ext_resource type="Script" path="res://scripts/world/pressure_plate.gd" id="plate"]
+[ext_resource type="Script" path="res://scripts/world/blood_thorn.gd" id="thorn"]
+[ext_resource type="Script" path="res://scripts/world/page_pickup.gd" id="page"]
+[ext_resource type="Script" path="res://scripts/world/drain_link.gd" id="link"]
+[ext_resource type="Texture2D" path="res://assets/props/memory_echo.png" id="valve_tex"]
+
+[sub_resource type="RectangleShape2D" id="Interact"]
+size = Vector2(40, 48)
+
+[sub_resource type="RectangleShape2D" id="RaftShape"]
+size = Vector2(160, 12)
+
+[sub_resource type="RectangleShape2D" id="PlateShape"]
+size = Vector2(48, 28)
+
+[sub_resource type="RectangleShape2D" id="PageLow"]
+size = Vector2(36, 28)
 
 [node name="DecayCistern" type="Node2D"]
 script = ExtResource("room")
 room_id = &"decay_cistern"
 region_id = &"decay"
-room_width = 960.0
+room_width = 1120.0
 bg_region = "decay"
 checkpoint = Vector2(120, 288)
 default_spawn = Vector2(120, 288)
 doors = [{"x": 40.0, "to": "decay_weight", "spawn": "from_decay_cistern"}]
+platforms = PackedVector3Array(760, 210, 100, 460, 130, 100)
+floor_gaps = PackedVector2Array(560, 720)
 
 [node name="Interactive" type="Node2D" parent="."]
 
-[node name="WetPages" type="Area2D" parent="Interactive"]
-position = Vector2(480, 288)
-script = ExtResource("relic")
-relic_id = "cistern_diary"
-dialogue_room = &"decay_cistern"
-dialogue_set = &"diary"
-solve_puzzle = &"decay_cistern"
-evidence_title = "Islak Günlük"
-evidence_body = "Sarnıçtaki sayfalar altmış sekiz yıl önce yazılmış. Bir el yazmış, su silememiş."
+[node name="Water" type="Node2D" parent="Interactive"]
+position = Vector2(640, 0)
+script = ExtResource("water")
+level_y = PackedFloat32Array(332, 288, 210, 130)
+start_level = 1
+puzzle_key = &"cistern"
+
+[node name="Raft" type="AnimatableBody2D" parent="Interactive/Water"]
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/Water/Raft"]
+position = Vector2(0, 6)
+shape = SubResource("RaftShape")
+one_way_collision = true
+
+[node name="Deck" type="Polygon2D" parent="Interactive/Water/Raft"]
+color = Color(0.25, 0.3, 0.38, 1)
+polygon = PackedVector2Array(-80, 0, 80, 0, 80, 12, -80, 12)
+
+[node name="ValveA" type="Area2D" parent="Interactive/Water/Raft"]
+position = Vector2(-56, 0)
+script = ExtResource("valve")
+water = NodePath("../..")
+delta = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/Water/Raft/ValveA"]
+position = Vector2(0, -16)
+shape = SubResource("Interact")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/Water/Raft/ValveA"]
+texture_filter = 1
+position = Vector2(0, -14)
+scale = Vector2(0.3, 0.3)
+modulate = Color(0.55, 0.8, 1, 1)
+texture = ExtResource("valve_tex")
+
+[node name="ValveC" type="Area2D" parent="Interactive/Water/Raft"]
+position = Vector2(0, 0)
+script = ExtResource("valve")
+water = NodePath("../..")
+delta = -1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/Water/Raft/ValveC"]
+position = Vector2(0, -16)
+shape = SubResource("Interact")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/Water/Raft/ValveC"]
+texture_filter = 1
+position = Vector2(0, -14)
+scale = Vector2(0.3, 0.3)
+modulate = Color(1, 0.6, 0.45, 1)
+texture = ExtResource("valve_tex")
+
+[node name="ValveB" type="Area2D" parent="Interactive/Water/Raft"]
+position = Vector2(56, 0)
+script = ExtResource("valve")
+water = NodePath("../..")
+delta = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/Water/Raft/ValveB"]
+position = Vector2(0, -16)
+shape = SubResource("Interact")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/Water/Raft/ValveB"]
+texture_filter = 1
+position = Vector2(0, -14)
+scale = Vector2(0.3, 0.3)
+modulate = Color(0.55, 0.8, 1, 1)
+texture = ExtResource("valve_tex")
+
+[node name="DrainPlate" type="Area2D" parent="Interactive"]
+position = Vector2(300, 278)
+script = ExtResource("plate")
+puzzle_id = &"decay_cistern_drain"
+accept_player = false
+accept_stone = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/DrainPlate"]
+shape = SubResource("PlateShape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/DrainPlate"]
+
+[node name="DrainLink" type="Node" parent="Interactive"]
+script = ExtResource("link")
+plate = NodePath("../DrainPlate")
+water = NodePath("../Water")
+
+[node name="DrainThorn" type="Area2D" parent="Interactive"]
+position = Vector2(190, 290)
+script = ExtResource("thorn")
+anchor_x = 300.0
+puzzle_hint = &"decay_cistern_drain"
+body_line = "Dokunursam ölürüm; bedenim plakayı tutar, sarnıç boşalır."
+solved_line = "Diken sustu; tahliye plakası bedeni tutuyor."
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/DrainThorn"]
+shape = SubResource("Interact")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/DrainThorn"]
+texture_filter = 0
+centered = true
+
+[node name="Page1" type="Area2D" parent="Interactive"]
+position = Vector2(640, 322)
+script = ExtResource("page")
+page_id = 1
+water = NodePath("../Water")
+need_level = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/Page1"]
+shape = SubResource("PageLow")
+
+[node name="Page2" type="Area2D" parent="Interactive"]
+position = Vector2(810, 196)
+script = ExtResource("page")
+page_id = 2
+
+[node name="Page3" type="Area2D" parent="Interactive"]
+position = Vector2(510, 116)
+script = ExtResource("page")
+page_id = 3
