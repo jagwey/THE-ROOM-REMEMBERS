@@ -389,15 +389,21 @@ func _run_tier_1_feature_coverage() -> void:
 	record_check(1, 31, "POCO X6 Pro 5G Android APK build & test", arm64_enabled and package_name_ok, "arm64 enabled=%s package name=%s" % [arm64_enabled, package_name_ok], false, "M4")
 
 	# F32: Versioning & export configuration (M5)
-	var godot_v111: bool = proj_cfg.contains('config/version="1.13.0"')
-	var preset_v111: bool = exp_presets.contains('version/name="1.13.0"') and exp_presets.contains('version/code=43')
+	var ver_re := RegEx.create_from_string('config/version="(\\d+\\.\\d+\\.\\d+)"')
+	var ver_m := ver_re.search(proj_cfg)
+	var app_ver: String = ver_m.get_string(1) if ver_m else ""
+	var code_re := RegEx.create_from_string("version/code=(\\d+)")
+	var code_m := code_re.search(exp_presets)
+	var app_code: int = int(code_m.get_string(1)) if code_m else 0
+	var godot_v111: bool = not app_ver.is_empty()
+	var preset_v111: bool = godot_v111 and exp_presets.contains('version/name="%s"' % app_ver) and app_code >= 44 and exp_presets.contains("TheRoomRemembers-%s-android-arm64.apk" % app_ver)
 	var gradle_on: bool = exp_presets.contains("gradle_build/use_gradle_build=true")
 	var mono_icon: bool = exp_presets.contains('launcher_icons/adaptive_monochrome_432x432="res://assets/icon/icon_foreground.png"')
 	var manifest := _read_file_text("res://android/build/src/main/AndroidManifest.xml")
 	var startup_ok: bool = manifest.contains('android:authorities="${applicationId}.androidx-startup"') and manifest.contains("androidx.startup.InitializationProvider")
 	var themed_ok: bool = FileAccess.file_exists("res://android/build/res/mipmap-anydpi-v26/themed_icon.xml")
 	var build_ver := _read_file_text("res://android/.build_version").strip_edges()
-	record_check(1, 32, "Versioning & export configuration", godot_v111 and preset_v111 and gradle_on and mono_icon and startup_ok and themed_ok and build_ver == "4.7.2.stable", "version 1.13.0 code 43 gradle mono=%s startup=%s themed=%s build=%s" % [mono_icon, startup_ok, themed_ok, build_ver], false, "M5")
+	record_check(1, 32, "Versioning & export configuration", godot_v111 and preset_v111 and gradle_on and mono_icon and startup_ok and themed_ok and build_ver == "4.7.2.stable", "version %s code %d gradle mono=%s startup=%s themed=%s build=%s" % [app_ver, app_code, mono_icon, startup_ok, themed_ok, build_ver], false, "M5")
 
 	# F33: Git commit, tag, and GitHub Release (M5)
 	var git_clean: bool = FileAccess.file_exists("res://PROJECT.md") and FileAccess.file_exists("res://TEST_INFRA.md")

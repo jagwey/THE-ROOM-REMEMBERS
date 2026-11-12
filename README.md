@@ -177,6 +177,15 @@ flowchart LR
 ### Katakomb çiçeği ve Sarnıç (Faz 0)
 Kemik Mahzeni girişinde (x≈150) tükenmez bir çiçek kaynağı durur. Çiçek elde ölürsen ceset çiçeği taşır ve fener gibi yanar; karanlık yol aydınlanır. Çiçek hayat başınadır, ölümde cesede geçer ve elden silinir. Sarnıç yan kapısı artık yetenek istemez.
 
+### v1.14.0 (hazır, yayınlanmadı) — Faz 0 kritik düzeltmeler
+- **Canlı plaka kuralı:** plaka yalnız üstünde ağırlık varken kapıyı açar; içinden geçince kapı kalıcı çözülür ve kaydedilir (`PuzzleManager.set_live/is_live`).
+- **Yükseliş (`core_ascent`):** üç ayrı yetenek sınavı — Ruh Kesimi mührü, Gölge Atılması perdesi, yankı sunağı+plaka. Eski kayıtlar ilerlemeyi korur.
+- **Ayna Tapınağı kapısı:** `mirrors_unbroken` yan kapısı nabız atan işaret ve başlıkla görünür.
+- **Katakomb çiçeği / Sarnıç:** yukarıdaki bölüm; softlock'lar kapandı.
+- **Metin düzeltmeleri:** Çiçeklenme ve sayfa ipuçları gerçek sırayla eşleşir, yankı kaydı tek sabit 8 sn, ölü `core_portal.gd` silindi.
+- **Shilda sprite:** ayaklar zemine oturur (offset −59), balkon gözlem noktası boşluktan çıkarıldı.
+- e2e sürüm kontrolü artık `project.godot` ile `export_presets.cfg` tutarlılığını denetler (sabit sürüm yok).
+
 ## 🎨 Karakterler ve Görsel Yenileme (Shilda HD Remaster)
 
 v1.12.5 görsel düzenlemesi `assets/trr_refresh/` içinden 16 PNG kullanır. Saatler Odası, Gözlem Camı, Kırık Gece ve Sera'da yeni nesne çizimleri mevcut etkileşim noktalarına bağlanır. Kütüphane ve deney alanında duvar çizimleri dekoru taşır. Çürüme ve ayna bölgelerindeki tavan motifleri 320 piksel aralıklıdır. Diyalog çerçeveleri konuşmanın tonuna göre değişir. Finalde dört alan için ayrı ekran çizimi kullanılır.
