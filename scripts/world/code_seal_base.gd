@@ -6,9 +6,9 @@ extends Area2D
 @export var code_key: String = "awakening"
 @export var puzzle_id: StringName = &"awakening_memory_code"
 @export var story_code: String = "314"
-@export var intro_line: String = "…Üzerinde çizikler. Bir kod mu?"
+@export var intro_line: String = "…Üzerinde çizikler var, bir kod mu bu?"
 @export var solved_line: String = "Mühür… gevşedi."
-@export var wrong_line: String = "…Yanlış. Mühür kımıldamadı."
+@export var wrong_line: String = "…Yanlış, mühür kımıldamadı."
 
 var _busy: bool = false
 var _session: int = 0

@@ -199,7 +199,7 @@ func _play_intro() -> void:
 	if not _continued:
 		DialogueManager.say("", "Gözlerin açılıyor. Saat durmuş. Biri nefesini tutmuş.")
 		DialogueManager.say("", "Bu oda seni tanıyor. Sen onu tanımıyorsun.")
-		DialogueManager.say("Noroi", "Burası neresi? Neden uyanamıyorum?")
+		DialogueManager.say("Noroi", "Burası neresi, neden uyanamıyorum?")
 		await DialogueManager.dialogue_finished
 		if not is_inside_tree():
 			return
@@ -208,7 +208,7 @@ func _play_intro() -> void:
 		return
 	else:
 		DialogueManager.say("", "Yine bu yatak. Oda saydı. Sen unuttun.")
-		DialogueManager.say("Noroi", "Bir şey eksik. Duvarlar hatırlıyor.")
+		DialogueManager.say("Noroi", "Bir şey eksik, duvarlar hatırlıyor.")
 
 
 func _clear_session_loaded_flag() -> void:

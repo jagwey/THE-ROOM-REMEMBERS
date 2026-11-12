@@ -114,7 +114,7 @@ theme_override_colors/font_color = Color(0.671, 0.596, 0.663, 1)
 theme_override_colors/font_outline_color = Color(0.133, 0.106, 0.153, 1)
 theme_override_constants/outline_size = 3
 theme_override_font_sizes/font_size = 14
-text = "WASD · Z saldır · X atıl · E etkileş · I günlük"
+text = "WASD yürü · Z saldır · X atıl · E etkileş · I günlük aç"
 
 [node name="JournalBtn" type="TextureButton" parent="SafeArea"]
 layout_mode = 1
@@ -347,7 +347,7 @@ layout_mode = 2
 theme_override_colors/font_color = Color(0.882, 0.827, 0.82, 1)
 theme_override_font_sizes/font_size = 19
 horizontal_alignment = 1
-text = "Hafıza mührü"
+text = "Anı mührü"
 
 [node name="Digits" type="Label" parent="SafeArea/SealCode/Box"]
 layout_mode = 2

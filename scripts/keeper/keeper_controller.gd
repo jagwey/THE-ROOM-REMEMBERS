@@ -566,7 +566,7 @@ func on_interact(_by: Node) -> void:
 		return
 	# Barışma / Onarım mekaniği (Pillar 5)
 	if bool(GameState.player_progress_knowledge.get("keeper_withdrew", false)) or mode == Mode.MOURNING:
-		DialogueManager.say("Noroi", "Özür dilerim. Seni incitmek istemedim.")
+		DialogueManager.say("Noroi", "Özür dilerim, seni incitmek istemedim.")
 		DialogueManager.say(GameState.keeper_speaker_name(), "…Acı unutturmaz ama affetmek mümkün. Yanımda durabilirsin.")
 		await _await_dialogue_or_smoke()
 		GameState.player_progress_knowledge["keeper_withdrew"] = false

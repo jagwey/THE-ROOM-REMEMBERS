@@ -402,7 +402,7 @@ func _refresh_card() -> void:
 		return
 	var rid := String(gs.character_current_life_knowledge.get("room", &"awakening"))
 	var titles: Dictionary = RoomTransitionScript.ROOM_TITLES
-	_card_line("SON HAFIZA", UiTheme.BODY, true, Palette.IVORY)
+	_card_line("SON KAYIT", UiTheme.BODY, true, Palette.IVORY)
 	_card_line(_room_display_name(rid), 15, true, Color(1.0, 0.82, 0.5))
 	_card_line("Keşif: %d / %d oda" % [visited.size(), titles.size()], 13, false, Palette.IVORY)
 	_card_line("Ölüm: %d · Can: %d/%d" % [int(gs.player_progress_knowledge.get("deaths", 0)), gs.hearts, gs.max_hearts], 13, false, Palette.IVORY)

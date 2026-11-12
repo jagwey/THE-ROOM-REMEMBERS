@@ -58,9 +58,9 @@ func _on_enter(body: Node) -> void:
 	GameState.player_progress_knowledge["encounter_%s_seen" % String(encounter_id)] = true
 	var fails := int(GameState.player_progress_knowledge.get("wall_chase_deaths", 0))
 	if first:
-		DialogueManager.say("Shilda", "Dur. Bu duvarın ardında… unutmaman gereken bir şey var.")
+		DialogueManager.say("Shilda", "Dur. Duvarın ardında unutmaman gereken bir şey var.")
 		DialogueManager.say("Shilda", "Ama önce göster bana: benden kaçabilir misin?")
-		DialogueManager.say("Shilda", "Gözlerim kızarınca atıl. Duvarın önünde kal; son adımda kenara çekil.")
+		DialogueManager.say("Shilda", "Gözlerim kızarınca atıl. Son adımda kenara çekil.")
 	else:
 		DialogueManager.say("Shilda", "Yine mi. Atıl.")
 	if fails >= 3:
@@ -84,5 +84,5 @@ func _on_wall_broken(_id: StringName) -> void:
 	PuzzleManager.mark_solved(puzzle_id)
 	GameState.player_progress_knowledge["shilda_wall_trust"] = true
 	DialogueManager.say("Shilda", "…Affet. Seni incitmek istemedim.")
-	DialogueManager.say("Shilda", "Bazen gerçeğe giden tek yol, bir duvarı kırmaktır.")
+	DialogueManager.say("Shilda", "Bazen gerçeğe giden yol duvardan geçer.")
 	SaveManager.save_game()

@@ -91,7 +91,7 @@ func on_interact(by: Node) -> void:
 		var eid := _resolve_echo_id()
 		_spawn_ghost()
 		await EchoManager.play_echo(eid)
-		DialogueManager.say("Noroi", "…Ağır. Ama sırtlayıp taşıyabilirim.")
+		DialogueManager.say("Noroi", "…Ağır ama sırtlayıp taşıyabilirim.")
 		return
 	# Taşınıyorsa: bırak.
 	if is_carried():
@@ -343,8 +343,8 @@ const REASON_LINES := {
 	"hearts": "Bir darbe daha… ve dizlerim çözüldü.",
 	"hazard": "Zemin yalan söyledi. Düştüm.",
 	"curse": "Lanet damarlarımdan yükseldi; ben değildim artık.",
-	"keeper": "Shilda'nın pençesi… ama gözleri ağlıyordu.",
-	"mercy": "Shilda fısıldadı: Uyu ve unut.",
+	"keeper": "Gölgenin pençesi… ama gözleri ağlıyordu.",
+	"mercy": "Gölge fısıldadı: Uyu ve unut.",
 	"cloud": "Kırmızı sis nefesimi aldı.",
 	"thorn": "Kan dikeni avucumu deldi. Bilerek dokundum.",
 }

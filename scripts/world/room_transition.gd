@@ -302,16 +302,16 @@ func on_interact(by: Node) -> void:
 		var msg: String = locked_message if idx == 0 else String(LOCKED_VARIANTS[idx - 1])
 		## Yetenek kilidi sabit cümle kullanır; mühür kapılarındaki LOCKED_VARIANTS döngüsü aynı kalır.
 		if _ability_blocked():
-			msg = "Bu geçit için Gölge Atılması gerek."
+			msg = "Bu geçidi Gölge Atılması ile geç."
 		## Ruh mührü: yetenek yoksa "nerede bulunur", varsa "nasıl açılır" söylenir (genel varyantlar yanıltmasın).
 		elif String(required_puzzle).begins_with("soul_seal"):
 			var has_slash := bool(GameState.player_progress_knowledge.get("ability_soul_slash", false))
 			if has_slash:
 				msg = "Mor mühür. Ruh Kesimi'ni savur (Q / yıldız düğmesi)."
 			elif idx % 2 == 0:
-				msg = "Mor bir mühür. Kılıç işlemez… ruhumla kesmeyi henüz bilmiyorum."
+				msg = "Mor mühür kılıçla açılmaz, ruhumla kesmeyi henüz bilmiyorum."
 			else:
-				msg = "Mor bir mühür. Bunu kıracak güç… belki eski kitapların arasında saklı."
+				msg = "Bu mührü kıracak güç belki eski kitapların arasında saklı."
 		AudioManager.play_sfx(&"seal_key", -8.0, 0.55)
 		_shake_seal()
 		DialogueManager.say("Noroi", msg)
@@ -322,7 +322,7 @@ func on_interact(by: Node) -> void:
 	if target_room_id == &"core" and not EndingManager.has_both_shards():
 		if not bool(GameState.character_current_life_knowledge.get("warned_core_shards", false)):
 			GameState.character_current_life_knowledge["warned_core_shards"] = true
-			DialogueManager.say(GameState.keeper_speaker_name(), "Çekirdek açılacak… ama mühür parçaların eksik. Eksik girersen geri dönersin.")
+			DialogueManager.say(GameState.keeper_speaker_name(), "Mühür parçaların eksik. Eksik girme.")
 			return
 	_travel(by)
 
