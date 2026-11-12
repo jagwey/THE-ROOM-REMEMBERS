@@ -12,7 +12,7 @@ const RULES := [
 ]
 
 ## Yeni konuşmacı eklemek bu listeye eklemeyi gerektirir.
-const KNOWN_SPEAKERS := ["Noroi", "Shilda", "@shilda", "???", "Ses", "X", "Arşivci", "Yansıma"]
+const KNOWN_SPEAKERS := ["Noroi", "Shilda", "@shilda", "???", "Ses", "X", "Arşivci", "Yansıma", "Yankı", "Kayıt"]
 
 ## "<dosya>:<kural>" -> gerekçe. Gerekçesiz muafiyet yok.
 const ALLOW := {
@@ -23,15 +23,11 @@ const TURKISH_LETTERS := "çğıöşüÇĞİÖŞÜ"
 const BANNED_ROOTS := ["hatıra", "bellek"]
 const ENGLISH_RESIDUE := ["DOMAIN", "END OF PART", "PART I", "İz: "]
 
-## tscn özellikleri: diyalog satırı sayılanlar (line_length).
-const TSCN_DIALOGUE_PROPS := [
-	"lines", "locked_lines", "repeat_line", "dialogue_sets", "intro_text", "solved_text",
-	"refusal_line", "locked_line", "locked_message",
-]
-## tscn özellikleri: Konuşmacı|metin biçimi zorunlu olanlar.
+## tscn: oyuncu metni taşıyan özellikler (ad kuralı). Kaynak yolu/StringName/düğüm yolu değerleri elenir.
+const TEXT_PROP_SUFFIXES := ["_line", "_lines", "_text", "_title", "_body", "_hint", "_message", "_msg"]
+const TEXT_PROP_NAMES := ["text", "title", "lines", "dialogue_sets"]
+## Konuşmacı|metin biçimi zorunlu olanlar.
 const TSCN_SPEAKER_PROPS := ["lines", "locked_lines", "repeat_line", "dialogue_sets"]
-## Uzunluk kuralından muaf ama diğer kurallar için taranan metin özellikleri.
-const TSCN_OTHER_TEXT_PROPS := ["evidence_title", "evidence_body"]
 
 var failures := 0
 var fail_by_rule := {}
@@ -116,15 +112,20 @@ func _is_capitalized_word(s: String) -> bool:
 	return rx.search(s) != null
 
 
-func _check_style(path: String, line: int, text: String, check_banned: bool = true) -> void:
+## Her literal için: üç nokta + yasak kök.
+func _check_basic(path: String, line: int, text: String) -> void:
 	if text.contains("..."):
 		_fail("three_dots", path, line, text)
-	if check_banned:
-		var low := text.to_lower()
-		for root_word in BANNED_ROOTS:
-			if low.contains(root_word):
-				_fail("banned_word", path, line, text)
-				break
+	var low := text.to_lower()
+	for root_word in BANNED_ROOTS:
+		if low.contains(root_word):
+			_fail("banned_word", path, line, text)
+			break
+
+
+## Metin gibi görünen literal için: temel kurallar + İngilizce kalıntı + yer tutucu.
+func _check_style(path: String, line: int, text: String) -> void:
+	_check_basic(path, line, text)
 	for residue in ENGLISH_RESIDUE:
 		if text.contains(residue):
 			_fail("english_residue", path, line, text)
@@ -178,11 +179,12 @@ func _literals(src: String, stop_at_hash: bool) -> Array:
 		var c := src[i]
 		if c == "#" and stop_at_hash:
 			break
-		if c == "\"":
+		if c == "\"" or c == "'":
+			var quote := c
 			var start := i
 			var buf := ""
 			i += 1
-			while i < n and src[i] != "\"":
+			while i < n and src[i] != quote:
 				if src[i] == "\\" and i + 1 < n:
 					i += 1
 					var e := src[i]
@@ -241,10 +243,20 @@ func _scan_json_entry(path: String, raw: String, entry: Variant) -> void:
 
 # --- tscn ------------------------------------------------------------------
 
+func _is_text_prop(prop: String) -> bool:
+	if TEXT_PROP_NAMES.has(prop):
+		return true
+	for suf in TEXT_PROP_SUFFIXES:
+		if prop.ends_with(suf):
+			return true
+	return false
+
+
 func _scan_tscn(path: String) -> void:
 	var rx := RegEx.new()
-	rx.compile("^([a-z_]+) = (.*)$")
-	var lines := FileAccess.get_file_as_string(path).split("\n")
+	rx.compile("^([A-Za-z0-9_]+) = (.*)$")
+	var lines := FileAccess.get_file_as_string(path).split("
+")
 	for ln in lines.size():
 		var m := rx.search(String(lines[ln]))
 		if m == null:
@@ -261,18 +273,24 @@ func _scan_tscn(path: String) -> void:
 					_check_dialogue_length(path, lineno, msg, false)
 					_check_hint(path, lineno, msg)
 			continue
-		var is_dialogue: bool = TSCN_DIALOGUE_PROPS.has(prop) or prop.ends_with("_refusal_line")
-		var is_other: bool = TSCN_OTHER_TEXT_PROPS.has(prop)
-		if not (is_dialogue or is_other):
+		if not _is_text_prop(prop):
 			continue
+		if value.begins_with("&\"") or value.begins_with("^\"") or value.begins_with("NodePath(") or value.begins_with("ExtResource") or value.begins_with("SubResource"):
+			continue
+		var has_speaker := TSCN_SPEAKER_PROPS.has(prop)
+		var is_length: bool = prop.ends_with("_line") or prop.ends_with("_lines") or prop.ends_with("_text") or prop.ends_with("_message") or prop == "lines" or prop == "dialogue_sets"
 		for lit in _literals(value, false):
 			var s := String(lit["s"])
-			if s.is_empty():
+			if s.is_empty() or s.begins_with("res://") or s.begins_with("uid://"):
 				continue
-			var has_speaker := TSCN_SPEAKER_PROPS.has(prop)
+			if _is_identifier_like(s) and not has_speaker:
+				_check_basic(path, lineno, s)
+				continue
 			_check_style(path, lineno, s)
-			if is_dialogue:
+			if is_length:
 				_check_dialogue_length(path, lineno, s, has_speaker)
+			if prop.ends_with("_hint"):
+				_check_hint(path, lineno, s)
 			if has_speaker:
 				_check_speaker_format(path, lineno, s)
 
@@ -284,6 +302,8 @@ func _scan_gd(path: String) -> void:
 	var lines := FileAccess.get_file_as_string(path).split("\n")
 	var call_rx := RegEx.new()
 	call_rx.compile("DialogueManager\\.(say|whisper|say_with)\\(")
+	var pair_rx := RegEx.new()
+	pair_rx.compile("\\[\\s*(?:\"([A-ZÇĞİÖŞÜ?@][A-Za-zçğıöşüÇĞİÖŞÜ?@]{0,14})\"|[A-Z_]+)\\s*,\\s*\"((?:[^\"\\\\]|\\\\.)*)\"\\s*\\]")
 	for ln in lines.size():
 		var src := String(lines[ln])
 		if src.strip_edges().begins_with("#"):
@@ -291,19 +311,41 @@ func _scan_gd(path: String) -> void:
 		var lineno := ln + 1
 		for lit in _literals(src, true):
 			var s := String(lit["s"])
-			if s.is_empty() or _is_identifier_like(s):
+			if s.is_empty():
 				continue
 			var texty := _has_turkish_letter(s) or s.contains(" ") or _is_capitalized_word(s)
-			# İngilizce kalıntı yalnız metin gibi görünen literal'lerde aranır.
 			if texty or ENGLISH_RESIDUE.any(func(r): return s.contains(r)):
 				_check_style(path, lineno, s)
-			if is_hint_file and texty:
-				_check_hint(path, lineno, s)
+				if is_hint_file:
+					_check_hint(path, lineno, s)
+			else:
+				_check_basic(path, lineno, s)
 		var cm := call_rx.search(src)
 		if cm != null:
-			var arg_text := _call_text_literal(src.substr(cm.get_end()))
-			if arg_text != "":
-				_check_dialogue_length(path, lineno, arg_text, false)
+			var rest := src.substr(cm.get_end())
+			if rest.contains(")"):
+				var arg_text := _call_text_literal(rest)
+				if arg_text != "":
+					_check_dialogue_length(path, lineno, arg_text, false)
+			elif ln + 1 < lines.size():
+				# Çok satırlı çağrı: sonraki satırdaki literal'ler (en iyi çaba).
+				for lit2 in _literals(String(lines[ln + 1]), true):
+					_check_dialogue_length(path, lineno + 1, String(lit2["s"]), false)
+		# Dizi çifti diyalog: ["Konuşmacı", "metin"]
+		for pm in pair_rx.search_all(src):
+			var speaker: String = pm.get_string(1)
+			var body := _unescape(pm.get_string(2))
+			if speaker != "" and not (body.contains(" ") or _has_turkish_letter(body)):
+				continue
+			if speaker != "":
+				if speaker != "" and not KNOWN_SPEAKERS.has(speaker):
+					_fail("speaker_format", path, lineno, "bilinmeyen konuşmacı '%s' | %s" % [speaker, body])
+			_check_dialogue_length(path, lineno, body, false)
+
+
+func _unescape(t: String) -> String:
+	return t.replace("\\\"", "\"").replace("\n", "
+")
 
 
 ## say(speaker, "metin") çağrısının ikinci argümanı bir literal ile başlıyorsa onu döndürür.

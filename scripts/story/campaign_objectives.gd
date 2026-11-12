@@ -5,7 +5,7 @@ extends RefCounted
 const _BY_ROOM: Dictionary = {
 	"awakening": "Durmuş saate bak. Gölge konuşursa dinle. Sağdaki geçit seni çağırıyor.",
 	"awakening_passage": "Yarık anını koparır. Taşın fısıldadığı sayıyı sağdaki eşiğe götür.",
-	"awakening_seal": "Plaka canlıyı tanımaz. Bedeni bırak; yankının sayısı mühürde bekler.",
+	"awakening_seal": "Plaka canlıyı tanımaz; kristal bedeni bırak. Sayı mühürde bekler.",
 	"decay_vines": "Sarmaşık yolu yutmuş. Kolu bul; düğüm çözülünce geçit nefes alır.",
 	"decay_weight": "Taş ağır. Onu plakanın üstüne bırak. Şaşırırsan kol taşı geri çağırır.",
 	"decay_garden": "Çiçeğe bak. Shilda'yı dinle. Arşivin mührü ancak o zaman uyanır.",
@@ -32,7 +32,7 @@ const _BY_ROOM: Dictionary = {
 	"mirrors_labyrinth": "Yol tavandaki aynada. Mavi taş gerçektir; soluk kırmızı yalan söyler.",
 	"core_memory_vault": "Sütunlar bir yıl sırası tutuyor. 1927, 1995, sonra Son.",
 	"core_bloom_garden": "Taçları say: dört, bir, iki. Sonra Shilda konuşur.",
-	"mirrors_shrine": "Gölgeyi içine çek. Kırmızı perde iter; mührün öteki yarısı orada.",
+	"mirrors_shrine": "Gölgeyi içine çek. Perde bedeni iter; mührün öteki yarısı orada.",
 	"awakening_vigil": "Gölge yüzünü gösteriyor. Onu dinle; sağdaki kapı açılır.",
 	"decay_greenhouse": "Camın ötesinde bir el mührü tutuyor. Plaka senin.",
 	"library_clockroom": "İki saat, iki gece. Önce 1927, sonra 1995.",
