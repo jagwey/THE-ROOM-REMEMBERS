@@ -51,4 +51,4 @@ func _touch(b: Node) -> void:
 	if b.has_method("has_shadow_dash") and b.has_shadow_dash():
 		return
 	_hint_done = true
-	DialogueManager.whisper("Noroi", refusal_line if refusal_line != "" else "Kırmızı perde bedenimi itiyor. Gölge olsaydım… geçebilirdim.")
+	DialogueManager.whisper("Noroi", refusal_line if refusal_line != "" else "Kırmızı perde bedenimi itiyor, gölge olsaydım geçebilirdim.")

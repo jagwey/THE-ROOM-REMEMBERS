@@ -136,7 +136,7 @@ func pick_up(by: Node2D) -> void:
 		am.play_sfx(&"corpse_drag")
 	if not bool(GameState.player_progress_knowledge.get("carry_hint_seen", false)):
 		GameState.player_progress_knowledge["carry_hint_seen"] = true
-		DialogueManager.whisper("Noroi", "Bedeni sırtladım. Atlayabilirim; Etkileş ile bırakırım.")
+		DialogueManager.whisper("Noroi", "Bedeni sırtladım; atlayabilirim, Etkileş ile bırakırım.")
 
 
 ## Taşıyanın önündeki zemine bırakır; boşluk varsa ayak altına, o da yoksa son sağlam noktaya.

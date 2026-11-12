@@ -66,7 +66,7 @@ func on_interact(_by: Node) -> void:
 		var corpses: Variant = GameState.world_memory_state.get("corpses", [])
 		if corpses is Array:
 			bodies = (corpses as Array).size()
-		DialogueManager.say("Noroi", "Duvar %d beden tutuyor. Ben %d ölüm hatırlıyorum." % [bodies, deaths])
+		DialogueManager.say("Noroi", "Duvar %d beden tutuyor, ben %d ölüm hatırlıyorum." % [bodies, deaths])
 	var ok: bool = await DialogueManager.dialogue_finished
 	if ok:
 		if evidence_title != "":

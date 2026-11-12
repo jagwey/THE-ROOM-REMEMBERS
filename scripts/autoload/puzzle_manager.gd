@@ -166,7 +166,7 @@ const HINTS: Dictionary = {
 	&"mirrors_dual": {
 		"goal": "Geçit, iki kristalin aynı anda uyanmasını bekliyor.",
 		"orientation": "Yansıma sana ters yöne gider; iki kristali aynı anda uyandır.",
-		"explicit": "Gölge Atılması ile mesafeyi hızla kapatıp iki kristale yetiş."
+		"explicit": "Yankın bir kristali tutarken koşup ötekini uyandır."
 	},
 	&"core_ascent": {
 		"goal": "Son merdiven iki yetenek ve bir yankı istiyor.",

@@ -102,7 +102,7 @@ func on_interact(_by: Node = null) -> void:
 		DialogueManager.say("Noroi", "Tehlike varken mühür tepki vermiyor.")
 		return
 	if CurseManager == null or CurseManager.curse <= 0.0:
-		DialogueManager.say("Noroi", "Kanımda aktif bir lanet yok. Bu mühür sadece lanet altındayken uyanır.")
+		DialogueManager.say("Noroi", "Kanımda aktif bir lanet yok, bu mühür yalnız lanet altındayken uyanır.")
 		return
 	var was_known := GameState.discovered_seals.has(room_id)
 	var absorbed := CurseManager.curse

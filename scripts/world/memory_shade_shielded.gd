@@ -199,9 +199,9 @@ func _reflect_strike(attacker: Node, dir: float) -> void:
 	if not _hint_given:
 		_hint_given = true
 		if bool(GameState.player_progress_knowledge.get("ability_soul_slash", false)):
-			DialogueManager.whisper("Noroi", "Kalkan kılıcı sektiriyor! Arkasına atıl ya da Ruh Kesimi savur.")
+			DialogueManager.whisper("Noroi", "Kalkan kılıcı sektiriyor, arkasına atıl ya da Ruh Kesimi savur.")
 		else:
-			DialogueManager.whisper("Noroi", "Kalkan kılıcı sektiriyor! Arkasına atıl, sonra arkadan vur.")
+			DialogueManager.whisper("Noroi", "Kalkan kılıcı sektiriyor, arkasına atıl ve arkadan vur.")
 
 
 func receive_soul_slash(attacker: Node) -> void:

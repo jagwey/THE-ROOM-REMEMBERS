@@ -100,11 +100,11 @@ func receive_sword_hit(_from: Node, _dir: float, _combo: int) -> void:
 		return
 	_hint_done = true
 	if bool(GameState.player_progress_knowledge.get("ability_soul_slash", false)):
-		DialogueManager.whisper("Noroi", "Kılıç taşı keser. Bu mühür ruh istiyor. Yıldız, ya da Q.")
+		DialogueManager.whisper("Noroi", "Kılıç taşı keser ama bu mühür ruh istiyor: Yıldız ya da Q.")
 	elif refusal_line != "":
 		DialogueManager.whisper("Noroi", refusal_line)
 	else:
-		DialogueManager.whisper("Noroi", "Kılıç geçmiyor. Mühür bir ruh bekliyor. O gücü henüz tanımıyorum.")
+		DialogueManager.whisper("Noroi", "Kılıç geçmiyor, mühür bir ruh bekliyor ve o gücü henüz tanımıyorum.")
 
 
 func _open(animate: bool) -> void:

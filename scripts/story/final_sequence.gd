@@ -89,7 +89,7 @@ func play(tree: SceneTree, fast_mode: bool = false) -> void:
 		["X", "Merhaba, Shilda."],
 		["Shilda", "Yaşıyorsunuz…"],
 		["X", "Elbette."],
-		["Shilda", "Yıllarca sizi aradım. Ben de sayılırım."],
+		["Shilda", "Yıllarca sizi aradım; ölenler arasında ben de varım."],
 		["X", "Biliyorum."],
 		["Shilda", "Ne?"],
 		["X", "Her şeyi kaydettim."],

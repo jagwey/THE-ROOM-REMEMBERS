@@ -66,7 +66,7 @@ func receive_keeper_charge(_keeper: Node) -> void:
 		broken.emit(wall_id)
 		DialogueManager.say("Noroi", "Duvar yıkıldı… arkasında bir geçit var.")
 	else:
-		DialogueManager.whisper("Noroi", "Duvar çatladı! Bir kez daha…")
+		DialogueManager.whisper("Noroi", "Duvar çatladı, bir kez daha!")
 	SaveManager.save_game()
 
 
@@ -75,7 +75,7 @@ func receive_sword_hit(_from: Node, _dir: float, _combo: int) -> void:
 		return
 	if not _sword_hint_done:
 		_sword_hint_done = true
-		DialogueManager.whisper("Noroi", "Kılıcım taşı çizmiyor bile. Bunu yıkabilecek tek güç… gölgenin atılması.")
+		DialogueManager.whisper("Noroi", "Kılıcım taşı çizmiyor bile, bunu yıkabilecek tek güç gölgenin atılması.")
 
 
 func _apply_state(animate: bool) -> void:

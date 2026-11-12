@@ -71,7 +71,7 @@ func on_interact(_by: Node) -> void:
 				DialogueManager.say("Noroi", "Ellerim bu şifreyi nereden bildi?!")
 			_:
 				DialogueManager.say("Noroi", "…Ben bunu hiç görmedim.")
-				DialogueManager.say("Noroi", "Zihnimin içinde başka biri var… Parmaklarımı kim yönetiyor?!")
+				DialogueManager.say("Noroi", "Zihnimin içinde başka biri var, parmaklarımı kim yönetiyor?!")
 		DialogueManager.say("Noroi", solved_line)
 		var confirm_ok: bool = await DialogueManager.dialogue_finished
 		if session != _session or not confirm_ok:

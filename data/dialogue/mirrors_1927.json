@@ -14,7 +14,7 @@
       {"s": "X", "t": "Yetki kaydındaki imza benim. Bana X deyin."},
       {"s": "Noroi", "t": "Kazınmış imza senindi demek."},
       {"s": "X", "t": "Kazıttım. Kayıt tutan görünmemeli."},
-      {"s": "Noroi", "t": "Bir adı bile yok, yalnız bir harf: X."},
+      {"s": "Noroi", "t": "Adı yok, yalnız bir harf."},
       {"s": "X", "t": "Geri dönün. Sizi izlemeye devam edeceğim."}
     ]
   }
