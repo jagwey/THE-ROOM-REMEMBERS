@@ -23,7 +23,7 @@ floor_gaps = PackedVector2Array(660.0, 724.0)
 [node name="Spawns" type="Node2D" parent="."]
 
 [node name="keeper_observe" type="Marker2D" parent="Spawns"]
-position = Vector2(700, 288)
+position = Vector2(760, 288)
 
 [node name="Interactive" type="Node2D" parent="."]
 

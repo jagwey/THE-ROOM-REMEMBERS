@@ -127,7 +127,103 @@ func _run() -> void:
 	check(JournalScript.call("can_open_in_layer", 0) and JournalScript.call("can_open_in_layer", 2), "journal opens in NONE/JOURNAL")
 	for layer in [1, 3, 5, 4, 6, 7, 8]:
 		check(not JournalScript.call("can_open_in_layer", layer), "journal blocked in layer %d" % layer)
+	await _keeper_spawn_checks()
+	await _medallion_checks()
 	quit(1 if failures else 0)
+
+
+## Lowest opaque pixel row (texture space) of the keeper's first idle frame.
+func _keeper_feet_row(spr: AnimatedSprite2D) -> int:
+	var anim: StringName = &"idle"
+	if not spr.sprite_frames.has_animation(anim):
+		anim = spr.sprite_frames.get_animation_names()[0]
+	var tex := spr.sprite_frames.get_frame_texture(anim, 0)
+	var img := tex.get_image()
+	for y in range(img.get_height() - 1, -1, -1):
+		for x in range(img.get_width()):
+			if img.get_pixel(x, y).a > 0.1:
+				return y
+	return 0
+
+
+## Floor top y under world x (Floor* StaticBody2D rectangles built by BuiltRoom / the scene).
+func _floor_top_at(room: Node, x: float) -> float:
+	for c in room.get_children():
+		if c is StaticBody2D and String(c.name).begins_with("Floor"):
+			var cs: CollisionShape2D = null
+			for k in c.get_children():
+				if k is CollisionShape2D:
+					cs = k
+			if cs and cs.shape is RectangleShape2D:
+				var half: Vector2 = (cs.shape as RectangleShape2D).size * 0.5
+				if absf(x - c.global_position.x) <= half.x:
+					return c.global_position.y - half.y
+	return NAN
+
+
+func _keeper_spawn_checks() -> void:
+	var keeper := (load("res://scenes/keeper/keeper.tscn") as PackedScene).instantiate()
+	root.add_child(keeper)
+	var spr := keeper.get_node("AnimatedSprite2D") as AnimatedSprite2D
+	await process_frame
+	var feet_row := _keeper_feet_row(spr)
+	var tex_h: int = spr.sprite_frames.get_frame_texture(spr.animation, 0).get_height()
+	## centered sprite: bottom opaque pixel (row+1) in node space
+	var feet_local: float = spr.position.y + spr.offset.y + (feet_row + 1) - tex_h * 0.5
+	keeper.queue_free()
+	var bad: Array = []
+	var bad_feet: Array = []
+	var n := 0
+	for f in DirAccess.get_files_at("res://scenes/rooms"):
+		if not f.ends_with(".tscn"):
+			continue
+		var room := (load("res://scenes/rooms/" + f) as PackedScene).instantiate()
+		root.add_child(room)
+		await process_frame
+		var spawns := room.get_node_or_null("Spawns")
+		for m in (spawns.get_children() if spawns else []):
+			if not String(m.name).begins_with("keeper_"):
+				continue
+			n += 1
+			var fl := _floor_top_at(room, m.global_position.x)
+			if is_nan(fl):
+				bad.append("%s/%s: no floor under x" % [f, m.name])
+				continue
+			if m.global_position.y > fl + 0.01:
+				bad.append("%s/%s y=%s floor=%s" % [f, m.name, m.global_position.y, fl])
+			var feet_world: float = m.global_position.y + feet_local
+			if absf(feet_world - fl) > 2.0:
+				bad_feet.append("%s/%s feet=%s floor=%s" % [f, m.name, feet_world, fl])
+		room.queue_free()
+		await process_frame
+	check(n > 0 and bad.is_empty(), "keeper_spawns_on_floor: %d keeper_* spawns not below floor %s" % [n, str(bad)])
+	check(bad_feet.is_empty(), "keeper sprite feet sit on floor within 2px (feet_local=%s) %s" % [feet_local, str(bad_feet)])
+
+
+func _medallion_checks() -> void:
+	var hud := (load("res://scenes/ui/hud.tscn") as PackedScene).instantiate()
+	root.add_child(hud)
+	await process_frame
+	var panel := hud.get_node("SafeArea/Dialogue") as Control
+	for sz in [Vector2i(640, 360), Vector2i(1280, 720), Vector2i(2400, 1080)]:
+		root.content_scale_size = Vector2i(640, 360)
+		root.content_scale_mode = Window.CONTENT_SCALE_MODE_CANVAS_ITEMS
+		root.content_scale_aspect = Window.CONTENT_SCALE_ASPECT_EXPAND
+		root.size = sz
+		await process_frame
+		await process_frame
+		var vp := Rect2(Vector2.ZERO, root.get_visible_rect().size)
+		panel.visible = true
+		hud.call("_update_portrait", "Shilda")
+		await process_frame
+		var med := hud.get("_medallion") as Control
+		var ok_ref := med != null
+		var mr: Rect2 = med.get_global_rect() if ok_ref else Rect2()
+		var pr: Rect2 = panel.get_global_rect()
+		var inside_panel := ok_ref and pr.grow(0.5).encloses(mr)
+		var inside_vp := ok_ref and vp.grow(0.5).encloses(mr)
+		check(inside_panel and inside_vp, "medallion_inside_panel %s: med=%s panel=%s vp=%s" % [str(sz), str(mr), str(pr), str(vp)])
+	hud.queue_free()
 
 
 const ALLOWED_SPEAKERS := ["", "???", "X?", "X", "Sistem", "Kayıt", "Shilda", "Noroi", "Arşivci", "Yansıma", "Ses", "Çekirdek", "GameState.keeper_speaker_name()"]

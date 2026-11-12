@@ -98,7 +98,7 @@ var _zone_lines: Dictionary = {
 func _ready() -> void:
 	add_to_group("keeper")
 	sprite.sprite_frames = load("res://assets/characters/keeper.tres")
-	sprite.offset = Vector2(0, -51) ## ayak alt kenari (opak satir 122) node y+8 = zemin
+	sprite.offset = Vector2(0, -59) ## ayak alt kenari (opak satir 122, doku 128 yuksek, ortali) node y = zemin ust yuzu (288)
 	hint.text = ""
 	hint.visible = false
 	UiTheme.apply_outlined(hint, UiTheme.HINT)
