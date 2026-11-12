@@ -25,6 +25,21 @@ var _catalog: Dictionary = {
 		},
 		"memory_code": "",
 	},
+	"shilda_flowers_echo": {
+		"evidence_id": "ev_shilda_flowers",
+		"lines": [
+			["Yankı", "Duvarın ardında sıra sıra kurumuş kırmızı çiçekler."],
+			["Yankı", "Her birinin yanına bir sayı kazınmış."],
+			["Shilda", "Her ölümünde bir tane. Unutmamak için."],
+		],
+		"journal": {
+			"section": "izler",
+			"title": "Ölüm Çiçekleri",
+			"body": "Her ölüm için bir çiçek saklanmış. Duvar hepsini sayıyor.",
+			"kind": "evidence",
+		},
+		"memory_code": "",
+	},
 	"awakening_rift_echo": {
 		"evidence_id": "ev_rift_314",
 		"lines": [

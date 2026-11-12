@@ -1,11 +1,18 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
 [ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore"]
 [ext_resource type="Script" path="res://scripts/world/pressure_plate.gd" id="plate"]
+[ext_resource type="Script" path="res://scripts/world/gate_blocker.gd" id="gate"]
+[ext_resource type="Script" path="res://scripts/world/blood_thorn.gd" id="thorn"]
+[ext_resource type="Script" path="res://scripts/world/greenhouse_pots.gd" id="pots"]
+[ext_resource type="Texture2D" path="res://assets/props/door_closed.png" id="door_tex"]
 
 [sub_resource type="RectangleShape2D" id="PlateShape"]
 size = Vector2(56, 24)
+
+[sub_resource type="RectangleShape2D" id="Gate"]
+size = Vector2(24, 120)
 
 [node name="DecayGreenhouse" type="Node2D"]
 script = ExtResource("room")
@@ -15,14 +22,28 @@ room_width = 1280.0
 bg_region = "decay"
 checkpoint = Vector2(120, 288)
 default_spawn = Vector2(120, 288)
-doors = [{"x": 40.0, "to": "decay_weight", "spawn": "from_garden"}, {"x": 1240.0, "to": "decay_shilda_wall", "spawn": "from_decay_greenhouse", "req": "decay_greenhouse", "msg": "Uzak mühür hâlâ kapalı. Plakaya bas."}]
+doors = [{"x": 40.0, "to": "decay_weight", "spawn": "from_garden"}, {"x": 1240.0, "to": "decay_shilda_wall", "spawn": "from_decay_greenhouse", "req": "decay_greenhouse", "msg": "Uzak mühür kapalı. Doğru saksıda bir beden bırak."}]
 
 [node name="Spawns" type="Node2D" parent="."]
 
 [node name="keeper_observe" type="Marker2D" parent="Spawns"]
-position = Vector2(980, 288)
+position = Vector2(900, 288)
 
 [node name="Interactive" type="Node2D" parent="."]
+
+[node name="PotShades" type="Node2D" parent="Interactive"]
+script = ExtResource("pots")
+
+[node name="WallInscription" type="Area2D" parent="Interactive"]
+position = Vector2(260, 288)
+script = ExtResource("lore")
+lore_id = &"greenhouse_inscription"
+texture_path = "res://assets/trr_refresh/decay/planter_bloom.png"
+sprite_scale = 0.5
+lines = PackedStringArray("Noroi|Cama kazınmış: yedi yaprak açmış bir çiçek, yanında iki kök.", "Noroi|Altında dokuz damla. Sayı değil, sıra: yedi, iki, dokuz.", "Shilda|Çiçeğin yaprağı, kökü, damlası. Kapı onları sırayla sever.")
+evidence_title = "Cam Yazıt"
+evidence_body = "Camda çiçek çizimi: yedi yaprak, iki kök, dokuz damla. Mührün sırası bu."
+evidence_section = "izler"
 
 [node name="GlassNote" type="Area2D" parent="Interactive"]
 position = Vector2(400, 288)
@@ -33,15 +54,89 @@ sprite_scale = 0.58
 dialogue_room = &"decay_greenhouse"
 dialogue_set = &"shared_seal"
 evidence_title = "Ortak Mühür"
-evidence_body = "Serada uzaktaki bir gölge mührün öbür yanını tutuyor. Plakaya basınca yol açılır."
+evidence_body = "Serada uzaktaki bir gölge mührün öbür yanını tutuyor. Gölgenin gittiği saksıda bir beden bırakınca yol açılır."
 evidence_section = "izler"
 
-[node name="SharedPlate" type="Area2D" parent="Interactive"]
-position = Vector2(700, 300)
+[node name="PotA" type="Area2D" parent="Interactive"]
+position = Vector2(460, 300)
+collision_layer = 0
+collision_mask = 1
 script = ExtResource("plate")
-puzzle_id = &"decay_greenhouse"
-accept_player = true
-latch_on_press = true
+puzzle_id = &"decay_greenhouse_wrong_1"
+accept_player = false
+accept_stone = false
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/SharedPlate"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/PotA"]
 shape = SubResource("PlateShape")
+
+[node name="PotB" type="Area2D" parent="Interactive"]
+position = Vector2(620, 300)
+collision_layer = 0
+collision_mask = 1
+script = ExtResource("plate")
+puzzle_id = &"decay_greenhouse_pot"
+accept_player = false
+accept_stone = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/PotB"]
+shape = SubResource("PlateShape")
+
+[node name="PotC" type="Area2D" parent="Interactive"]
+position = Vector2(780, 300)
+collision_layer = 0
+collision_mask = 1
+script = ExtResource("plate")
+puzzle_id = &"decay_greenhouse_wrong_2"
+accept_player = false
+accept_stone = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/PotC"]
+shape = SubResource("PlateShape")
+
+[node name="ThornA" type="Area2D" parent="Interactive"]
+position = Vector2(520, 290)
+script = ExtResource("thorn")
+anchor_x = 460.0
+body_line = "Bu saksı boş kalmak istiyor. Burada ölmem bir şey açmaz."
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ThornA"]
+shape = SubResource("PlateShape")
+
+[node name="ThornB" type="Area2D" parent="Interactive"]
+position = Vector2(680, 290)
+script = ExtResource("thorn")
+anchor_x = 620.0
+puzzle_hint = &"decay_greenhouse_pot"
+body_line = "Gölge burada durdu. Bu saksıda ölürsem mühür yanıt verir."
+solved_line = "Saksı sustu. Beden mührü basık tutuyor."
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ThornB"]
+shape = SubResource("PlateShape")
+
+[node name="ThornC" type="Area2D" parent="Interactive"]
+position = Vector2(840, 290)
+script = ExtResource("thorn")
+anchor_x = 780.0
+body_line = "Bu saksı da boş. Gölge buraya uğramadı."
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ThornC"]
+shape = SubResource("PlateShape")
+
+[node name="ExitGate" type="StaticBody2D" parent="Interactive"]
+position = Vector2(1000, 288)
+script = ExtResource("gate")
+open_flag = &""
+puzzle_listen = &""
+puzzle_listen_all = PackedStringArray("decay_greenhouse_pot")
+legacy_puzzle = &"decay_greenhouse"
+ignore_world_flag = true
+also_solve = PackedStringArray("decay_greenhouse")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ExitGate"]
+position = Vector2(0, -40)
+shape = SubResource("Gate")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/ExitGate"]
+texture_filter = 0
+position = Vector2(0, -48)
+texture = ExtResource("door_tex")

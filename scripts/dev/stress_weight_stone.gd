@@ -194,7 +194,14 @@ func _run_all_tests() -> void:
 		
 	check(plate._pressed, "PressurePlate is pressed when WeightStone is positioned on top")
 	check(pm.is_live(&"decay_weight_latch"), "decay_weight_latch puzzle live under stone weight (latch happens on pass)")
-	check(gate_node.collision_layer == 0, "PathGate opened (collision_layer == 0)")
+	check(gate_node.collision_layer == 1, "PathGate stays closed with latch alone (corpse plate not live)")
+	pm.set_live(&"decay_weight_corpse", true)
+	await process_frame
+	await process_frame
+	check(gate_node.collision_layer == 0, "PathGate opened (collision_layer == 0) when latch + corpse plate live")
+	pm.set_live(&"decay_weight_corpse", false)
+	await process_frame
+	check(gate_node.collision_layer == 1, "PathGate closes again without corpse plate")
 
 	print("=== WEIGHT_STONE STRESS TESTS FINISHED: %d tests, %d failures ===" % [tests_run, failures])
 	quit(1 if failures else 0)

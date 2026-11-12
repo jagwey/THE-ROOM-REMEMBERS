@@ -64,7 +64,7 @@ func mark_solved(puzzle_id: StringName) -> void:
 			GameState.set_world_flag(&"awakening_door_opened", true)
 		&"awakening_memory_code":
 			GameState.set_world_flag(&"awakening_crystal_cracked", true)
-		&"decay_vine_shortcut":
+		&"decay_vine_shortcut", &"decay_vines":
 			GameState.set_world_flag(&"decay_vine_open", true)
 		&"decay_archive_key":
 			GameState.set_world_flag(&"decay_archive_open", true)
@@ -184,15 +184,30 @@ const HINTS: Dictionary = {
 		"orientation": "Geçitteki yarıkta geçmişten kalan bir ses yankılanıyor.",
 		"explicit": "Yarıktaki fısıltıyı dinle; aklına gelen üç sembolü sırayla gir."
 	},
+	&"decay_vines": {
+		"goal": "Sarmaşık yolu kapatmış; kılıç onu çözmüyor.",
+		"orientation": "Çiçek yakar. Çiçekli bir beden sarmaşığın dibinde kül bırakır.",
+		"explicit": "Çiçeği al, kırık camda öl; çiçekli ceset sarmaşığı yakar."
+	},
 	&"decay_weight_latch": {
-		"goal": "Çürüme bahçesine giden sürgülü kapı kilitli.",
-		"orientation": "Zemindeki plaka ağırlıkla tetiklenir; karşıdaki mekanizma sürgüyü yakalar.",
-		"explicit": "Ağır taşı plakada bırak. Kapı ağırlık durdukça açık; geçtiğinde hatırlar."
+		"goal": "Sürgülü kapı kilitli.",
+		"orientation": "Zemindeki plaka ağırlıkla tetiklenir; mekanizma sürgüyü yakalar.",
+		"explicit": "Taşı plakaya it; kapı ağırlık durdukça açık kalır."
+	},
+	&"decay_weight_corpse": {
+		"goal": "Kapı hem taşı hem bedeni bekliyor.",
+		"orientation": "Taş sürgüyü tutar. Dikenli plaka ise bir beden ister.",
+		"explicit": "Taşı sürgüye it; dikene dokunup bedenini plakada bırak."
+	},
+	&"decay_greenhouse_pot": {
+		"goal": "Sera mührü yalnız doğru saksıyı tanır.",
+		"orientation": "Gölge bir saksıya yürüyor. Yanlış saksı bedeni yutar, açmaz.",
+		"explicit": "Gölgenin durduğu saksının dikenine dokun; bedenin orada kalsın."
 	},
 	&"decay_greenhouse": {
-		"goal": "Sera mührü iki el istiyor.",
-		"orientation": "Camın ötesindeki gölge bir yanı tutuyor. Senin basman gereken bir plaka var.",
-		"explicit": "Ortadaki plakaya bas. Uzaktaki el mührü bırakmaz."
+		"goal": "Sera mührü tek bir saksıya bağlı.",
+		"orientation": "Duvardaki yazı çiçeği, gölge ise doğru saksıyı gösterir.",
+		"explicit": "Gölgenin durduğu saksıda öl; cesedin mührü açar."
 	},
 	&"decay_shilda_wall_broken": {
 		"goal": "Çatlak duvar kılıçla inmez.",
@@ -275,7 +290,8 @@ const ROOM_PUZZLES: Dictionary = {
 	"awakening_passage": [&"awakening_passage_rings", &"awakening_memory_code"],
 	"awakening_seal": [&"awakening_seal_weight", &"awakening_seal_second", &"awakening_memory_code"],
 	"awakening_vigil": [&"awakening_vigil_trace"],
-	"decay_weight": [&"decay_weight_latch"],
+	"decay_vines": [&"decay_vines"],
+	"decay_weight": [&"decay_weight_latch", &"decay_weight_corpse"],
 	"decay_greenhouse": [&"decay_greenhouse"],
 	"decay_shilda_wall": [&"decay_shilda_wall_broken"],
 	"decay_garden": [&"decay_archive_key"],

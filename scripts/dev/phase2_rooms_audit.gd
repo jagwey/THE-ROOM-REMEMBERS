@@ -35,6 +35,7 @@ func _run() -> void:
 	await _rooms_01_03()
 	await _rooms_01_03_fix1()
 	await _rooms_04_06()
+	await _rooms_07_10()
 	quit(1 if failures > 0 else 0)
 
 
@@ -1222,6 +1223,231 @@ func _rooms_04_06() -> void:
 	check(_objective("awakening_passage").length() > 0 and _objective("awakening_vigil").length() > 0, "objectives_nonempty")
 	_clear_corpses()
 	_unsolve(["awakening_vigil", "awakening_vigil_trace"])
+	dm.clear()
+
+
+## Kapi gecisi: oyuncu kapinin bir yanindan oteki yanina gecer (gate_blocker yan degistirme mandali).
+func _cross(gate: Node2D) -> void:
+	var player: Node2D = current_scene.get_node("Player")
+	player.global_position = Vector2(gate.global_position.x - 40.0, player.global_position.y)
+	await create_timer(0.15).timeout
+	player.global_position.x = gate.global_position.x + 40.0
+	await create_timer(0.3).timeout
+
+
+func _corpse_at(x: float, y: float, flower: bool = false) -> void:
+	var gs := root.get_node("GameState")
+	gs.character_current_life_knowledge["flower_in_hand"] = flower
+	root.get_node("CorpseManager").record_corpse_at(Vector2(x, y), &"audit")
+	gs.character_current_life_knowledge["flower_in_hand"] = false
+
+
+func _rooms_07_10() -> void:
+	var rm := root.get_node("RoomManager")
+	var pm := root.get_node("PuzzleManager")
+	var gs := root.get_node("GameState")
+	var dm := root.get_node("DialogueManager")
+	dm.clear()
+	_clear_corpses()
+	# ---- 07 sarmasik ----
+	_unsolve(["decay_vines", "decay_vine_shortcut"])
+	gs.set_world_flag(&"decay_vine_open", false)
+	rm.enter_room(&"decay_vines", &"default")
+	await create_timer(0.4).timeout
+	var vr: Node = _room_root(&"decay_vines")
+	var vgate: Node2D = vr.find_child("ShortcutBlock", true, false)
+	var glass: Node2D = vr.find_child("FloorHazard", true, false)
+	var lever: Node2D = vr.find_child("VineLever", true, false)
+	var fsrc: Node = vr.find_child("FlowerSource", true, false)
+	check(fsrc != null and fsrc.has_method("on_interact"), "vines_flower_source_exists")
+	check(glass != null and bool(glass.lethal), "vines_glass_hazard_lethal")
+	check(vgate != null and glass != null and absf(glass.position.x - vgate.position.x) <= 100.0 and glass.position.x < vgate.position.x, "vines_glass_right_before_gate")
+	check(lever != null and vgate != null and lever.position.x > vgate.position.x, "vines_lever_beyond_gate_return_shortcut")
+	check(vgate != null and not vgate._is_open(), "vines_gate_closed_initially")
+	if vgate != null:
+		var gy := vgate.global_position.y + 40.0
+		_corpse_at(vgate.global_position.x - 200.0, gy, true)
+		await create_timer(0.6).timeout
+		check(not pm.is_solved(&"decay_vines") and not vgate._is_open(), "vines_flower_corpse_200px_does_not_burn")
+		_corpse_at(vgate.global_position.x - 50.0, gy, false)
+		await create_timer(0.6).timeout
+		check(not pm.is_solved(&"decay_vines"), "vines_plain_corpse_50px_does_not_burn")
+		_corpse_at(vgate.global_position.x - 50.0, gy, true)
+		await create_timer(0.6).timeout
+		check(pm.is_solved(&"decay_vines") and vgate._is_open() and bool(gs.get_world_flag(&"decay_vine_open", false)), "vines_flower_corpse_50px_burns_vine")
+		_clear_corpses()
+		_unsolve(["decay_vines"])
+		gs.set_world_flag(&"decay_vine_open", false)
+		check(not vgate._is_open(), "vines_gate_closes_again_for_legacy_test")
+		pm.mark_solved(&"decay_vine_shortcut")
+		check(vgate._is_open(), "vines_legacy_shortcut_puzzle_opens_gate")
+		_unsolve(["decay_vine_shortcut"])
+		gs.set_world_flag(&"decay_vine_open", true)
+		check(vgate._is_open(), "vines_legacy_flag_opens_gate")
+		gs.set_world_flag(&"decay_vine_open", false)
+	var main_src := FileAccess.get_file_as_string("res://scripts/main.gd")
+	check(main_src.contains('"x": 896.0, "to": "decay_catacombs"'), "vines_catacombs_side_door_896_kept")
+	check(vgate != null and 896.0 > vgate.position.x, "vines_catacombs_door_beyond_gate")
+	_clear_corpses()
+	# ---- 08 agirlik ----
+	_unsolve(["decay_weight_latch", "decay_weight_corpse"])
+	gs.set_world_flag(&"decay_weight_latched", false)
+	rm.enter_room(&"decay_weight", &"default")
+	await create_timer(0.4).timeout
+	var wr: Node = _room_root(&"decay_weight")
+	var pgate: Node2D = wr.find_child("PathGate", true, false)
+	var wstone: Node2D = wr.find_child("WeightStone", true, false)
+	var wexit: Node2D = wr.find_child("ExitToGarden", true, false)
+	var cplate: Node2D = null
+	for n in wr.find_children("*", "Area2D", true, false):
+		if n.is_in_group("pressure_plate") and n.puzzle_id == &"decay_weight_corpse":
+			cplate = n
+	check(cplate != null and not cplate.accept_player and not cplate.accept_stone, "weight_corpse_plate_corpse_only")
+	var wthorn: Node2D = null
+	for n in wr.find_children("*", "Area2D", true, false):
+		if n.is_in_group("blood_thorn"):
+			wthorn = n
+	check(wthorn != null and cplate != null and is_equal_approx(wthorn.anchor_x, cplate.position.x), "weight_thorn_anchors_on_corpse_plate")
+	check(pgate != null and Array(pgate.puzzle_listen_all) == ["decay_weight_latch", "decay_weight_corpse"] and pgate.legacy_puzzle == &"decay_weight_latch", "weight_gate_listens_both_with_legacy")
+	check(pgate != null and not pgate._is_open(), "weight_gate_closed_initially")
+	check(wstone != null and wexit != null and wstone.max_x <= wexit.position.x - 48.0 and is_equal_approx(wstone.max_x, 862.0), "weight_stone_max_x_le_exit_minus_48")
+	if pgate != null:
+		pm.set_live(&"decay_weight_latch", true)
+		check(not pgate._is_open(), "weight_latch_alone_keeps_gate_closed")
+		pm.set_live(&"decay_weight_latch", false)
+		pm.mark_solved(&"decay_weight_latch")
+		check(pgate._is_open(), "weight_gate_open_via_legacy_latch_solved")
+		_unsolve(["decay_weight_latch"])
+		gs.set_world_flag(&"decay_weight_latched", false)
+		check(not pgate._is_open(), "weight_gate_closes_after_unsolve")
+	_clear_corpses()
+	# ---- 09 sera ----
+	_unsolve(["decay_greenhouse", "decay_greenhouse_pot", "decay_greenhouse_wrong_1", "decay_greenhouse_wrong_2"])
+	rm.enter_room(&"decay_greenhouse", &"default")
+	await create_timer(0.4).timeout
+	var gr: Node = _room_root(&"decay_greenhouse")
+	var plates: Array = []
+	var any_player_plate := false
+	for n in gr.find_children("*", "Area2D", true, false):
+		if n.is_in_group("pressure_plate"):
+			plates.append(n)
+			if n.accept_player or n.latch_on_press:
+				any_player_plate = true
+	check(plates.size() == 3 and not any_player_plate, "greenhouse_three_corpse_only_plates")
+	var right: Node2D = null
+	var wrong: Node2D = null
+	for pl in plates:
+		if pl.puzzle_id == &"decay_greenhouse_pot":
+			right = pl
+		elif wrong == null:
+			wrong = pl
+	var ggate: Node2D = gr.find_child("ExitGate", true, false)
+	check(right != null and wrong != null and ggate != null, "greenhouse_pots_and_gate_exist")
+	if right != null and wrong != null and ggate != null:
+		check(Array(ggate.puzzle_listen_all) == ["decay_greenhouse_pot"] and ggate.legacy_puzzle == &"decay_greenhouse", "greenhouse_gate_listens_pot_with_legacy")
+		check(not ggate._is_open(), "greenhouse_gate_closed_initially")
+		var py := right.global_position.y
+		_corpse_at(wrong.global_position.x, py)
+		await create_timer(0.6).timeout
+		check(not ggate._is_open() and not pm.is_solved(&"decay_greenhouse"), "greenhouse_wrong_pot_keeps_gate_closed")
+		_clear_corpses()
+		await create_timer(0.3).timeout
+		_corpse_at(right.global_position.x, py)
+		await create_timer(0.6).timeout
+		check(ggate._is_open(), "greenhouse_right_pot_opens_gate")
+		await _cross(ggate)
+		check(pm.is_solved(&"decay_greenhouse") and pm.is_solved(&"decay_greenhouse_pot"), "greenhouse_pass_through_marks_legacy_and_pot")
+		_clear_corpses()
+		await create_timer(0.3).timeout
+		_unsolve(["decay_greenhouse", "decay_greenhouse_pot"])
+		await create_timer(0.2).timeout
+		check(not ggate._is_open(), "greenhouse_gate_closes_after_unsolve")
+		pm.mark_solved(&"decay_greenhouse")
+		check(ggate._is_open(), "greenhouse_gate_open_via_legacy_solved")
+		_unsolve(["decay_greenhouse"])
+	var shade_n := 0
+	for n in gr.find_children("*", "Node2D", true, false):
+		if n.is_in_group("greenhouse_shade"):
+			shade_n += 1
+	check(shade_n == 1, "greenhouse_trace_shade_spawned_when_unsolved")
+	pm.mark_solved(&"decay_greenhouse")
+	var skip := Node2D.new()
+	skip.set_script(load("res://scripts/world/greenhouse_pots.gd"))
+	root.add_child(skip)
+	await process_frame
+	check(skip.get_child_count() == 0, "greenhouse_shade_skipped_when_legacy_solved")
+	skip.queue_free()
+	_unsolve(["decay_greenhouse"])
+	var inscr: Node = gr.find_child("WallInscription", true, false)
+	check(inscr != null and "lines" in inscr and inscr.lines.size() >= 2, "greenhouse_wall_inscription_lore")
+	if inscr != null and "lines" in inscr:
+		var itxt := " ".join(PackedStringArray(inscr.lines))
+		check(itxt.contains("yedi") and itxt.contains("iki") and itxt.contains("dokuz") and not itxt.contains("729"), "greenhouse_inscription_flower_imagery_7_2_9")
+	_clear_corpses()
+	# ---- 10 shilda duvari ----
+	rm.enter_room(&"decay_shilda_wall", &"default")
+	await create_timer(0.4).timeout
+	var sr: Node = _room_root(&"decay_shilda_wall")
+	var cloud: Node2D = null
+	for n in sr.find_children("*", "Area2D", true, false):
+		if n.is_in_group("curse_cloud"):
+			cloud = n
+	check(cloud != null, "wall_curse_cloud_exists")
+	var curse_max := float(root.get_node("CurseManager").CURSE_MAX)
+	var walk_speed := float(load("res://scripts/player/player_controller.gd").get_script_constant_map()["SPEED"])
+	if cloud != null:
+		var cx0: float = cloud.position.x - cloud.size.x * 0.5
+		var cx1: float = cloud.position.x + cloud.size.x * 0.5
+		check(cx0 >= 190.0 and cx1 <= 490.0 and cx1 - cx0 >= 240.0, "wall_cloud_spans_x200_480")
+		var cost: float = cloud.size.x / walk_speed * cloud.curse_per_second
+		print("PHASE2 INFO wall_cloud walk_speed=%.1f width=%.1f cps=%.1f cost=%.1f/%.0f" % [walk_speed, cloud.size.x, cloud.curse_per_second, cost, curse_max])
+		check(cost >= curse_max * 0.6 and cost < curse_max, "wall_cloud_straight_walk_cost_60_to_99_percent")
+		_corpse_at(cloud.position.x, cloud.position.y)
+		await create_timer(0.4).timeout
+		var shielded := maxf(cloud.size.x - 2.0 * cloud.safe_radius, 0.0)
+		var cost_shield: float = shielded / walk_speed * cloud.curse_per_second
+		check(cost_shield <= curse_max * 0.25, "wall_cloud_corpse_shield_makes_walk_cheap")
+		var pl2: Node2D = current_scene.get_node("Player")
+		check(cloud._is_safe(Vector2(cloud.position.x + cloud.safe_radius - 10.0, pl2.global_position.y)) and not cloud._is_safe(Vector2(cx1 - 5.0, pl2.global_position.y)), "wall_cloud_corpse_shield_live_check")
+		_clear_corpses()
+		var wthorn2: Node2D = null
+		for n in sr.find_children("*", "Area2D", true, false):
+			if n.is_in_group("blood_thorn"):
+				wthorn2 = n
+		check(wthorn2 != null and wthorn2.position.x < cx0 and wthorn2.anchor_x > cx0 and wthorn2.anchor_x < cx1, "wall_thorn_before_cloud_drops_corpse_inside")
+	var crypt_x := -1.0
+	var garden_x := -1.0
+	for n in sr.find_children("*", "Area2D", true, false):
+		if n.is_in_group("room_door"):
+			if String(n.get("target_room_id")) == "awakening_crypt":
+				crypt_x = n.position.x
+				check(n.required_puzzle == &"decay_shilda_wall_broken", "wall_crypt_door_requires_broken")
+			elif String(n.get("target_room_id")) == "decay_garden":
+				garden_x = n.position.x
+				check(n.required_puzzle == &"decay_shilda_wall_broken", "wall_garden_door_requires_broken")
+	check(is_equal_approx(crypt_x, 1120.0) and is_equal_approx(garden_x, 1400.0) and absf(garden_x - crypt_x) >= 280.0, "wall_doors_crypt1120_garden1400_apart_280")
+	var enc: Node2D = sr.find_child("Encounter", true, false)
+	var cwall: Node2D = sr.find_child("CrackedWall", true, false)
+	check(enc != null and is_equal_approx(enc.position.x, 520.0) and cwall != null and is_equal_approx(cwall.position.x, 1000.0) and cwall.shortcut_flag == &"shortcut_decay_crypt", "wall_encounter520_crackedwall1000_kept")
+	var froom: Node = sr.find_child("FlowerRoom", true, false)
+	check(froom != null and "echo_id" in froom and String(froom.echo_id) != "", "wall_flowerroom_is_echo_point")
+	if froom != null and "echo_id" in froom:
+		var cat: Dictionary = root.get_node("EchoManager")._catalog
+		check(cat.has(froom.echo_id) or cat.has(String(froom.echo_id)), "wall_echo_id_in_catalog")
+	# ---- hints / objectives ----
+	for id in [&"decay_vines", &"decay_weight_corpse", &"decay_greenhouse_pot", &"decay_greenhouse", &"decay_weight_latch"]:
+		var hh3: Dictionary = pm.get_hints(id)
+		var ok3 := hh3.size() > 0 and hh3.has("goal")
+		for k in ["goal", "orientation", "explicit"]:
+			var tx3 := String(hh3.get(k, ""))
+			if tx3.length() > 70 or tx3.length() == 0:
+				ok3 = false
+		check(ok3 and String(hh3.get("explicit", "")).ends_with("."), "hints_%s_len_ok_0710" % String(id))
+	for rid in ["decay_vines", "decay_weight", "decay_greenhouse", "decay_shilda_wall"]:
+		check(_objective(rid).length() > 0, "objective_%s_nonempty" % rid)
+	check(_objective("decay_greenhouse").find("Plakaya bas") == -1, "objective_greenhouse_no_player_plate_text")
+	_clear_corpses()
+	_unsolve(["decay_vines", "decay_greenhouse", "decay_greenhouse_pot", "decay_weight_latch", "decay_weight_corpse"])
 	dm.clear()
 
 

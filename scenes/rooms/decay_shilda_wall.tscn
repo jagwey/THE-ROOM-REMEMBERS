@@ -1,9 +1,12 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
 [ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore"]
 [ext_resource type="Script" path="res://scripts/world/cracked_wall.gd" id="wall"]
 [ext_resource type="Script" path="res://scripts/world/encounter_zone.gd" id="enc"]
+[ext_resource type="Script" path="res://scripts/world/curse_cloud.gd" id="cloud"]
+[ext_resource type="Script" path="res://scripts/world/blood_thorn.gd" id="thorn"]
+[ext_resource type="Script" path="res://scripts/world/echo_point.gd" id="echo"]
 
 [sub_resource type="RectangleShape2D" id="Interact"]
 size = Vector2(40, 48)
@@ -18,7 +21,7 @@ region_id = &"decay"
 room_width = 1440.0
 bg_region = "decay"
 checkpoint = Vector2(120, 288)
-doors = [{"x": 40.0, "to": "decay_greenhouse", "spawn": "from_decay_shilda_wall"}, {"x": 1260.0, "to": "decay_garden", "spawn": "from_weight", "req": "decay_shilda_wall_broken", "msg": "Duvar yolu kapatıyor."}, {"x": 1400.0, "to": "awakening_crypt", "spawn": "from_decay_shilda_wall", "req": "decay_shilda_wall_broken", "msg": "Duvar yolu kapatıyor."}]
+doors = [{"x": 40.0, "to": "decay_greenhouse", "spawn": "from_decay_shilda_wall"}, {"x": 1120.0, "to": "awakening_crypt", "spawn": "from_decay_shilda_wall", "req": "decay_shilda_wall_broken", "msg": "Duvar yolu kapatıyor."}, {"x": 1400.0, "to": "decay_garden", "spawn": "from_weight", "req": "decay_shilda_wall_broken", "msg": "Duvar yolu kapatıyor."}]
 
 [node name="Interactive" type="Node2D" parent="."]
 
@@ -36,7 +39,33 @@ wall_id = &"decay_shilda_wall"
 shortcut_flag = &"shortcut_decay_crypt"
 
 [node name="FlowerRoom" type="Area2D" parent="Interactive"]
-position = Vector2(1120, 288.0)
+position = Vector2(780, 288.0)
+script = ExtResource("echo")
+echo_id = &"shilda_flowers_echo"
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/FlowerRoom"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/FlowerRoom"]
+shape = SubResource("Interact")
+
+[node name="CurseCloud" type="Area2D" parent="Interactive"]
+position = Vector2(340, 300)
+script = ExtResource("cloud")
+size = Vector2(280, 150)
+curse_per_second = 45.0
+safe_radius = 120.0
+
+[node name="WallThorn" type="Area2D" parent="Interactive"]
+position = Vector2(170, 290)
+script = ExtResource("thorn")
+anchor_x = 340.0
+body_line = "Bulutu yürüyerek geçersem lanet dolar. Burada ölürsem cesedim onu emer."
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/WallThorn"]
+shape = SubResource("Interact")
+
+[node name="DeathFlowers" type="Area2D" parent="Interactive"]
+position = Vector2(900, 288.0)
 script = ExtResource("lore")
 lore_id = &"shilda_flowers"
 texture_path = "res://assets/props/red_flower.png"

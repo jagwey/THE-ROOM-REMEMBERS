@@ -4,11 +4,11 @@
     "shared_seal": [
       {"s": "Noroi", "t": "Cam buğulu, içerideki kırmızı yapraklar hâlâ canlı."},
       {"s": "@shilda", "t": "Dur orada. Mührün öteki yanını ben tutuyorum."},
-      {"s": "Noroi", "t": "Seni göremiyorum, yalnız elini görüyorum."},
-      {"s": "@shilda", "t": "Ayağının altında plaka var. Bırakmam."},
-      {"s": "Noroi", "t": "Ya bırakırsan?"},
-      {"s": "@shilda", "t": "Elim yerinde. Bu serayı birlikte açarız."},
-      {"s": "Noroi", "t": "Tamam. Basıyorum."},
+      {"s": "Noroi", "t": "Seni göremiyorum, yalnız bir gölge görüyorum. Saksılar arasında yürüyor."},
+      {"s": "@shilda", "t": "Gölge doğru saksıyı bilir. Ayağın değil, bedenin basar."},
+      {"s": "Noroi", "t": "Yani orada ölmem gerek."},
+      {"s": "@shilda", "t": "Bir beden yeter. Bu serayı birlikte açarız."},
+      {"s": "Noroi", "t": "Tamam. Gölgeyi izliyorum."},
       {"s": "@shilda", "t": "Duvarın ötesinde benden kaçacaksın. Henüz değil."}
     ]
   }

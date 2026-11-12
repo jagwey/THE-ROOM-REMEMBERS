@@ -10,6 +10,8 @@ extends StaticBody2D
 @export var legacy_puzzle: StringName = &""
 ## true ise yalnızca puzzle ile açılır (bayrak/legacy tek başına yetmez).
 @export var ignore_world_flag: bool = false
+## Geçişte listedeki id'lerle birlikte kalıcı çözülecek ek (eski) bulmaca id'leri.
+@export var also_solve: PackedStringArray = []
 @onready var shape: CollisionShape2D = $CollisionShape2D
 @onready var sprite: Sprite2D = $Sprite2D
 ## Geçiş kilidi: gate canlı plaka yüzünden açıkken oyuncu karşı tarafa geçerse bulmaca kalıcı çözülür.
@@ -131,6 +133,8 @@ func _physics_process(_delta: float) -> void:
 	elif side != _entry_side:
 		_entry_side = 0
 		for id in ids:
+			PuzzleManager.mark_solved(StringName(id))
+		for id in also_solve:
 			PuzzleManager.mark_solved(StringName(id))
 		SaveManager.save_game()
 

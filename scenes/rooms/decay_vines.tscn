@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://torimon_decay_vines"]
+[gd_scene load_steps=21 format=3 uid="uid://torimon_decay_vines"]
 
 [ext_resource type="Texture2D" path="res://assets/backgrounds/decay/far.png" id="1"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/decay/mid.png" id="2"]
@@ -10,6 +10,8 @@
 [ext_resource type="Script" path="res://scripts/world/vine_puzzle_lever.gd" id="8"]
 [ext_resource type="Texture2D" path="res://assets/layers/vines.png" id="10"]
 [ext_resource type="Texture2D" path="res://assets/layers/rubble.png" id="11"]
+[ext_resource type="Script" path="res://scripts/world/flower_source.gd" id="flower_src"]
+[ext_resource type="Texture2D" path="res://assets/props/red_flower.png" id="flower_tex"]
 
 [ext_resource type="Texture2D" path="res://assets/tiles/tile_00.png" id="walk_tile"]
 
@@ -24,6 +26,9 @@ size = Vector2(44, 100)
 
 [sub_resource type="RectangleShape2D" id="HazardShape"]
 size = Vector2(24, 40)
+
+[sub_resource type="RectangleShape2D" id="FlowerPick"]
+size = Vector2(40, 48)
 
 [sub_resource type="RectangleShape2D" id="VineGateShape"]
 size = Vector2(28, 72)
@@ -138,8 +143,21 @@ target_spawn_id = &"default"
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ExitToWeight"]
 shape = SubResource("TransitionHit")
 
+[node name="FlowerSource" type="Area2D" parent="Interactive"]
+position = Vector2(300, 288)
+script = ExtResource("flower_src")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/FlowerSource"]
+shape = SubResource("FlowerPick")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/FlowerSource"]
+texture_filter = 1
+position = Vector2(0, -16)
+scale = Vector2(0.32, 0.32)
+texture = ExtResource("flower_tex")
+
 [node name="VineLever" type="Area2D" parent="Interactive"]
-position = Vector2(540, 268)
+position = Vector2(780, 268)
 collision_layer = 8
 collision_mask = 0
 monitoring = false
@@ -168,12 +186,13 @@ modulate = Color(0.55, 0.65, 0.45, 0.95)
 [node name="Hazards" type="Node2D" parent="."]
 
 [node name="FloorHazard" type="Area2D" parent="Hazards"]
-position = Vector2(400, 306)
+position = Vector2(590, 306)
 collision_layer = 0
 collision_mask = 2
 script = ExtResource("6")
 hazard_id = &"decay_floor_glass"
 arm_requires_mystery = false
+lethal = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hazards/FloorHazard"]
 shape = SubResource("HazardShape")
@@ -182,6 +201,9 @@ shape = SubResource("HazardShape")
 texture_filter = 0
 modulate = Color(0.65, 0.25, 0.22, 0.42)
 centered = true
+
+[node name="CorpseDrop" type="Marker2D" parent="Hazards/FloorHazard"]
+position = Vector2(32, -18)
 
 [node name="Corpse" type="Node2D" parent="." groups=["corpses_root"]]
 

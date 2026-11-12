@@ -11,6 +11,7 @@
 [ext_resource type="Script" path="res://scripts/world/gate_blocker.gd" id="8"]
 [ext_resource type="Script" path="res://scripts/world/weight_stone.gd" id="9"]
 [ext_resource type="Script" path="res://scripts/world/reset_lever.gd" id="10"]
+[ext_resource type="Script" path="res://scripts/world/blood_thorn.gd" id="blood_thorn"]
 [ext_resource type="Texture2D" path="res://assets/layers/rubble.png" id="12"]
 
 [ext_resource type="Texture2D" path="res://assets/tiles/tile_00.png" id="walk_tile"]
@@ -150,6 +151,33 @@ shape = SubResource("PlateShape")
 texture_filter = 0
 centered = true
 
+[node name="CorpsePlate" type="Area2D" parent="Interactive"]
+position = Vector2(330, 288)
+collision_layer = 0
+collision_mask = 1
+script = ExtResource("7")
+puzzle_id = &"decay_weight_corpse"
+accept_player = false
+accept_stone = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/CorpsePlate"]
+shape = SubResource("PlateShape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/CorpsePlate"]
+texture_filter = 0
+centered = true
+
+[node name="BloodThorn" type="Area2D" parent="Interactive"]
+position = Vector2(385, 290)
+script = ExtResource("blood_thorn")
+anchor_x = 330.0
+puzzle_hint = &"decay_weight_corpse"
+body_line = "Sürgü taşı tutuyor ama kapı bir beden daha istiyor. Plakanın başında ölürsem kalırım."
+solved_line = "Dikenli plaka sustu. Beden onu basık tutuyor."
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BloodThorn"]
+shape = SubResource("PlateShape")
+
 [node name="PathGate" type="StaticBody2D" parent="Interactive"]
 position = Vector2(560, 268)
 collision_layer = 1
@@ -157,6 +185,8 @@ collision_mask = 0
 script = ExtResource("8")
 open_flag = &"decay_weight_latched"
 puzzle_listen = &"decay_weight_latch"
+puzzle_listen_all = PackedStringArray("decay_weight_latch", "decay_weight_corpse")
+legacy_puzzle = &"decay_weight_latch"
 ignore_world_flag = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/PathGate"]

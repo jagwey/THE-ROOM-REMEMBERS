@@ -6,7 +6,6 @@ var failures := 0
 ## accept_player = true olan plakalar yalnız burada olabilir (oda:Düğüm, gerekçe).
 const ACCEPT_PLAYER_WHITELIST := {
 	"awakening_crypt:BedPlate": "Faz 2: yalnız-ceset plaka (accept_stone=false, accept_player=false); latch_on_press ile anı kalıcı açılır",
-	"decay_greenhouse:SharedPlate": "Faz 2'de saksı tasarımı; odada taş yok, ceset garanti değil, kapı latch_on_press ile kalıcı çözülür",
 }
 const CLEARANCE := 48.0
 
@@ -187,18 +186,30 @@ func _run() -> void:
 		dpz.erase("decay_weight_latch")
 		state.set_world_flag(&"decay_weight_latched", false)
 		pm.set_live(&"decay_weight_latch", false)
+		pm.set_live(&"decay_weight_corpse", false)
+		pm.solved.erase("decay_weight_corpse")
+		dpz.erase("decay_weight_corpse")
 		var dplayer: CharacterBody2D = current_scene.get_node("Player")
 		dplayer.global_position = Vector2(dgate.global_position.x - 60.0, d_home.y)
 		await create_timer(0.3).timeout
 		dstone.global_position = d_on
 		await create_timer(0.4).timeout
 		check(pm.is_live(&"decay_weight_latch") and not pm.is_solved(&"decay_weight_latch"), "decay_weight: live before crossing")
+		check(dgate.collision_layer == 1, "decay_weight: latch alone does NOT open the gate")
+		pm.set_live(&"decay_weight_corpse", true)
+		await create_timer(0.2).timeout
+		check(dgate.collision_layer == 0, "decay_weight: latch + corpse plate opens the gate")
 		dplayer.global_position = Vector2(dgate.global_position.x - 30.0, d_home.y)
 		await create_timer(0.2).timeout
 		dplayer.global_position = Vector2(dgate.global_position.x + 30.0, d_home.y)
 		await create_timer(0.3).timeout
 		check(pm.is_solved(&"decay_weight_latch") and bool(state.get_world_flag(&"decay_weight_latched", false)), "decay_weight_crossing_solves_and_flags")
 		dstone.global_position = d_home
+		pm.set_live(&"decay_weight_corpse", false)
+		pm.solved.erase("decay_weight_corpse")
+		dpz.erase("decay_weight_corpse")
+		await create_timer(0.2).timeout
+		check(dgate.collision_layer == 0, "decay_weight: legacy latch solved keeps gate open")
 
 	print("PLATE_AUDIT failures=", failures)
 	sm.delete_all_save_files()
