@@ -1,5 +1,5 @@
 extends Area2D
-## Yankı Sunağı — etkileşince oyuncunun 6 saniyelik hareketi kaydedilir; sonra yarı saydam
+## Yankı Sunağı — etkileşince oyuncunun 8 saniyelik hareketi kaydedilir; sonra yarı saydam
 ## bir Noroi ikizi (EchoTwin) bu hareketi dünyada fiziksel olarak tekrarlar. İkiz plakaya
 ## basar / kolu çeker; oyuncu eşzamanlı olarak diğer mekanizmayı tetikler.
 ## Tüm anahtarlar (EchoSwitch) aynı anda aktifse puzzle_id çözülür.

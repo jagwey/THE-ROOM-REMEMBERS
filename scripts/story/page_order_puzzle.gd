@@ -156,13 +156,11 @@ func _success_flow() -> void:
 		SaveManager.save_game()
 		var cam := get_tree().get_first_node_in_group("follow_camera")
 		var door: Node2D = null
-		var idx := RoomManager.ROOM_ORDER.find("library_page")
-		if idx >= 0 and idx + 1 < RoomManager.ROOM_ORDER.size():
-			var next_room: String = RoomManager.ROOM_ORDER[idx + 1]
-			for n in get_tree().get_nodes_in_group("room_door"):
-				if n is Node2D and "target_room_id" in n and String(n.get("target_room_id")) == next_room:
-					door = n as Node2D
-					break
+		# Bu bulmacanın açtığı kapı (required_puzzle); yoksa pulse yapılmaz.
+		for n in get_tree().get_nodes_in_group("room_door"):
+			if n is Node2D and "required_puzzle" in n and StringName(n.get("required_puzzle")) == &"library_page_order":
+				door = n as Node2D
+				break
 		if cam and cam.has_method("focus_pulse") and door:
 			cam.focus_pulse(door.global_position + Vector2(0, -40))
 		var am := get_node_or_null("/root/AudioManager")

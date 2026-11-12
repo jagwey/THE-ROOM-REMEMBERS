@@ -256,7 +256,7 @@ func _mirrors_dual() -> void:
 	var ok: bool = await DialogueManager.dialogue_finished
 	if not ok:
 		return
-	_relay_seconds = 6.0
+	_relay_seconds = 8.0
 
 func _mirrors_unbroken() -> void:
 

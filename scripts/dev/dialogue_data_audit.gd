@@ -132,7 +132,7 @@ func _check_phase0_text() -> void:
 	altar.free()
 	var hits: Array = []
 	_scan_text("res://scenes", ["record_seconds", "altı saniye", "Altı saniye"], hits)
-	_scan_text("res://scripts", ["altı saniye", "Altı saniye"], hits)
+	_scan_text("res://scripts", ["altı saniye", "Altı saniye", "6 saniyelik", "_relay_seconds = 6"], hits)
 	check(is_equal_approx(rs, 8.0) and hits.is_empty(), "record_seconds_single", [rs, hits])
 	var fc: Array = []
 	_scan_text("res://scenes", ["Forward" + "Circuit"], fc)
@@ -142,5 +142,7 @@ func _check_phase0_text() -> void:
 	var i1 := page.find("deney")
 	var i2 := page.find("kapı")
 	var i3 := page.find("mühür")
-	check(i1 >= 0 and i2 > i1 and i3 > i2 and not page.contains("Mühül"), "page_hint_matches_order", page)
+	var page_order: Array = load("res://scripts/story/page_order_puzzle.gd").get_script_constant_map().get("ORDER", [])
+	var order_ok := page_order == ["experiment_started", "door_closed", "seal_engaged"]
+	check(i1 >= 0 and i2 > i1 and i3 > i2 and not page.contains("Mühül") and order_ok, "page_hint_matches_order", [page, page_order])
 	check(not FileAccess.file_exists("res://scripts/world/core_portal.gd"), "core_portal_gone")
