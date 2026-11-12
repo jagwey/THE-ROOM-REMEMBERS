@@ -5,7 +5,7 @@ extends RefCounted
 const _BY_ROOM: Dictionary = {
 	"awakening": "Durmuş saate bak. Gölge konuşursa dinle. Sağdaki geçide yürü.",
 	"awakening_passage": "Taşı dinle, sayıyı ezberle. Kırmızı yarığa basma, mühre git.",
-	"awakening_seal": "Plaka canlıyı tanımaz. Kristale dokun, bedenin plakada kalsın.",
+	"awakening_seal": "Kristale dokun, bedenin plakada kalsın; sonra sayıyı mühre yaz.",
 	"decay_vines": "Sarmaşık yolu kapatmış. Kolu çek, düğüm çözülsün, geçide geç.",
 	"decay_weight": "Taşı plakaya bırak. Şaşırırsan kolu çek, taş geri gelir.",
 	"decay_garden": "Çiçeklere bak, Shilda'yı dinle, arşiv mührünü aç.",
