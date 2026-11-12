@@ -293,7 +293,7 @@ func _physics_process(delta: float) -> void:
 			_process_intervene(delta)
 		Mode.MOURNING:
 			_face_idle()
-			_show_hint("…çiçek")
+			_show_hint("Sessizce bekle.")
 		Mode.INTIMACY:
 			_face_idle()
 		Mode.COMBAT:
@@ -507,7 +507,7 @@ func mourn_corpse(death_pos: Vector2, corpse_id: String) -> void:
 		DialogueManager.whisper(GameState.keeper_speaker_name(), "…")
 		DialogueManager.whisper(GameState.keeper_speaker_name(), "Bedenin soğuyor. Oda onu bırakmayacak.")
 		DialogueManager.whisper(GameState.keeper_speaker_name(), "Uyan. Bu sefer hatırla.")
-		_show_hint("…çiçek")
+		_show_hint("Sessizce bekle.")
 		## Dokunuşla geçilir; geçilmezse kendiliğinden ilerler — ölüm akışı asla kilitlenmez.
 		await DeathManager.wait_dialogue()
 		await DeathManager._wait(0.25)
@@ -567,7 +567,7 @@ func on_interact(_by: Node) -> void:
 	# Barışma / Onarım mekaniği (Pillar 5)
 	if bool(GameState.player_progress_knowledge.get("keeper_withdrew", false)) or mode == Mode.MOURNING:
 		DialogueManager.say("Noroi", "Özür dilerim, seni incitmek istemedim.")
-		DialogueManager.say(GameState.keeper_speaker_name(), "…Acı unutturmaz ama affetmek mümkün. Yanımda durabilirsin.")
+		DialogueManager.say(GameState.keeper_speaker_name(), "…Acıdı. Ama affettim. Yanımda dur.")
 		await _await_dialogue_or_smoke()
 		GameState.player_progress_knowledge["keeper_withdrew"] = false
 		GameState.player_progress_knowledge["keeper_hurt"] = false

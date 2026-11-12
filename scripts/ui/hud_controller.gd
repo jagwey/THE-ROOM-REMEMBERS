@@ -283,7 +283,7 @@ func _apply_safe_area() -> void:
 
 ## Masaüstünde tuş özeti; mobilde butonlar zaten görünür, ipucu gizli kalır.
 func _apply_default_hint() -> void:
-	hint_label.text = "WASD yürü · Z saldır · X atıl · E etkileş · I günlük aç"
+	hint_label.text = "WASD yürü · Z saldır · X atıl · E etkileş · I günlüğü aç"
 	hint_label.visible = not (MobileInputManager.is_touch_ui() or _touch_seen)
 
 

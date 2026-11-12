@@ -124,9 +124,9 @@ const HINTS: Dictionary = {
 		"explicit": "Taş ya da hareketsiz bir beden plakada durursa kapı kapanmaz."
 	},
 	&"awakening_memory_code": {
-		"goal": "Taş mühür üç haneli bir hafıza rezonansı bekliyor.",
+		"goal": "Taş mühür üç haneli bir sayı bekliyor.",
 		"orientation": "Geçitteki yarıkta geçmişten kalan bir ses yankılanıyor.",
-		"explicit": "Yarıktaki fısıltıyı dinle; zihninde canlanan üç sembolü sırayla gir."
+		"explicit": "Yarıktaki fısıltıyı dinle; aklına gelen üç sembolü sırayla gir."
 	},
 	&"decay_weight_latch": {
 		"goal": "Çürüme bahçesine giden sürgülü kapı kilitli.",
@@ -145,8 +145,8 @@ const HINTS: Dictionary = {
 	},
 	&"decay_archive_key": {
 		"goal": "Arşiv kapısı mühürlü; kilitte bir çiçek motifi yer alıyor.",
-		"orientation": "Bahçedeki kırmızı yaprakları incele ve Bekçi'nin güvenini kazan.",
-		"explicit": "Bekçi ile barış içinde konuşup çiçeğin anısını günlüğüne kaydet; kilit açılır."
+		"orientation": "Bahçedeki kırmızı yaprakları incele ve gölgenin güvenini kazan.",
+		"explicit": "Gölgeyle konuşup çiçeğin anısını günlüğüne kaydet; kilit açılır."
 	},
 	&"library_clockroom": {
 		"goal": "İki saat iki geceyi tutuyor.",
@@ -174,9 +174,9 @@ const HINTS: Dictionary = {
 		"explicit": "İkisi de açıkken son basamağa dokun; gölge mührü tutar."
 	},
 	&"core_seal": {
-		"goal": "Çekirdeğin ana mührü kırılmalı ve boyut kapısı aralanmalı.",
+		"goal": "Çekirdeğin ana mührü kırılmalı, çıkış açılmalı.",
 		"orientation": "Her iki mühür parçası birleşmeden çekirdek savunması gevşemez.",
-		"explicit": "Bekçi ile birlikte çekirdeğin merkezine yaklaş ve Ruh Kesimi ile bağı kopar."
+		"explicit": "Gölgeyle birlikte çekirdeğin merkezine yaklaş ve Ruh Kesimi ile mührü kır."
 	},
 	&"core_bloom_order": {
 		"goal": "Bahçedeki üç taş uyanmadan çiçek konuşmuyor.",

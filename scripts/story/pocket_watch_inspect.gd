@@ -27,8 +27,8 @@ func on_interact(_by: Node) -> void:
 	GameState.character_current_life_knowledge["dialogue_flags"] = life_flags
 
 	_opening_hook()
-	DialogueManager.say("Noroi", "Saat durmuş. Ama içeriden hâlâ ses geliyor.")
-	DialogueManager.say("Noroi", "Akrep üçte. Yelkovan on dörtte donmuş.")
+	DialogueManager.say("Noroi", "Saat durmuş ama içeriden hâlâ ses geliyor.")
+	DialogueManager.say("Noroi", "Akrep üçte, yelkovan on dörtte donmuş.")
 	await DialogueManager.dialogue_finished
 
 	if not bool(GameState.player_progress_knowledge.get("pocket_watch_seen", false)):

@@ -307,11 +307,11 @@ func on_interact(by: Node) -> void:
 		elif String(required_puzzle).begins_with("soul_seal"):
 			var has_slash := bool(GameState.player_progress_knowledge.get("ability_soul_slash", false))
 			if has_slash:
-				msg = "Mor mühür. Ruh Kesimi'ni savur (Q / yıldız düğmesi)."
+				msg = "Mor mühür. Q ile (mobilde yıldız düğmesi) Ruh Kesimi'ni savur."
 			elif idx % 2 == 0:
 				msg = "Mor mühür kılıçla açılmaz, ruhumla kesmeyi henüz bilmiyorum."
 			else:
-				msg = "Bu mührü kıracak güç belki eski kitapların arasında saklı."
+				msg = "Bu mührü kıracak gücü eski kitaplarda ara."
 		AudioManager.play_sfx(&"seal_key", -8.0, 0.55)
 		_shake_seal()
 		DialogueManager.say("Noroi", msg)
@@ -322,7 +322,7 @@ func on_interact(by: Node) -> void:
 	if target_room_id == &"core" and not EndingManager.has_both_shards():
 		if not bool(GameState.character_current_life_knowledge.get("warned_core_shards", false)):
 			GameState.character_current_life_knowledge["warned_core_shards"] = true
-			DialogueManager.say(GameState.keeper_speaker_name(), "Mühür parçaların eksik. Eksik girme.")
+			DialogueManager.say(GameState.keeper_speaker_name(), "Mühür parçaların eksik. Böyle girme.")
 			return
 	_travel(by)
 

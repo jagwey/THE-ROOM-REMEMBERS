@@ -40,7 +40,7 @@ func on_interact(_by: Node) -> void:
 	if reaction == &"unknown":
 		DialogueManager.say("Noroi", intro_line)
 	else:
-		DialogueManager.say("Noroi", "…Bir sayı geliyor aklıma. Denemeliyim.")
+		DialogueManager.say("Noroi", "…Bir sayı geliyor aklıma, denemeliyim.")
 	var intro_ok: bool = await DialogueManager.dialogue_finished
 	if session != _session or not intro_ok:
 		_busy = false

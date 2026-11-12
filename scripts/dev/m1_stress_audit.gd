@@ -326,7 +326,7 @@ func receive_sword_hit(_attacker, _dir, combo):
 	test_corpse.call("_push", 1.0)
 	await create_timer(0.05).timeout
 	dm.advance()
-	check(dm.is_open and dm.get("_full_line").contains("Engelle karşılaştı"), "Corpse flush against wall displays 'Engelle karşılaştı'")
+	check(dm.is_open and dm.get("_full_line").contains("Önünde duvar var"), "Corpse flush against wall displays 'Önünde duvar var'")
 	dm.clear()
 	solid_wall.queue_free()
 	test_corpse.queue_free()

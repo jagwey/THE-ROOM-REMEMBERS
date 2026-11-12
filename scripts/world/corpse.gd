@@ -263,7 +263,7 @@ func _push(dir: float, by_node: Node = null) -> void:
 			var hit_pos: Vector2 = wall_hit["position"]
 			var stop_x: float = hit_pos.x - dir * 14.0
 			if (dir > 0.0 and stop_x <= global_position.x + 2.0) or (dir < 0.0 and stop_x >= global_position.x - 2.0):
-				DialogueManager.say("Noroi", "…Engelle karşılaştı.")
+				DialogueManager.say("Noroi", "…Önünde duvar var.")
 				return
 			target_x = minf(target_x, stop_x) if dir > 0.0 else maxf(target_x, stop_x)
 
