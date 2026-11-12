@@ -15,7 +15,7 @@ func on_interact(_by: Node) -> void:
 	## Aynı hayatta duyulan yankı ile önceki hayattan kalan sezgi ayrılır (code_seal_base ile aynı kural).
 	match GameState.memory_code_reaction("awakening"):
 		&"same_life":
-			DialogueManager.say("Noroi", "Yarıktaki yankı üç, bir, dört dedi. Mührü bununla açacağım.")
+			DialogueManager.say("Noroi", "Yarıktaki yankı üç, bir, dört dedi; mührü bununla açacağım.")
 			return
 		&"past_life":
 			DialogueManager.say("Noroi", "Oyuğa bakınca aklımda üç hane beliriyor: 3 — 1 — 4.")
@@ -25,6 +25,6 @@ func on_interact(_by: Node) -> void:
 	if seen.has("awakening_rift_echo"):
 		GameState.learn_memory_code("awakening", "314")
 		SaveManager.save_game()
-		DialogueManager.say("Noroi", "Yankıyı yeniden duydum: 3 — 1 — 4. Mühre bunu yazacağım.")
+		DialogueManager.say("Noroi", "Yankıyı yeniden duydum: 3 — 1 — 4, mühre bunu yazacağım.")
 		return
 	DialogueManager.say("Noroi", "Önce geçitteki taşın yankısını dinlemeliyim.")

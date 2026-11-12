@@ -4,9 +4,9 @@ extends RefCounted
 
 const _BY_ROOM: Dictionary = {
 	"awakening": "Durmuş saate bak. Gölge konuşursa dinle. Sağdaki geçide yürü.",
-	"awakening_passage": "Yarığa kulak ver. Sayıyı ezberle, sağdaki mühre götür.",
-	"awakening_seal": "Kristal canlıyı tanımaz; ona bir beden bırak. Sayıyı mühre gir.",
-	"decay_vines": "Sarmaşık yolu kapatmış. Kolu bul, düğümü çöz, geçide geç.",
+	"awakening_passage": "Taşı dinle, sayıyı ezberle. Kırmızı yarığa basma, mühre git.",
+	"awakening_seal": "Plaka canlıyı tanımaz. Kristale dokun, bedenin plakada kalsın.",
+	"decay_vines": "Sarmaşık yolu kapatmış. Kolu çek, düğüm çözülsün, geçide geç.",
 	"decay_weight": "Taşı plakaya bırak. Şaşırırsan kolu çek, taş geri gelir.",
 	"decay_garden": "Çiçeklere bak, Shilda'yı dinle, arşiv mührünü aç.",
 	"library_hall": "Arşivci seni tanıyor. Tanıklıklar rafların arasında.",
@@ -62,7 +62,7 @@ static func objective_for_room(room_id: String) -> String:
 		if PuzzleManager.is_solved(&"soul_seal_balcony"):
 			return "Mühür söndü. Kapı açık, mahzene in."
 		if _has_soul_slash():
-			return "Kopuk taşın üstünden geç. Mor mühre Ruh Kesimi at."
+			return "Kopuk taşın üstünden geç. Mor mühre Ruh Kesimi uygula."
 		return "Kopuk taşın üstünden geç. Mor mühür Ruh Kesimi ister."
 	var raw := String(_BY_ROOM.get(room_id, "Kayıtları incele; sağdaki geçidi takip et."))
 	var i := raw.find(" · ")

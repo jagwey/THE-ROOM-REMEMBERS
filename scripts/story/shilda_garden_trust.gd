@@ -39,7 +39,7 @@ func on_interact(_by: Node) -> void:
 		GameState.player_progress_knowledge["trusted_keeper"] = true
 	else:
 		DialogueManager.say("Noroi", "Buradan nasıl çıkarım?")
-		DialogueManager.say(keeper_name, "Acele ediyorsun. Burada güven adımla kazanılır.")
+		DialogueManager.say(keeper_name, "Acele ediyorsun. Burada güven adım adım kazanılır.")
 
 	var ok: bool = await DialogueManager.dialogue_finished
 	if ok:
