@@ -35,8 +35,8 @@ dialogue_sets = PackedStringArray("Ses|Duyan var mı? Ben de buraya girdim, bend
 script = ExtResource("shrine")
 puzzle_id = &"core_vault_order"
 order = PackedStringArray("1927", "1995", "son")
-fail_line = "Yanlış yıl. Önce 1927, sonra 1995, en son Son."
-success_line = "Kasa ışıldadı. İçindeki ses artık duyuluyor."
+fail_line = "Yanlış yıl: önce 1927, sonra 1995, en son Son."
+success_line = "Kasa ışıldadı, içindeki ses artık duyuluyor."
 
 [node name="Year1927" type="Area2D" parent="Interactive/VaultShrine"]
 position = Vector2(420.0, 288.0)
@@ -72,8 +72,8 @@ lore_id = &"memory_vault"
 texture_path = "res://assets/layers/core_crystal.png"
 sprite_scale = 0.4
 requires_puzzle = &"core_vault_order"
-locked_lines = PackedStringArray("Noroi|Kasa karanlık. Sütunlar bir yıl sırası bekliyor.", "Ses|Önce 1927. Sonra 1995. En son, son kayıt.")
-lines = PackedStringArray("Noroi|Kristal kasada binlerce ışık. Her biri birinin anısı.", "Noroi|Ortada tek bir ışık daha parlak: onun sesi.", "Noroi|İmza satırı hâlâ kazınmış. Ama Shilda hepsini hatırladı.")
+locked_lines = PackedStringArray("Noroi|Kasa karanlık, sütunlar bir yıl sırası bekliyor.", "Ses|Önce 1927. Sonra 1995. En son, son kayıt.")
+lines = PackedStringArray("Noroi|Kasadaki binlerce ışığın her biri birinin anısı.", "Noroi|Ortada tek bir ışık daha parlak: onun sesi.", "Noroi|İmza satırı kazınmış kalmış, ama Shilda hepsini hatırlıyor.")
 evidence_title = "Hafıza Kasası"
 evidence_body = "Çekirdek yuttuğu anıları burada saklıyor. Sütunlar 1927, 1995 ve son kayıt diye açıldı. Gerçeği gördüm."
 evidence_section = "izler"

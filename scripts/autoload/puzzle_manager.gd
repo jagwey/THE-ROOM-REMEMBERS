@@ -161,17 +161,17 @@ const HINTS: Dictionary = {
 	&"mirrors_gallery": {
 		"goal": "Camlar ölü bedenlerini tutuyor.",
 		"orientation": "Duvar, hatırladığından fazla ceset sayar.",
-		"explicit": "Ortadaki duvarı dinle. Sayıyı kabul edince kırılmayan ayna açılır."
+		"explicit": "Ortadaki duvarı dinle; sayıyı kabul edince kırılmayan ayna açılır."
 	},
 	&"mirrors_dual": {
-		"goal": "İkiz aynaların arkasındaki geçit eşzamanlı rezonans istiyor.",
-		"orientation": "Aynadaki yansıma seninle zıt yönde hareket eder; iki kristali aynı anda tetikle.",
-		"explicit": "Gölge Atılması ile mesafeyi hızla kapatıp iki tarafın enerjisini dengele."
+		"goal": "Geçit, iki kristalin aynı anda uyanmasını bekliyor.",
+		"orientation": "Yansıma sana ters yöne gider; iki kristali aynı anda uyandır.",
+		"explicit": "Gölge Atılması ile mesafeyi hızla kapatıp iki kristale yetiş."
 	},
 	&"core_ascent": {
 		"goal": "Son merdiven iki yetenek ve bir yankı istiyor.",
 		"orientation": "Önce yankının durduğu basamak. Sonra Ruh Kesimi ve Gölge Atılması.",
-		"explicit": "İkisi de açıkken son basamağa dokun. Gölge mührü tutar. Gidelim."
+		"explicit": "İkisi de açıkken son basamağa dokun; gölge mührü tutar."
 	},
 	&"core_seal": {
 		"goal": "Çekirdeğin ana mührü kırılmalı ve boyut kapısı aralanmalı.",

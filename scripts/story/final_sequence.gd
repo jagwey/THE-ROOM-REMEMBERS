@@ -89,7 +89,7 @@ func play(tree: SceneTree, fast_mode: bool = false) -> void:
 		["X", "Merhaba, Shilda."],
 		["Shilda", "Yaşıyorsunuz…"],
 		["X", "Elbette."],
-		["Shilda", "Yıllarca sizi aradım. İnsanlar öldü. Ben de sayılırım."],
+		["Shilda", "Yıllarca sizi aradım. Ben de sayılırım."],
 		["X", "Biliyorum."],
 		["Shilda", "Ne?"],
 		["X", "Her şeyi kaydettim."],
@@ -116,13 +116,13 @@ func play(tree: SceneTree, fast_mode: bool = false) -> void:
 		["X", "İhtiyacım olan şeyi aldım."],
 		["Shilda", "Bizi neden kurtarmadınız?"],
 		["X", "Çünkü henüz işiniz bitmemişti."],
-		["Noroi", "İşimiz mi? Biz insanız."],
+		["Noroi", "Biz insanız, ne işimiz olacak?"],
 		["X", "Bölüm iki sizsiz açılmaz."],
 	])
 	await _portal_leave()
 	await _say([
 		["Shilda", "Noroi… beni duyuyor musun?"],
-		["Noroi", "Duyuyorum. Bu sefer adın aklımda kalacak."],
+		["Noroi", "Duyuyorum; bu sefer adın aklımda kalacak."],
 		["Shilda", "O zaman yürü. Oda bizi bekleyemez."],
 	])
 	await _title_card()

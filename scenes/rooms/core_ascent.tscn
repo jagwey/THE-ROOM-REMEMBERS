@@ -39,12 +39,12 @@ position = Vector2(300, 288)
 script = ExtResource("soul")
 puzzle_id = &"core_ascent_seal"
 back_side = 1
-refusal_line = "Mühür ruh istiyor. Ruh Kesimi Yasak Kanat'ta bekliyor; oraya gitmeliyim."
+refusal_line = "Mühür ruh istiyor; Ruh Kesimi için Yasak Kanat'a gitmeliyim."
 
 [node name="CurseBarrier" type="StaticBody2D" parent="Interactive"]
 position = Vector2(616, 288)
 script = ExtResource("barrier")
-refusal_line = "Kırmızı perde beni itiyor. Gölge Atılması Ayna Tapınağı'nda; oraya gitmeliyim."
+refusal_line = "Kırmızı perde beni itiyor; Gölge Atılması için Ayna Tapınağı'na gitmeliyim."
 
 [node name="EchoStep" type="Area2D" parent="Interactive"]
 position = Vector2(720, 288)
@@ -64,7 +64,7 @@ monitorable = true
 script = ExtResource("altar")
 puzzle_id = &"core_ascent_echo"
 intro_text = "Sunağa dokun, plakaya yürü ve bekle. Yankın plakadayken kapıdan geç."
-solved_text = "Yankı plakayı tuttu. Yol açıldı."
+solved_text = "Yankı plakayı tuttu, yol açıldı."
 switch_kinds = PackedStringArray()
 switch_positions = PackedVector2Array()
 
@@ -112,7 +112,7 @@ dialogue_room = &"core_ascent"
 dialogue_set = &"go"
 solve_puzzle = &"core_ascent"
 locked_line = "Önce yankının durduğu basamağı dinlemeliyim."
-soul_refusal_line = "Son basamak Ruh Kesimi istiyor. Onu Yasak Kanat'ta öğrenebilirim."
-dash_refusal_line = "Perde Gölge Atılması istiyor. Onu Ayna Tapınağı'nda öğrenebilirim."
+soul_refusal_line = "Son basamak Ruh Kesimi istiyor, onu Yasak Kanat'ta öğrenebilirim."
+dash_refusal_line = "Perde Gölge Atılması istiyor, onu Ayna Tapınağı'nda öğrenebilirim."
 evidence_title = "Gidelim"
 evidence_body = "İki yetenek ve yankı birleşince gölge son mührü tuttu. Birlikte mühür odasına inilir."

@@ -62,7 +62,7 @@ const SIDE_DOORS := {
 	"experiment_circuit": [{"x": 700.0, "to": "experiment_observation", "ability": "ability_shadow_dash"}],
 	"experiment_authority": [{"x": 672.0, "to": "experiment_core_conduit"}],
 	"mirrors_reverse": [{"x": 672.0, "to": "mirrors_labyrinth"}],
-	"mirrors_dual": [{"x": 700.0, "to": "mirrors_1927", "req": "mirrors_gallery", "msg": "Galeri suskun. Önce bedenleri saymalıyım."}],
+	"mirrors_dual": [{"x": 700.0, "to": "mirrors_1927", "req": "mirrors_gallery", "msg": "Önce galerideki bedenleri saymalıyım."}],
 	"mirrors_unbroken": [{"x": 784.0, "to": "mirrors_shrine", "title": "Ayna Tapınağı", "mark": true, "label_dy": -74.0}],
 	"core_threshold": [{"x": 784.0, "to": "core_memory_vault"}],
 	"core_seal_chamber": [{"x": 784.0, "to": "core_bloom_garden"}],

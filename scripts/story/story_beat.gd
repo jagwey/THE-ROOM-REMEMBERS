@@ -241,9 +241,9 @@ func _experiment_authority() -> void:
 
 func _mirrors_reverse() -> void:
 	if PuzzleManager.is_solved(&"mirrors_reverse"):
-		DialogueManager.say("Noroi", "Aynadaki sol, gerçekte sağ. Geçit açık.")
+		DialogueManager.say("Noroi", "Aynadaki sol, gerçekte sağ; geçit açık.")
 		return
-	DialogueManager.say("Noroi", "Aynada çiçek soldaki kapıda. Yansıma yönleri ters gösteriyor.")
+	DialogueManager.say("Noroi", "Aynada çiçek soldaki kapıda, ama yansıma yönleri ters gösteriyor.")
 	DialogueManager.say("Noroi", "Gerçek kapı hangisi?")
 	var ok: bool = await DialogueManager.dialogue_finished
 	if not ok:
@@ -252,7 +252,7 @@ func _mirrors_reverse() -> void:
 
 func _mirrors_dual() -> void:
 	if PuzzleManager.is_solved(&"mirrors_dual"):
-		DialogueManager.say("Noroi", "İki iz birleşti. Yol açık.")
+		DialogueManager.say("Noroi", "İki iz birleşti, yol açık.")
 		return
 	DialogueManager.say("Shilda", "Yankın bu anahtarı sekiz saniye tutar. Sağdaki kristale yetiş.")
 	DialogueManager.say("Shilda", "Yetişemezsen yeniden dene. Bu oda affeder.")
@@ -267,7 +267,7 @@ func _mirrors_unbroken() -> void:
 	DialogueManager.say("Shilda", "…")
 	DialogueManager.say("Shilda", "Çünkü birinin onları hatırlaması gerekiyor.")
 
-	DialogueManager.say("Noroi", "Beni korumuyordun. Bir sırrı koruyordun.")
+	DialogueManager.say("Noroi", "Beni değil, bir sırrı koruyordun.")
 
 	DialogueManager.say("Shilda", "İkisini ayırmayı unuttum.")
 
@@ -275,7 +275,7 @@ func _mirrors_unbroken() -> void:
 	DialogueManager.say("Noroi", "Ama gerçeği saklamadan yanımda durabilirsin.")
 	DialogueManager.say("Shilda", "Çekirdekte son mühür var. Onu birlikte açacağız.")
 	DialogueManager.say("Shilda", "Çekirdeğe gitmeden Ayna Tapınağı'na uğra. Gölgen orada bekliyor.")
-	DialogueManager.say("Noroi", "Artık gerçeği biliyorum. Sağ uçtaki geçidi açıyorum.")
+	DialogueManager.say("Noroi", "Artık gerçeği biliyorum, sağ uçtaki geçidi açıyorum.")
 
 	var ok: bool = await DialogueManager.dialogue_finished
 
@@ -312,7 +312,7 @@ func _core_threshold() -> void:
 	DialogueManager.say("Noroi", "Biliyorum.")
 	DialogueManager.say("Shilda", "Hayır. Henüz bilmiyorsun.")
 	DialogueManager.say("Shilda", "Yine de kapı artık senden bir can istemiyor.")
-	DialogueManager.say("Noroi", "Öğrendiklerimi yanıma aldım. Son mühür odasında kayıtları birleştireceğim.")
+	DialogueManager.say("Noroi", "Öğrendiklerimi yanıma aldım; son mühür odasında kayıtları birleştireceğim.")
 
 	var ok: bool = await DialogueManager.dialogue_finished
 
@@ -327,10 +327,10 @@ func _core_threshold() -> void:
 func _core_seal_chamber() -> void:
 
 	DialogueManager.say("Kayıt", "Deney başladı. Kapı kapandı. Koruma mührü devreye girdi.")
-	DialogueManager.say("Noroi", "Silinen hafızalar burada kaldı. Hiçbiri kayıp değil artık.")
+	DialogueManager.say("Noroi", "Silinen hafızalar burada kaldı, hiçbiri kayıp değil artık.")
 
 	DialogueManager.say("Shilda", "Mührün bağları çekirdeğin başında. Ruh Kesimi onları kesebilir.")
-	DialogueManager.say("Noroi", "Hazırım. Kristale dokunduğumda bitecek.")
+	DialogueManager.say("Noroi", "Hazırım, kristale dokunduğumda bitecek.")
 
 	var ok: bool = await DialogueManager.dialogue_finished
 
@@ -405,7 +405,7 @@ func _answer_mirror(option: String) -> void:
 	if option == "Sağdaki kapı":
 		PuzzleManager.mark_solved(&"mirrors_reverse")
 		SaveManager.save_game()
-		DialogueManager.say("Noroi", "Yansımanın değil, gerçeğin yolunu seçtim. Sağdaki geçit açıldı.")
+		DialogueManager.say("Noroi", "Yansımanın değil, gerçeğin yolunu seçtim; sağdaki geçit açıldı.")
 	elif option == "Soldaki kapı":
 		DialogueManager.say("Shilda", "Aynada sol, gerçekte sağ olur. Canın yanmadı. Yeniden inceleyebilirsin.")
 
@@ -454,5 +454,5 @@ func finish_relay() -> void:
 	_relay_label.text = "İki iz birleşti"
 	PuzzleManager.mark_solved(&"mirrors_dual")
 	SaveManager.save_game()
-	DialogueManager.say("Noroi", "Yankım geçmişi tuttu; ben yeni bir adım attım. Sağdaki geçit açıldı.")
+	DialogueManager.say("Noroi", "Yankım geçmişi tuttu, ben yeni bir adım attım; sağdaki geçit açıldı.")
 

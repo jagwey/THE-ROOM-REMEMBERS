@@ -31,7 +31,7 @@ script = ExtResource("lore")
 lore_id = &"labyrinth_hint"
 texture_path = "res://assets/layers/mirror.png"
 sprite_scale = 0.3
-lines = PackedStringArray("Noroi|Önümde uçurum. Tavandaki aynada bir yol var.", "Noroi|Mavi taşlar gerçek. Soluk kırmızı olan yalan söylüyor.")
+lines = PackedStringArray("Noroi|Önümde uçurum var, yol tavandaki aynada görünüyor.", "Noroi|Mavi taşlar gerçek, soluk kırmızı olan yalan söylüyor.")
 
 [node name="RegretEcho" type="Area2D" parent="Interactive"]
 position = Vector2(1100, 288.0)
@@ -40,7 +40,7 @@ npc_id = &"echo_regret"
 idle_anim = "echo_idle"
 walk_anim = "echo_walk"
 ghostly = true
-dialogue_sets = PackedStringArray("Yansıma|Ben otuzuncu sendim. Mühürlerin kapandığı günü hatırlıyorum.;;Yansıma|İçeride kalanların bağırışlarını… sen hatırlamıyorsun. Şanslısın.", "Yansıma|Çıkabildik mi? Hayır. Çekirdek bizi de yuttu.;;Yansıma|Geriye bir tek Shilda kaldı. O hiç unutmadı.")
+dialogue_sets = PackedStringArray("Yansıma|Ben otuzuncu sendim. Mühürlerin kapandığı günü hatırlıyorum.;;Yansıma|İçeride kalanların bağırışını sen hatırlamıyorsun. Şanslısın.", "Yansıma|Çıkabildik mi? Hayır, Çekirdek bizi de yuttu.;;Yansıma|Geriye yalnız Shilda kaldı. O hiç unutmadı.")
 
 [node name="Crossed" type="Area2D" parent="Interactive"]
 position = Vector2(1120.0, 288.0)
@@ -53,7 +53,7 @@ script = ExtResource("lore")
 lore_id = &"labyrinth_mirror"
 texture_path = "res://assets/layers/mirror_shards.png"
 sprite_scale = 0.35
-lines = PackedStringArray("Noroi|Kırık aynada kendi yüzüm… yaşlı. Gerçek yaşım bu mu?")
+lines = PackedStringArray("Noroi|Kırık aynada yüzüm yaşlı; gerçek yaşım bu mu?")
 evidence_title = "Gerçek Yüz"
 evidence_body = "Aynanın ardındaki yüzüm yaşlıydı. Bu yerde zaman benim bildiğim gibi akmıyor."
 evidence_section = "izler"

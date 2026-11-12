@@ -2,13 +2,13 @@
   "room": "mirrors_gallery",
   "sets": {
     "reflections": [
-      {"s": "Noroi", "t": "Her camda başka bir ben. Hepsi benden önce ölmüş."},
+      {"s": "Noroi", "t": "Her camda başka bir ben var, hepsi benden önce ölmüş."},
       {"s": "@shilda", "t": "Onlar unuttuğun geceler. Duvar sayıyı saklar."},
       {"s": "Noroi", "t": "Neden ben hatırlamıyorum?"},
-      {"s": "@shilda", "t": "Çünkü her ölümünde oda seni sıfırlıyor. Ben sıfırlanmıyorum."},
+      {"s": "@shilda", "t": "Oda seni her ölümde sıfırlıyor. Beni sıfırlamıyor."},
       {"s": "Noroi", "t": "O yüzden aynı soruyu tekrar soruyorum."},
-      {"s": "@shilda", "t": "Ve ben her seferinde susuyorum. Artık susmayacağım."},
-      {"s": "Noroi", "t": "Sağdaki ayna kırılmayan. Orada yüzleşiriz."}
+      {"s": "@shilda", "t": "Ben her seferinde sustum. Artık susmayacağım."},
+      {"s": "Noroi", "t": "Sağdaki ayna kırılmamış, orada yüzleşiriz."}
     ]
   }
 }

@@ -24,7 +24,7 @@ dialogue_room = &"mirrors_1927"
 dialogue_set = &"echo"
 solve_puzzle = &"mirrors_1927"
 evidence_title = "İzlenen Gece"
-evidence_body = "1927 gecesi oynanmaz. Bir kadın sesini kaybeder, saat durur. Yalnız izlenir."
+evidence_body = "1927 gecesi oynanmaz, yalnız izlenir: bir kadın sesini kaybeder, saat durur. Camın ardında kendine X diyen biri not tutuyor."
 
 [node name="RelicArt" type="Sprite2D" parent="Interactive/NightEcho"]
 texture_filter = 1

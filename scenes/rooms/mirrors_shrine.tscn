@@ -38,7 +38,7 @@ grant_key = "ability_shadow_dash"
 title = "Gölge Atılması"
 texture_path = "res://assets/props/halo.png"
 tint = Color(0.6, 0.45, 0.9, 1)
-lines = PackedStringArray("Noroi|Sunakta bir gölge. Benim gölgem… ama benden önce hareket ediyor.", "Noroi|İçime çekiyorum. Bedenim hafifliyor.")
+lines = PackedStringArray("Noroi|Sunakta benim gölgem var, ama benden önce hareket ediyor.", "Noroi|Gölgeyi içime çekiyorum, bedenim hafifliyor.")
 tutorial = "%DASH%: Gölge Atılması. Atılırken lanetli bariyerlerden ve gelen darbelerden hasar almadan geçersin."
 
 [node name="Barrier" type="StaticBody2D" parent="Interactive"]
@@ -53,7 +53,7 @@ grant_world_flag = &"seal_shard_2"
 title = "2. Mühür Parçası"
 texture_path = "res://assets/props/seal.png"
 tint = Color(1, 0.75, 0.8, 1)
-lines = PackedStringArray("Noroi|Mührün öteki yarısı. Kenarında benim adım.", "Noroi|İki ad, bir mühür. Çekirdek'i ancak birlikte kapatabiliriz.")
+lines = PackedStringArray("Noroi|Mührün öteki yarısında benim adım yazıyor.", "Noroi|İki ad, bir mühür; Çekirdek'i ancak birlikte kapatırız.")
 
 [node name="ShrineEcho" type="Area2D" parent="Interactive"]
 position = Vector2(880.0, 288.0)
@@ -62,7 +62,7 @@ npc_id = &"echo_shrine"
 idle_anim = "echo_idle"
 walk_anim = "echo_walk"
 ghostly = true
-dialogue_sets = PackedStringArray("Yansıma|Her döngüde buraya kadar geldin. Her seferinde Shilda'ya kılıç kaldırdın.;;Yansıma|Bu sefer başka bir şey dene.", "Yansıma|Ona güvenirsen birlikte mühürlersiniz. Bağı koparırsan… onu burada bırakırsın.")
+dialogue_sets = PackedStringArray("Yansıma|Her döngüde buraya kadar geldin. Her seferinde Shilda'ya kılıç kaldırdın.;;Yansıma|Bu sefer başka bir şey dene.", "Yansıma|Ona güvenirsen birlikte mühürlersiniz. Bağı koparırsan onu burada bırakırsın.")
 
 [node name="seal_mirrors_shrine" type="Marker2D" parent="Spawns"]
 position = Vector2(430, 288)

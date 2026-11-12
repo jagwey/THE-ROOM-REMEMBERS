@@ -99,7 +99,7 @@ script = ExtResource("5")
 target_room_id = &"mirrors_gallery"
 target_spawn_id = &"from_mirrors_dual"
 required_puzzle = &"mirrors_dual"
-locked_message = "İki yankıyı birlikte etkinleştirmeliyim."
+locked_message = "İki yankıyı aynı anda uyandırmalıyım."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ForwardUnbroken"]
 shape = SubResource("Hit")
@@ -112,8 +112,8 @@ monitoring = false
 monitorable = true
 script = ExtResource("6")
 puzzle_id = &"mirrors_dual"
-intro_text = "İki kristal aynı nefeste uyanmalı. Yankın birini tutsun; sen ötekine dokun."
-solved_text = "İki iz birleşti. Sağdaki geçit açıldı."
+intro_text = "İki kristali aynı anda uyandır: yankın birini tutsun, sen ötekine dokun."
+solved_text = "İki iz birleşti, sağdaki geçit açıldı."
 switch_kinds = PackedStringArray("lever", "lever")
 switch_positions = PackedVector2Array(-260, 0, 320, 0)
 lever_hold_seconds = 1.8

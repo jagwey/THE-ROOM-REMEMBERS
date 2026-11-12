@@ -111,7 +111,7 @@ script = ExtResource("5")
 target_room_id = &"mirrors_dual"
 target_spawn_id = &"from_reverse"
 required_puzzle = &"mirrors_reverse"
-locked_message = "Aynadaki işaretin gerçek karşılığını bulmalıyım."
+locked_message = "Aynadaki işaretin gerçek yönünü bulmalıyım."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ForwardDual"]
 shape = SubResource("Hit")

@@ -29,4 +29,4 @@ dialogue_set = &"reflections"
 solve_puzzle = &"mirrors_gallery"
 count_line = true
 evidence_title = "Bedenler Duvarı"
-evidence_body = "Galeride her cam bir ölümü tutuyor. Duvar, hatırladığımdan fazla beden sayıyor."
+evidence_body = "Her cam bir ölümü tutuyor; duvar, hatırladığımdan fazla beden sayıyor."
