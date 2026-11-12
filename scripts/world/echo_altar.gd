@@ -10,7 +10,7 @@ const SWITCH_SCRIPT := preload("res://scripts/world/echo_switch.gd")
 @export var puzzle_id: StringName = &"experiment_circuit"
 @export var record_seconds: float = 8.0
 @export var intro_speaker: String = "Shilda"
-@export_multiline var intro_text: String = "Sunağa dokun, sekiz saniyelik hareketlerini oda hatırlasın; sonra yankın aynısını yapar."
+@export_multiline var intro_text: String = "Sunağa dokun; yankın sekiz saniyeni tekrarlar."
 @export var solved_text: String = "İki devre birleşti, yol açık."
 ## "plate" (üstünde durulmalı) veya "lever" (çekildikten sonra kısa süre aktif)
 @export var switch_kinds: PackedStringArray = PackedStringArray(["plate", "lever"])

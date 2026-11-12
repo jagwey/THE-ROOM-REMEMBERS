@@ -274,7 +274,8 @@ func _mirrors_unbroken() -> void:
 	DialogueManager.say("Noroi", "Döngüyü sürdürmemi de susmanı kabul etmemi de isteyemezsin.")
 	DialogueManager.say("Noroi", "Ama gerçeği saklamadan yanımda durabilirsin.")
 	DialogueManager.say("Shilda", "Çekirdekte son mühür var. Onu birlikte açacağız.")
-	DialogueManager.say("Shilda", "Çekirdeğe gitmeden Ayna Tapınağı'na uğra. Gölgen orada bekliyor.")
+	DialogueManager.say("Shilda", "Çekirdeğe gitmeden Ayna Tapınağı'na uğra.")
+	DialogueManager.say("Shilda", "Gölgen orada bekliyor.")
 	DialogueManager.say("Noroi", "Artık gerçeği biliyorum, sağ uçtaki geçidi açıyorum.")
 
 	var ok: bool = await DialogueManager.dialogue_finished
@@ -329,7 +330,8 @@ func _core_seal_chamber() -> void:
 	DialogueManager.say("Kayıt", "Deney başladı. Kapı kapandı. Koruma mührü devreye girdi.")
 	DialogueManager.say("Noroi", "Silinen hafızalar burada kaldı, hiçbiri kayıp değil artık.")
 
-	DialogueManager.say("Shilda", "Mührün bağları çekirdeğin başında. Ruh Kesimi onları kesebilir.")
+	DialogueManager.say("Shilda", "Mührün bağları çekirdeğin başında.")
+	DialogueManager.say("Shilda", "Ruh Kesimi onları kesebilir.")
 	DialogueManager.say("Noroi", "Hazırım, kristale dokunduğumda bitecek.")
 
 	var ok: bool = await DialogueManager.dialogue_finished
@@ -407,7 +409,8 @@ func _answer_mirror(option: String) -> void:
 		SaveManager.save_game()
 		DialogueManager.say("Noroi", "Yansımanın değil, gerçeğin yolunu seçtim; sağdaki geçit açıldı.")
 	elif option == "Soldaki kapı":
-		DialogueManager.say("Shilda", "Aynada sol, gerçekte sağ olur. Canın yanmadı. Yeniden inceleyebilirsin.")
+		DialogueManager.say("Shilda", "Aynada sol, gerçekte sağ olur. Canın yanmadı.")
+		DialogueManager.say("Shilda", "Yeniden inceleyebilirsin.")
 
 func _build_relay() -> void:
 	var relay := Area2D.new()

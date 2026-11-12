@@ -344,8 +344,7 @@ func _scan_gd(path: String) -> void:
 
 
 func _unescape(t: String) -> String:
-	return t.replace("\\\"", "\"").replace("\n", "
-")
+	return t.replace("\\\"", "\"").replace("\\n", "\n")
 
 
 ## say(speaker, "metin") çağrısının ikinci argümanı bir literal ile başlıyorsa onu döndürür.

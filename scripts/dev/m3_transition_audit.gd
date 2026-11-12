@@ -89,10 +89,6 @@ func _run() -> void:
 	_test_return_spawn_coordinates()
 
 	print("\n==================================================")
-	print("TEST SECTION 6: CORE PORTAL CLEANUP")
-	print("==================================================")
-
-	print("\n==================================================")
 	print("M3 AUDIT SUMMARY: Total checks = %d | Failures = %d" % [total_checks, failures])
 	print("==================================================")
 

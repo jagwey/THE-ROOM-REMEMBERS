@@ -11,11 +11,11 @@
       {"s": "@shilda", "t": "Yüzünü hiç görmedim. Yalnız sesini."},
       {"s": "X", "t": "Not: denek geceyi izledi, müdahale etmedi."},
       {"s": "Noroi", "t": "Seni duyuyorum, kimsin sen?"},
-      {"s": "X", "t": "Yetki kaydındaki imza benim. Bana X deyin."},
+      {"s": "X", "t": "Geri dönün. Sizi izlemeye devam edeceğim."},
       {"s": "Noroi", "t": "Kazınmış imza senindi demek."},
       {"s": "X", "t": "Kazıttım. Kayıt tutan görünmemeli."},
-      {"s": "Noroi", "t": "Adı yok, yalnız bir harf."},
-      {"s": "X", "t": "Geri dönün. Sizi izlemeye devam edeceğim."}
+      {"s": "Noroi", "t": "Hâlâ adını söylemiyorsun."},
+      {"s": "X", "t": "Yetki kaydındaki imza benim. Bana X deyin."}
     ]
   }
 }

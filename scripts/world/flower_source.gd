@@ -2,7 +2,7 @@ extends Area2D
 ## Katakomb çiçek kaynağı: çiçeği ele alır (hayat başına). Ölünce ceset çiçeği taşır ve fener gibi yanar.
 ## Kaynak tükenmez; çiçeksiz ölümden sonra yeniden alınabilir.
 
-const PICK_LINE := "Solgun bir çiçek… Elimde ışık gibi duruyor."
+const PICK_LINE := "Solgun çiçek elimde ışık gibi duruyor."
 const HELD_LINE := "Çiçek zaten elimde…"
 
 

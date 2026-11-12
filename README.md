@@ -179,9 +179,10 @@ Kemik Mahzeni girişinde (x≈150) tükenmez bir çiçek kaynağı durur. Çiçe
 
 ### v1.15.0 (hazır, yayınlanmadı) — Faz 1 diyalog yeniden yazımı
 - **Kapsam:** tüm oda, Shilda/Gölge, sistem ve arayüz metinleri sade Türkçeye yeniden yazıldı (T3–T6). Oda/puzzle/flag/relic ID'leri, `when` koşulları, bulmaca çözümleri değişmedi. Sürüm: `project.godot` 1.15.0, `version/code` 45.
-- **Lint kuralları (`dialogue_lint_audit`, T1):** Shilda satırları 2–8 kelime; HUD ipuçları en çok 70 karakter ve fiille biter; İngilizce kalıntı yok (`BÖLGE %02d`, `BÖLÜM I SONU`, iz türleri Türkçe); Noroi satırları en çok bir cümle; "..." yerine "…"; hatıra/bellek yasak.
+- **Lint kuralları (`dialogue_lint_audit`, T1):** `three_dots` ("..." yerine "…"), `banned_word` (hatıra/bellek yasak), `english_residue` (`BÖLGE %02d`, `BÖLÜM I SONU` vb. kalıntı yok), `json_shilda_speaker`, `line_length`, `hint_length` (HUD ipucu en çok 70 karakter), `speaker_format`, `unknown_placeholder`.
+- **Elle denetlenen stil kuralları (lint doğrulamaz):** Shilda satırları 2–8 kelime, ipucu fiille biter, Noroi satırları tek cümle.
 - **Canon kontrolleri (`lore_canon_audit`, T2):** `x_name_late`, `vault_irony`, `garden_hint`, `witness_order`, `shilda_human_late`, `intake_flower_owner`, `pre_name_shilda` ve diğerleri (`no_hundreds`, `night_1927`).
-- **Oda başlıkları (T2'de kesinleşti, tek kaynak `RoomManager.ROOM_TITLES_TR`):** `experiment_quarantine` → "Karantina Mahzeni", `mirrors_1927` → "1927 Gecesi".
+- **Oda başlıkları (T1'de kesinleşti, tek kaynak `RoomManager.ROOM_TITLES_TR`):** `experiment_quarantine` → "Karantina Mahzeni", `mirrors_1927` → "1927 Gecesi".
 - **Öne çıkan değişiklikler:** X'in kimliği `mirrors_1927` sonunda açılır ("Bana X deyin"); bölge kartı "Uyanış Mahmuzu" → "Uyanış Odası"; "███" → "[kazınmış]".
 - **Durum:** yayınlanmadı; rozet ve indirme bağlantıları v1.13.0'da kalır.
 

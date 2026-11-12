@@ -349,10 +349,10 @@ const REASON_LINES := {
 	"thorn": "Kan dikeni avucumu deldi. Bilerek dokundum.",
 }
 const LIFE_LINES := [
-	"Biri çiçek bıraktı. Kim olduğunu hatırlamıyorum.",
-	"Bu beden benim. Ama ben bu bedende değilim.",
-	"Yine unuttum. Oda unutmadı.",
-	"Bir ses: Bir dahaki sefere sağa bakma.",
+	"Çiçeği bırakanı hatırlamıyorum.",
+	"Bu beden benim ama ben bu bedende değilim.",
+	"Yine unuttum ama oda unutmadı.",
+	"Bir ses, bir dahaki sefere sağa bakma dedi.",
 ]
 
 
