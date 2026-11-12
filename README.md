@@ -42,6 +42,8 @@
 Oyuncu **Noroi** olarak ne adını ne de neden bu yıkık ve zamandan kopuk yeraltı tesisinde tutulduğunu bilerek uyanır. Her ölümde Noroi'nin o yaşamdaki hatıraları silinir; fakat **oda hiçbir şeyi unutmaz**. Önceki yaşamlarından kalan kendi cansız bedenlerin odalarda kalıcı olarak durur:
 * Üzerlerine basıp yüksek çıkıntılara tırmanabilirsin (`one_way_collision`),
 * Ağır taş basınç plakalarının üstüne itip kapıları açık tutabilirsin (`anchoring`),
+  * **Canlı plaka kuralı:** plaka yalnızca taş/ceset ağırlığıyla basılır (oyuncu tek başına basamaz); kapı ağırlık durdukça açıktır, ağırlık kalkınca kapanır. Kapıdan karşı tarafa geçildiği anda bulmaca kalıcı çözülür (*geçiş kilidi*). Eski kayıtlarda çözülmüş bulmaca çözülü kalır.
+  * İstisna: `latch_on_press` plakası (yalnız Sera `SharedPlate`) basıldığı anda kalıcı çözülür; `accept_player` ve `latch_on_press` beyaz listesi `plate_rule_audit` ile denetlenir.
 * Son 3 saniyelik mor **Yankı Tekrarlarını (Echo Replay)** izleyerek ölüm anındaki sırları çözebilirsin,
 * **Beyaz Bekçi Shilda**'nın bedenlerine bıraktığı kızıl ölüm çiçeklerinin ışığıyla karanlıkta gizlenen antik mühürleri ortaya çıkarabilirsin.
 

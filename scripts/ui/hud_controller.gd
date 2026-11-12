@@ -71,6 +71,7 @@ func _ready() -> void:
 	GameState.knowledge_changed.connect(_refresh_objective_now)
 	GameState.knowledge_changed.connect(_update_control_visibility_arg)
 	PuzzleManager.puzzle_solved.connect(_on_puzzle_solved_objective)
+	PuzzleManager.live_changed.connect(_on_puzzle_live_changed)
 	DialogueManager.page_shown.connect(_on_dialogue_page)
 	DialogueManager.dialogue_closed.connect(_on_dialogue_closed)
 	DialogueManager.dialogue_cancelled.connect(_on_dialogue_closed)
@@ -752,6 +753,17 @@ func _fit_guidance_width() -> void:
 
 func _on_puzzle_solved_objective(_puzzle_id: StringName) -> void:
 	_refresh_objective_now()
+
+
+func _on_puzzle_live_changed(_puzzle_id: StringName, live: bool) -> void:
+	_refresh_objective_now()
+	if not live or hint_label == null:
+		return
+	hint_label.text = "Bir şey… açıldı."
+	hint_label.visible = true
+	await get_tree().create_timer(2.5).timeout
+	if is_instance_valid(hint_label) and hint_label.text == "Bir şey… açıldı.":
+		_apply_default_hint()
 
 
 func _setup_guidance() -> void:

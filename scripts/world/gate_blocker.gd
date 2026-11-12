@@ -10,6 +10,9 @@ extends StaticBody2D
 @onready var sprite: Sprite2D = $Sprite2D
 ## Geçiş kilidi: gate canlı plaka yüzünden açıkken oyuncu karşı tarafa geçerse bulmaca kalıcı çözülür.
 var _entry_side: int = 0
+var _last_player_x: float = NAN
+## Tek karede bu kadar kayma = teleport/spawn; taraf yeniden öğrenilir.
+const TELEPORT_DX := 160.0
 
 
 func _ready() -> void:
@@ -18,7 +21,25 @@ func _ready() -> void:
 	GameState.world_flag_changed.connect(_on_flag)
 	PuzzleManager.puzzle_solved.connect(_on_puzzle)
 	PuzzleManager.live_changed.connect(_on_live)
+	GameState.room_changed.connect(_on_room_changed)
+	var par := get_parent() as CanvasItem
+	if par != null:
+		par.visibility_changed.connect(_reset_side)
 	_apply(_is_open())
+
+
+func _reset_side() -> void:
+	_entry_side = 0
+	_last_player_x = NAN
+
+
+func _on_room_changed(_room_id: StringName = &"") -> void:
+	_reset_side()
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_ENABLED or what == NOTIFICATION_DISABLED:
+		_reset_side()
 
 
 func _is_open() -> bool:
@@ -47,14 +68,21 @@ func _on_puzzle(puzzle_id: StringName) -> void:
 func _on_live(puzzle_id: StringName, live: bool) -> void:
 	if puzzle_id != puzzle_listen:
 		return
+	var parent_vis := get_parent() as CanvasItem
+	var audible := parent_vis == null or parent_vis.is_visible_in_tree()
 	if live:
 		_pulse_open()
+	if audible:
+		var am := get_node_or_null("/root/AudioManager")
+		if am != null and am.has_method("play_sfx"):
+			am.play_sfx(&"door_open" if live else &"plate_press", -4.0)
 	_apply(_is_open())
 
 
 func _physics_process(_delta: float) -> void:
 	if puzzle_listen == &"" or PuzzleManager.is_solved(puzzle_listen) or not PuzzleManager.is_live(puzzle_listen):
 		_entry_side = 0
+		_last_player_x = NAN
 		return
 	## Gate açıkken kendi görünürlüğü kapalıdır; oda görünürlüğüne bak.
 	var par := get_parent() as CanvasItem
@@ -63,7 +91,11 @@ func _physics_process(_delta: float) -> void:
 	var player := get_tree().get_first_node_in_group("player") as Node2D
 	if player == null:
 		return
-	var side := 1 if player.global_position.x > global_position.x else -1
+	var px := player.global_position.x
+	if not is_nan(_last_player_x) and absf(px - _last_player_x) > TELEPORT_DX:
+		_entry_side = 0
+	_last_player_x = px
+	var side := 1 if px > global_position.x else -1
 	if _entry_side == 0:
 		_entry_side = side
 	elif side != _entry_side:

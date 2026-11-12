@@ -108,6 +108,33 @@ func _run() -> void:
 	await create_timer(0.3).timeout
 	check(door._is_open() and not pm.is_live(&"awakening_weight"), "old_save_solved_stays_open")
 
+	# reverse-direction crossing latches too (player starts on the far side)
+	_reset_awakening(pm, state)
+	stone.global_position = stone_home
+	player.global_position = Vector2(door.global_position.x + 60.0, stone_home.y)
+	await create_timer(0.3).timeout
+	stone.global_position = on_plate
+	await create_timer(0.4).timeout
+	check(pm.is_live(&"awakening_weight") and not pm.is_solved(&"awakening_weight"), "reverse_crossing: live, not yet solved")
+	player.global_position = Vector2(door.global_position.x + 30.0, stone_home.y)
+	await create_timer(0.2).timeout
+	player.global_position = Vector2(door.global_position.x - 30.0, stone_home.y)
+	await create_timer(0.25).timeout
+	check(pm.is_solved(&"awakening_weight"), "reverse_crossing_latches")
+
+	# spawn/teleport past the open gate must not latch
+	_reset_awakening(pm, state)
+	stone.global_position = stone_home
+	player.global_position = Vector2(door.global_position.x - 300.0, stone_home.y)
+	await create_timer(0.3).timeout
+	stone.global_position = on_plate
+	await create_timer(0.4).timeout
+	player.global_position = Vector2(door.global_position.x + 300.0, stone_home.y)
+	await create_timer(0.4).timeout
+	check(pm.is_live(&"awakening_weight") and not pm.is_solved(&"awakening_weight"), "spawn_past_gate_does_not_latch")
+	stone.global_position = stone_home
+	await create_timer(0.3).timeout
+
 	# anchored corpse on the plate survives trim
 	_reset_awakening(pm, state)
 	player.global_position = Vector2(stone_home.x - 200.0, stone_home.y)
@@ -121,6 +148,36 @@ func _run() -> void:
 		if c is Dictionary and String(c.get("id", "")) == cid:
 			survived = true
 	check(pm.is_live(&"awakening_weight") and survived, "anchored_corpse_survives_trim")
+
+	# decay_weight: crossing the live gate solves + sets decay_weight_latched
+	rm.enter_room(&"decay_weight", &"default")
+	await create_timer(0.4).timeout
+	var dw_root: Node = (rm._rooms[&"decay_weight"] as Dictionary)["root"]
+	var dplate := _find(dw_root, "PressurePlate") as Node2D
+	var dgate := _find(dw_root, "PathGate") as Node2D
+	var dstone := _find(dw_root, "WeightStone") as Node2D
+	if dplate == null or dgate == null or dstone == null:
+		check(false, "decay_weight has PressurePlate, PathGate, WeightStone")
+	else:
+		var d_home := dstone.global_position
+		var d_on := Vector2(dplate.global_position.x, d_home.y)
+		pm.solved.erase("decay_weight_latch")
+		var dpz: Dictionary = state.world_memory_state.get("puzzles", {})
+		dpz.erase("decay_weight_latch")
+		state.set_world_flag(&"decay_weight_latched", false)
+		pm.set_live(&"decay_weight_latch", false)
+		var dplayer: CharacterBody2D = current_scene.get_node("Player")
+		dplayer.global_position = Vector2(dgate.global_position.x - 60.0, d_home.y)
+		await create_timer(0.3).timeout
+		dstone.global_position = d_on
+		await create_timer(0.4).timeout
+		check(pm.is_live(&"decay_weight_latch") and not pm.is_solved(&"decay_weight_latch"), "decay_weight: live before crossing")
+		dplayer.global_position = Vector2(dgate.global_position.x - 30.0, d_home.y)
+		await create_timer(0.2).timeout
+		dplayer.global_position = Vector2(dgate.global_position.x + 30.0, d_home.y)
+		await create_timer(0.3).timeout
+		check(pm.is_solved(&"decay_weight_latch") and bool(state.get_world_flag(&"decay_weight_latched", false)), "decay_weight_crossing_solves_and_flags")
+		dstone.global_position = d_home
 
 	print("PLATE_AUDIT failures=", failures)
 	sm.delete_all_save_files()
@@ -175,9 +232,11 @@ func _static_scene_checks() -> void:
 				n["script_path"] = String(ext.get(sid, ""))
 			if String(n.get("script_path", "")).ends_with("pressure_plate.gd"):
 				plate_ids.append(String(pr.get("puzzle_id", "&\"awakening_weight\"")))
-				if String(pr.get("accept_player", "false")) == "true":
+				var is_accept := String(pr.get("accept_player", "false")) == "true"
+				var is_latch := String(pr.get("latch_on_press", "false")) == "true"
+				if is_accept or is_latch:
 					var key := "%s:%s" % [room, n["name"]]
-					if not ACCEPT_PLAYER_WHITELIST.has(key) or String(pr.get("latch_on_press", "false")) != "true":
+					if not ACCEPT_PLAYER_WHITELIST.has(key) or not is_latch:
 						accept_bad.append(key)
 		var barriers: Array = []
 		for n in nodes:

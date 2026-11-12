@@ -35,7 +35,7 @@ func _ready() -> void:
 func on_interact(by: Node) -> void:
 	if DeathManager.is_dying:
 		return
-	if PuzzleManager.is_solved(puzzle_hint):
+	if PuzzleManager.is_solved(puzzle_hint) or PuzzleManager.is_live(puzzle_hint):
 		DialogueManager.say("Noroi", solved_line)
 		return
 	if not _armed:
