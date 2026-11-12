@@ -311,11 +311,22 @@ const ROOM_PUZZLES: Dictionary = {
 }
 
 
+## Eski kayıt: bu id çözülmüşse oda zaten geçilmiş sayılır, yeni bulmaca ipucu gösterilmez.
+const LEGACY_ROOM_DONE: Dictionary = {
+	"decay_vines": [&"decay_vine_shortcut"],
+	"decay_weight": [&"decay_weight_latch"],
+	"decay_greenhouse": [&"decay_greenhouse"],
+}
+
+
 ## Günlük açılınca kademe artar: 1 hedef, 2 yön, 3 açık cevap. Üçten sonra artmaz.
 func journal_hint_for_active_room() -> Dictionary:
 	var room := String(RoomManager.get_active_room_id())
 	var list: Array = ROOM_PUZZLES.get(room, [])
 	var pid := &""
+	for legacy in LEGACY_ROOM_DONE.get(room, []):
+		if is_solved(StringName(String(legacy))):
+			return {}
 	for candidate in list:
 		var id := StringName(String(candidate))
 		if not is_solved(id):

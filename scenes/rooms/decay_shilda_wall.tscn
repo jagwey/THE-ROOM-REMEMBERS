@@ -59,6 +59,8 @@ safe_radius = 120.0
 position = Vector2(170, 290)
 script = ExtResource("thorn")
 anchor_x = 340.0
+puzzle_hint = &"shilda_wall_cloud_thorn"
+solved_line = "Bulut cesedimi emdi. Koridor açık."
 body_line = "Bulutu yürüyerek geçersem lanet dolar. Burada ölürsem cesedim onu emer."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/WallThorn"]

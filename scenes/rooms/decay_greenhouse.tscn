@@ -97,6 +97,7 @@ shape = SubResource("PlateShape")
 position = Vector2(520, 290)
 script = ExtResource("thorn")
 anchor_x = 460.0
+puzzle_hint = &"greenhouse_pot_a_thorn"
 body_line = "Bu saksı boş kalmak istiyor. Burada ölmem bir şey açmaz."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ThornA"]
@@ -117,6 +118,7 @@ shape = SubResource("PlateShape")
 position = Vector2(840, 290)
 script = ExtResource("thorn")
 anchor_x = 780.0
+puzzle_hint = &"greenhouse_pot_c_thorn"
 body_line = "Bu saksı da boş. Gölge buraya uğramadı."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ThornC"]

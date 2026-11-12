@@ -1406,7 +1406,7 @@ func _rooms_07_10() -> void:
 		await create_timer(0.4).timeout
 		var shielded := maxf(cloud.size.x - 2.0 * cloud.safe_radius, 0.0)
 		var cost_shield: float = shielded / walk_speed * cloud.curse_per_second
-		check(cost_shield <= curse_max * 0.25, "wall_cloud_corpse_shield_makes_walk_cheap")
+		check(cost_shield <= curse_max * 0.15, "wall_cloud_corpse_shield_makes_walk_cheap")
 		var pl2: Node2D = current_scene.get_node("Player")
 		check(cloud._is_safe(Vector2(cloud.position.x + cloud.safe_radius - 10.0, pl2.global_position.y)) and not cloud._is_safe(Vector2(cx1 - 5.0, pl2.global_position.y)), "wall_cloud_corpse_shield_live_check")
 		_clear_corpses()
@@ -1415,6 +1415,53 @@ func _rooms_07_10() -> void:
 			if n.is_in_group("blood_thorn"):
 				wthorn2 = n
 		check(wthorn2 != null and wthorn2.position.x < cx0 and wthorn2.anchor_x > cx0 and wthorn2.anchor_x < cx1, "wall_thorn_before_cloud_drops_corpse_inside")
+	# ---- fix1: dikenler silahli, benzersiz ipucu, eski gunluk ipucu, bulut erisimi ----
+	var earlier: Array = ["awakening_weight", "awakening_corpse_plate", "awakening_balcony_crossed", "balcony_step_near", "balcony_step_far", "awakening_crypt_pages", "awakening_crypt_bed", "awakening_passage_rings", "awakening_memory_code", "passage_step_high", "awakening_seal_weight", "awakening_seal_second", "awakening_vigil_trace", "decay_vines", "decay_weight_latch", "decay_weight_corpse"]
+	for eid in earlier:
+		pm.mark_solved(StringName(eid))
+	var hint_seen: Dictionary = {}
+	var dup_hint := false
+	for rid2 in ["decay_vines", "decay_weight", "decay_greenhouse", "decay_shilda_wall"]:
+		var rr: Node = _room_root(StringName(rid2))
+		if rr == null:
+			continue
+		for t in rr.find_children("*", "Area2D", true, false):
+			if t.is_in_group("blood_thorn"):
+				if hint_seen.has(t.puzzle_hint):
+					dup_hint = true
+				hint_seen[t.puzzle_hint] = true
+	check(not dup_hint, "thorns_0710_unique_puzzle_hints")
+	var armed_nodes: Array = []
+	var wt: Node = sr.find_child("WallThorn", true, false)
+	var ta: Node = gr.find_child("ThornA", true, false)
+	var tc: Node = gr.find_child("ThornC", true, false)
+	for t2 in [wt, ta, tc]:
+		if t2 == null:
+			check(false, "thorn_exists_fix1")
+			continue
+		check(not pm.is_solved(t2.puzzle_hint) and not pm.is_live(t2.puzzle_hint), "thorn_%s_hint_unsolved_late_game" % String(t2.name))
+		t2.on_interact(current_scene.get_node("Player"))
+		check(bool(t2._armed), "thorn_%s_arms_on_interact_late_game" % String(t2.name))
+		t2._armed = false
+	var spawn_x: float = float(sr.get("checkpoint").x) if sr.get("checkpoint") != null else 120.0
+	if cloud != null and wt != null:
+		var cxa: float = cloud.position.x - cloud.size.x * 0.5
+		check(spawn_x < cxa and wt.position.x < cxa and wt.position.x > spawn_x - 200.0, "wall_thorn_reachable_without_crossing_cloud")
+		var shielded2: float = maxf(cloud.size.x - 2.0 * cloud.safe_radius, 0.0)
+		check(shielded2 / walk_speed * cloud.curse_per_second <= curse_max * 0.15, "wall_cloud_shield_cost_le_15_percent")
+	_unsolve(["decay_vines", "decay_weight_latch", "decay_weight_corpse", "decay_vine_shortcut"])
+	rm.enter_room(&"decay_vines", &"default")
+	await create_timer(0.3).timeout
+	check(not pm.journal_hint_for_active_room().is_empty(), "journal_vines_hint_when_unsolved")
+	pm.mark_solved(&"decay_vine_shortcut")
+	check(pm.journal_hint_for_active_room().is_empty(), "journal_vines_no_hint_when_legacy_solved")
+	_unsolve(["decay_vine_shortcut"])
+	rm.enter_room(&"decay_weight", &"default")
+	await create_timer(0.3).timeout
+	check(not pm.journal_hint_for_active_room().is_empty(), "journal_weight_hint_when_unsolved")
+	pm.mark_solved(&"decay_weight_latch")
+	check(pm.journal_hint_for_active_room().is_empty(), "journal_weight_no_hint_when_legacy_latch_solved")
+	_unsolve(["decay_weight_latch", "decay_weight_corpse"])
 	var crypt_x := -1.0
 	var garden_x := -1.0
 	for n in sr.find_children("*", "Area2D", true, false):
