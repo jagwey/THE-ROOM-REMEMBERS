@@ -159,6 +159,26 @@ const HINTS: Dictionary = {
 		"orientation": "Kırmızı kristal bedeni yatağın üstünde bırakır.",
 		"explicit": "Kristale iki kez dokun; bedenin yatağa uzanınca anı açılır."
 	},
+	&"awakening_passage_rings": {
+		"goal": "Geçidin çıkışı halkalara bağlı.",
+		"orientation": "Üç halkanın çentik sayısı yankıdaki sırayla eşleşmeli.",
+		"explicit": "Halkalara çentik sırasıyla dokun: üç, bir, dört."
+	},
+	&"awakening_seal_weight": {
+		"goal": "Kapı bir beden ağırlığı istiyor.",
+		"orientation": "Kırmızı kristal bedeni ilk plakada bırakır.",
+		"explicit": "İlk kristale iki kez dokun, beden plakada kalsın."
+	},
+	&"awakening_seal_second": {
+		"goal": "İkinci plaka da boş kalmamalı.",
+		"orientation": "Her plaka ayrı bir beden ister. Bedenler birbirini atmaz.",
+		"explicit": "İkinci kristale iki kez dokun, bedenin ikinci plakada kalsın."
+	},
+	&"awakening_vigil_trace": {
+		"goal": "Nöbet odasında gölgeler yürüyor.",
+		"orientation": "Kapıyı gösteren gölge, diğerleri gibi yarıda solmaz.",
+		"explicit": "Sağdaki kapıya kadar yürüyen gölgenin peşinden git."
+	},
 	&"awakening_memory_code": {
 		"goal": "Taş mühür üç haneli bir sayı bekliyor.",
 		"orientation": "Geçitteki yarıkta geçmişten kalan bir ses yankılanıyor.",
@@ -252,8 +272,9 @@ const ROOM_PUZZLES: Dictionary = {
 	"awakening": [&"awakening_weight", &"awakening_corpse_plate"],
 	"awakening_balcony": [&"awakening_balcony_crossed"],
 	"awakening_crypt": [&"awakening_crypt_pages", &"awakening_crypt_bed"],
-	"awakening_passage": [&"awakening_memory_code"],
-	"awakening_seal": [&"awakening_memory_code"],
+	"awakening_passage": [&"awakening_passage_rings", &"awakening_memory_code"],
+	"awakening_seal": [&"awakening_seal_weight", &"awakening_seal_second", &"awakening_memory_code"],
+	"awakening_vigil": [&"awakening_vigil_trace"],
 	"decay_weight": [&"decay_weight_latch"],
 	"decay_greenhouse": [&"decay_greenhouse"],
 	"decay_shilda_wall": [&"decay_shilda_wall_broken"],

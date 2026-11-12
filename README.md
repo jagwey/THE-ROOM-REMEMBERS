@@ -186,6 +186,7 @@ Kemik Mahzeni girişinde (x≈150) tükenmez bir çiçek kaynağı durur. Çiçe
 - **Öne çıkan değişiklikler:** X'in kimliği `mirrors_1927` sonunda açılır ("Bana X deyin"); bölge kartı "Uyanış Mahmuzu" → "Uyanış Odası"; "███" → "[kazınmış]".
 - **Durum:** yayınlanmadı; rozet ve indirme bağlantıları v1.13.0'da kalır.
 - **Faz 2 odalar 01-03 (T4):** Uyanış Odası kapısı taş plakası + yalnız-ceset plaka ister (ilk ölüm dersi: plakadaki dikenli kök); Gözlem Balkonu ruh mührünü kaybetti; boşluğun iki yanındaki sütunlar (64 px) düz zıplamayla aşılamaz, kan kristaliyle ölüp bedenini basamak yaparak geçilir (dönüş için karşı yakada ikinci kristal), karşıdaki geçiş alanı kapıyı açar, teleskop halka kodunun ilk hanesini (3) gösterir; Mahzen'de defter sayfaları tarih sırasına dizilir, yataktaki ceset anıyı açar ve 2.-3. haneleri (1, 4) verir. Eski `soul_seal_balcony` kayıtları geçerli kalır.
+- **Faz 2 odalar 04-06 (T5):** Kırık Geçit kısaldı (1500 px); çıkış, yankıdaki sırayla (3-1-4) dokunulan üç halkaya bağlı ve yüksek basamak ancak kan kristaliyle bırakılan bedenle aşılır. Mühür Odası iki plaka ister: iki ayrı beden, iki plaka; yanlış mühür kodu laneti artırır. Nöbet Odası'nda gölge üç soru sorar (cevaplar güveni ±1 değiştirir), sonra üç iz gölgesinden yalnız biri kapıya kadar yürür; konuşma ve iz tamamlanınca yol açılır.
 
 ### v1.14.0 (hazır, yayınlanmadı) — Faz 0 kritik düzeltmeler
 - **Canlı plaka kuralı:** plaka yalnız üstünde ağırlık varken kapıyı açar; içinden geçince kapı kalıcı çözülür ve kaydedilir (`PuzzleManager.set_live/is_live`).

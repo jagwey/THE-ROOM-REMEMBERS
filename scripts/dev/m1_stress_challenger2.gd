@@ -391,7 +391,7 @@ func _run() -> void:
 
 	# 4.3: Real in-game death stress testing across diverse rooms
 	var test_rooms: Array[Dictionary] = [
-		{"room": &"awakening_passage", "death_x": 600.0, "expected_spawn": Vector2(700, 288), "margin": 30.0},
+		{"room": &"awakening_passage", "death_x": 400.0, "expected_spawn": Vector2(600, 288), "margin": 30.0},
 		{"room": &"decay_vines", "death_x": 400.0, "expected_spawn": Vector2(120, 288), "margin": 30.0},
 		{"room": &"decay_weight", "death_x": 400.0, "expected_spawn": Vector2(120, 288), "margin": 30.0},
 		{"room": &"decay_garden", "death_x": 500.0, "expected_spawn": Vector2(130, 288), "margin": 30.0},

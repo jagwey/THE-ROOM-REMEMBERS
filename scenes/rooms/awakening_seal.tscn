@@ -148,12 +148,13 @@ required_puzzle = &"awakening_memory_code"
 shape = SubResource("TransitionHit")
 
 [node name="PressurePlate" type="Area2D" parent="Interactive"]
-position = Vector2(330, 300)
+position = Vector2(300, 300)
 collision_layer = 0
 collision_mask = 1
 script = ExtResource("7")
 puzzle_id = &"awakening_seal_weight"
 accept_player = false
+accept_stone = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/PressurePlate"]
 shape = SubResource("PlateShape")
@@ -163,11 +164,38 @@ texture_filter = 0
 centered = true
 
 [node name="BloodThorn" type="Area2D" parent="Interactive"]
-position = Vector2(440, 290)
+position = Vector2(370, 290)
 script = ExtResource("blood_thorn")
-anchor_x = 330.0
+anchor_x = 300.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BloodThorn"]
+shape = SubResource("PlateShape")
+
+[node name="PressurePlate2" type="Area2D" parent="Interactive"]
+position = Vector2(430, 300)
+collision_layer = 0
+collision_mask = 1
+script = ExtResource("7")
+puzzle_id = &"awakening_seal_second"
+accept_player = false
+accept_stone = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/PressurePlate2"]
+shape = SubResource("PlateShape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/PressurePlate2"]
+texture_filter = 0
+centered = true
+
+[node name="BloodThorn2" type="Area2D" parent="Interactive"]
+position = Vector2(500, 290)
+script = ExtResource("blood_thorn")
+anchor_x = 430.0
+puzzle_hint = &"awakening_seal_second"
+body_line = "İkinci plaka da bir beden istiyor. Bu sefer ötekini ezmem."
+solved_line = "İkinci kristal sustu. İki beden iki plakayı tutuyor."
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BloodThorn2"]
 shape = SubResource("PlateShape")
 
 [node name="SideGate" type="StaticBody2D" parent="Interactive"]
@@ -176,7 +204,8 @@ collision_layer = 1
 collision_mask = 0
 script = ExtResource("8")
 open_flag = &""
-puzzle_listen = &"awakening_seal_weight"
+puzzle_listen_all = PackedStringArray("awakening_seal_weight", "awakening_seal_second")
+legacy_puzzle = &"awakening_seal_weight"
 ignore_world_flag = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/SideGate"]
@@ -196,6 +225,7 @@ collision_mask = 0
 monitoring = false
 monitorable = true
 script = ExtResource("9")
+penalize_wrong = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/MemorySeal"]
 shape = SubResource("SealShape")

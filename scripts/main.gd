@@ -13,8 +13,8 @@ var _continued: bool = false
 const ROOM_DEFS := {
 	"awakening": {"node": "Awakening", "bounds": Rect2(0, 0, 1280, 360), "checkpoint": Vector2(120, 280), "bg": "res://assets/backgrounds/awakening",
 		"spawns": {"default": Vector2(120, 280), "rebirth_bed": Vector2(120, 280), "from_passage": Vector2(1160, 288), "seal_awakening": Vector2(380, 288)}},
-	"awakening_passage": {"node": "AwakeningPassage", "bounds": Rect2(0, 0, 1920, 360), "checkpoint": Vector2(700, 288), "bg": "res://assets/backgrounds/decay",
-		"spawns": {"default": Vector2(80, 288), "from_awakening": Vector2(80, 288), "from_seal": Vector2(1840, 288)}},
+	"awakening_passage": {"node": "AwakeningPassage", "bounds": Rect2(0, 0, 1500, 360), "checkpoint": Vector2(700, 288), "bg": "res://assets/backgrounds/decay",
+		"spawns": {"default": Vector2(80, 288), "from_awakening": Vector2(80, 288), "from_seal": Vector2(1410, 288)}},
 	"awakening_seal": {"node": "AwakeningSeal", "bounds": Rect2(0, 0, 960, 360), "checkpoint": Vector2(480, 288), "bg": "res://assets/backgrounds/decay",
 		"spawns": {"default": Vector2(480, 288), "from_passage": Vector2(80, 288), "from_decay": Vector2(880, 288)}},
 	"decay_vines": {"node": "DecayVines", "bounds": Rect2(0, 0, 1280, 360), "checkpoint": Vector2(120, 288), "bg": "res://assets/backgrounds/decay",

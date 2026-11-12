@@ -31,6 +31,8 @@ var _catalog: Dictionary = {
 			["Yankı", "Kırmızı halka… zemin yalan söylüyor."],
 			["Yankı", "Üç çatlak. Bir nefes. Dört kalp atışı."],
 			["Yankı", "Sayı… üç… bir… dört."],
+			["Noroi", "Yarıktan kendi sesim geliyor, bu ölümden değil, bir öncekinden."],
+			["Noroi", "Unutmuşum ama oda unutmamış."],
 		],
 		"journal": {
 			"section": "izler",

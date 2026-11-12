@@ -34,6 +34,7 @@ func _run() -> void:
 	await _shade_water()
 	await _rooms_01_03()
 	await _rooms_01_03_fix1()
+	await _rooms_04_06()
 	quit(1 if failures > 0 else 0)
 
 
@@ -825,6 +826,311 @@ func _rooms_01_03_fix1() -> void:
 	check(after_ids.has(ids3[0]) and not after_ids.has(ids3[1]), "trim_keeps_anchor_of_unsolved_plate")
 	_clear_corpses()
 	_unsolve(["awakening_corpse_plate"])
+
+
+func _shape_size(n: Node) -> Vector2:
+	return ((n.get_node("CollisionShape2D") as CollisionShape2D).shape as RectangleShape2D).size
+
+
+func _answer_vigil(dm: Node, answers: Array, keeper: Node) -> int:
+	## Keeper konusmasini calistirir; ask() cikinca answers[i] secenegini secer. Secim sayisini dondurur.
+	var made := [0]
+	var on_made := func(_i): made[0] += 1
+	dm.choice_made.connect(on_made)
+	var done := [false]
+	var runner := func():
+		await keeper._run_vigil_meeting()
+		done[0] = true
+	runner.call()
+	var guard := 0
+	while not done[0] and guard < 900:
+		guard += 1
+		if dm.has_choices() and made[0] < answers.size():
+			dm.choose_now(int(answers[made[0]]))
+		elif dm.is_open and not dm.has_choices():
+			dm.advance()
+		await process_frame
+	dm.choice_made.disconnect(on_made)
+	return made[0]
+
+
+func _drive_dialogue(flag: Array, dm: Node) -> void:
+	var gd := 0
+	while not flag[0] and gd < 600:
+		gd += 1
+		if dm.is_open:
+			dm.advance()
+		await process_frame
+
+
+func _rooms_04_06() -> void:
+	var rm := root.get_node("RoomManager")
+	var pm := root.get_node("PuzzleManager")
+	var gs := root.get_node("GameState")
+	var cm := root.get_node("CorpseManager")
+	var dm := root.get_node("DialogueManager")
+	var cu := root.get_node("CurseManager")
+	dm.clear()
+	_clear_corpses()
+	# ---- 04 gecit ----
+	rm.enter_room(&"awakening_passage", &"default")
+	await create_timer(0.4).timeout
+	var pas: Node = _room_root(&"awakening_passage")
+	check(is_equal_approx((pas.bounds as Rect2).size.x, 1500.0), "pas_room_width_1500")
+	var exit_seal: Node2D = pas.find_child("ExitToSeal", true, false)
+	check(exit_seal != null and exit_seal.position.x <= 1460.0, "pas_exit_x_le_1460")
+	check(exit_seal != null and exit_seal.required_puzzle == &"awakening_passage_rings", "pas_exit_requires_rings")
+	var from_seal: Node2D = pas.get_node_or_null("Spawns/from_seal")
+	check(from_seal != null and from_seal.position.x < 1460.0 and from_seal.position.x > 1300.0, "pas_from_seal_spawn_inside_room")
+	var shrine: Node = pas.find_child("RingShrine", true, false)
+	check(shrine != null and shrine.is_in_group("sequence_shrine"), "pas_ring_shrine_exists")
+	if shrine != null:
+		check(Array(shrine.order) == ["3", "1", "4"], "pas_shrine_order_314")
+		check(shrine.puzzle_id == &"awakening_passage_rings", "pas_shrine_puzzle_id")
+		check(String(shrine.fail_line) != "", "pas_shrine_fail_line")
+		var sids: Array = []
+		for ch in shrine.get_children():
+			if "step_id" in ch:
+				sids.append(String(ch.step_id))
+				check((ch as Node2D).position.x < exit_seal.position.x - 20.0, "pas_ring_%s_before_exit" % String(ch.step_id))
+		sids.sort()
+		check(sids == ["1", "3", "4"], "pas_ring_steps_134")
+	var echo_n := 0
+	for ch in pas.get_node("Interactive").get_children():
+		if ch.has_method("get_interact_label") and "echo_id" in ch:
+			echo_n += 1
+	check(echo_n == 1 and pas.find_child("OwnVoice", true, false) == null, "pas_single_echo_point_ownvoice_merged")
+	var echo_src := FileAccess.get_file_as_string("res://scripts/autoload/echo_manager.gd")
+	check(echo_src.contains("Unutmuşum ama oda unutmamış") and echo_src.contains("kendi sesim"), "pas_ownvoice_lines_in_echo")
+	var pcs: Dictionary = load("res://scripts/player/player_controller.gd").get_script_constant_map()
+	var jv := absf(float(pcs["JUMP_VELOCITY"]))
+	var g := float(pcs["GRAVITY"])
+	var apex := jv * jv / (2.0 * g)
+	var ci := (load("res://scenes/world/corpse.tscn") as PackedScene).instantiate()
+	var ccs := ci.get_node("CollisionShape2D") as CollisionShape2D
+	var ctop := -(ccs.position.y - (ccs.shape as RectangleShape2D).size.y / 2.0)
+	ci.free()
+	var hi: StaticBody2D = pas.get_node_or_null("LessonStepHigh")
+	check(hi != null, "pas_high_step_exists")
+	if hi != null:
+		var hsz := _shape_size(hi)
+		var hh := 288.0 - (hi.position.y - hsz.y / 2.0)
+		check(hh > apex + 4.0, "pas_high_step_unreachable_without_corpse (H %.1f > apex %.1f)" % [hh, apex])
+		check(hh < ctop + apex - 4.0, "pas_high_step_reachable_with_corpse (H %.1f < %.1f)" % [hh, ctop + apex - 4.0])
+		var left_edge := hi.position.x - hsz.x / 2.0
+		var pth: Node = pas.find_child("StepThorn", true, false)
+		check(pth != null and pth.is_in_group("blood_thorn"), "pas_step_thorn_exists")
+		if pth != null:
+			check(pth.anchor_x < left_edge and left_edge - pth.anchor_x <= 24.0, "pas_thorn_anchor_within_24_of_step")
+			check(pth.position.x < pth.anchor_x and not pm.is_solved(pth.puzzle_hint), "pas_thorn_before_anchor_unsolved_hint")
+		var mass: StaticBody2D = pas.get_node_or_null("LessonMass")
+		if mass != null:
+			var mh := 288.0 - (mass.position.y - _shape_size(mass).y / 2.0)
+			check(mh <= apex - 4.0, "pas_mass_jumpable_without_corpse")
+	# ---- 05 muhur ----
+	_unsolve(["awakening_seal_weight", "awakening_seal_second", "awakening_memory_code"])
+	rm.enter_room(&"awakening_seal", &"default")
+	await create_timer(0.4).timeout
+	var seal: Node = _room_root(&"awakening_seal")
+	var p1: Node = seal.find_child("PressurePlate", true, false)
+	var p2: Node = seal.find_child("PressurePlate2", true, false)
+	check(p1 != null and p2 != null, "seal_two_plates_exist")
+	if p1 != null and p2 != null:
+		check(p1.accept_stone == false and p2.accept_stone == false, "seal_both_plates_corpse_only_stone_off")
+		check(p1.accept_player == false and p2.accept_player == false, "seal_both_plates_player_off")
+		check(p1.puzzle_id == &"awakening_seal_weight" and p2.puzzle_id == &"awakening_seal_second", "seal_plate_ids")
+		check(absf(p1.position.x - p2.position.x) >= 80.0, "seal_plates_far_apart")
+	var sg: Node = seal.find_child("SideGate", true, false)
+	check(sg != null and Array(sg.puzzle_listen_all) == ["awakening_seal_weight", "awakening_seal_second"] and sg.legacy_puzzle == &"awakening_seal_weight", "seal_gate_listens_both_with_legacy")
+	var thorns: Array = []
+	for t in get_nodes_in_group("blood_thorn"):
+		if seal.is_ancestor_of(t):
+			thorns.append(t)
+	check(thorns.size() == 2, "seal_two_thorns")
+	if p1 != null and p2 != null and thorns.size() == 2:
+		var anchors: Array = [float(thorns[0].anchor_x), float(thorns[1].anchor_x)]
+		anchors.sort()
+		var plates: Array = [float(p1.position.x), float(p2.position.x)]
+		plates.sort()
+		check(absf(anchors[0] - plates[0]) < 1.0 and absf(anchors[1] - plates[1]) < 1.0, "seal_thorn_anchors_on_plates")
+		var hints: Array = [String(thorns[0].puzzle_hint), String(thorns[1].puzzle_hint)]
+		hints.sort()
+		check(hints == ["awakening_seal_second", "awakening_seal_weight"], "seal_thorn_hints_per_plate")
+	var mseal: Node = seal.find_child("MemorySeal", true, false)
+	check(mseal != null and mseal.penalize_wrong == true, "seal_memory_seal_penalizes_wrong")
+	check(pm.get_hints(&"awakening_seal_second").size() > 0, "seal_second_plate_hints")
+	if mseal != null:
+		var stub := Node.new()
+		stub.set_script(load("res://scripts/dev/seal_hud_stub.gd"))
+		root.add_child(stub)
+		## Gercek HUD gruptan gecici cikar (get_first_node_in_group stub'i bulsun), title katmani kapat.
+		var real_huds: Array = get_nodes_in_group("hud")
+		for h in real_huds:
+			h.remove_from_group("hud")
+		stub.add_to_group("hud")
+		root.get_node("UiGate").set_title(false)
+		var curse0: float = cu.curse
+		stub.next_code = "999"
+		var run1 := [false]
+		var r1 := func():
+			await mseal.on_interact(null)
+			run1[0] = true
+		r1.call()
+		await _drive_dialogue(run1, dm)
+		check(cu.curse > curse0 and not pm.is_solved(&"awakening_memory_code"), "seal_wrong_code_penalizes_curse_unsolved")
+		stub.next_code = "314"
+		run1[0] = false
+		r1.call()
+		await _drive_dialogue(run1, dm)
+		check(pm.is_solved(&"awakening_memory_code"), "seal_right_code_314_solves")
+		stub.queue_free()
+		for h in real_huds:
+			if is_instance_valid(h):
+				h.add_to_group("hud")
+		_unsolve(["awakening_memory_code"])
+	# iki ceset butcesi: eski cesetler iki muhur cesedini asla atmaz
+	_clear_corpses()
+	_unsolve(["awakening_corpse_plate", "awakening_seal_weight", "awakening_seal_second"])
+	for i in 3:
+		cm.record_corpse_at(Vector2(100 + i * 30, 288), &"audit")
+		await create_timer(0.03).timeout
+	var lst: Array = gs.world_memory_state["corpses"]
+	for e in lst:
+		(e as Dictionary)["anchored"] = true
+		(e as Dictionary)["anchoring"] = true
+		(e as Dictionary)["anchor_plate"] = "awakening_corpse_plate"
+	pm.mark_solved(&"awakening_corpse_plate") ## kapi gecisi plakayi cozer (gate_blocker)
+	var sid1: String = cm.record_corpse_at(Vector2(330, 288), &"audit")
+	lst = gs.world_memory_state["corpses"]
+	for e in lst:
+		if String((e as Dictionary).get("id", "")) == sid1:
+			(e as Dictionary)["anchored"] = true
+			(e as Dictionary)["anchoring"] = true
+			(e as Dictionary)["anchor_plate"] = "awakening_seal_weight"
+	await create_timer(0.03).timeout
+	var sid2: String = cm.record_corpse_at(Vector2(440, 288), &"audit")
+	lst = gs.world_memory_state["corpses"]
+	var ids_now: Array = []
+	for e in lst:
+		ids_now.append(String((e as Dictionary).get("id", "")))
+	check(ids_now.has(sid1) and ids_now.has(sid2) and lst.size() <= cm.MAX_CORPSES, "seal_two_corpses_within_cap_neither_trimmed")
+	_clear_corpses()
+	_unsolve(["awakening_corpse_plate"])
+	# ---- 06 nobet ----
+	var keepers := get_nodes_in_group("keeper")
+	var keeper: Node = keepers[0] if keepers.size() > 0 else null
+	check(keeper != null, "vigil_keeper_exists")
+	gs.player_progress_knowledge.erase("vigil_answers")
+	gs.player_progress_knowledge.erase("vigil_talk_done")
+	gs.player_progress_knowledge.erase("vigil_parted")
+	gs.player_progress_knowledge["vigil_trust"] = 0
+	_unsolve(["awakening_vigil", "awakening_vigil_trace"])
+	rm.enter_room(&"awakening_vigil", &"default")
+	await create_timer(0.5).timeout
+	var vig: Node = _room_root(&"awakening_vigil")
+	var shades_root: Node = vig.find_child("VigilShades", true, false)
+	check(shades_root != null, "vigil_shades_root_exists")
+	var shades: Array = []
+	if shades_root != null:
+		for ch in shades_root.get_children():
+			if ch.has_method("start") and "fake" in ch:
+				shades.append(ch)
+	var nfake := 0
+	var real: Node = null
+	var fake_s: Node = null
+	for s in shades:
+		if s.fake:
+			nfake += 1
+			fake_s = s
+		else:
+			real = s
+	check(shades.size() == 3 and nfake >= 1 and nfake < 3, "vigil_three_shades_with_fake (%d/%d)" % [nfake, shades.size()])
+	check(real != null and fake_s != null, "vigil_real_and_fake_found")
+	var running := false
+	for s in shades:
+		if s._running:
+			running = true
+	check(not running, "vigil_shades_idle_before_talk")
+	if keeper != null and real != null and fake_s != null:
+		var n_made: int = await _answer_vigil(dm, [0, 1, 0], keeper)
+		check(n_made == 3, "vigil_three_questions_asked (%d)" % n_made)
+		check(gs.get_vigil_trust() == 1, "vigil_trust_plus1_minus1_plus1 (%d)" % gs.get_vigil_trust())
+		check(bool(gs.player_progress_knowledge.get("vigil_talk_done", false)), "vigil_talk_done_flag")
+		check(not pm.is_solved(&"awakening_vigil"), "vigil_talk_alone_does_not_solve")
+		var any_running := false
+		for s in shades:
+			if s._running:
+				any_running = true
+		check(any_running, "vigil_shades_start_after_talk")
+		real.reached.emit(&"vigil_decoy_probe")
+		await process_frame
+		check(not pm.is_solved(&"awakening_vigil_trace"), "vigil_unknown_shade_id_does_not_solve")
+		fake_s.reached.emit(fake_s.shade_id)
+		await process_frame
+		check(not pm.is_solved(&"awakening_vigil_trace") and not pm.is_solved(&"awakening_vigil"), "vigil_fake_reached_does_not_solve")
+		real.reached.emit(real.shade_id)
+		await create_timer(0.1).timeout
+		check(pm.is_solved(&"awakening_vigil_trace") and pm.is_solved(&"awakening_vigil"), "vigil_real_shade_solves_trace_and_vigil")
+		check(bool(gs.player_progress_knowledge.get("vigil_parted", false)), "vigil_parted_after_solve")
+		var n2: int = await _answer_vigil(dm, [1, 1, 1], keeper)
+		check(n2 == 0 and gs.get_vigil_trust() == 1, "vigil_not_asked_again_after_done")
+		rm.enter_room(&"awakening_seal", &"default")
+		await create_timer(0.3).timeout
+		rm.enter_room(&"awakening_vigil", &"default")
+		await create_timer(0.4).timeout
+		var again := false
+		var vig2: Node = _room_root(&"awakening_vigil")
+		var sr2: Node = vig2.find_child("VigilShades", true, false) if vig2 != null else null
+		if sr2 != null:
+			for s in sr2.get_children():
+				if "_running" in s and s._running:
+					again = true
+		check(not again, "vigil_trace_solved_shades_not_restarted")
+		gs.player_progress_knowledge["vigil_answers"] = [0]
+		gs.player_progress_knowledge.erase("vigil_talk_done")
+		gs.player_progress_knowledge.erase("vigil_parted")
+		gs.player_progress_knowledge["vigil_trust"] = 1
+		_unsolve(["awakening_vigil", "awakening_vigil_trace"])
+		var n3: int = await _answer_vigil(dm, [0, 0], keeper)
+		check(n3 == 2 and (gs.player_progress_knowledge["vigil_answers"] as Array).size() == 3, "vigil_resumes_remaining_questions (%d)" % n3)
+		gs.player_progress_knowledge.erase("vigil_answers")
+		gs.player_progress_knowledge.erase("vigil_talk_done")
+		_unsolve(["awakening_vigil_trace"])
+		pm.mark_solved(&"awakening_vigil")
+		var n4: int = await _answer_vigil(dm, [0, 0, 0], keeper)
+		check(n4 == 0 and pm.is_solved(&"awakening_vigil"), "vigil_legacy_solved_stays_solved_no_questions")
+	# varsayilan headless otomatik ilerleme: ask() secenek 0'i secer, takilmaz
+	gs.player_progress_knowledge.erase("vigil_answers")
+	gs.player_progress_knowledge.erase("vigil_talk_done")
+	gs.player_progress_knowledge.erase("vigil_parted")
+	gs.player_progress_knowledge["vigil_trust"] = 0
+	_unsolve(["awakening_vigil", "awakening_vigil_trace"])
+	if keeper != null:
+		OS.set_environment("TORIMON_NO_AUTO_DIALOGUE", "")
+		dm.clear()
+		var auto_done := [false]
+		var ar := func():
+			await keeper._run_vigil_meeting()
+			auto_done[0] = true
+		ar.call()
+		var ag := 0
+		while not auto_done[0] and ag < 900:
+			ag += 1
+			await process_frame
+		OS.set_environment("TORIMON_NO_AUTO_DIALOGUE", "1")
+		check(auto_done[0] and gs.get_vigil_trust() == 3 and bool(gs.player_progress_knowledge.get("vigil_talk_done", false)), "vigil_headless_auto_picks_option0_no_softlock (trust %d)" % gs.get_vigil_trust())
+	for id in [&"awakening_passage_rings", &"awakening_seal_weight", &"awakening_seal_second", &"awakening_vigil_trace"]:
+		var hh2: Dictionary = pm.get_hints(id)
+		var ok := hh2.size() > 0
+		for k in ["goal", "orientation", "explicit"]:
+			var tx := String(hh2.get(k, ""))
+			if tx.length() > 70 or tx.length() == 0:
+				ok = false
+		check(ok and String(hh2.get("explicit", "")).ends_with("."), "hints_%s_len_ok" % String(id))
+	check(_objective("awakening_passage").length() > 0 and _objective("awakening_vigil").length() > 0, "objectives_nonempty")
+	_clear_corpses()
+	_unsolve(["awakening_vigil", "awakening_vigil_trace"])
+	dm.clear()
 
 
 func _objective(room: String) -> String:

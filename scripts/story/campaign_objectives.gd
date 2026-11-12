@@ -4,8 +4,8 @@ extends RefCounted
 
 const _BY_ROOM: Dictionary = {
 	"awakening": "Durmuş saate bak. Gölge konuşursa dinle. Sağdaki geçide yürü.",
-	"awakening_passage": "Taşı dinle, sayıyı ezberle. Kırmızı yarığa basma, mühre git.",
-	"awakening_seal": "Kristale dokun, bedenin plakada kalsın; sonra sayıyı mühre yaz.",
+	"awakening_passage": "Halkalara yankıdaki sırayla dokun, kristalle basamak kur.",
+	"awakening_seal": "İki kristal, iki beden, iki plaka. Kapı açılınca sayıyı mühre yaz.",
 	"decay_vines": "Sarmaşık yolu kapatmış. Kolu çek, düğüm çözülsün, geçide geç.",
 	"decay_weight": "Taşı plakaya bırak. Şaşırırsan kolu çek, taş geri gelir.",
 	"decay_garden": "Çiçeklere bak, Shilda'yı dinle, arşiv mührünü aç.",
@@ -33,7 +33,7 @@ const _BY_ROOM: Dictionary = {
 	"core_memory_vault": "Sütunlara sırayla dokun: 1927, 1995, sonra Son.",
 	"core_bloom_garden": "Taçları say: dört, bir, iki. Sonra Shilda konuşur.",
 	"mirrors_shrine": "Gölgeyi içine çek, perdeyi geç ve mührün öteki yarısını al.",
-	"awakening_vigil": "Gölgeyle konuş. Sağdaki kapı ancak o zaman açılır.",
+	"awakening_vigil": "Gölgeyle konuş, sonra kapıya yürüyen izin peşinden git.",
 	"decay_greenhouse": "Camın ötesindeki el mührü tutuyor. Plakaya bas.",
 	"library_clockroom": "Önce 1927 saatini, sonra 1995 saatini dinle.",
 	"library_reading_cell": "Duvardaki çentiklere bak, kaç gün sayıldığını gör.",

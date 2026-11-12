@@ -44,7 +44,7 @@ const ROOM_PRESENCE := {
 	"mirrors_gallery": {"mode": "present", "pos": Vector2(900, 280)},
 	"mirrors_1927": {"mode": "silhouette", "pos": Vector2(760, 280)},
 	"core_ascent": {"mode": "present", "pos": Vector2(980, 280)},
-	"awakening_passage": {"mode": "silhouette", "pos": Vector2(1500, 280)},
+	"awakening_passage": {"mode": "silhouette", "pos": Vector2(1150, 280)},
 	"awakening_balcony": {"mode": "silhouette", "pos": Vector2(820, 280)},
 	"decay_garden": {"mode": "present", "pos": Vector2(700, 280)},
 	"decay_shilda_wall": {"mode": "present", "pos": Vector2(760, 280)},
@@ -653,14 +653,59 @@ func _queue_stage_talk(room: String) -> void:
 
 ## Isim sahnesi: "???" konusur; "Ben Noroi." satirindan itibaren ad bilinir, kart "Shilda" olur.
 ## Perde 1 sonu: yüz yüze, konuşan ???. Ad söylenmez. Yol açılır, gölge gider.
+const VIGIL_QUESTIONS: Array = [
+	["Neden buradasın?", ["Kim olduğumu öğrenmem gerek.", "Seni ilgilendirmez."]],
+	["Bana güvenir misin?", ["Henüz değil ama dinliyorum.", "Hayır. Kimseye güvenmem."]],
+	["Yarıktan gelen sesi duydun mu?", ["Duydum. Kendi sesime benziyordu.", "Hayır. Hiçbir şey duymadım."]],
+]
+var _vigil_hooked: bool = false
+
+
+## Nöbet odası: tanışma + 3 soru (güven ±1) + iz gölgesi. `awakening_vigil` yalnız konuşma bitti
+## VE iz çözüldüyse işaretlenir. Cevaplar kalıcıdır; yarım kalan konuşma kalan sorularla sürer.
 func _run_vigil_meeting() -> void:
-	_busy = true
-	var lines: Array = DialogueData.get_set(&"awakening_vigil", &"meeting")
-	for line in lines:
-		DialogueManager.say(String(line[0]), String(line[1]))
-	await _await_dialogue_or_smoke()
-	_busy = false
-	if DialogueManager.is_open:
+	_vigil_hook()
+	if _busy:
+		return
+	var gs := GameState.player_progress_knowledge
+	if not bool(gs.get("vigil_talk_done", false)) and not PuzzleManager.is_solved(&"awakening_vigil"):
+		_busy = true
+		var answers: Array = gs.get("vigil_answers", [])
+		if answers.is_empty():
+			for line in DialogueData.get_set(&"awakening_vigil", &"meeting"):
+				DialogueManager.say(String(line[0]), String(line[1]))
+			await _await_dialogue_or_smoke()
+		while answers.size() < VIGIL_QUESTIONS.size():
+			var q: Array = VIGIL_QUESTIONS[answers.size()]
+			var pick: int = await _vigil_ask(String(q[0]), q[1])
+			if pick < 0:
+				_busy = false
+				return
+			answers.append(pick)
+			gs["vigil_answers"] = answers
+			GameState.add_vigil_trust(1 if pick == 0 else -1)
+		gs["vigil_talk_done"] = true
+		_busy = false
+		for sh in get_tree().get_nodes_in_group("vigil_shades"):
+			sh.start_all()
+	_vigil_try_finish()
+
+
+func _vigil_hook() -> void:
+	if _vigil_hooked:
+		return
+	_vigil_hooked = true
+	PuzzleManager.puzzle_solved.connect(func(id: StringName) -> void:
+		if id == &"awakening_vigil_trace":
+			_vigil_try_finish())
+
+
+## Konuşma bitti (veya eski kayıt çözülmüş) VE iz çözüldüyse nöbeti kapatır. Tekrar çağrılabilir.
+func _vigil_try_finish() -> void:
+	if PuzzleManager.is_solved(&"awakening_vigil") and bool(GameState.player_progress_knowledge.get("vigil_parted", false)):
+		return
+	var talk_ok: bool = bool(GameState.player_progress_knowledge.get("vigil_talk_done", false)) or PuzzleManager.is_solved(&"awakening_vigil")
+	if not talk_ok or not PuzzleManager.is_solved(&"awakening_vigil_trace"):
 		return
 	PuzzleManager.mark_solved(&"awakening_vigil")
 	LorePointScript.record_evidence("ev_vigil_meeting", "Nöbet", "Nöbet odasında bir gölge yolu gösterdi ve gitti. Adını söylemedi.", "izler")
@@ -668,6 +713,26 @@ func _run_vigil_meeting() -> void:
 	GameState.player_progress_knowledge["seen_keeper"] = true
 	place_for_room(&"awakening_vigil")
 	SaveManager.save_game()
+
+
+## Seçimli soru; seçilen indeksi döndürür, iptalde -1. Headless/smoke'ta advance() ile seçenek 0 seçilir.
+func _vigil_ask(prompt: String, opts: Array) -> int:
+	var res := [-2]
+	var on_made := func(i: int) -> void: res[0] = i
+	var on_cancel := func() -> void: res[0] = -1
+	DialogueManager.choice_made.connect(on_made)
+	DialogueManager.choice_cancelled.connect(on_cancel)
+	DialogueManager.ask(GameState.keeper_speaker_name(), prompt, PackedStringArray(opts))
+	var auto := OS.get_environment("TORIMON_SMOKE") == "1" or DisplayServer.get_name() == "headless"
+	var frames := 0
+	while res[0] == -2 and frames < (900 if auto else 72000):
+		frames += 1
+		if auto:
+			DialogueManager.advance()
+		await get_tree().process_frame
+	DialogueManager.choice_made.disconnect(on_made)
+	DialogueManager.choice_cancelled.disconnect(on_cancel)
+	return res[0] if res[0] != -2 else -1
 
 
 func _run_naming_scene() -> void:

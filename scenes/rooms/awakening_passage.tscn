@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://torimon_awakening_passage"]
+[gd_scene load_steps=25 format=3 uid="uid://torimon_awakening_passage"]
 
 [ext_resource type="Texture2D" path="res://assets/backgrounds/decay/far.png" id="1"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/decay/mid.png" id="2"]
@@ -7,7 +7,10 @@
 [ext_resource type="Script" path="res://scripts/world/room_transition.gd" id="5"]
 [ext_resource type="Script" path="res://scripts/world/memory_hazard.gd" id="6"]
 [ext_resource type="Script" path="res://scripts/world/echo_interactable.gd" id="7"]
-[ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore_self"]
+[ext_resource type="Script" path="res://scripts/world/gated_room_transition.gd" id="gated"]
+[ext_resource type="Script" path="res://scripts/world/sequence_shrine.gd" id="shrine"]
+[ext_resource type="Script" path="res://scripts/world/sequence_step.gd" id="step"]
+[ext_resource type="Script" path="res://scripts/world/blood_thorn.gd" id="thorn"]
 [ext_resource type="Texture2D" path="res://assets/layers/rubble.png" id="9"]
 [ext_resource type="Texture2D" path="res://assets/layers/vines.png" id="10"]
 [ext_resource type="Texture2D" path="res://assets/layers/candlestick.png" id="11"]
@@ -16,7 +19,7 @@
 [ext_resource type="Texture2D" path="res://assets/tiles/tile_00.png" id="walk_tile"]
 
 [sub_resource type="RectangleShape2D" id="Floor"]
-size = Vector2(1960, 48)
+size = Vector2(1560, 48)
 
 [sub_resource type="RectangleShape2D" id="Wall"]
 size = Vector2(40, 400)
@@ -31,17 +34,23 @@ size = Vector2(110, 56)
 size = Vector2(180, 78)
 
 [sub_resource type="RectangleShape2D" id="LessonStepHighShape"]
-size = Vector2(100, 52)
+size = Vector2(60, 64)
+
+[sub_resource type="RectangleShape2D" id="LessonStepMidShape"]
+size = Vector2(50, 40)
 
 [sub_resource type="RectangleShape2D" id="LessonStepLowShape"]
-size = Vector2(100, 34)
+size = Vector2(50, 22)
+
+[sub_resource type="RectangleShape2D" id="ThornShape"]
+size = Vector2(40, 16)
 
 [node name="AwakeningPassage" type="Node2D"]
 script = ExtResource("4")
 room_id = &"awakening_passage"
 region_id = &"awakening"
-bounds = Rect2(0, 0, 1920, 360)
-checkpoint = Vector2(700, 288)
+bounds = Rect2(0, 0, 1500, 360)
+checkpoint = Vector2(600, 288)
 checkpoint_room = &"awakening_passage"
 atmosphere_bg = "res://assets/backgrounds/decay"
 
@@ -54,7 +63,7 @@ position = Vector2(80, 288)
 position = Vector2(80, 288)
 
 [node name="from_seal" type="Marker2D" parent="Spawns"]
-position = Vector2(1840, 288)
+position = Vector2(1410, 288)
 
 [node name="ParallaxFar" type="Parallax2D" parent="."]
 scroll_scale = Vector2(0.15, 0.15)
@@ -134,7 +143,7 @@ modulate = Color(0.65, 0.58, 0.7, 0.72)
 
 [node name="VinesR" type="Sprite2D" parent="Decor"]
 texture_filter = 0
-position = Vector2(1780, 188)
+position = Vector2(1400, 188)
 texture = ExtResource("10")
 centered = true
 flip_h = true
@@ -149,7 +158,7 @@ centered = true
 
 [node name="Rubble" type="Sprite2D" parent="Decor"]
 texture_filter = 0
-position = Vector2(1460, 276)
+position = Vector2(1140, 276)
 scale = Vector2(0.6, 0.6)
 texture = ExtResource("9")
 centered = true
@@ -178,14 +187,15 @@ target_spawn_id = &"from_passage"
 shape = SubResource("TransitionHit")
 
 [node name="ExitToSeal" type="Area2D" parent="Interactive"]
-position = Vector2(1896, 270)
+position = Vector2(1450, 270)
 collision_layer = 8
 collision_mask = 0
 monitoring = false
 monitorable = true
-script = ExtResource("5")
+script = ExtResource("gated")
 target_room_id = &"awakening_seal"
 target_spawn_id = &"from_passage"
+required_puzzle = &"awakening_passage_rings"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ExitToSeal"]
 shape = SubResource("TransitionHit")
@@ -202,20 +212,54 @@ echo_id = &"awakening_rift_echo"
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/RiftEchoStone"]
 shape = SubResource("TransitionHit")
 
-[node name="OwnVoice" type="Area2D" parent="Interactive"]
-position = Vector2(980, 288)
-script = ExtResource("lore_self")
-lore_id = &"passage_own_voice"
+[node name="RingShrine" type="Node2D" parent="Interactive"]
+script = ExtResource("shrine")
+puzzle_id = &"awakening_passage_rings"
+order = PackedStringArray("3", "1", "4")
+fail_line = "Halkalar tutmadı. Yankının sırasını baştan denemeliyim."
+success_line = "Halkalar yerine oturdu. Geçit gevşedi."
+
+[node name="Ring4" type="Area2D" parent="Interactive/RingShrine"]
+position = Vector2(500, 288)
+script = ExtResource("step")
+step_id = "4"
+label = "Halka: dört çentik"
 texture_path = "res://assets/props/memory_echo.png"
-lines = PackedStringArray("Noroi|Yarıktan kendi sesim geliyor, bu ölümden değil, bir öncekinden.", "Noroi|Unutmuşum ama oda unutmamış.")
-evidence_title = "Kendi Sesim"
-evidence_body = "Yarık, bir önceki ölümümden kalan kendi sesimi çalıyor."
-evidence_section = "izler"
+sprite_scale = 0.5
+pips = 4
+
+[node name="Ring1" type="Area2D" parent="Interactive/RingShrine"]
+position = Vector2(575, 288)
+script = ExtResource("step")
+step_id = "1"
+label = "Halka: bir çentik"
+texture_path = "res://assets/props/memory_echo.png"
+sprite_scale = 0.5
+pips = 1
+
+[node name="Ring3" type="Area2D" parent="Interactive/RingShrine"]
+position = Vector2(650, 288)
+script = ExtResource("step")
+step_id = "3"
+label = "Halka: üç çentik"
+texture_path = "res://assets/props/memory_echo.png"
+sprite_scale = 0.5
+pips = 3
+
+[node name="StepThorn" type="Area2D" parent="Interactive"]
+position = Vector2(1130, 290)
+script = ExtResource("thorn")
+anchor_x = 1200.0
+puzzle_hint = &"passage_step_high"
+body_line = "Basamak benden yüksek. Bedenim dibine düşerse çıkarım."
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/StepThorn"]
+shape = SubResource("ThornShape")
 
 [node name="Hazards" type="Node2D" parent="."]
 
 [node name="MemoryStrip" type="Area2D" parent="Hazards"]
-position = Vector2(920, 270)
+position = Vector2(760, 270)
 collision_layer = 0
 collision_mask = 2
 script = ExtResource("6")
@@ -244,7 +288,7 @@ position = Vector2(120, 18)
 [node name="Corpse" type="Node2D" parent="." groups=["corpses_root"]]
 
 [node name="Floor" type="StaticBody2D" parent="."]
-position = Vector2(960, 312)
+position = Vector2(760, 312)
 collision_layer = 1
 collision_mask = 0
 
@@ -260,7 +304,7 @@ collision_mask = 0
 shape = SubResource("Wall")
 
 [node name="RightWall" type="StaticBody2D" parent="."]
-position = Vector2(1936, 180)
+position = Vector2(1516, 180)
 collision_layer = 1
 collision_mask = 0
 
@@ -268,7 +312,7 @@ collision_mask = 0
 shape = SubResource("Wall")
 
 [node name="LessonMass" type="StaticBody2D" parent="."]
-position = Vector2(1170, 287)
+position = Vector2(1000, 287)
 collision_layer = 1
 collision_mask = 0
 
@@ -276,15 +320,23 @@ collision_mask = 0
 shape = SubResource("LessonWallShape")
 
 [node name="LessonStepHigh" type="StaticBody2D" parent="."]
-position = Vector2(1310, 274)
+position = Vector2(1250, 256)
 collision_layer = 1
 collision_mask = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="LessonStepHigh"]
 shape = SubResource("LessonStepHighShape")
 
+[node name="LessonStepMid" type="StaticBody2D" parent="."]
+position = Vector2(1305, 268)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LessonStepMid"]
+shape = SubResource("LessonStepMidShape")
+
 [node name="LessonStepLow" type="StaticBody2D" parent="."]
-position = Vector2(1410, 283)
+position = Vector2(1355, 277)
 collision_layer = 1
 collision_mask = 0
 
@@ -529,79 +581,22 @@ position = Vector2(1472, 288)
 texture = ExtResource("walk_tile")
 centered = false
 
-[node name="Stone1504" type="Sprite2D" parent="WalkableTerrain"]
-position = Vector2(1504, 288)
-texture = ExtResource("walk_tile")
-centered = false
-
-[node name="Stone1536" type="Sprite2D" parent="WalkableTerrain"]
-position = Vector2(1536, 288)
-texture = ExtResource("walk_tile")
-centered = false
-
-[node name="Stone1568" type="Sprite2D" parent="WalkableTerrain"]
-position = Vector2(1568, 288)
-texture = ExtResource("walk_tile")
-centered = false
-
-[node name="Stone1600" type="Sprite2D" parent="WalkableTerrain"]
-position = Vector2(1600, 288)
-texture = ExtResource("walk_tile")
-centered = false
-
-[node name="Stone1632" type="Sprite2D" parent="WalkableTerrain"]
-position = Vector2(1632, 288)
-texture = ExtResource("walk_tile")
-centered = false
-
-[node name="Stone1664" type="Sprite2D" parent="WalkableTerrain"]
-position = Vector2(1664, 288)
-texture = ExtResource("walk_tile")
-centered = false
-
-[node name="Stone1696" type="Sprite2D" parent="WalkableTerrain"]
-position = Vector2(1696, 288)
-texture = ExtResource("walk_tile")
-centered = false
-
-[node name="Stone1728" type="Sprite2D" parent="WalkableTerrain"]
-position = Vector2(1728, 288)
-texture = ExtResource("walk_tile")
-centered = false
-
-[node name="Stone1760" type="Sprite2D" parent="WalkableTerrain"]
-position = Vector2(1760, 288)
-texture = ExtResource("walk_tile")
-centered = false
-
-[node name="Stone1792" type="Sprite2D" parent="WalkableTerrain"]
-position = Vector2(1792, 288)
-texture = ExtResource("walk_tile")
-centered = false
-
-[node name="Stone1824" type="Sprite2D" parent="WalkableTerrain"]
-position = Vector2(1824, 288)
-texture = ExtResource("walk_tile")
-centered = false
-
-[node name="Stone1856" type="Sprite2D" parent="WalkableTerrain"]
-position = Vector2(1856, 288)
-texture = ExtResource("walk_tile")
-centered = false
-
-[node name="Stone1888" type="Sprite2D" parent="WalkableTerrain"]
-position = Vector2(1888, 288)
-texture = ExtResource("walk_tile")
-centered = false
-
 [node name="Foundation" type="Polygon2D" parent="WalkableTerrain"]
-polygon = PackedVector2Array(0, 320, 1920, 320, 1920, 360, 0, 360)
+polygon = PackedVector2Array(0, 320, 1500, 320, 1500, 360, 0, 360)
 color = Color(0.08, 0.06, 0.1, 1)
 
 [node name="LessonFill" type="Polygon2D" parent="WalkableTerrain"]
-polygon = PackedVector2Array(1080, 248, 1260, 248, 1260, 248, 1360, 248, 1360, 266, 1460, 266, 1460, 288, 1080, 288)
+polygon = PackedVector2Array(910, 248, 1090, 248, 1090, 288, 910, 288)
+color = Color(0.2, 0.16, 0.24, 1)
+
+[node name="LessonFillSteps" type="Polygon2D" parent="WalkableTerrain"]
+polygon = PackedVector2Array(1220, 224, 1280, 224, 1280, 248, 1330, 248, 1330, 266, 1380, 266, 1380, 288, 1220, 288)
 color = Color(0.2, 0.16, 0.24, 1)
 
 [node name="LessonLip" type="Polygon2D" parent="WalkableTerrain"]
-polygon = PackedVector2Array(1080, 248, 1260, 248, 1260, 254, 1080, 254)
+polygon = PackedVector2Array(910, 248, 1090, 248, 1090, 254, 910, 254)
+color = Color(0.4, 0.34, 0.46, 1)
+
+[node name="LessonLipSteps" type="Polygon2D" parent="WalkableTerrain"]
+polygon = PackedVector2Array(1220, 224, 1280, 224, 1280, 230, 1220, 230)
 color = Color(0.4, 0.34, 0.46, 1)
