@@ -63,7 +63,7 @@ const SIDE_DOORS := {
 	"experiment_authority": [{"x": 672.0, "to": "experiment_core_conduit"}],
 	"mirrors_reverse": [{"x": 672.0, "to": "mirrors_labyrinth"}],
 	"mirrors_dual": [{"x": 700.0, "to": "mirrors_1927", "req": "mirrors_gallery", "msg": "Galeri suskun. Önce bedenleri saymalıyım."}],
-	"mirrors_unbroken": [{"x": 784.0, "to": "mirrors_shrine", "title": "Ayna Tapınağı", "mark": true}],
+	"mirrors_unbroken": [{"x": 784.0, "to": "mirrors_shrine", "title": "Ayna Tapınağı", "mark": true, "label_dy": -74.0}],
 	"core_threshold": [{"x": 784.0, "to": "core_memory_vault"}],
 	"core_seal_chamber": [{"x": 784.0, "to": "core_bloom_garden"}],
 }
@@ -80,7 +80,7 @@ func _add_door_mark(door: Area2D) -> void:
 	gt.fill_from = Vector2(0.5, 0.5)
 	gt.fill_to = Vector2(1.0, 0.5)
 	var grad := Gradient.new()
-	grad.set_color(0, Color(0.7, 0.55, 1.0, 0.35))
+	grad.set_color(0, Color(0.7, 0.55, 1.0, 0.5))
 	grad.set_color(1, Color(0.5, 0.35, 0.9, 0.0))
 	gt.gradient = grad
 	mark.texture = gt
@@ -130,6 +130,8 @@ func _add_side_doors() -> void:
 			rect.size = Vector2(44, 96)
 			cs.shape = rect
 			door.add_child(cs)
+			if d.has("label_dy"):
+				door.set("label_dy", float(d["label_dy"]))
 			if d.has("title"):
 				door.set("door_title", String(d["title"]))
 			parent.add_child(door)

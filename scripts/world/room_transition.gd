@@ -9,6 +9,8 @@ extends Area2D
 @export var required_ability: StringName = &""
 @export var locked_message: String = "Önce bu odanın hatırasını tamamlamalıyım."
 @export var door_title: String = ""
+## Etiketi dikeyde kaydır (yakın iki kapının etiketi üst üste binmesin diye).
+@export var label_dy: float = 0.0
 
 ## Oda adları tek kaynaktan: RoomManager.ROOM_TITLES_TR (HUD başlığı, hedef, harita, kapı etiketi).
 const ROOM_TITLES: Dictionary = preload("res://scripts/autoload/room_manager.gd").ROOM_TITLES_TR
@@ -73,7 +75,7 @@ func _ready() -> void:
 	_label.z_index = 4
 	_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	## Her zaman kapının tam ortasında; sabit sağ kenar kayması yok.
-	_label.position = Vector2(-_label.size.x * 0.5, FOOT_Y - _door_h - 40.0)
+	_label.position = Vector2(-_label.size.x * 0.5, FOOT_Y - _door_h - 40.0 + label_dy)
 	add_child(_label)
 	call_deferred("_clamp_door_label")
 	if not UiGate.gate_changed.is_connected(_on_gate_changed):
