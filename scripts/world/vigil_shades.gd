@@ -12,7 +12,7 @@ var _shades: Array = []
 
 func _ready() -> void:
 	add_to_group("vigil_shades")
-	if PuzzleManager.is_solved(TRACE_ID):
+	if PuzzleManager.is_solved(TRACE_ID) or PuzzleManager.is_solved(&"awakening_vigil"):
 		return
 	_spawn(&"vigil_shade_true", false, "", PackedVector2Array([Vector2(720, 252), Vector2(900, 252), Vector2(1080, 252), Vector2(1180, 252)]))
 	_spawn(&"vigil_shade_left", true, "Bu iz soğuk. Yanlış gölgenin peşine düştüm.", PackedVector2Array([Vector2(600, 252), Vector2(420, 252), Vector2(260, 252)]))

@@ -162,7 +162,7 @@ const HINTS: Dictionary = {
 	&"awakening_passage_rings": {
 		"goal": "Geçidin çıkışı halkalara bağlı.",
 		"orientation": "Üç halkanın çentik sayısı yankıdaki sırayla eşleşmeli.",
-		"explicit": "Halkalara çentik sırasıyla dokun: üç, bir, dört."
+		"explicit": "Halkalar çıkışı açıyor."
 	},
 	&"awakening_seal_weight": {
 		"goal": "Kapı bir beden ağırlığı istiyor.",

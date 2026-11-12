@@ -97,6 +97,7 @@ var _zone_lines: Dictionary = {
 
 func _ready() -> void:
 	add_to_group("keeper")
+	_vigil_hook()
 	sprite.sprite_frames = load("res://assets/characters/keeper.tres")
 	sprite.offset = Vector2(0, -59) ## ayak alt kenari (opak satir 122, doku 128 yuksek, ortali) node y = zemin ust yuzu (288)
 	hint.text = ""
@@ -651,12 +652,15 @@ func _queue_stage_talk(room: String) -> void:
 		DialogueManager.say("Shilda", "Çünkü orası güvenli değil.")
 
 
-## Isim sahnesi: "???" konusur; "Ben Noroi." satirindan itibaren ad bilinir, kart "Shilda" olur.
 ## Perde 1 sonu: yüz yüze, konuşan ???. Ad söylenmez. Yol açılır, gölge gider.
+## Her giriş [[sorucu, soru], [[Noroi, cevap0], [Noroi, cevap1]]]; çiftler dialogue_lint tarafından taranır.
 const VIGIL_QUESTIONS: Array = [
-	["Neden buradasın?", ["Kim olduğumu öğrenmem gerek.", "Seni ilgilendirmez."]],
-	["Bana güvenir misin?", ["Henüz değil ama dinliyorum.", "Hayır. Kimseye güvenmem."]],
-	["Yarıktan gelen sesi duydun mu?", ["Duydum. Kendi sesime benziyordu.", "Hayır. Hiçbir şey duymadım."]],
+	[["@shilda", "Neden buradasın?"],
+		[["Noroi", "Kim olduğumu öğrenmem gerek."], ["Noroi", "Seni ilgilendirmez."]]],
+	[["@shilda", "Bana güvenir misin?"],
+		[["Noroi", "Henüz değil ama dinliyorum."], ["Noroi", "Hayır. Kimseye güvenmem."]]],
+	[["@shilda", "Yarıktan gelen sesi duydun mu?"],
+		[["Noroi", "Duydum. Kendi sesime benziyordu."], ["Noroi", "Hayır. Hiçbir şey duymadım."]]],
 ]
 var _vigil_hooked: bool = false
 
@@ -677,7 +681,10 @@ func _run_vigil_meeting() -> void:
 			await _await_dialogue_or_smoke()
 		while answers.size() < VIGIL_QUESTIONS.size():
 			var q: Array = VIGIL_QUESTIONS[answers.size()]
-			var pick: int = await _vigil_ask(String(q[0]), q[1])
+			var opts: Array = []
+			for o in q[1]:
+				opts.append(String(o[1]))
+			var pick: int = await _vigil_ask(String(q[0][1]), opts)
 			if pick < 0:
 				_busy = false
 				return
@@ -696,7 +703,7 @@ func _vigil_hook() -> void:
 		return
 	_vigil_hooked = true
 	PuzzleManager.puzzle_solved.connect(func(id: StringName) -> void:
-		if id == &"awakening_vigil_trace":
+		if id == &"awakening_vigil_trace" and RoomManager.get_active_room_id() == &"awakening_vigil":
 			_vigil_try_finish())
 
 
@@ -735,6 +742,7 @@ func _vigil_ask(prompt: String, opts: Array) -> int:
 	return res[0] if res[0] != -2 else -1
 
 
+## Isim sahnesi: "???" konusur; "Ben Noroi." satirindan itibaren ad bilinir, kart "Shilda" olur.
 func _run_naming_scene() -> void:
 	_busy = true
 	_queue_naming_lines()
