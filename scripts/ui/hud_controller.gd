@@ -77,6 +77,9 @@ func _ready() -> void:
 	DialogueManager.dialogue_closed.connect(_on_dialogue_closed)
 	DialogueManager.dialogue_cancelled.connect(_on_dialogue_closed)
 	DialogueManager.typing_finished.connect(_on_typing_finished)
+	DialogueManager.choices_shown.connect(_on_choices_shown)
+	DialogueManager.choice_selected.connect(_refresh_choice_highlight)
+	DialogueManager.choice_made.connect(_hide_choices.unbind(1))
 	dialogue_panel.visible = false
 	_apply_default_hint()
 	btn_journal.pressed.connect(_toggle_journal)
@@ -401,7 +404,47 @@ func _on_typing_finished() -> void:
 		_set_continue(true, true)
 
 
+var _choice_box: VBoxContainer = null
+
+
+func _on_choices_shown(options: PackedStringArray) -> void:
+	_hide_choices()
+	_choice_box = VBoxContainer.new()
+	_choice_box.add_theme_constant_override("separation", 4)
+	for i in options.size():
+		var b := Button.new()
+		b.text = options[i]
+		b.focus_mode = Control.FOCUS_NONE
+		b.custom_minimum_size = Vector2(0, 40)
+		b.pressed.connect(DialogueManager.choose.bind(i))
+		_choice_box.add_child(b)
+	$SafeArea.add_child(_choice_box)
+	_refresh_choice_highlight(DialogueManager.choice_index())
+	await get_tree().process_frame
+	if _choice_box == null or not is_instance_valid(_choice_box):
+		return
+	var r := dialogue_panel.get_global_rect()
+	_choice_box.size = Vector2(r.size.x, 0)
+	_choice_box.global_position = Vector2(r.position.x, r.position.y - _choice_box.size.y - 6.0)
+
+
+func _refresh_choice_highlight(sel: int) -> void:
+	if _choice_box == null or not is_instance_valid(_choice_box):
+		return
+	for i in _choice_box.get_child_count():
+		var b := _choice_box.get_child(i) as Button
+		b.text = ("> " if i == sel else "  ") + String(b.text).lstrip("> ").strip_edges()
+		b.modulate = Color(1, 1, 1) if i == sel else Color(0.75, 0.75, 0.75)
+
+
+func _hide_choices() -> void:
+	if _choice_box != null and is_instance_valid(_choice_box):
+		_choice_box.queue_free()
+	_choice_box = null
+
+
 func _on_dialogue_closed() -> void:
+	_hide_choices()
 	dialogue_panel.visible = false
 	_set_continue(false, false)
 	_set_header_hidden_for_dialogue(false)
@@ -562,6 +605,18 @@ func _input(event: InputEvent) -> void:
 		return
 	if UiGate.blocks_dialogue_advance():
 		return
+	if DialogueManager.is_open and DialogueManager.has_choices():
+		## Seçim açıkken: yukarı/aşağı vurgu, panel dokunuşu yok (butonlar kendi basışını alır).
+		if event.is_action_pressed("ui_up"):
+			DialogueManager.move_choice(-1)
+			get_viewport().set_input_as_handled()
+			return
+		if event.is_action_pressed("ui_down"):
+			DialogueManager.move_choice(1)
+			get_viewport().set_input_as_handled()
+			return
+		if event is InputEventScreenTouch or event is InputEventMouseButton:
+			return
 	if UiGate.current_layer() == UiGate.Layer.DEATH:
 		# Ölüm sahnesi: joystick/düğme yok; yalnız yas/uyanış diyaloğu dokunuşla geçilebilir.
 		if DialogueManager.is_open and _is_advance_press(event):

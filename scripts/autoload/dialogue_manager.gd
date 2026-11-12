@@ -8,11 +8,16 @@ signal dialogue_closed ## yalnızca başarılı tamamlanma
 signal dialogue_cancelled
 signal dialogue_finished(completed: bool)
 signal typing_finished
+signal choices_shown(options: PackedStringArray) ## istem satırı son sayfaya gelince HUD butonları gösterir
+signal choice_selected(index: int) ## klavye vurgusu değişti (HUD yenilesin)
+signal choice_made(index: int)
 
 var _queue: Array[Dictionary] = []
 var is_open: bool = false
 var last_was_whisper: bool = false
 var generation: int = 0
+var _options: PackedStringArray = PackedStringArray()
+var _choice_sel: int = 0
 
 ## Aktif satırın sayfaları
 var _pages: PackedStringArray = []
@@ -45,8 +50,42 @@ func whisper(speaker: String, text: String) -> void:
 	_enqueue(speaker, text, true)
 
 
-func _enqueue(speaker: String, text: String, is_whisper: bool, on_show: Callable = Callable()) -> void:
-	_queue.append({"speaker": speaker, "text": text, "whisper": is_whisper, "on_show": on_show})
+## Seçimli istem: satır gösterilir, ardından `options` butonları çıkar; oyuncu seçene dek diyalog
+## ilerlemez (hareket kilidi normal diyalogla aynı: UiGate.set_story). Sonuç `choice_made(index)`.
+func ask(speaker: String, prompt: String, options: PackedStringArray) -> void:
+	if options.is_empty():
+		say(speaker, prompt)
+		return
+	_enqueue(speaker, prompt, false, Callable(), options)
+
+
+func has_choices() -> bool:
+	return not _options.is_empty()
+
+
+func choice_index() -> int:
+	return _choice_sel
+
+
+func move_choice(delta: int) -> void:
+	if _options.is_empty():
+		return
+	_choice_sel = posmod(_choice_sel + delta, _options.size())
+	choice_selected.emit(_choice_sel)
+
+
+## Buton, klavye (advance) ve test aynı yolu kullanır.
+func choose(index: int) -> void:
+	if not is_open or _options.is_empty() or index < 0 or index >= _options.size():
+		return
+	_options = PackedStringArray()
+	_choice_sel = 0
+	_show_next() ## sıra boşsa diyaloğu kapatır ve kilidi kaldırır
+	choice_made.emit(index)
+
+
+func _enqueue(speaker: String, text: String, is_whisper: bool, on_show: Callable = Callable(), options: PackedStringArray = PackedStringArray()) -> void:
+	_queue.append({"speaker": speaker, "text": text, "whisper": is_whisper, "on_show": on_show, "options": options})
 	if not is_open:
 		_show_next()
 
@@ -64,6 +103,8 @@ func _show_next() -> void:
 	var on_show: Callable = line.get("on_show", Callable())
 	if on_show.is_valid():
 		on_show.call()
+	_options = line.get("options", PackedStringArray())
+	_choice_sel = 0
 	_speaker = String(line["speaker"])
 	_full_line = String(line["text"])
 	_speaker = resolve_whisper_speaker(_speaker, last_was_whisper, GameState.is_shilda_named())
@@ -110,6 +151,8 @@ func _begin_page() -> void:
 	if page.is_empty():
 		_typing = false
 		typing_finished.emit()
+	if not _options.is_empty() and _page_index == _pages.size() - 1:
+		choices_shown.emit(_options)
 
 
 func _schedule_headless_auto() -> void:
@@ -185,12 +228,16 @@ func advance() -> void:
 		_page_index += 1
 		_begin_page()
 		return
+	if not _options.is_empty():
+		choose(_choice_sel) ## etkileş tuşu = vurgulu seçenek
+		return
 	_show_next()
 
 
 func clear() -> void:
 	## İptal — tamamlanma sinyali YOK.
 	_queue.clear()
+	_options = PackedStringArray()
 	_pages = PackedStringArray()
 	_page_index = 0
 	_typing = false

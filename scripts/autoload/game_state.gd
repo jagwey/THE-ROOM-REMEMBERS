@@ -307,4 +307,15 @@ func is_shilda_trusted() -> bool:
 		score += 1
 	if bool(t.get("reconciled", false)):
 		score += 1
+	score += get_vigil_trust() ## nöbet seçimleri: >0 güven, <0 şüphe
 	return score >= 3
+
+
+## Nöbet odası seçimlerinden biriken güven (negatif = şüphe). Kayıtlı: player_progress_knowledge["vigil_trust"].
+func add_vigil_trust(delta: int) -> void:
+	player_progress_knowledge["vigil_trust"] = get_vigil_trust() + delta
+	knowledge_changed.emit(&"player")
+
+
+func get_vigil_trust() -> int:
+	return int(player_progress_knowledge.get("vigil_trust", 0))

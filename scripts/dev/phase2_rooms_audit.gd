@@ -30,6 +30,7 @@ func _run() -> void:
 	root.get_node("DialogueManager").clear()
 	root.get_node("UiGate").set_story(false)
 	await _components()
+	await _dialogue()
 	quit(1 if failures > 0 else 0)
 
 
@@ -139,3 +140,46 @@ func _components() -> void:
 	check(is_equal_approx(curse.curse, c0 + 1.0), "seal_wrong_penalizes_curse_plus_one")
 	curse.set_curse(c0)
 	seal.queue_free()
+
+
+var _picked := -1
+
+
+func _on_pick(i: int) -> void:
+	_picked = i
+
+
+func _dialogue() -> void:
+	var dm := root.get_node("DialogueManager")
+	var gs := root.get_node("GameState")
+	var gate := root.get_node("UiGate")
+	dm.clear()
+	_picked = -1
+	dm.choice_made.connect(_on_pick)
+	dm.ask("@shilda", "?", PackedStringArray(["A", "B", "C"]))
+	await process_frame
+	check(dm.is_open and dm.has_choices(), "ask_opens_with_choices")
+	check(gate.blocks_movement(), "ask_locks_movement")
+	dm.choose(1)
+	check(_picked == 1, "choose_emits_choice_made_1")
+	check(not dm.is_open, "choose_closes_box")
+	check(not gate.blocks_movement(), "choose_unlocks_movement")
+	dm.choose(0) ## kapalıyken etkisiz
+	check(_picked == 1, "choose_when_closed_ignored")
+	dm.choice_made.disconnect(_on_pick)
+	# --- vigil trust ---
+	var before: bool = gs.is_shilda_trusted()
+	check(gs.get_vigil_trust() == 0, "vigil_trust_starts_zero")
+	gs.add_vigil_trust(2)
+	check(gs.get_vigil_trust() == 2, "vigil_trust_add_2")
+	var sm := root.get_node("SaveManager")
+	var saved: bool = sm.save_game()
+	gs.add_vigil_trust(-2)
+	check(gs.get_vigil_trust() == 0, "vigil_trust_reset_before_load")
+	var loaded: bool = sm.load_game(false)
+	check(saved and loaded and gs.get_vigil_trust() == 2, "vigil_trust_survives_save_load")
+	check(gs.is_shilda_trusted() or not before, "trust_plus2_not_lower_than_before")
+	gs.add_vigil_trust(-2)
+	gs.add_vigil_trust(-10)
+	check(not gs.is_shilda_trusted(), "negative_vigil_trust_causes_suspicion")
+	gs.player_progress_knowledge.erase("vigil_trust")
