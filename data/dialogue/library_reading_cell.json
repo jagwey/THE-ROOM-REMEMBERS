@@ -4,12 +4,12 @@
     "notches": [
       {"s": "Noroi", "t": "Duvar gün gün çentilmiş. Bir el saymış."},
       {"s": "Noroi", "t": "Son çentik 1927 gecesi. Sonra boşluk."},
-      {"s": "@shilda", "t": "O boşluktan önce ben de buradaydım. Kitap okurdum."},
-      {"s": "Noroi", "t": "Sen… kimdin burada?"},
-      {"s": "@shilda", "t": "Adım sende kalmadı. Gerisini oda saklar."},
-      {"s": "Noroi", "t": "Çentikler titriyor. Saymayı bıraktığın gün."},
+      {"s": "@shilda", "t": "O boşluktan önce buradaydım. Kitap okurdum."},
+      {"s": "Noroi", "t": "Kimdin sen burada?"},
+      {"s": "@shilda", "t": "Adımı unutmuşsun. Gerisini oda saklıyor."},
+      {"s": "Noroi", "t": "Çentikler saymayı bıraktığın günde titriyor."},
       {"s": "@shilda", "t": "O gün sesimi kaybettim. Saat de durdu."},
-      {"s": "Noroi", "t": "Geri döneceğim. Bu hücreyi unutmam."}
+      {"s": "Noroi", "t": "Geri döneceğim, bu hücreyi unutmam."}
     ]
   }
 }

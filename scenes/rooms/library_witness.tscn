@@ -110,7 +110,7 @@ script = ExtResource("5")
 target_room_id = &"library_clockroom"
 target_spawn_id = &"from_library_witness"
 required_puzzle = &"library_witnesses"
-locked_message = "Saat, çiçek ve mühür tanıklıklarını birleştirmeliyim."
+locked_message = "Önce saat, çiçek ve mührü dinlemeliyim."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ForwardPage"]
 shape = SubResource("Hit")

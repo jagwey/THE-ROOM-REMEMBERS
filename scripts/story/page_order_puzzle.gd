@@ -22,7 +22,7 @@ func _build_ui() -> void:
 	panel.name = "Panel"
 	panel.setup("Unutulmuş sayfa — sırayı kur", Vector2(470, 330))
 	add_child(panel)
-	panel.add_label("Tanıkları hatırla: önce deney, sonra kapı, en son mühür.", UiTheme.HINT)
+	panel.add_label("Önce deney, sonra kapı, sonda mühür. Kartları böyle diz.", UiTheme.HINT)
 	for i in 3:
 		var lab := Label.new()
 		lab.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -60,7 +60,7 @@ func open_puzzle() -> void:
 	if not has_node("Panel"):
 		_build_ui()
 	if not PuzzleManager.is_solved(&"library_witnesses"):
-		DialogueManager.say("Noroi", "Önce saat, çiçek ve mührü dinlemeliyim. Sonra ortadaki kaydı karşılaştıracağım.")
+		DialogueManager.say("Noroi", "Önce saat, çiçek ve mührü dinlemeliyim, sonra ortadaki kaydı karşılaştırmalıyım.")
 		return
 	visible = true
 	UiGate.set_story(true)
@@ -145,9 +145,10 @@ func _success_flow() -> void:
 	visible = false
 	UiGate.set_story(false)
 	DialogueManager.say("Noroi", "Kaydı sen mi sildin?")
-	DialogueManager.say("Shilda", "Hayır. Sayfayı kazıyan ben değilim. Ben bir kopyasını sakladım.")
+	DialogueManager.say("Shilda", "Hayır. Kazıyan ben değilim, kopyasını sakladım.")
 	DialogueManager.say("Noroi", "O zaman neden sakladın?")
-	DialogueManager.say("Shilda", "Biri gelip bunu soracak diye. Deneyin yetki kaydı sağdaki kapının ardında.")
+	DialogueManager.say("Shilda", "Biri gelip soracak diye.")
+	DialogueManager.say("Shilda", "Yetki kaydı sağdaki kapının ardında.")
 	var heard: bool = await DialogueManager.dialogue_finished
 	if heard:
 		PuzzleManager.mark_solved(&"library_page_order")

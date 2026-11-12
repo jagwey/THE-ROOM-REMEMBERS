@@ -150,13 +150,13 @@ const HINTS: Dictionary = {
 	},
 	&"library_clockroom": {
 		"goal": "İki saat iki geceyi tutuyor.",
-		"orientation": "Önce 1927, sonra 1995. Cep saatin aynı geceyi bilir.",
+		"orientation": "Önce 1927, sonra 1995. Cep saatin aynı geceyi sayıyor.",
 		"explicit": "Soldaki saati dinle, sonra sağdakini. Sayfa kapısı açılır."
 	},
 	&"library_page_order": {
-		"goal": "Dağılmış arşiv sayfaları doğru kronolojiye dizilmeli.",
-		"orientation": "Tanıkları hatırla: önce deney, sonra kapı, en son mühür.",
-		"explicit": "İlk deney başlangıcından mühürlerin kapandığı felaket gününe kadar olayları sırala."
+		"goal": "Dağılmış sayfaları oldukları sıraya diz.",
+		"orientation": "Önce deney, sonra kapı, sonda mühür. Kartları böyle diz.",
+		"explicit": "Deneyin başlangıcından mührün kapanışına kadar olayları sırala."
 	},
 	&"mirrors_gallery": {
 		"goal": "Camlar ölü bedenlerini tutuyor.",
@@ -189,7 +189,7 @@ const HINTS: Dictionary = {
 		"explicit": "1927, sonra 1995, sonra Son. Kasa ancak o zaman açılır."
 	},
 	&"library_shelf_order": {
-		"goal": "Yasak kanada giden tahta inmiş değil.",
+		"goal": "Yasak kanada giden tahta henüz inmedi.",
 		"orientation": "Arşivci üç kitabın adını sırayla söyledi.",
 		"explicit": "Ses, mühür, çiçek. Bu sıra tahtayı indirir."
 	},
@@ -200,8 +200,8 @@ const HINTS: Dictionary = {
 	},
 	&"experiment_intake": {
 		"goal": "Kabul masası 1995'i tutuyor.",
-		"orientation": "Önce dosya, sonra askıdaki palto.",
-		"explicit": "Denek 14'ün eşyası senin saatin. Paltoyu okuyunca devre açılır."
+		"orientation": "Önce dosyayı, sonra askıdaki paltoyu oku.",
+		"explicit": "Paltodaki Denek 14 eşyası senin saatin. Okuyunca devre açılır."
 	},
 	&"experiment_quarantine_done": {
 		"goal": "Kırmızı sis canlıyı yer. Rapor sisin ötesinde, yüksek rafta.",

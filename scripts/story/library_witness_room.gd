@@ -7,7 +7,7 @@ func _ready() -> void:
 		"evidence_id": "ev_witness_clock",
 		"lines": [
 			["Yankı", "…tik. 1927. Boyut kuruldu."],
-			["Yankı", "Zaman burada durdu. Kapı henüz açıktı."],
+			["Yankı", "Zaman burada durdu. Kapı o an hâlâ açıktı."],
 		],
 		"journal": {
 			"section": "izler",
@@ -20,8 +20,8 @@ func _ready() -> void:
 	EchoManager.register_echo("witness_flower", {
 		"evidence_id": "ev_witness_flower",
 		"lines": [
-			["Yankı", "Solgun kırmızı… yas deneyden önce."],
-			["Yankı", "1995'e kadar çiçek bırakan biri bekledi."],
+			["Yankı", "Solgun kırmızı bir çiçek. Yas deneyden önce gelmiş."],
+			["Yankı", "Biri 1995'e kadar çiçek bırakıp bekledi."],
 		],
 		"journal": {
 			"section": "izler",
@@ -34,8 +34,8 @@ func _ready() -> void:
 	EchoManager.register_echo("witness_seal", {
 		"evidence_id": "ev_witness_seal",
 		"lines": [
-			["Yankı", "Kırmızı mühür kapanıyor. İki… beş… bir."],
-			["Yankı", "Koruma sonradan devreye girdi. Felaketi içeride tuttu."],
+			["Yankı", "Kırmızı mühür kapanıyor. İki, beş, bir."],
+			["Yankı", "Koruma sonra devreye girdi, felaketi içeride tuttu."],
 		],
 		"journal": {
 			"section": "izler",

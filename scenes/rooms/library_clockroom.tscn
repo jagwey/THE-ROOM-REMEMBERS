@@ -13,7 +13,7 @@ room_width = 1280.0
 bg_region = "library"
 checkpoint = Vector2(120, 288)
 default_spawn = Vector2(120, 288)
-doors = [{"x": 40.0, "to": "library_witness", "spawn": "from_page"}, {"x": 1240.0, "to": "library_page", "spawn": "from_witness", "req": "library_clockroom", "msg": "İki saati de dinlemeden sayfa açılmaz."}]
+doors = [{"x": 40.0, "to": "library_witness", "spawn": "from_page"}, {"x": 1240.0, "to": "library_page", "spawn": "from_witness", "req": "library_clockroom", "msg": "İki saati de dinle, sonra sayfa kapısı açılır."}]
 
 [node name="Spawns" type="Node2D" parent="."]
 
@@ -29,7 +29,7 @@ relic_id = "clock_1927"
 dialogue_room = &"library_clockroom"
 dialogue_set = &"clock_1927"
 evidence_title = "1927 Saati"
-evidence_body = "Saatler odasında bir saat 1927 gecesinde durmuş. Cep saatiyle aynı gece."
+evidence_body = "Saatler Odası'ndaki ilk saat 1927 gecesinde durmuş, cep saatimle aynı gece."
 
 [node name="Clock1995" type="Area2D" parent="Interactive"]
 position = Vector2(860, 288)

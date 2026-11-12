@@ -29,7 +29,7 @@ script = ExtResource("lore")
 lore_id = &"quarantine_sign"
 texture_path = "res://assets/props/curse.png"
 sprite_scale = 0.5
-lines = PackedStringArray("Noroi|“KARANTİNA. Lanet yoğunluğu ölümcül.”", "Noroi|Kırmızı sis canlıyı yer. Ölü beden onu emer.", "Shilda|Ölünü sisin ortasına bırak. Rapor, ötedeki rafta.")
+lines = PackedStringArray("Noroi|“KARANTİNA. Lanet yoğunluğu ölümcül.”", "Noroi|Kırmızı sis canlıyı yer, ölü beden onu emer.", "Shilda|Ölünü sisin ortasına bırak. Rapor, ötedeki rafta.")
 
 [node name="Cloud" type="Area2D" parent="Interactive"]
 position = Vector2(660.0, 288.0)
@@ -47,7 +47,7 @@ script = ExtResource("lore")
 lore_id = &"quarantine_cassette"
 texture_path = "res://assets/props/memory_echo.png"
 sprite_scale = 0.5
-lines = PackedStringArray("Noroi|Anı yankısı: “Denek 12 laneti emdi. Bedeni ölü ama sis çekildi.”", "Noroi|“Yetkili imza: ███ (kazınmış). Ölüler paratoner olarak kullanılacak.”")
+lines = PackedStringArray("Noroi|Anı yankısı: “Denek 12 laneti emdi. Bedeni ölü ama sis çekildi.”", "Noroi|“Yetkili imza: [kazınmış]. Ölüler paratoner olarak kullanılacak.”")
 evidence_title = "Paratoner Raporu"
 evidence_body = "Ölü bedenler laneti emiyor. Bunu yöntem olarak onaylayan imza kazınmış."
 evidence_section = "notlar"

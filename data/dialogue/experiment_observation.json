@@ -5,9 +5,11 @@
       {"s": "Noroi", "t": "Camın bu yanında bir masa. Notlar kurşun kalemle yazılmış."},
       {"s": "Noroi", "t": "«Denek 14 öldü. 12. Tekrar uyanış: hafıza sıfır.»"},
       {"s": "Noroi", "t": "«Saymayı bırakmıyorum. O bırakıyor.» İmza kazınmış."},
-      {"s": "@shilda", "t": "O masa beni hiç görmedi. Yalnız seni saydı."},
+      {"s": "@shilda", "t": "Ben de insandım. Bu camın ardında çalışırdım."},
+      {"s": "Noroi", "t": "Sen de insandın demek."},
+      {"s": "@shilda", "t": "O masa beni hiç saymadı. Yalnız seni saydı."},
       {"s": "Noroi", "t": "Masada biri oturmuş gibi bir iz var. Yüzü yok."},
-      {"s": "@shilda", "t": "Notu al. Çekirdekte lafa gerek kalmasın."},
+      {"s": "@shilda", "t": "Notu al. Çekirdekte açıklama gerekmesin."},
       {"s": "Noroi", "t": "Aldım. Cam kapansın."}
     ]
   }

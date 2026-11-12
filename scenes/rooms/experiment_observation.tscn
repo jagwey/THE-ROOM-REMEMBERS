@@ -24,7 +24,7 @@ dialogue_room = &"experiment_observation"
 dialogue_set = &"notes"
 solve_puzzle = &"experiment_observation"
 evidence_title = "Sayım Notu"
-evidence_body = "Gözlem camının masasında Denek 14'ün ölümleri sayılı. İmza kazınmış. Yüz yok."
+evidence_body = "Gözlem camının masasında Denek 14'ün ölümleri sayılı. İmza kazınmış, yüz yok."
 
 [node name="RelicArt" type="Sprite2D" parent="Interactive/GlassNotes"]
 texture_filter = 1

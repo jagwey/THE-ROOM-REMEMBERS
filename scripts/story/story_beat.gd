@@ -92,7 +92,7 @@ func on_interact(_by: Node) -> void:
 
 func _library_hall() -> void:
 	if CurseManager.curse > 0.0:
-		DialogueManager.say("Arşivci", "Lanetin hâlâ sıcak. Raflar seni tanıyor; mühürler de.")
+		DialogueManager.say("Arşivci", "Lanetin hâlâ sıcak. Raflar seni tanıyor, mühürler de.")
 	else:
 		DialogueManager.say("Arşivci", "Yine geldin, Noroi. Bu sefer hangi rafa bakacaksın?")
 
@@ -102,7 +102,7 @@ func _library_hall() -> void:
 
 	DialogueManager.say("Arşivci", "Sağdaki odada saat, çiçek ve mühür var. Üçünü de dinle.")
 
-	DialogueManager.say("Arşivci", "Sonra ortadaki kayıtta karşılaştır. Sıra, kayıp sayfayı açar.")
+	DialogueManager.say("Arşivci", "Sonra ortadaki kayıtla karşılaştır. Sıra kayıp sayfayı açar.")
 
 	var ok: bool = await DialogueManager.dialogue_finished
 
@@ -136,9 +136,9 @@ func _library_witness() -> void:
 
 	if ev.has("ev_witness_clock") and ev.has("ev_witness_flower") and ev.has("ev_witness_seal"):
 
-		DialogueManager.say("Noroi", "1927'de boyut kuruldu. Son kayıt 1995'te düşülmüş.")
-		DialogueManager.say("Noroi", "Deney önce, kapı sonra, mühür en son. Kod… iki, beş, bir.")
-		DialogueManager.say("Noroi", "Felaketi mühür başlatmamış. İçeride tutmuş.")
+		DialogueManager.say("Noroi", "1927'de boyut kuruldu, son kayıt 1995'te düşülmüş.")
+		DialogueManager.say("Noroi", "Önce deney, sonra kapı, en son mühür; kod iki, beş, bir.")
+		DialogueManager.say("Noroi", "Felaketi mühür başlatmamış, içeride tutmuş.")
 		var understood: bool = await DialogueManager.dialogue_finished
 		if not understood:
 			return
@@ -166,12 +166,14 @@ func _library_page() -> void:
 func _experiment_cells() -> void:
 
 	DialogueManager.say("Kayıt", "Hafıza koruma deneyi. Amaç: kaybedilenlerin seslerini saklamak.")
-	DialogueManager.say("Kayıt", "Denek 14: Noroi. Kurucu imza: ███ (kazınmış).")
+	DialogueManager.say("Kayıt", "Denek 14: Noroi. Kurucu imza: [kazınmış].")
 
-	DialogueManager.say("Noroi", "Ben… denektim. Kurucu ben değilim.")
-	DialogueManager.say("Shilda", "Kurucu başlattı. Sen içeride kaldın. Ben kapıda bekledim.")
+	DialogueManager.say("Noroi", "Ben denektim, kurucu değilim.")
+	DialogueManager.say("Shilda", "Kurucu başlattı. Sen içeride kaldın.")
+	DialogueManager.say("Shilda", "Ben kapıda bekledim.")
 	DialogueManager.say("Shilda", "Sesler bedenlerinden koptu. Oda onları sakladı.")
-	DialogueManager.say("Shilda", "Kimseyi feda etmeyeceğiz. Sağdaki devrede yankın bir anahtarı tutacak.")
+	DialogueManager.say("Shilda", "Kimseyi feda etmeyeceğiz.")
+	DialogueManager.say("Shilda", "Sağdaki devrede yankın bir anahtarı tutacak.")
 	DialogueManager.say("Shilda", "Sen de diğerini açacaksın. Bu sefer birlikte.")
 
 	var ok: bool = await DialogueManager.dialogue_finished
@@ -206,19 +208,20 @@ func _experiment_circuit() -> void:
 
 func _experiment_authority() -> void:
 
-	DialogueManager.say("Kayıt", "Protokol yetkilisi: ███ (kazınmış). Araştırma Yardımcısı S.")
+	DialogueManager.say("Kayıt", "Protokol yetkilisi: [kazınmış]. Araştırma Yardımcısı S.")
 	DialogueManager.say("Kayıt", "Acil kapatma talebi reddedildi. Mühür kodu kenarda: 4-1-8.")
 	DialogueManager.say("Kayıt", "Kayıt şeridinde silik bir fısıltı izi kalmış. Sözler seçilmiyor.")
 
-	DialogueManager.say("Noroi", "Biri kapıyı, kimse çıkmasın diye kilitlemiş. Sesler içeride kalmış.")
+	DialogueManager.say("Noroi", "Biri kimse çıkmasın diye kapıyı kilitlemiş, sesler içeride kalmış.")
 
 	DialogueManager.say("Noroi", "Benden önce kimler vardı?")
 	DialogueManager.say("Shilda", "Çok fazla insan. Çoğunun adını oda unuttu.")
 	DialogueManager.say("Noroi", "Hepsini tanıyor muydun?")
 	DialogueManager.say("Shilda", "Bazılarını tanıyacak kadar zamanım oldu.")
 	DialogueManager.say("Shilda", "Seni unutturmak istediler. Ben hatırlamayı seçtim.")
-	DialogueManager.say("Shilda", "Altmış sekiz yıl oldu. Kapı 1927'den beri kilitli. Sen 1995'te geldin.")
-	DialogueManager.say("Noroi", "Bu kez kaçmayacağım. Aynalar salonuna gidelim.")
+	DialogueManager.say("Shilda", "Altmış sekiz yıl oldu. Kapı 1927'den beri kilitli.")
+	DialogueManager.say("Shilda", "Sen 1995'te geldin.")
+	DialogueManager.say("Noroi", "Bu kez kaçmayacağım, aynalar salonuna gidelim.")
 
 	var ok: bool = await DialogueManager.dialogue_finished
 
