@@ -95,16 +95,25 @@ func _trim_excess() -> void:
 	while corpses.size() > MAX_CORPSES:
 		## Aktif bulmacayı tutan cesetler silinmez.
 		var idx := -1
+		var active_room := String(RoomManager.get_active_room_id())
+		## Önce başka odada tutulan (uzak) ceset kırpılır: dönüşte oyuncu köprüyü/plakayı yeniden kurar.
 		for i in corpses.size():
-			var c: Dictionary = corpses[i] as Dictionary
-			var held := bool(c.get("anchoring", false)) or bool(c.get("anchored", false))
-			## Çözülmüş plakaya bağlı ceset artık bulmacayı tutmuyor: kırpılabilir.
-			var plate := String(c.get("anchor_plate", ""))
-			if held and plate != "" and PuzzleManager.is_solved(StringName(plate)):
-				held = false
-			if not held:
+			var c0: Dictionary = corpses[i] as Dictionary
+			var held0 := bool(c0.get("anchoring", false)) or bool(c0.get("anchored", false))
+			if held0 and String(c0.get("room", active_room)) != active_room:
 				idx = i
 				break
+		if idx < 0:
+			for i in corpses.size():
+				var c: Dictionary = corpses[i] as Dictionary
+				var held := bool(c.get("anchoring", false)) or bool(c.get("anchored", false))
+				## Çözülmüş plakaya bağlı ceset artık bulmacayı tutmuyor: kırpılabilir.
+				var plate := String(c.get("anchor_plate", ""))
+				if held and plate != "" and PuzzleManager.is_solved(StringName(plate)):
+					held = false
+				if not held:
+					idx = i
+					break
 		if idx < 0:
 			# Tüm cesetler plakalarda kilitli/anchored; bulmacayı bozmamak için hepsi korunur
 			break

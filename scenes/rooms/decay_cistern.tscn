@@ -41,6 +41,7 @@ script = ExtResource("water")
 level_y = PackedFloat32Array(332, 288, 210, 130)
 start_level = 1
 puzzle_key = &"cistern"
+reset_until_solved = &"decay_cistern"
 
 [node name="Raft" type="AnimatableBody2D" parent="Interactive/Water"]
 collision_layer = 1

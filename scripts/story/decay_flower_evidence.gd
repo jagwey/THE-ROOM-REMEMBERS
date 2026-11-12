@@ -13,16 +13,15 @@ func _ready() -> void:
 	EchoManager.register_echo("decay_archive_hint", {
 		"evidence_id": "ev_decay_archive_hint",
 		"lines": [
-			["Yankı", "Yerdeki desen aklımda kaldı: üç sayı."],
-			["Yankı", "Arşiv mührü bu sayıları ister."],
+			["Yankı", "Taç yapraklar ışıkta sayılıyor."],
+			["Yankı", "Çiçekli bedenin ışığında yaprakları say."],
 		],
 		"journal": {
 			"section": "izler",
-			"title": "Bahçe sayıları",
-			"body": "Bahçede yerdeki desen: 7 — 2 — 9. Arşiv kapısı için.",
+			"title": "Bahçe yaprakları",
+			"body": "Taç yapraklar yalnız çiçekli bedenin ışığında okunur; sırayla aç.",
 			"kind": "evidence",
 		},
-		"memory_code": "729",
 	})
 
 
@@ -34,7 +33,7 @@ func on_interact(_by: Node) -> void:
 		var keeper := get_tree().get_first_node_in_group("keeper")
 		if keeper and keeper.has_method("_run_naming_scene"):
 			await keeper._run_naming_scene()
-	DialogueManager.say("Noroi", "Kurumuş kırmızı yapraklar, yerde bir desen var: 7, 2, 9.")
+	DialogueManager.say("Noroi", "Kurumuş kırmızı yapraklar; sayıları ancak ışıkta okunur.")
 	await DialogueManager.dialogue_finished
 	_busy = false
 

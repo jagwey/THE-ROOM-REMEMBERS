@@ -1424,10 +1424,9 @@ func _rooms_07_10() -> void:
 	var dup_hint := false
 	for rid2 in ["decay_vines", "decay_weight", "decay_greenhouse", "decay_shilda_wall", "decay_garden", "decay_catacombs", "decay_cistern"]:
 		if not (root.get_node("RoomManager")._rooms as Dictionary).has(StringName(rid2)):
+			check(false, "thorn_room_loaded_%s" % rid2)
 			continue
 		var rr: Node = _room_root(StringName(rid2))
-		if rr == null:
-			continue
 		for t in rr.find_children("*", "Area2D", true, false):
 			if t.is_in_group("blood_thorn"):
 				if hint_seen.has(t.puzzle_hint):
@@ -1517,6 +1516,9 @@ func _rooms_11_13() -> void:
 	gs.set_world_flag(&"decay_archive_open", false)
 	rm.enter_room(&"decay_garden", &"default")
 	await create_timer(0.4).timeout
+	if not (rm._rooms as Dictionary).has(&"decay_garden"):
+		check(false, "rooms_11_13_garden_loaded")
+		return
 	var g: Node = _room_root(&"decay_garden")
 	var shrine: Node = g.find_child("BloomShrine", true, false)
 	check(shrine != null and shrine.has_method("press"), "garden_bloom_shrine_exists")
@@ -1575,6 +1577,21 @@ func _rooms_11_13() -> void:
 		check(pm.journal_hint_for_active_room().is_empty(), "garden_legacy_skips_journal_hint")
 	_unsolve(["decay_garden_bloom", "decay_archive_key"])
 	gs.set_world_flag(&"decay_archive_open", false)
+	# garden answer leak: no evidence/garden text may state 7, 2 and 9 together
+	var leak := false
+	var lre := RegEx.new()
+	lre.compile("\"([^\"\n]*)\"")
+	for lpath in ["res://scripts/story/decay_flower_evidence.gd", "res://scenes/rooms/decay_garden.tscn"]:
+		for ln in FileAccess.get_file_as_string(lpath).split("\n"):
+			if ln.find("memory_code") != -1 or ln.find("order") != -1 or ln.begins_with("[") or ln.find("StringName") != -1 or ln.find("&\"") != -1:
+				continue
+			for mt in lre.search_all(ln):
+				var lit: String = mt.get_string(1)
+				if lit.find("7") != -1 and lit.find("2") != -1 and lit.find("9") != -1:
+					leak = true
+	check(not leak, "garden_texts_do_not_leak_729")
+	var fev: String = FileAccess.get_file_as_string("res://scripts/story/decay_flower_evidence.gd")
+	check(fev.to_lower().find("mühür") == -1 and fev.to_lower().find("muhur") == -1, "garden_evidence_no_keypad_reference")
 	# ---- 12 catacombs ----
 	_unsolve(["decay_catacomb_seal"])
 	rm.enter_room(&"decay_catacombs", &"default")
@@ -1629,9 +1646,22 @@ func _rooms_11_13() -> void:
 			wide = gv
 	check(wide.y - wide.x > reach_max, "cata_big_gap_unjumpable (%.0f > %.1f)" % [wide.y - wide.x, reach_max])
 	var half := (wide.y - wide.x - cw) * 0.5
-	check(half < speed * air_t - 8.0, "cata_gap_halves_jumpable_with_corpse (%.1f < %.1f)" % [half, speed * air_t - 8.0])
+	## Zıplama corpse tepesinden (~15 px yukarı) başlar/biter: başlangıçtan 15 px yukarıdaki seviyeye dönüşe kadar süre.
+	var corpse_top := 15.0
+	var vy2 := -jv
+	var y2 := 0.0
+	var t15 := 0.0
+	while t15 < 3.0:
+		var gm2 := apex_mult if absf(vy2) < apex_spd else 1.0
+		vy2 += grav * gm2 / 60.0
+		y2 += vy2 / 60.0
+		t15 += 1.0 / 60.0
+		if vy2 > 0.0 and y2 >= -corpse_top:
+			break
+	check(half < speed * t15 - 4.0, "cata_gap_halves_jumpable_from_corpse_top (%.1f < %.1f, t15 %.3f)" % [half, speed * t15 - 4.0, t15])
+	## Not: tam headless fizik simulasyonu (Player sahnesi kare kare) bilincli atlandi; sabit-turev aritmetigi + e2e yeterli.
 	var th: Node = cat.find_child("Thorn", true, false)
-	check(th != null and th.is_in_group("blood_thorn") and th.puzzle_hint == &"decay_catacomb_seal", "cata_thorn_hint")
+	check(th != null and th.is_in_group("blood_thorn") and th.puzzle_hint == &"catacomb_bridge_thorn", "cata_thorn_hint")
 	if th != null:
 		check(th.anchor_x - cw * 0.5 > wide.x and th.anchor_x + cw * 0.5 < wide.y, "cata_thorn_anchor_inside_gap")
 		check(bool(th.hold_corpse) and float(th.anchor_y) >= 0.0, "cata_thorn_holds_corpse")
@@ -1639,7 +1669,9 @@ func _rooms_11_13() -> void:
 		check(not pm.is_solved(th.puzzle_hint), "cata_thorn_hint_unsolved")
 		_clear_corpses()
 		cm.record_corpse_at(Vector2(th.anchor_x, th.anchor_y), &"thorn")
-		th._hold_last_corpse()
+		var ids_h: Array = th._corpse_ids()
+		ids_h.pop_back()
+		th._hold_new_corpse(ids_h)
 		var cl: Array = gs.world_memory_state["corpses"]
 		var held := false
 		var ok_pos := false
@@ -1649,9 +1681,90 @@ func _rooms_11_13() -> void:
 			ok_pos = absf(float((c.get("position", {}) as Dictionary).get("x", 0.0)) - th.anchor_x) < 1.0
 		check(held and ok_pos, "cata_bridge_corpse_anchored_not_pickable_in_gap")
 		check(th._bridge_exists(), "cata_thorn_detects_existing_bridge")
+		# refused death: no NEW corpse -> previous corpse stays unanchored
+		_clear_corpses()
+		cm.record_corpse_at(Vector2(100.0, 288.0), &"unknown")
+		var before_ids: Array = th._corpse_ids()
+		var got: bool = th._hold_new_corpse(before_ids)
+		var prev: Dictionary = (gs.world_memory_state["corpses"] as Array).back()
+		check(not got and not bool(prev.get("anchored", false)) and String(prev.get("anchor_plate", "")) == "", "thorn_hold_ignores_old_corpse_when_death_refused")
+		# legacy save: seal already solved, no corpses -> bridge thorn still armed and bridges
+		_clear_corpses()
+		pm.mark_solved(&"decay_catacomb_seal")
+		check(not pm.is_solved(th.puzzle_hint) and not pm.is_live(th.puzzle_hint) and not th._bridge_exists(), "cata_thorn_armed_on_legacy_seal_save")
+		th._armed = true
+		th.on_interact(player)
+		var tl := 0.0
+		while tl < 5.0 and gs.world_memory_state["corpses"].is_empty():
+			await create_timer(0.1).timeout
+			tl += 0.1
+		var lc: Array = gs.world_memory_state["corpses"]
+		var lheld := false
+		if lc.size() > 0:
+			var lcd: Dictionary = lc.back()
+			lheld = bool(lcd.get("anchored", false)) and absf(float((lcd.get("position", {}) as Dictionary).get("x", 0.0)) - th.anchor_x) < 1.0
+		check(lheld and th._bridge_exists(), "cata_legacy_seal_save_bridge_corpse_anchored_in_gap")
+		tl = 0.0
+		while tl < 6.0 and bool(root.get_node("DeathManager").is_dying):
+			await create_timer(0.1).timeout
+			tl += 0.1
+		_unsolve(["decay_catacomb_seal"])
 	_clear_corpses()
 	var hc: Dictionary = pm.get_hints(&"decay_catacomb_seal")
 	check(hc.size() > 0 and String(hc.get("explicit", "")).length() <= 90, "cata_hints_ok")
+	# each symbol shows one digit; 586 learned only after all three are lit
+	var sym_nodes: Dictionary = {}
+	for n in cat.find_children("*", "Node2D", true, false):
+		if n.is_in_group("hidden_symbol"):
+			sym_nodes[String(n.symbol_text)] = n
+	check(sym_nodes.size() == 3 and sym_nodes.has("5") and sym_nodes.has("8") and sym_nodes.has("6"), "cata_symbols_one_digit_each_586")
+	if sym_nodes.size() == 3:
+		var mc: Dictionary = gs.player_progress_knowledge.get("memory_codes", {})
+		mc.erase("catacomb")
+		for sk in sym_nodes:
+			sym_nodes[sk]._seen = false
+		var lamp := Node2D.new()
+		lamp.add_to_group("lantern_corpse")
+		current_scene.add_child(lamp)
+		var learned_early := false
+		for dk in ["5", "8"]:
+			lamp.global_position = Vector2(sym_nodes[dk].global_position.x, 288.0)
+			await create_timer(0.7).timeout
+		if (gs.player_progress_knowledge.get("memory_codes", {}) as Dictionary).has("catacomb"):
+			learned_early = true
+		lamp.global_position = Vector2(sym_nodes["6"].global_position.x, 288.0)
+		await create_timer(0.7).timeout
+		var learned: bool = (gs.player_progress_knowledge.get("memory_codes", {}) as Dictionary).get("catacomb", "") == "586"
+		lamp.queue_free()
+		check(sym_nodes["5"].is_seen() and sym_nodes["8"].is_seen() and sym_nodes["6"].is_seen(), "cata_all_three_symbols_lit_by_separate_corpses")
+		check(not learned_early and learned, "cata_code_586_learned_only_after_all_three")
+	# remote held corpse is trimmed first (budget)
+	_clear_corpses()
+	var thb: Node = cat.find_child("Thorn", true, false)
+	cm.record_corpse_at(Vector2(thb.anchor_x, thb.anchor_y), &"thorn")
+	var idsb: Array = thb._corpse_ids()
+	idsb.pop_back()
+	thb._hold_new_corpse(idsb)
+	var bridge_id: String = String((gs.world_memory_state["corpses"] as Array).back().get("id", ""))
+	rm.enter_room(&"decay_garden", &"default")
+	await create_timer(0.4).timeout
+	for ti in 2:
+		cm.record_corpse_at(Vector2(200.0 + 60.0 * ti, 288.0), &"unknown")
+		var cc: Dictionary = (gs.world_memory_state["corpses"] as Array).back()
+		cc["anchored"] = true
+		cc["anchor_plate"] = "audit_plate_%d" % ti
+		await create_timer(0.02).timeout
+	cm.record_corpse_at(Vector2(400.0, 288.0), &"unknown")
+	var left_ids: Array = []
+	var anch := 0
+	for cd in gs.world_memory_state["corpses"]:
+		left_ids.append(String((cd as Dictionary).get("id", "")))
+		if bool((cd as Dictionary).get("anchored", false)) and String((cd as Dictionary).get("room", "")) == "decay_garden":
+			anch += 1
+	check(not left_ids.has(bridge_id) and anch == 2, "trim_prefers_remote_held_corpse_keeps_active_room_anchors")
+	_clear_corpses()
+	rm.enter_room(&"decay_catacombs", &"default")
+	await create_timer(0.3).timeout
 	# ---- 13 cistern ----
 	_unsolve(["decay_cistern", "decay_cistern_drain"])
 	for k in ["cistern_page_1", "cistern_page_2", "cistern_page_3"]:
@@ -1704,6 +1817,28 @@ func _rooms_11_13() -> void:
 	_unsolve(["decay_cistern"])
 	for k in ["cistern_page_1", "cistern_page_2", "cistern_page_3"]:
 		gs.set_world_flag(StringName(k), false)
+	if water != null:
+		# raise to 3, leave and re-enter: level resets to 1 and a valve is reachable from the floor
+		water.step(1)
+		water.step(1)
+		await create_timer(0.1).timeout
+		check(water.level == 3, "cist_raised_to_3_before_reload")
+		rm.enter_room(&"decay_garden", &"default")
+		await create_timer(0.3).timeout
+		rm.enter_room(&"decay_cistern", &"default")
+		await create_timer(0.4).timeout
+		check(water.level == 1 and int(gs.get_world_flag(&"cistern_level", 1)) == 1, "cist_reenter_resets_level_1")
+		var vmin := 9999.0
+		for n in cis.find_children("*", "Area2D", true, false):
+			if n.is_in_group("valve"):
+				vmin = minf(vmin, absf(288.0 - (n as Node2D).global_position.y))
+		check(vmin <= 60.0, "cist_valve_reachable_from_floor_at_level1 (%.0f px)" % vmin)
+		water.step(1)
+		water.step(1)
+		await create_timer(0.1).timeout
+		check(water.level == 3, "cist_raised_to_3_before_death")
+		root.get_node("DeathManager").rebirth_completed.emit()
+		check(water.level == 1, "cist_rebirth_resets_level_1")
 	check(not pm.journal_hint_for_active_room().is_empty(), "cist_hint_when_unsolved")
 	pm.mark_solved(&"decay_cistern")
 	check(pm.journal_hint_for_active_room().is_empty(), "cist_legacy_solved_skips_hint")
@@ -1715,8 +1850,9 @@ func _rooms_11_13() -> void:
 			if t.is_in_group("blood_thorn"):
 				check(not seen.has(t.puzzle_hint), "thorn_%s_unique_hint" % String(t.name))
 				seen[t.puzzle_hint] = true
-				check(not pm.is_solved(t.puzzle_hint) or t.puzzle_hint == &"decay_cistern", "thorn_%s_hint_live" % String(t.name))
-	check(seen.has(&"decay_garden_bloom") and seen.has(&"decay_cistern_drain") and seen.has(&"decay_catacomb_seal"), "thorns_1113_use_room_puzzles")
+				## Cistern thorn uses decay_cistern_drain (not the page puzzle decay_cistern), so every thorn hint must be unsolved.
+				check(not pm.is_solved(t.puzzle_hint), "thorn_%s_hint_live" % String(t.name))
+	check(seen.has(&"decay_garden_bloom") and seen.has(&"decay_cistern_drain") and seen.has(&"catacomb_bridge_thorn"), "thorns_1113_use_room_puzzles")
 	for id in [&"decay_garden_bloom", &"decay_cistern", &"decay_catacomb_seal", &"decay_catacombs"]:
 		var hh: Dictionary = pm.get_hints(id)
 		var ok4 := hh.size() > 0 and hh.has("goal")

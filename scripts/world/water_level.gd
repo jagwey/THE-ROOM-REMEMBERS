@@ -7,6 +7,9 @@ signal level_changed(level: int)
 @export var level_y: PackedFloat32Array = PackedFloat32Array([0.0, 0.0, 0.0, 0.0])
 @export var start_level: int = 1
 @export var puzzle_key: StringName = &""
+## Doluysa: bu bulmaca çözülene dek odaya girişte ve yeniden doğuşta seviye start_level'a döner
+## (vanalar sal üstünde; yüksek seviyede yere basan oyuncu vanaya yetişemez).
+@export var reset_until_solved: StringName = &""
 
 var level: int = 1
 var drain_open: bool = false
@@ -30,6 +33,35 @@ func _ready() -> void:
 	level = clampi(int(GameState.get_world_flag(_flag(), start_level)), 1, 3)
 	if not level_y.is_empty():
 		_raft.position.y = level_y[mini(level, level_y.size() - 1)]
+	if reset_until_solved != &"":
+		RoomManager.room_changed.connect(_on_room_changed)
+		DeathManager.rebirth_completed.connect(_reset_if_needed)
+		_reset_if_needed()
+
+
+func _on_room_changed(_from: StringName, _to: StringName) -> void:
+	_reset_if_needed()
+
+
+func _reset_if_needed() -> void:
+	if reset_until_solved == &"" or PuzzleManager.is_solved(reset_until_solved):
+		return
+	if not is_visible_in_tree():
+		return
+	reset_to_start()
+
+
+## Seviyeyi start_level'a anında döndür (tween yok).
+func reset_to_start() -> void:
+	if level == start_level:
+		return
+	level = clampi(start_level, 1, 3)
+	GameState.set_world_flag(_flag(), level)
+	if _tween != null and _tween.is_valid():
+		_tween.kill()
+	if _raft != null and not level_y.is_empty():
+		_raft.position.y = level_y[mini(level, level_y.size() - 1)]
+	level_changed.emit(level)
 
 
 func step(delta: int) -> void:

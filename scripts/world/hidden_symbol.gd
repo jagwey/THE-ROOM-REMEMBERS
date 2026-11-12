@@ -7,6 +7,8 @@ extends Node2D
 @export var memory_code_key: String = ""
 @export var memory_code_value: String = ""
 @export var reveal_line: String = ""
+## Doluysa: aynı code_group'taki TÜM semboller görülünce kod öğrenilir (rakamlar yayılmış semboller).
+@export var code_group: StringName = &""
 
 var _label: Label
 var _seen: bool = false
@@ -39,7 +41,32 @@ func _physics_process(_delta: float) -> void:
 	_label.modulate.a = lerpf(_label.modulate.a, a, 0.15)
 	if a > 0.8 and not _seen:
 		_seen = true
+		if code_group != &"":
+			_try_group_code()
+			return
 		if memory_code_key != "" and memory_code_value != "":
 			GameState.learn_memory_code(memory_code_key, memory_code_value)
 		if reveal_line != "":
 			DialogueManager.whisper("Noroi", reveal_line)
+
+
+func is_seen() -> bool:
+	return _seen
+
+
+func _try_group_code() -> void:
+	var carrier: Node = null
+	for n in get_tree().get_nodes_in_group("hidden_symbol"):
+		if n == self or not ("code_group" in n) or n.code_group != code_group:
+			continue
+		if not n.is_seen():
+			return
+		if String(n.memory_code_value) != "":
+			carrier = n
+	if carrier == null and memory_code_value != "":
+		carrier = self
+	if carrier == null:
+		return
+	GameState.learn_memory_code(String(carrier.memory_code_key), String(carrier.memory_code_value))
+	if String(carrier.reveal_line) != "":
+		DialogueManager.whisper("Noroi", String(carrier.reveal_line))

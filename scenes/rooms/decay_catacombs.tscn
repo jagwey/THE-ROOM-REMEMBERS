@@ -79,9 +79,9 @@ script = ExtResource("thorn")
 anchor_x = 890.0
 anchor_y = 288.0
 hold_corpse = true
-puzzle_hint = &"decay_catacomb_seal"
+puzzle_hint = &"catacomb_bridge_thorn"
 body_line = "Dokunursam ölürüm; bedenim uçurumun üstünde köprü olur, çiçek alırsa yanar."
-solved_line = "Diken sustu; köprü ya da mühür zaten hazır."
+solved_line = "Diken sustu; köprü zaten kuruldu."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/Thorn"]
 shape = SubResource("Interact")
@@ -95,21 +95,24 @@ position = Vector2(300.0, 200.0)
 script = ExtResource("symbol")
 symbol_text = "5"
 reveal_radius = 220.0
+code_group = &"catacomb"
 
 [node name="Sym8" type="Node2D" parent="Interactive"]
 position = Vector2(600.0, 176.0)
 script = ExtResource("symbol")
 symbol_text = "8"
 reveal_radius = 220.0
+code_group = &"catacomb"
 
 [node name="Sym6" type="Node2D" parent="Interactive"]
 position = Vector2(880.0, 200.0)
 script = ExtResource("symbol")
 symbol_text = "6"
 reveal_radius = 220.0
+code_group = &"catacomb"
 memory_code_key = "catacomb"
 memory_code_value = "586"
-reveal_line = "Bedenimin ışığında görünüyor: beş, sekiz, altı."
+reveal_line = "Üç sembol de okundu: beş, sekiz, altı."
 
 [node name="CatacombSeal" type="Area2D" parent="Interactive"]
 position = Vector2(1130, 268.0)

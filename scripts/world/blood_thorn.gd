@@ -67,9 +67,10 @@ func on_interact(by: Node) -> void:
 		cam.add_trauma(0.5)
 	if anchor_y >= 0.0 and player != null and player.has_method("note_safe_floor"):
 		player.note_safe_floor(Vector2(anchor_x, anchor_y))
+	var before := _corpse_ids()
 	DeathManager.request_death(&"thorn")
 	if hold_corpse:
-		_hold_last_corpse()
+		_hold_new_corpse(before)
 
 
 func _bridge_exists() -> bool:
@@ -81,14 +82,25 @@ func _bridge_exists() -> bool:
 	return false
 
 
-## Son kaydedilen bedeni köprü olarak sabitle: alınamaz, anchor_plate boş olmadığı için plaka hesapları dokunmaz.
-func _hold_last_corpse() -> void:
+func _corpse_ids() -> Array:
+	var ids: Array = []
+	for c in GameState.world_memory_state.get("corpses", []):
+		ids.append(String((c as Dictionary).get("id", "")))
+	return ids
+
+
+## Ölümle YENİ kaydedilen bedeni köprü olarak sabitle (alınamaz; anchor_plate boş olmadığı için plaka hesapları dokunmaz).
+## Ölüm reddedildiyse (yeni ceset yok) önceki hiçbir ceset sabitlenmez.
+func _hold_new_corpse(ids_before: Array) -> bool:
 	var corpses: Array = GameState.world_memory_state.get("corpses", [])
-	if corpses.is_empty():
-		return
-	var c: Dictionary = corpses.back()
-	c["anchored"] = true
-	c["anchoring"] = true
-	c["anchor_plate"] = String(hold_id)
-	c["usable_for_puzzle"] = false
-	CorpseManager.rebuild_world_corpses()
+	for i in range(corpses.size() - 1, -1, -1):
+		var c: Dictionary = corpses[i]
+		if ids_before.has(String(c.get("id", ""))):
+			continue
+		c["anchored"] = true
+		c["anchoring"] = true
+		c["anchor_plate"] = String(hold_id)
+		c["usable_for_puzzle"] = false
+		CorpseManager.rebuild_world_corpses()
+		return true
+	return false

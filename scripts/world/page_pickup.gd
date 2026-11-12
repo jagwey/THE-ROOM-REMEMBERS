@@ -5,6 +5,7 @@ extends Area2D
 const LorePointScript := preload("res://scripts/world/lore_point.gd")
 const PAGE_COUNT := 3
 const SOLVE_ID := &"decay_cistern"
+const DIARY_EVIDENCE := "Sarnıçtaki sayfalar altmış sekiz yıl önce yazılmış. Bir el yazmış, su silememiş."
 
 @export var page_id: int = 1
 ## Doluysa sayfa yalnız bu su seviyesindeyken alınabilir (çukur dibi: 0).
@@ -84,7 +85,7 @@ func on_interact(_by: Node) -> void:
 			DialogueManager.say(String(line[0]), String(line[1]))
 		var ok: bool = await DialogueManager.dialogue_finished
 		if ok:
-			LorePointScript.record_evidence("ev_cistern_diary", "Islak Günlük", "Sarnıçtaki sayfalar altmış sekiz yıl önce yazılmış. Bir el yazmış, su silememiş.", "izler")
+			LorePointScript.record_evidence("ev_cistern_diary", "Islak Günlük", DIARY_EVIDENCE, "izler")
 	else:
 		DialogueManager.say("Noroi", "Islak bir sayfa topladım. (%d/%d)" % [n, PAGE_COUNT])
 	SaveManager.save_game()

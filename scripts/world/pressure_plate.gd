@@ -105,6 +105,10 @@ func _weight_of(b: Node) -> int:
 	return 0
 
 
+func is_pressed() -> bool:
+	return _pressed
+
+
 func _set_pressed(value: bool) -> void:
 	if _pressed == value:
 		return

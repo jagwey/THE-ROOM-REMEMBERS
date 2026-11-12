@@ -342,7 +342,7 @@ func receive_sword_hit(_attacker, _dir, combo):
 
 	# In decay_catacombs, second floor gap exists between x=750 and x=1030.
 	# Corpse starts at x=720. Push step is 60. Target would be x=780 (inside the pit gap!).
-	# Downward raycast at x=850 finds no floor on layer 1, halting corpse with "…Uçurumun kenarında durdu."
+	# Downward raycast at the target x=780 finds no floor on layer 1, halting corpse with "…Uçurumun kenarında durdu."
 	pit_corpse.global_position = Vector2(720, 288)
 	pit_corpse.call("_push", 1.0)
 	await create_timer(0.05).timeout

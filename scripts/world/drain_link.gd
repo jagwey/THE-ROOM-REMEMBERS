@@ -12,5 +12,5 @@ func _ready() -> void:
 		push_warning("drain_link '%s': plate/water missing" % name)
 		return
 	p.pressed_changed.connect(func(on: bool): w.set_drain(on))
-	if bool(p.get("_pressed")):
+	if p.is_pressed():
 		w.set_drain(true)
