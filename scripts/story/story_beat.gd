@@ -124,7 +124,7 @@ func _library_witness() -> void:
 
 		return
 
-	DialogueManager.say("Noroi", "Saat, çiçek, mühür. Kayıtlarını karşılaştırıyorum.")
+	DialogueManager.say("Noroi", "Saat, çiçek, mühür: kayıtlarını karşılaştırıyorum.")
 
 	var ok: bool = await DialogueManager.dialogue_finished
 

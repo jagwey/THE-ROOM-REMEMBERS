@@ -33,7 +33,7 @@ script = ExtResource("lore")
 lore_id = &"stacks_books"
 texture_path = "res://assets/layers/books.png"
 sprite_scale = 0.35
-lines = PackedStringArray("Noroi|“Ses Arşivi Projesi — kayıp bir sesi sonsuza dek saklamak.”", "Noroi|Yazarın imzası kazınmış. Kenarda üç sözcük: ses, mühür, çiçek.")
+lines = PackedStringArray("Noroi|“Ses Arşivi Projesi — kayıp bir sesi sonsuza dek saklamak.”", "Noroi|Yazarın imzası kazınmış, kenarda üç sözcük var: ses, mühür, çiçek.")
 evidence_title = "Ses Arşivi Projesi"
 evidence_body = "Çekirdek deneyi kayıp bir sesi saklamak için başlamış. Yazarın imzası kazınmış. Rafların sırası: ses, mühür, çiçek."
 evidence_section = "notlar"
@@ -42,7 +42,7 @@ evidence_section = "notlar"
 script = ExtResource("shrine")
 puzzle_id = &"library_shelf_order"
 order = PackedStringArray("ses", "muhur", "cicek")
-fail_line = "Yanlış kitap. Ses, sonra mühür, sonra çiçek."
+fail_line = "Yanlış kitap; sıra ses, mühür, çiçek."
 success_line = "Tahta indi, yasak kanada çıkabilirsin."
 bridge = Vector3(560, 168, 280)
 
