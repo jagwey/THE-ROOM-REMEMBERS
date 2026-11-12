@@ -12,10 +12,10 @@
       {"s": "X", "t": "Not: denek geceyi izledi, müdahale etmedi."},
       {"s": "Noroi", "t": "Seni duyuyorum, kimsin sen?"},
       {"s": "X", "t": "Geri dönün. Sizi izlemeye devam edeceğim."},
-      {"s": "Noroi", "t": "Kazınmış imza senindi demek."},
-      {"s": "X", "t": "Kazıttım. Kayıt tutan görünmemeli."},
       {"s": "Noroi", "t": "Hâlâ adını söylemiyorsun."},
-      {"s": "X", "t": "Yetki kaydındaki imza benim. Bana X deyin."}
+      {"s": "X", "t": "Kayıt tutan görünmemeli. İmzamı bile kazıttım."},
+      {"s": "Noroi", "t": "Kazınmış imza senindi demek."},
+      {"s": "X", "t": "Evet, yetki kaydındaki imza benim. Bana X deyin."}
     ]
   }
 }
