@@ -5,7 +5,7 @@
       {
         "variants": [
           {"when": {"min_deaths": 3}, "s": "@shilda", "t": "Yine buradasın. Duvar saydı."},
-          {"s": "@shilda", "t": "Dur. Bu oda seni unutmadı. Sen odayı unutmuşsun."}
+          {"s": "@shilda", "t": "Dur. Oda seni unutmadı, sen odayı unuttun."}
         ]
       },
       {"s": "Noroi", "t": "Sen kimsin?"}

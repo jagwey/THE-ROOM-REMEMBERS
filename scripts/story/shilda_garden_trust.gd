@@ -24,7 +24,7 @@ func on_interact(_by: Node) -> void:
 
 	if bool(GameState.player_progress_knowledge.get("shilda_garden_beat", false)):
 		if trusted:
-			DialogueManager.say(keeper_name, "Burada güvendesin. Çiçeklerin fısıltısını duyabiliyorum.")
+			DialogueManager.say(keeper_name, "Burada güvendesin. Çiçekler fısıldıyor.")
 		else:
 			DialogueManager.say(keeper_name, "Adımlarına dikkat et. Kökler hâlâ huzursuz.")
 		await DialogueManager.dialogue_finished
@@ -32,14 +32,14 @@ func on_interact(_by: Node) -> void:
 		return
 
 	# İlk derin diyalog — oyuncunun eylemlerini tartar
-	DialogueManager.say(keeper_name, "Bu çürüyen kökler… seni de çeker. Dur yanımda.")
+	DialogueManager.say(keeper_name, "Kökler seni de çeker. Yanımda dur.")
 	if trusted:
-		DialogueManager.say("Noroi", "Seni dinliyorum. Çiçeklere zarar vermedim.")
-		DialogueManager.say(keeper_name, "Fark ettim. Adımların aceleci değil. Sana inanmak istiyorum.")
+		DialogueManager.say("Noroi", "Seni dinliyorum, çiçeklere zarar vermedim.")
+		DialogueManager.say(keeper_name, "Fark ettim, aceleci değilsin. Sana inanmak istiyorum.")
 		GameState.player_progress_knowledge["trusted_keeper"] = true
 	else:
 		DialogueManager.say("Noroi", "Buradan nasıl çıkarım?")
-		DialogueManager.say(keeper_name, "Acele ediyorsun. Bu odada güven sözle değil, adımlarla kazanılır.")
+		DialogueManager.say(keeper_name, "Acele ediyorsun. Burada güven adımla kazanılır.")
 
 	var ok: bool = await DialogueManager.dialogue_finished
 	if ok:

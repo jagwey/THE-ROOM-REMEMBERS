@@ -201,9 +201,9 @@ script = ExtResource("lore_flower")
 lore_id = &"awakening_fresh_flower"
 texture_path = "res://assets/props/red_flower.png"
 sprite_scale = 0.7
-lines = PackedStringArray("Noroi|Taze bir kırmızı çiçek. Bu odada hiçbir şey taze olmamalı.", "Noroi|Biri buradan az önce geçmiş. İz ıslak.")
+lines = PackedStringArray("Noroi|Taze bir kırmızı çiçek, bu odadaki tek taze şey.", "Noroi|Biri az önce buradan geçmiş, iz hâlâ ıslak.")
 evidence_title = "Taze Çiçek"
-evidence_body = "Uyanış odasında kurumamış bir kırmızı çiçek var. Biri önden geçmiş."
+evidence_body = "Uyanış odasında solmamış bir kırmızı çiçek duruyor. Biri benden önce geçmiş."
 evidence_section = "izler"
 
 [node name="PressurePlate" type="Area2D" parent="Interactive"]

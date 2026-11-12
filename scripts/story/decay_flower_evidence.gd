@@ -12,8 +12,8 @@ func _ready() -> void:
 	EchoManager.register_echo("decay_archive_hint", {
 		"evidence_id": "ev_decay_archive_hint",
 		"lines": [
-			["Yankı", "Bahçede yerdeki desen. Aklımda kalan o üç sayı."],
-			["Yankı", "Arşiv mührü bunu ister."],
+			["Yankı", "Yerdeki desen aklımda kaldı: üç sayı."],
+			["Yankı", "Arşiv mührü bu sayıları ister."],
 		],
 		"journal": {
 			"section": "izler",
@@ -33,7 +33,7 @@ func on_interact(_by: Node) -> void:
 		var keeper := get_tree().get_first_node_in_group("keeper")
 		if keeper and keeper.has_method("_run_naming_scene"):
 			await keeper._run_naming_scene()
-	DialogueManager.say("Noroi", "Kırmızı yapraklar… kurumuş. Yerde bir desen var: 7, 2, 9.")
+	DialogueManager.say("Noroi", "Kurumuş kırmızı yapraklar, yerde bir desen var: 7, 2, 9.")
 	var ok: bool = await DialogueManager.dialogue_finished
 	if ok:
 		GameState.learn_memory_code("decay_archive", "729")

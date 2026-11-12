@@ -11,7 +11,7 @@ room_width = 1280.0
 bg_region = "awakening"
 checkpoint = Vector2(120, 288)
 default_spawn = Vector2(120, 288)
-doors = [{"x": 40.0, "to": "awakening_seal", "spawn": "from_decay"}, {"x": 1240.0, "to": "decay_vines", "spawn": "from_seal", "req": "awakening_vigil", "msg": "Gölge yolu göstermeden geçemem."}]
+doors = [{"x": 40.0, "to": "awakening_seal", "spawn": "from_decay"}, {"x": 1240.0, "to": "decay_vines", "spawn": "from_seal", "req": "awakening_vigil", "msg": "Önce gölgeyi dinle. Kapı onun sözünden sonra açılır."}]
 
 [node name="Spawns" type="Node2D" parent="."]
 
@@ -25,7 +25,7 @@ position = Vector2(480, 288)
 script = ExtResource("lore")
 lore_id = &"vigil_who"
 texture_path = "res://assets/props/memory_echo.png"
-lines = PackedStringArray("Noroi|Sen kimsin?", "Noroi|Sağda bir kapı var, dedi. Kırmızı yarığa basma.", "Noroi|Gideceğimi biliyordu. Ben iz bırakırım, dedi.")
+lines = PackedStringArray("Noroi|Sen kimsin?", "Noroi|Sağda bir kapı var, kırmızı yarığa basma dedi.", "Noroi|Gideceğimi biliyordu, iz bırakacağını söyledi.")
 evidence_title = "Nöbetin İzi"
-evidence_body = "Gölge adını vermedi. Sağdaki kapıyı gösterdi, kırmızı yarığa basmamamı söyledi. Gideceğimi biliyordu; ben iz bırakırım dedi."
+evidence_body = "Gölge adını vermedi. Sağdaki kapıyı gösterdi, kırmızı yarığa basmamamı söyledi. Gideceğimi biliyordu, iz bırakacağını söyledi."
 evidence_section = "izler"

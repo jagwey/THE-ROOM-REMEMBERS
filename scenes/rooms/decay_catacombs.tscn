@@ -49,15 +49,15 @@ script = ExtResource("lore")
 lore_id = &"catacomb_dark"
 texture_path = "res://assets/props/candles.png"
 sprite_scale = 0.5
-lines = PackedStringArray("Noroi|Zifiri karanlık. Duvarlarda bir şey kazılı ama göremiyorum.", "Shilda|Burada ölülerin ışığı yolu gösterir. Çiçekli bir beden… fener gibi yanar.", "Shilda|O bedeni sırtla. Işığı duvarın dibine kadar götür.")
+lines = PackedStringArray("Noroi|Zifiri karanlık, duvarda bir şey kazılı ama göremiyorum.", "Shilda|Burada yolu ölülerin ışığı gösterir.", "Shilda|Çiçekli bir beden fener gibi yanar.", "Shilda|O bedeni sırtla. Işığı duvara götür.")
 
 [node name="Thorn" type="Area2D" parent="Interactive"]
 position = Vector2(640.0, 290.0)
 script = ExtResource("thorn")
 anchor_x = 640.0
 puzzle_hint = &"decay_catacomb_seal"
-body_line = "Dokunursam ölürüm; bedenim burada kalır. Çiçek alırsa karanlıkta fener gibi yanar."
-solved_line = "Diken sustu. Kemik mührü zaten açık."
+body_line = "Dokunursam ölürüm, bedenim burada kalır; çiçek alırsa fener gibi yanar."
+solved_line = "Diken sustu, kemik mührü zaten açık."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/Thorn"]
 shape = SubResource("Interact")
@@ -85,7 +85,7 @@ symbol_text = "6"
 reveal_radius = 220.0
 memory_code_key = "catacomb"
 memory_code_value = "586"
-reveal_line = "Bedenimin ışığında… beş, sekiz, altı."
+reveal_line = "Bedenimin ışığında görünüyor: beş, sekiz, altı."
 
 [node name="CatacombSeal" type="Area2D" parent="Interactive"]
 position = Vector2(950, 268.0)
@@ -93,9 +93,9 @@ script = ExtResource("seal")
 code_key = "catacomb"
 puzzle_id = &"decay_catacomb_seal"
 story_code = "586"
-intro_line = "…Kemiklerden bir mühür. Üç boşluk."
-solved_line = "Kemik mührü… açıldı."
-wrong_line = "…Yanlış. Kemikler kımıldamadı."
+intro_line = "Kemiklerden bir mühür, üç boşluk var."
+solved_line = "Kemik mührü açıldı."
+wrong_line = "Yanlış, kemikler kımıldamadı."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/CatacombSeal"]
 shape = SubResource("Interact")
@@ -126,7 +126,7 @@ script = ExtResource("lore")
 lore_id = &"catacomb_record"
 texture_path = "res://assets/props/memory_echo.png"
 sprite_scale = 1.1
-lines = PackedStringArray("Noroi|Bir anı yankısı. Tanımadığım bir ses: “Ritüel tutmuyor. Çekirdek anıları yutuyor.”", "Noroi|“Tesisi içeriden kilitleyeceğim. Kimse çıkmayacak. Ben de.”")
+lines = PackedStringArray("Noroi|Tanımadığım bir ses, bir anı yankısı:", "Noroi|“Ritüel tutmuyor. Çekirdek anıları yutuyor.”", "Noroi|“Tesisi içeriden kilitleyeceğim. Kimse çıkmayacak. Ben de.”")
 evidence_title = "Kemik Mahzeni Kaydı"
 evidence_body = "Tanımadığım bir ses: Çekirdek anıları yutmaya başladığında tesisi içeriden kilitledi."
 evidence_section = "izler"

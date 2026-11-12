@@ -18,7 +18,7 @@ region_id = &"awakening"
 room_width = 960.0
 bg_region = "awakening"
 checkpoint = Vector2(120, 288)
-doors = [{"x": 40.0, "to": "awakening_balcony", "spawn": "from_awakening_crypt"}, {"x": 920.0, "to": "decay_shilda_wall", "spawn": "from_awakening_crypt", "req": "decay_shilda_wall_broken", "msg": "Taş yığını. Öbür taraftan yıkılmalı."}]
+doors = [{"x": 40.0, "to": "awakening_balcony", "spawn": "from_awakening_crypt"}, {"x": 920.0, "to": "decay_shilda_wall", "spawn": "from_awakening_crypt", "req": "decay_shilda_wall_broken", "msg": "Taş yığını yolu kapatmış. Öbür taraftan yıkılmalı."}]
 
 [node name="Interactive" type="Node2D" parent="."]
 
@@ -28,7 +28,7 @@ script = ExtResource("lore")
 lore_id = &"crypt_beds"
 texture_path = "res://assets/props/body_echo.png"
 sprite_scale = 0.9
-lines = PackedStringArray("Noroi|Sıra sıra yataklar. Her birinde… bir beden.", "Noroi|Hepsi yabancı yüzler. Benden öncekiler.", "Noroi|Yatak beni her ölümde yeniden doğurmuyor. Beni geri sarıyor.", "Noroi|Hepsi bu yatağa uzanmış. Hiçbiri kalkmamış.")
+lines = PackedStringArray("Noroi|Sıra sıra yataklar, her birinde bir beden.", "Noroi|Hepsi yabancı yüzler, benden öncekiler.", "Noroi|Yatak beni doğurmuyor, her ölümde geri sarıyor.", "Noroi|Hepsi bu yatağa uzanmış, hiçbiri kalkmamış.")
 evidence_title = "İlk Bedenler"
 evidence_body = "Yatakların her birinde yabancı bir beden var. Benden önce girenlerin bedenleri; yeniden doğuş yatağı beni onlardan biri yapmak istemiyor."
 evidence_section = "izler"
@@ -41,7 +41,7 @@ script = ExtResource("lore")
 lore_id = &"crypt_ledger"
 texture_path = "res://assets/props/ledger.png"
 sprite_scale = 0.9
-lines = PackedStringArray("Noroi|Defterdeki el yazısı: “{deaths}. ölüm. Yine unuttu. Yine çiçek bıraktım.”", "Noroi|Defterin kapağında 1927 yazıyor. Gerisi yanmış.", "Noroi|Kenar notu, imzası silinmiş: “Gözlem notu: hâlâ konuşuyor.”")
+lines = PackedStringArray("Noroi|Defterdeki el yazısı: “{deaths}. ölüm. Yine unuttu. Yine çiçek bıraktım.”", "Noroi|Defterin kapağında 1927 yazıyor, gerisi yanmış.", "Noroi|Kenarda imzası silinmiş bir not: “Gözlem notu: hâlâ konuşuyor.”")
 evidence_title = "Bekçinin Defteri"
 evidence_body = "Defteri tutan her döngüyü saymış. Kapağında 1927 yazıyor; gerisi yanmış. Bir kenar notunun imzası silinmiş."
 evidence_section = "notlar"

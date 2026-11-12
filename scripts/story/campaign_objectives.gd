@@ -3,12 +3,12 @@ extends RefCounted
 ## HUD hedef metinleri — `GameState.get_current_objective()` ve oda kimliğiyle eşleşir.
 
 const _BY_ROOM: Dictionary = {
-	"awakening": "Durmuş saate bak. Gölge konuşursa dinle. Sağdaki geçit seni çağırıyor.",
-	"awakening_passage": "Yarık anını koparır. Taşın fısıldadığı sayıyı sağdaki eşiğe götür.",
-	"awakening_seal": "Plaka canlıyı tanımaz; kristal bedeni bırak. Sayı mühürde bekler.",
-	"decay_vines": "Sarmaşık yolu yutmuş. Kolu bul; düğüm çözülünce geçit nefes alır.",
-	"decay_weight": "Taş ağır. Onu plakanın üstüne bırak. Şaşırırsan kol taşı geri çağırır.",
-	"decay_garden": "Çiçeğe bak. Shilda'yı dinle. Arşivin mührü ancak o zaman uyanır.",
+	"awakening": "Durmuş saate bak. Gölge konuşursa dinle. Sağdaki geçide yürü.",
+	"awakening_passage": "Yarığa kulak ver. Sayıyı ezberle, sağdaki mühre götür.",
+	"awakening_seal": "Kristal canlıyı tanımaz; ona bir beden bırak. Sayıyı mühre gir.",
+	"decay_vines": "Sarmaşık yolu kapatmış. Kolu bul, düğümü çöz, geçide geç.",
+	"decay_weight": "Taşı plakaya bırak. Şaşırırsan kolu çek, taş geri gelir.",
+	"decay_garden": "Çiçeklere bak, Shilda'yı dinle, arşiv mührünü aç.",
 	"library_hall": "Arşivci seni tanıyor. Tanıklıklar rafların arasında.",
 	"library_witness": "Üç tanık var: saat, çiçek, mühür. Hepsini dinle.",
 	"library_page": "Sayfalar dağılmış. Olayları oldukları sıraya koy.",
@@ -21,9 +21,9 @@ const _BY_ROOM: Dictionary = {
 	"core_threshold": "İzler sende. Çekirdek artık uzak değil.",
 	"core_seal_chamber": "Tanıklıklar birleşince son kapı nefes alır.",
 	"core": "Aşağı in. Mührü Shilda ile birlikte kır.",
-	"awakening_balcony": "Camın ardı boşluk. Kopuk taşın üstünden geç. Mor mühür henüz uyumuyor.",
-	"awakening_crypt": "Yataklar boş değil. Sır duvarda, defterde.",
-	"decay_catacombs": "Karanlıkta yol, ölülerin ışığıdır. Sembolleri gör; mühür uyanır.",
+	"awakening_balcony": "Kopuk taşın üstünden geç. Mor mühür Ruh Kesimi ister.",
+	"awakening_crypt": "Yataklar dolu. Defteri oku, duvara bak.",
+	"decay_catacombs": "Çiçekli bedenin ışığıyla yürü. Sembolleri oku, mührü aç.",
 	"decay_shilda_wall": "Gözleri kızarınca son adımda kenara çekil. Duvarı o yıkar.",
 	"library_upper_stacks": "Sıra: ses, mühür, çiçek. Doğruysa tahta iner; yukarı tırman.",
 	"library_forbidden_wing": "Burada bir kesik asılı. Onu al; mührün ilk yarısı da burada.",
@@ -33,14 +33,14 @@ const _BY_ROOM: Dictionary = {
 	"core_memory_vault": "Sütunlar bir yıl sırası tutuyor. 1927, 1995, sonra Son.",
 	"core_bloom_garden": "Taçları say: dört, bir, iki. Sonra Shilda konuşur.",
 	"mirrors_shrine": "Gölgeyi içine çek. Perde bedeni iter; mührün öteki yarısı orada.",
-	"awakening_vigil": "Gölge yüzünü gösteriyor. Onu dinle; sağdaki kapı açılır.",
-	"decay_greenhouse": "Camın ötesinde bir el mührü tutuyor. Plaka senin.",
+	"awakening_vigil": "Gölgeyle konuş. Sağdaki kapı ancak o zaman açılır.",
+	"decay_greenhouse": "Camın ötesindeki el mührü tutuyor. Plakaya bas.",
 	"library_clockroom": "İki saat, iki gece. Önce 1927, sonra 1995.",
 	"library_reading_cell": "Duvar gün gün çentilmiş. Sayılan günler burada bitmiş.",
 	"experiment_intake": "Önce kabul dosyası. Sonra askıdaki palto. İkisi de 1995'i biliyor.",
 	"mirrors_gallery": "Duvar, unuttuğun bedenleri sayıyor. Sonra kırılmayan aynaya geç.",
 	"mirrors_1927": "1927 gecesi kendi kendine oynuyor. Dokunma. Sonra geri dön.",
-	"decay_cistern": "Suyun üstündeki sayfalar bir ömür tutuyor. Oku, göğsüne koy.",
+	"decay_cistern": "Sayfalar suyun üstünde yüzüyor. Oku, göğsüne koy.",
 	"experiment_observation": "Cam önündeki masada sayım notu var. İmza kazınmış; yine de al.",
 	"core_ascent": "Yankıyı dinle. İki güç de sende olunca son basamak seni çağırır.",
 }
@@ -60,10 +60,10 @@ static func objective_for_room(room_id: String) -> String:
 	## Mor mühür Ruh Kesimi ister; yetenek yoksa oyuncuyu nereye gideceğine yönlendir.
 	if room_id == "awakening_balcony":
 		if PuzzleManager.is_solved(&"soul_seal_balcony"):
-			return "Mühür sustu. Balkon ile mahzen artık aynı nefesi paylaşıyor."
+			return "Mühür söndü. Kapı açık, mahzene in."
 		if _has_soul_slash():
-			return "Kopuk taşın üstünden geç. Mor mühre ruhunu savur; mahzen aşağıda."
-		return "Camın ardı boşluk. Kopuk taşın üstünden geç. Mor mühür henüz uyumuyor."
+			return "Kopuk taşın üstünden geç. Mor mühre Ruh Kesimi at."
+		return "Kopuk taşın üstünden geç. Mor mühür Ruh Kesimi ister."
 	var raw := String(_BY_ROOM.get(room_id, "Kayıtları incele; sağdaki geçidi takip et."))
 	var i := raw.find(" · ")
 	if i > 0 and i <= 32:

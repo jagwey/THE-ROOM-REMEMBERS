@@ -17,7 +17,7 @@ region_id = &"awakening"
 room_width = 960.0
 bg_region = "awakening"
 checkpoint = Vector2(120, 288)
-doors = [{"x": 40.0, "to": "awakening", "spawn": "from_awakening_balcony"}, {"x": 920.0, "to": "awakening_crypt", "spawn": "from_awakening_balcony", "req": "soul_seal_balcony", "msg": "Mor bir mühür kapıyı tutuyor. Buna kılıç değil, ruh gerek."}]
+doors = [{"x": 40.0, "to": "awakening", "spawn": "from_awakening_balcony"}, {"x": 920.0, "to": "awakening_crypt", "spawn": "from_awakening_balcony", "req": "soul_seal_balcony", "msg": "Mor mühür kapıyı tutuyor. Ruh Kesimi ile kır."}]
 floor_gaps = PackedVector2Array(660.0, 724.0)
 
 [node name="Spawns" type="Node2D" parent="."]
@@ -33,9 +33,9 @@ script = ExtResource("lore")
 lore_id = &"balcony_view"
 texture_path = "res://assets/props/telescope.png"
 sprite_scale = 0.9
-lines = PackedStringArray("Noroi|Kırık bir gözlem dürbünü. Camın ötesi… zemin yok.", "Noroi|Tesis karanlık bir boşlukta asılı. Dış dünya yok.", "Noroi|Bir flaş: beyaz önlük, kazınmış yüz, kalabalığa emir.", "Shilda|Bu balkon dışarıyı göstermez. Bizi tutan boşluğu gösterir.", "Noroi|Sağdaki taş kopmuş. Boşluk dar. Karşı kıyı beni tutar.")
+lines = PackedStringArray("Noroi|Kırık bir dürbün; camın ötesinde zemin yok.", "Noroi|Tesis karanlık bir boşlukta asılı duruyor, dışarısı yok.", "Noroi|Gözümde bir şimşek: beyaz önlük, yüzü kazınmış biri emir veriyor.", "Shilda|Dışarıyı değil, bizi tutan boşluğu gösterir.", "Noroi|Sağdaki taş kopmuş ama boşluk dar, karşı kıyı beni tutar.")
 evidence_title = "Gözlem Balkonu"
-evidence_body = "Dürbünden dışarı bakınca tesisin karanlık bir boşlukta asılı olduğu görülür. Dış dünya yok; yüzü kazınmış bir yetkili anı flaş eder."
+evidence_body = "Dürbünden bakınca tesisin karanlık bir boşlukta asılı durduğu görülüyor. Dışarısı yok; gözümde yüzü kazınmış bir yetkili çakıyor."
 evidence_section = "izler"
 focus_zoom = true
 
@@ -44,7 +44,7 @@ position = Vector2(590, 288.0)
 script = ExtResource("lore")
 lore_id = &"balcony_photo"
 texture_path = "res://assets/props/photograph.png"
-lines = PackedStringArray("Noroi|Yırtık bir fotoğraf. İki kişi: biri ben… öteki silinmiş.", "Noroi|Arkasında bir not: “Sesini kaybetmeyeceğim.”", "Noroi|Köşede silik bir tarih damgası. Yıl okunmuyor; yalnızca soluk bir rakam izi kalmış.")
+lines = PackedStringArray("Noroi|Yırtık bir fotoğraf: iki kişi, biri ben, ötekinin yüzü silinmiş.", "Noroi|Arkasında bir not var: “Sesini kaybetmeyeceğim.”", "Noroi|Köşede silik bir tarih damgası var, yılı okunmuyor.")
 evidence_title = "Silinmiş Yüz"
 evidence_body = "Fotoğrafta yanımdaki kişinin yüzü kazınmış. Notta: Sesini kaybetmeyeceğim."
 evidence_section = "notlar"

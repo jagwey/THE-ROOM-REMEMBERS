@@ -340,6 +340,11 @@ func _check_canon_decisions(texts: Dictionary) -> void:
 	var s_files := _room_files(before_vigil)
 	for p in ["res://scripts/world/awakening_seal_echo_recall.gd", "res://scripts/world/awakening_room.gd", "res://scripts/story/awakening_room.gd"]:
 		s_files.append(p)
+	var s_missing: Array[String] = []
+	for p in s_files:
+		if not game.has(p) and not texts.has(p):
+			s_missing.append(p)
+	check(s_missing.is_empty(), "CANON pre_name_shilda missing paths %s" % str(s_missing))
 	for p in s_files:
 		for line in _text_lines(str(game.get(p, "")) if game.has(p) else str(texts.get(p, ""))):
 			var body := line.replace("Shilda|", "").replace("\"Shilda\"", "")

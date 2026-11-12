@@ -33,7 +33,7 @@ sprite_scale = 0.58
 dialogue_room = &"decay_greenhouse"
 dialogue_set = &"shared_seal"
 evidence_title = "Ortak Mühür"
-evidence_body = "Serada uzak bir gölge mührün bir yanını tutuyor. Plakaya basınca yol açılıyor."
+evidence_body = "Serada uzaktaki bir gölge mührün öbür yanını tutuyor. Plakaya basınca yol açılır."
 evidence_section = "izler"
 
 [node name="SharedPlate" type="Area2D" parent="Interactive"]
