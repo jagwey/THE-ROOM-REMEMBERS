@@ -41,6 +41,7 @@ position = Vector2(700, 300)
 script = ExtResource("plate")
 puzzle_id = &"decay_greenhouse"
 accept_player = true
+latch_on_press = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/SharedPlate"]
 shape = SubResource("PlateShape")

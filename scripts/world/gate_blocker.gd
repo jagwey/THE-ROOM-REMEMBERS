@@ -8,6 +8,8 @@ extends StaticBody2D
 @export var ignore_world_flag: bool = false
 @onready var shape: CollisionShape2D = $CollisionShape2D
 @onready var sprite: Sprite2D = $Sprite2D
+## Geçiş kilidi: gate canlı plaka yüzünden açıkken oyuncu karşı tarafa geçerse bulmaca kalıcı çözülür.
+var _entry_side: int = 0
 
 
 func _ready() -> void:
@@ -15,11 +17,12 @@ func _ready() -> void:
 	collision_mask = 0
 	GameState.world_flag_changed.connect(_on_flag)
 	PuzzleManager.puzzle_solved.connect(_on_puzzle)
+	PuzzleManager.live_changed.connect(_on_live)
 	_apply(_is_open())
 
 
 func _is_open() -> bool:
-	if puzzle_listen != &"" and PuzzleManager.is_solved(puzzle_listen):
+	if puzzle_listen != &"" and (PuzzleManager.is_solved(puzzle_listen) or PuzzleManager.is_live(puzzle_listen)):
 		return true
 	if ignore_world_flag:
 		return false
@@ -39,6 +42,34 @@ func _on_puzzle(puzzle_id: StringName) -> void:
 	if puzzle_id == puzzle_listen:
 		_pulse_open()
 		_apply(true)
+
+
+func _on_live(puzzle_id: StringName, live: bool) -> void:
+	if puzzle_id != puzzle_listen:
+		return
+	if live:
+		_pulse_open()
+	_apply(_is_open())
+
+
+func _physics_process(_delta: float) -> void:
+	if puzzle_listen == &"" or PuzzleManager.is_solved(puzzle_listen) or not PuzzleManager.is_live(puzzle_listen):
+		_entry_side = 0
+		return
+	## Gate açıkken kendi görünürlüğü kapalıdır; oda görünürlüğüne bak.
+	var par := get_parent() as CanvasItem
+	if par != null and not par.is_visible_in_tree():
+		return
+	var player := get_tree().get_first_node_in_group("player") as Node2D
+	if player == null:
+		return
+	var side := 1 if player.global_position.x > global_position.x else -1
+	if _entry_side == 0:
+		_entry_side = side
+	elif side != _entry_side:
+		_entry_side = 0
+		PuzzleManager.mark_solved(puzzle_listen)
+		SaveManager.save_game()
 
 
 func _apply(open: bool) -> void:

@@ -209,7 +209,6 @@ evidence_section = "izler"
 [node name="PressurePlate" type="Area2D" parent="Interactive"]
 position = Vector2(940, 300)
 script = ExtResource("9")
-accept_player = true
 puzzle_id = &"awakening_weight"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/PressurePlate"]

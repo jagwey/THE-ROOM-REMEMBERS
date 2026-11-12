@@ -4,8 +4,11 @@ extends Node
 const SealBanner := preload("res://scripts/ui/seal_banner.gd")
 
 signal puzzle_solved(puzzle_id: StringName)
+## Plaka bulmacaları: ağırlık durdukça canlı (yalnız bellekte, kaydedilmez).
+signal live_changed(puzzle_id: StringName, live: bool)
 
 var solved: Dictionary = {}
+var _live: Dictionary = {}
 
 
 func _ready() -> void:
@@ -86,6 +89,22 @@ func is_solved(puzzle_id: StringName) -> bool:
 	return bool(solved.get(String(puzzle_id), false))
 
 
+## Plaka canlı durumu: ağırlık varken true. Kaydedilmez; oda değişince plakalar yeniden yazar.
+func set_live(puzzle_id: StringName, live: bool) -> void:
+	var key := String(puzzle_id)
+	if bool(_live.get(key, false)) == live:
+		return
+	if live:
+		_live[key] = true
+	else:
+		_live.erase(key)
+	live_changed.emit(puzzle_id, live)
+
+
+func is_live(puzzle_id: StringName) -> bool:
+	return bool(_live.get(String(puzzle_id), false))
+
+
 const HINTS: Dictionary = {
 	&"awakening_weight": {
 		"goal": "Kapıyı açık tutmak için bir ağırlık gerekiyor.",
@@ -100,7 +119,7 @@ const HINTS: Dictionary = {
 	&"decay_weight_latch": {
 		"goal": "Çürüme bahçesine giden sürgülü kapı kilitli.",
 		"orientation": "Zemindeki plaka ağırlıkla tetiklenir; karşıdaki mekanizma sürgüyü yakalar.",
-		"explicit": "Ağır kütleyi plakanın tam üzerine sürükleyerek sürgüyü kalıcı olarak kilitle."
+		"explicit": "Ağır taşı plakada bırak. Kapı ağırlık durdukça açık; geçtiğinde hatırlar."
 	},
 	&"decay_greenhouse": {
 		"goal": "Sera mührü iki el istiyor.",

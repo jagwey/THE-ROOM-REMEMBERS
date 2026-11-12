@@ -125,7 +125,7 @@ func _run() -> void:
 		await stone.step_push(1.0, player)
 		await physics_frame
 	check(plate._pressed, "plate pressed by stone after %d interact steps (stone x=%.1f)" % [steps, stone.global_position.x])
-	check(pm.is_solved(&"decay_weight_latch"), "plate puzzle solved by stone weight")
+	check(pm.is_live(&"decay_weight_latch"), "plate puzzle live while stone weight rests (latch happens on pass)")
 
 	## 5) Yapışık hedef: itişten sonra daha yakın bir Etkileş nesnesi hedefi çalmaz.
 	stone.reset_to_start()

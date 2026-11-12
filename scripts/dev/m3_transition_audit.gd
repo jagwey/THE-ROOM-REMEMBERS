@@ -270,7 +270,7 @@ func _test_room1_softlock_and_hazard() -> void:
 			stone.global_position = plate.global_position
 			plate._recompute()
 			await process_frame
-			check(pm.is_solved(&"awakening_weight"), "Pushing WeightStone onto PressurePlate solves awakening_weight")
+			check(pm.is_live(&"awakening_weight"), "Pushing WeightStone onto PressurePlate makes awakening_weight live")
 			stone.reset_to_start()
 
 	# 2.2 Hazard arming decoupled from awakening_weight

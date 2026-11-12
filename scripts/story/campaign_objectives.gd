@@ -85,7 +85,7 @@ static func _awakening_objective() -> String:
 		steps.append("Saate bak")
 	if GameState.has_story_flag(&"first_death_completed") and not GameState.is_shilda_named():
 		steps.append("Gölgeyle konuş")
-	if not PuzzleManager.is_solved(&"awakening_weight"):
+	if not (PuzzleManager.is_solved(&"awakening_weight") or PuzzleManager.is_live(&"awakening_weight")):
 		steps.append("plakaya bas")
 	if steps.is_empty():
 		return "Kırık Geçit açık. Kırmızı yarıklara basma."

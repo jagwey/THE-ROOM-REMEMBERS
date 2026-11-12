@@ -8,6 +8,8 @@ signal pressed_changed(is_pressed: bool)
 @export var accept_player: bool = false
 ## Doğal oturuşta ~1 px kaçırmayı tolere et (ışınlama ile test etme).
 @export var overlap_slack: float = 8.0
+## Eski davranış: basınca kalıcı çözülür (yalnız oyuncunun kendi basması gereken plakalar; Faz 2'de saksı tasarımına geçer).
+@export var latch_on_press: bool = false
 
 var _pressed: bool = false
 
@@ -30,17 +32,19 @@ func _ready() -> void:
 		var rect := (cs.shape as RectangleShape2D).duplicate() as RectangleShape2D
 		rect.size = Vector2(maxf(rect.size.x, 48.0), maxf(rect.size.y, 28.0))
 		cs.shape = rect
-	var legacy_awakening := puzzle_id == &"awakening_weight" and bool(GameState.get_world_flag(&"awakening_door_opened", false))
 	## v1.0 öncesi kayıtlar: oyuncu Çürüme bölgesine geçmişse mühür odası plakası çözülmüş sayılır.
 	if puzzle_id == &"awakening_seal_weight" and not PuzzleManager.is_solved(puzzle_id):
 		for r in GameState.player_progress_knowledge.get("rooms_visited", []):
 			if String(r).begins_with("decay"):
 				PuzzleManager.mark_solved(puzzle_id)
 				break
-	if PuzzleManager.is_solved(puzzle_id) or legacy_awakening:
-		_set_pressed(true, false)
-	else:
-		call_deferred("_recompute")
+	call_deferred("_recompute")
+
+
+func _exit_tree() -> void:
+	if _pressed:
+		_pressed = false
+		PuzzleManager.set_live(puzzle_id, false)
 
 
 func _physics_process(_delta: float) -> void:
@@ -52,6 +56,7 @@ func _physics_process(_delta: float) -> void:
 
 func _recompute() -> void:
 	if not is_visible_in_tree():
+		_set_pressed(false)
 		return
 	var seen: Dictionary = {}
 	var total := 0
@@ -83,7 +88,7 @@ func _recompute() -> void:
 			c.set_anchored(on_plate)
 		elif "corpse_id" in c and String(c.corpse_id) != "":
 			CorpseManager.set_corpse_anchored(String(c.corpse_id), on_plate)
-	_set_pressed(total >= required_weight, true)
+	_set_pressed(total >= required_weight)
 
 
 func _weight_of(b: Node) -> int:
@@ -98,7 +103,7 @@ func _weight_of(b: Node) -> int:
 	return 0
 
 
-func _set_pressed(value: bool, emit_solve: bool) -> void:
+func _set_pressed(value: bool) -> void:
 	if _pressed == value:
 		return
 	_pressed = value
@@ -111,13 +116,8 @@ func _set_pressed(value: bool, emit_solve: bool) -> void:
 		if am and am.has_method("play_sfx"):
 			am.play_sfx(&"plate_press", -6.0)
 	pressed_changed.emit(_pressed)
-	## Çözüm etkileri (mesaj, bayrak, kayıt) yalnız ilk çözümde — odaya dönüp plakaya tekrar basınca susar.
-	if _pressed and emit_solve and not PuzzleManager.is_solved(puzzle_id):
+	## Canlı kural: ağırlık durdukça açık. Kalıcı çözüm geçişte gate_blocker'da yazılır.
+	PuzzleManager.set_live(puzzle_id, _pressed)
+	if _pressed and latch_on_press and not PuzzleManager.is_solved(puzzle_id):
 		PuzzleManager.mark_solved(puzzle_id)
-		if puzzle_id == &"awakening_weight":
-			GameState.set_world_flag(&"awakening_door_opened", true)
-			DialogueManager.say("", "Bir şey… açıldı.")
-		elif puzzle_id == &"decay_weight_latch":
-			GameState.set_world_flag(&"decay_weight_latched", true)
-			DialogueManager.say("", "Mekanizmaya oturdu.")
 		SaveManager.save_game()
