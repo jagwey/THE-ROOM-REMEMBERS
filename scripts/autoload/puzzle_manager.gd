@@ -6,6 +6,8 @@ const SealBanner := preload("res://scripts/ui/seal_banner.gd")
 signal puzzle_solved(puzzle_id: StringName)
 ## Plaka bulmacaları: ağırlık durdukça canlı (yalnız bellekte, kaydedilmez).
 signal live_changed(puzzle_id: StringName, live: bool)
+## Oyuncu eyleminden doğan canlı açılış/kapanış geri bildirimi (yükleme sonrası ilk anlarda yayılmaz).
+signal live_feedback(puzzle_id: StringName, live: bool)
 
 var solved: Dictionary = {}
 var _live: Dictionary = {}

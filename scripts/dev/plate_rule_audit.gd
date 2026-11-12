@@ -135,6 +135,24 @@ func _run() -> void:
 	stone.global_position = stone_home
 	await create_timer(0.3).timeout
 
+	# load with stone already on plate: no live feedback without player action
+	_reset_awakening(pm, state)
+	stone.global_position = on_plate
+	player.global_position = Vector2(stone_home.x - 200.0, stone_home.y)
+	await create_timer(0.3).timeout
+	rm.enter_room(&"awakening", &"default")
+	var fb_before: int = door.feedback_count
+	await create_timer(0.4).timeout
+	check(pm.is_live(&"awakening_weight") and door.feedback_count == fb_before, "load_on_plate_no_feedback (count %d->%d)" % [fb_before, door.feedback_count])
+	# after the grace period a live toggle by the player does give feedback
+	stone.global_position = stone_home
+	await create_timer(0.8).timeout
+	stone.global_position = on_plate
+	await create_timer(0.4).timeout
+	check(door.feedback_count == fb_before + 1, "live_feedback_after_grace (count %d live %s)" % [door.feedback_count, pm.is_live(&"awakening_weight")])
+	stone.global_position = stone_home
+	await create_timer(0.3).timeout
+
 	# anchored corpse on the plate survives trim
 	_reset_awakening(pm, state)
 	player.global_position = Vector2(stone_home.x - 200.0, stone_home.y)

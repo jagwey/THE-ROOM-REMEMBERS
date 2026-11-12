@@ -72,6 +72,7 @@ func _ready() -> void:
 	GameState.knowledge_changed.connect(_update_control_visibility_arg)
 	PuzzleManager.puzzle_solved.connect(_on_puzzle_solved_objective)
 	PuzzleManager.live_changed.connect(_on_puzzle_live_changed)
+	PuzzleManager.live_feedback.connect(_on_live_feedback)
 	DialogueManager.page_shown.connect(_on_dialogue_page)
 	DialogueManager.dialogue_closed.connect(_on_dialogue_closed)
 	DialogueManager.dialogue_cancelled.connect(_on_dialogue_closed)
@@ -755,14 +756,24 @@ func _on_puzzle_solved_objective(_puzzle_id: StringName) -> void:
 	_refresh_objective_now()
 
 
-func _on_puzzle_live_changed(_puzzle_id: StringName, live: bool) -> void:
+func _on_puzzle_live_changed(_puzzle_id: StringName, _live: bool) -> void:
 	_refresh_objective_now()
+
+
+var _live_hint_timer: SceneTreeTimer = null
+
+
+func _on_live_feedback(_puzzle_id: StringName, live: bool) -> void:
 	if not live or hint_label == null:
 		return
 	hint_label.text = "Bir şey… açıldı."
 	hint_label.visible = true
-	await get_tree().create_timer(2.5).timeout
-	if is_instance_valid(hint_label) and hint_label.text == "Bir şey… açıldı.":
+	var t := get_tree().create_timer(2.5)
+	_live_hint_timer = t
+	await t.timeout
+	## Yalnız en yeni zamanlayıcı satırı temizler.
+	if t == _live_hint_timer and is_instance_valid(hint_label):
+		_live_hint_timer = null
 		_apply_default_hint()
 
 

@@ -13,6 +13,11 @@ var _entry_side: int = 0
 var _last_player_x: float = NAN
 ## Tek karede bu kadar kayma = teleport/spawn; taraf yeniden öğrenilir.
 const TELEPORT_DX := 160.0
+## Oda aktif olduktan / kayıt yüklendikten sonra bu süre canlı değişim geri bildirimi (sfx/HUD) susar.
+const FEEDBACK_GRACE_MS := 600
+var _grace_until_ms: int = 0
+## Test için: yayılan geri bildirim sayısı.
+var feedback_count: int = 0
 
 
 func _ready() -> void:
@@ -25,10 +30,12 @@ func _ready() -> void:
 	var par := get_parent() as CanvasItem
 	if par != null:
 		par.visibility_changed.connect(_reset_side)
+	_grace_until_ms = Time.get_ticks_msec() + FEEDBACK_GRACE_MS
 	_apply(_is_open())
 
 
 func _reset_side() -> void:
+	_grace_until_ms = Time.get_ticks_msec() + FEEDBACK_GRACE_MS
 	_entry_side = 0
 	_last_player_x = NAN
 
@@ -69,10 +76,12 @@ func _on_live(puzzle_id: StringName, live: bool) -> void:
 	if puzzle_id != puzzle_listen:
 		return
 	var parent_vis := get_parent() as CanvasItem
-	var audible := parent_vis == null or parent_vis.is_visible_in_tree()
+	var audible := (parent_vis == null or parent_vis.is_visible_in_tree()) and Time.get_ticks_msec() >= _grace_until_ms
 	if live:
 		_pulse_open()
 	if audible:
+		feedback_count += 1
+		PuzzleManager.live_feedback.emit(puzzle_id, live)
 		var am := get_node_or_null("/root/AudioManager")
 		if am != null and am.has_method("play_sfx"):
 			am.play_sfx(&"door_open" if live else &"plate_press", -4.0)
