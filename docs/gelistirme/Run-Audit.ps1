@@ -32,7 +32,7 @@ $records = @()
 $devAudits = @(
     'lore_canon','story_flags','save_split','memory_seal','curse_reload','final_sequence',
     'save_quit','start_flow','death_loop','interact','ui_header_portrait','keeper_naming',
-    'plate_rule','release','controls','door','push','jump','eye_intro','room_header_fit','room_identity','dialogue_data','room_graph','save_robust',
+    'plate_rule','ascent','release','controls','door','push','jump','eye_intro','room_header_fit','room_identity','dialogue_data','room_graph','save_robust',
     'resume_m3','update_check','m1_stress','softlock_reset','save_robustness','move_time'
 )
 $devRecords = @()

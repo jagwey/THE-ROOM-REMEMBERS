@@ -2,6 +2,8 @@ extends StaticBody2D
 ## Lanetli bariyer — katman 16. Yalnız Gölge Atılması (shadow dash) içinden geçer.
 
 @export var height: float = 120.0
+## Gölge Atılması yokken söylenen ret repliği (boşsa varsayılan satır). Yeteneğin alındığı odanın adını içermeli.
+@export var refusal_line: String = ""
 
 var _t: float = 0.0
 var _hint_done: bool = false
@@ -49,4 +51,4 @@ func _touch(b: Node) -> void:
 	if b.has_method("has_shadow_dash") and b.has_shadow_dash():
 		return
 	_hint_done = true
-	DialogueManager.whisper("Noroi", "Kırmızı perde bedenimi itiyor. Gölge olsaydım… geçebilirdim.")
+	DialogueManager.whisper("Noroi", refusal_line if refusal_line != "" else "Kırmızı perde bedenimi itiyor. Gölge olsaydım… geçebilirdim.")
