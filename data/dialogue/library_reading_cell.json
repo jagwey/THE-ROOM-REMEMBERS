@@ -2,10 +2,10 @@
   "room": "library_reading_cell",
   "sets": {
     "notches": [
-      {"s": "Noroi", "t": "Duvar gün gün çentilmiş. Bir el saymış."},
-      {"s": "Noroi", "t": "Son çentik 1927 gecesi. Sonra boşluk."},
+      {"s": "Noroi", "t": "Duvar gün gün çentilmiş, bir el saymış."},
+      {"s": "Noroi", "t": "Son çentik 1927 gecesine ait, sonrası boşluk."},
       {"s": "@shilda", "t": "O boşluktan önce buradaydım. Kitap okurdum."},
-      {"s": "Noroi", "t": "Kimdin sen burada?"},
+      {"s": "Noroi", "t": "Burada kimdin sen?"},
       {"s": "@shilda", "t": "Adımı unutmuşsun. Gerisini oda saklıyor."},
       {"s": "Noroi", "t": "Çentikler saymayı bıraktığın günde titriyor."},
       {"s": "@shilda", "t": "O gün sesimi kaybettim. Saat de durdu."},

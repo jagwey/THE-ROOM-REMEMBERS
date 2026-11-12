@@ -2,13 +2,13 @@
   "room": "experiment_intake",
   "sets": {
     "file": [
-      {"s": "Noroi", "t": "Kabul kaydı. Yıl: 1995. Numara: Denek 14."},
+      {"s": "Noroi", "t": "Kabul kaydı, yıl 1995, numara Denek 14."},
       {"s": "Noroi", "t": "Eşyalar: cep saati, kurumuş çiçek, kazınmış bir ad."},
       {"s": "@shilda", "t": "O çiçek benimdi. Cebine ben koydum."},
       {"s": "Noroi", "t": "Demek bu kapıdan kendi ayaklarımla girdim, unutmuşum."}
     ],
     "coat": [
-      {"s": "Noroi", "t": "Askıdaki palto. İç cebinde saatimin kayışı."},
+      {"s": "Noroi", "t": "Askıdaki paltonun iç cebinde saatimin kayışı var."},
       {"s": "Noroi", "t": "Denek 14'ün eşyası bu, yani benim."},
       {"s": "@shilda", "t": "Dosyayı imzalayan adını kazımış. İz kaldı."},
       {"s": "Noroi", "t": "Sağdaki devre odası artık beni tanıyor."}

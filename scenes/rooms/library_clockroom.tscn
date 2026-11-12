@@ -29,7 +29,7 @@ relic_id = "clock_1927"
 dialogue_room = &"library_clockroom"
 dialogue_set = &"clock_1927"
 evidence_title = "1927 Saati"
-evidence_body = "Saatler Odası'ndaki ilk saat 1927 gecesinde durmuş, cep saatimle aynı gece."
+evidence_body = "Saatler Odası'ndaki ilk saat 1927 gecesinde durmuş, cep saatiyle aynı gece."
 
 [node name="Clock1995" type="Area2D" parent="Interactive"]
 position = Vector2(860, 288)
