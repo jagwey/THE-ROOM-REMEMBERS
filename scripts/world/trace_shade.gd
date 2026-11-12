@@ -17,6 +17,11 @@ var _done: bool = false
 
 
 func start() -> void:
+	if _running or _done:
+		return
+	if waypoints.is_empty():
+		push_warning("trace_shade '%s': waypoints empty, not running" % shade_id)
+		return
 	_idx = 0
 	_done = false
 	_running = true
@@ -34,11 +39,12 @@ func _physics_process(delta: float) -> void:
 		global_position += to_target.normalized() * step
 		return
 	global_position = target
+	if not _player_near():
+		return
 	if _idx >= waypoints.size() - 1:
 		_finish()
 		return
-	if _player_near():
-		_idx += 1
+	_idx += 1
 
 
 func _player_near() -> bool:

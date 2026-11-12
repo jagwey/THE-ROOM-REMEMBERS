@@ -25,9 +25,11 @@ func _ready() -> void:
 		_raft.name = "Raft"
 		add_child(_raft)
 	_raft.sync_to_physics = true
-	level = clampi(int(GameState.get_world_flag(_flag(), start_level)), 0, 3)
-	if level_y.size() > level:
-		_raft.position.y = level_y[level]
+	if level_y.size() < 4:
+		push_warning("water_level '%s': level_y has %d entries (need 4)" % [puzzle_key, level_y.size()])
+	level = clampi(int(GameState.get_world_flag(_flag(), start_level)), 1, 3)
+	if not level_y.is_empty():
+		_raft.position.y = level_y[mini(level, level_y.size() - 1)]
 
 
 func step(delta: int) -> void:
@@ -47,9 +49,9 @@ func _set_level(target: int) -> void:
 		return
 	level = new_level
 	GameState.set_world_flag(_flag(), level)
-	if _raft != null and level_y.size() > level:
+	if _raft != null and not level_y.is_empty():
 		if _tween != null and _tween.is_valid():
 			_tween.kill()
 		_tween = create_tween()
-		_tween.tween_property(_raft, "position:y", level_y[level], 0.5)
+		_tween.tween_property(_raft, "position:y", level_y[mini(level, level_y.size() - 1)], 0.5)
 	level_changed.emit(level)

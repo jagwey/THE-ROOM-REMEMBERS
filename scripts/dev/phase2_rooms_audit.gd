@@ -320,17 +320,52 @@ func _shade_water() -> void:
 	shade.shade_id = &"s_real"
 	shade.waypoints = PackedVector2Array([Vector2(7000, 0), Vector2(7200, 0)])
 	shade.speed = 200.0
-	shade.wait_radius = 96.0
+	shade.wait_radius = 120.0
 	shade.global_position = Vector2(6900, 0)
 	scene.add_child(shade)
 	shade.reached.connect(_on_reached)
 	shade.start()
 	await create_timer(1.0).timeout
 	check(shade.global_position.distance_to(Vector2(7000, 0)) < 8.0 and _reached_ids.is_empty(), "shade_waits_at_first_waypoint_when_player_far")
-	player.global_position = Vector2(7050, 0)
+	player.global_position = Vector2(7100, 0)
 	await create_timer(1.2).timeout
 	check(_reached_ids == [&"s_real"], "shade_reached_emitted_when_player_near")
+	shade.start()
+	await create_timer(3.0).timeout
+	check(_reached_ids == [&"s_real"], "shade_start_after_done_does_not_re_emit")
 	shade.queue_free()
+	# --- trace_shade: son waypoint'te de bekler ---
+	_reached_ids.clear()
+	player.global_position = Vector2(5000, 5000)
+	var sh2: Node2D = Node2D.new()
+	sh2.set_script(shade_script)
+	sh2.shade_id = &"s_last"
+	sh2.waypoints = PackedVector2Array([Vector2(7000, 300)])
+	sh2.speed = 400.0
+	sh2.global_position = Vector2(6900, 300)
+	scene.add_child(sh2)
+	sh2.reached.connect(_on_reached)
+	sh2.start()
+	sh2.start()
+	await create_timer(1.0).timeout
+	check(_reached_ids.is_empty(), "shade_waits_at_last_waypoint_when_player_far")
+	player.global_position = Vector2(7050, 300)
+	await create_timer(0.5).timeout
+	check(_reached_ids == [&"s_last"], "shade_reached_once_after_player_near_at_last")
+	await create_timer(3.0).timeout
+	check(_reached_ids == [&"s_last"], "shade_double_start_emits_once")
+	sh2.queue_free()
+	# --- trace_shade: bos waypoint ---
+	_reached_ids.clear()
+	var sh3: Node2D = Node2D.new()
+	sh3.set_script(shade_script)
+	sh3.shade_id = &"s_empty"
+	scene.add_child(sh3)
+	sh3.reached.connect(_on_reached)
+	sh3.start()
+	await create_timer(0.5).timeout
+	check(_reached_ids.is_empty(), "shade_empty_waypoints_no_reached")
+	sh3.queue_free()
 	# --- trace_shade (sahte) ---
 	_reached_ids.clear()
 	var fake: Node2D = Node2D.new()
@@ -341,12 +376,13 @@ func _shade_water() -> void:
 	fake.waypoints = PackedVector2Array([Vector2(7000, 100)])
 	fake.speed = 400.0
 	fake.global_position = Vector2(6900, 100)
+	player.global_position = Vector2(7000, 100)
 	scene.add_child(fake)
 	fake.reached.connect(_on_reached)
 	fake.start()
 	await create_timer(2.5).timeout
 	check(_reached_ids.is_empty(), "fake_shade_does_not_emit_reached")
-	check((not is_instance_valid(fake)) or (not fake.visible) or fake.modulate.a < 0.05, "fake_shade_faded_out")
+	check(is_instance_valid(fake) and not fake.visible, "fake_shade_faded_out")
 	root.get_node("DialogueManager").clear()
 	if is_instance_valid(fake):
 		fake.queue_free()
@@ -377,6 +413,17 @@ func _shade_water() -> void:
 	check(raft is AnimatableBody2D and raft.sync_to_physics, "water_raft_animatable_sync")
 	await create_timer(1.2).timeout
 	check(raft != null and absf(raft.position.y - 300.0) < 1.0, "water_raft_tweens_to_level_y")
+	# mid-tween: 300 -> 200
+	water.step(1)
+	await create_timer(0.2).timeout
+	check(raft != null and raft.position.y < 299.0 and raft.position.y > 201.0, "water_raft_mid_tween")
+	# step during tween -> ends at final level_y
+	water.step(1)
+	await create_timer(1.0).timeout
+	check(water.level == 3 and absf(raft.position.y - 100.0) < 1.0, "water_step_during_tween_ends_at_final")
+	water.step(-2)
+	await create_timer(1.0).timeout
+	check(water.level == 1 and absf(raft.position.y - 300.0) < 1.0, "water_back_to_1_after_tween_test")
 	# valve
 	var valve := Area2D.new()
 	valve.set_script(valve_script)
@@ -384,7 +431,9 @@ func _shade_water() -> void:
 	scene.add_child(valve)
 	valve.water = valve.get_path_to(water)
 	valve.on_interact(player)
+	valve.on_interact(player)
 	check(water.level == 2, "valve_interact_steps_water")
+	check(water.level == 2, "valve_cooldown_blocks_second_step_same_frame")
 	check(valve.has_method("on_interact") and valve.collision_layer == 8, "valve_uses_interact_convention")
 	# kalicilik
 	check(gs.get_world_flag(&"p2w_level", -1) == 2, "water_level_persisted_in_flag")
@@ -395,6 +444,27 @@ func _shade_water() -> void:
 	water2.start_level = 1
 	scene.add_child(water2)
 	check(water2.level == 2, "water_level_restored_from_flag")
+	# clamp restore: flag 0 -> level 1
+	gs.set_world_flag(&"p2w_level", 0)
+	var water3: Node2D = Node2D.new()
+	water3.set_script(water_script)
+	water3.puzzle_key = &"p2w"
+	water3.level_y = PackedFloat32Array([400.0, 300.0, 200.0, 100.0])
+	scene.add_child(water3)
+	check(water3.level == 1, "water_restore_flag_0_clamped_to_1")
+	# short level_y: no crash, clamped index
+	gs.world_memory_state["flags"].erase("p2s_level")
+	var water4: Node2D = Node2D.new()
+	water4.set_script(water_script)
+	water4.puzzle_key = &"p2s"
+	water4.level_y = PackedFloat32Array([400.0, 300.0])
+	scene.add_child(water4)
+	water4.step(1)
+	water4.step(1)
+	await create_timer(0.8).timeout
+	var raft4 := water4.get_node_or_null("Raft")
+	check(water4.level == 3 and raft4 != null and absf(raft4.position.y - 300.0) < 1.0, "water_short_level_y_clamps_index")
+	gs.world_memory_state["flags"].erase("p2s_level")
 	gs.world_memory_state["flags"].erase("p2w_level")
-	for n in [water, water2, valve, player]:
+	for n in [water, water2, water3, water4, valve, player]:
 		n.queue_free()
