@@ -104,7 +104,7 @@ func _run() -> void:
 	check(hud != null, "HUD present")
 
 	## 1) Kritik kullanıcı yolu: balkon → ODA 03 mahzen
-	pm.mark_solved(&"soul_seal_balcony")
+	pm.mark_solved(&"awakening_balcony_crossed")
 	await _travel_and_assert(rm, gate, hud, player, &"awakening_balcony", &"awakening_crypt", &"from_awakening_balcony")
 
 	## 2) Bölgeler arası birkaç kapı (gerçek hedef id'leri)

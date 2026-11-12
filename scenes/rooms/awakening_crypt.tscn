@@ -1,15 +1,22 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
 [ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore"]
 [ext_resource type="Script" path="res://scripts/world/echo_point.gd" id="echo"]
 [ext_resource type="Script" path="res://scripts/world/memory_seal_point.gd" id="memory_seal_pt"]
+[ext_resource type="Script" path="res://scripts/world/sequence_shrine.gd" id="shrine"]
+[ext_resource type="Script" path="res://scripts/world/sequence_step.gd" id="step"]
+[ext_resource type="Script" path="res://scripts/world/pressure_plate.gd" id="plate"]
+[ext_resource type="Script" path="res://scripts/world/blood_thorn.gd" id="thorn"]
 
 [sub_resource type="RectangleShape2D" id="Interact"]
 size = Vector2(40, 48)
 
 [sub_resource type="RectangleShape2D" id="Gate"]
 size = Vector2(24, 120)
+
+[sub_resource type="RectangleShape2D" id="PlateShape"]
+size = Vector2(40, 16)
 
 [node name="AwakeningCrypt" type="Node2D"]
 script = ExtResource("room")
@@ -36,7 +43,7 @@ set_progress_key = "truth_fragment_crypt"
 focus_zoom = true
 
 [node name="Ledger" type="Area2D" parent="Interactive"]
-position = Vector2(600.0, 288.0)
+position = Vector2(610.0, 288.0)
 script = ExtResource("lore")
 lore_id = &"crypt_ledger"
 texture_path = "res://assets/props/ledger.png"
@@ -62,9 +69,87 @@ centered = true
 [node name="Spawns" type="Node2D" parent="."]
 
 [node name="seal_awakening_crypt" type="Marker2D" parent="Spawns"]
-position = Vector2(440, 288)
+position = Vector2(470, 288)
 
 [node name="MemorySeal" type="Area2D" parent="Interactive"]
-position = Vector2(440, 288)
+position = Vector2(470, 288)
 script = ExtResource("memory_seal_pt")
 room_id = &"awakening_crypt"
+
+[node name="BedPlate" type="Area2D" parent="Interactive"]
+position = Vector2(280, 300)
+script = ExtResource("plate")
+puzzle_id = &"awakening_crypt_bed"
+accept_stone = false
+latch_on_press = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BedPlate"]
+shape = SubResource("PlateShape")
+
+[node name="CryptThorn" type="Area2D" parent="Interactive"]
+position = Vector2(335, 290)
+script = ExtResource("thorn")
+anchor_x = 280.0
+puzzle_hint = &"awakening_crypt_bed"
+body_line = "Yatak beni bekliyor. Bedenim uzanırsa anı açılır."
+solved_line = "Beden yatağa uzandı. Anı artık açık."
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/CryptThorn"]
+shape = SubResource("PlateShape")
+
+[node name="PagesShrine" type="Node2D" parent="Interactive"]
+script = ExtResource("shrine")
+puzzle_id = &"awakening_crypt_pages"
+order = PackedStringArray("p_mar", "p_jun", "p_dec")
+fail_line = "Sayfalar birbirini tutmuyor. Tarihleri baştan sıralamalıyım."
+success_line = "Tarihler yerine oturdu. Sayfaların arasından bir rakam düştü."
+
+[node name="PageDec" type="Area2D" parent="Interactive/PagesShrine"]
+position = Vector2(150, 288)
+script = ExtResource("step")
+step_id = "p_dec"
+label = "Sayfa: 2 Aralık 1927"
+texture_path = "res://assets/props/ledger.png"
+sprite_scale = 0.5
+
+[node name="PageMar" type="Area2D" parent="Interactive/PagesShrine"]
+position = Vector2(395, 288)
+script = ExtResource("step")
+step_id = "p_mar"
+label = "Sayfa: 9 Mart 1927"
+texture_path = "res://assets/props/ledger.png"
+sprite_scale = 0.5
+
+[node name="PageJun" type="Area2D" parent="Interactive/PagesShrine"]
+position = Vector2(540, 288)
+script = ExtResource("step")
+step_id = "p_jun"
+label = "Sayfa: 17 Haziran 1927"
+texture_path = "res://assets/props/ledger.png"
+sprite_scale = 0.5
+
+[node name="RingTablet" type="Area2D" parent="Interactive"]
+position = Vector2(700, 288)
+script = ExtResource("lore")
+lore_id = &"crypt_ring_tablet"
+texture_path = "res://assets/props/memory_frame.png"
+sprite_scale = 0.6
+lines = PackedStringArray("Noroi|Sayfalar sıraya girince kenarda bir rakam belirdi: bir.", "Noroi|Üç, bir… halkanın ikinci hanesi bu.")
+locked_lines = PackedStringArray("Noroi|Taşın üstünde tarihler karışık. Sayfaları sıraya dizmeliyim.")
+requires_puzzle = &"awakening_crypt_pages"
+evidence_title = "Halkanın İkinci Hanesi"
+evidence_body = "Defter sayfalarını tarih sırasına dizince taşta bir rakam belirdi: 1. Halkanın ilk iki hanesi 3 ve 1."
+evidence_section = "izler"
+
+[node name="BedMemory" type="Area2D" parent="Interactive"]
+position = Vector2(810, 288)
+script = ExtResource("lore")
+lore_id = &"crypt_bed_memory"
+texture_path = "res://assets/props/memory_echo.png"
+sprite_scale = 0.7
+lines = PackedStringArray("Noroi|Yatağa uzanan bedenimden bir anı akıyor.", "Shilda|Sen unutursan ben hatırlarım. Söz.", "Noroi|Kalbim dört kez atıyor. Halkanın üçüncü hanesi: dört.")
+locked_lines = PackedStringArray("Noroi|Soğuk bir taş. Yatağa kimse uzanmadan hiçbir şey göstermiyor.")
+requires_puzzle = &"awakening_crypt_bed"
+evidence_title = "Yatağın Anısı"
+evidence_body = "Yatağa bırakılan beden bir anıyı açtı: bir söz ve dört kalp atışı. Halkanın üçüncü hanesi 4."
+evidence_section = "izler"

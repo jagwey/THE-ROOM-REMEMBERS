@@ -492,7 +492,17 @@ func set_anchored(value: bool) -> void:
 	set_anchoring(value, &"")
 
 
+var _anchor_plate: StringName = &""
+
+
 func set_anchoring(value: bool, plate_id: StringName = &"") -> void:
+	## Aynı odada birden çok plaka olabilir: başka plakaya kilitli ceset, diğer plakanın "basılı değil" çağrısıyla serbest kalmaz.
+	if not value and plate_id != &"" and is_anchored and _anchor_plate != &"" and _anchor_plate != plate_id:
+		return
+	if value:
+		_anchor_plate = plate_id
+	elif plate_id == &"" or _anchor_plate == plate_id:
+		_anchor_plate = &""
 	var was_anchored := is_anchored
 	is_anchored = value
 	if _data is Dictionary:

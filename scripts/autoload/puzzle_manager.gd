@@ -29,6 +29,10 @@ func _sync_legacy_flags_into_puzzles() -> void:
 	if bool(GameState.get_world_flag(&"awakening_crystal_cracked", false)) and not bool(pz.get("awakening_memory_code", false)):
 		pz["awakening_memory_code"] = true
 		changed = true
+	## Eski kayıt: Ruh Kesimi mührü kırılmışsa balkon boşluğu aşılmış sayılır.
+	if bool(pz.get("soul_seal_balcony", false)) and not bool(pz.get("awakening_balcony_crossed", false)):
+		pz["awakening_balcony_crossed"] = true
+		changed = true
 	if changed:
 		GameState.knowledge_changed.emit(&"world")
 
@@ -132,8 +136,28 @@ const HINTS: Dictionary = {
 	},
 	&"awakening_weight": {
 		"goal": "Kapıyı açık tutmak için bir ağırlık gerekiyor.",
-		"orientation": "Taş yürür. Onu plakanın üstüne bırakırsan kapı açık kalır.",
-		"explicit": "Taş ya da hareketsiz bir beden plakada durursa kapı kapanmaz."
+		"orientation": "Taş yürür. Onu plakanın üstüne bırakırsan bir ağırlık tamam olur.",
+		"explicit": "Taşı sağdaki plakaya it. Kapı ikinci bir ağırlık da istiyor."
+	},
+	&"awakening_corpse_plate": {
+		"goal": "Kapı iki ağırlık istiyor: biri taş, biri beden.",
+		"orientation": "Kırmızı kristal bedeni plakada bırakır. Taş ise öbür plakada durur.",
+		"explicit": "Taşı sağdaki plakaya it, kristale iki kez dokun; bedenin soldaki plakada kalır."
+	},
+	&"awakening_balcony_crossed": {
+		"goal": "Kapı boşluğun karşı yakasında.",
+		"orientation": "Boşluğu aş; dürbünde eski bir yolun izi var.",
+		"explicit": "Boşluğun üstünden karşı kıyıya geç; kapı orada."
+	},
+	&"awakening_crypt_pages": {
+		"goal": "Defter sayfaları karışık duruyor.",
+		"orientation": "Her sayfanın üstünde bir tarih yazıyor.",
+		"explicit": "Sayfalara en eski tarihten en yeniye doğru sırayla dokun."
+	},
+	&"awakening_crypt_bed": {
+		"goal": "Yatak boş; bir beden bekliyor.",
+		"orientation": "Kırmızı kristal bedeni yatağın üstünde bırakır.",
+		"explicit": "Kristale iki kez dokun; bedenin yatağa uzanınca anı açılır."
 	},
 	&"awakening_memory_code": {
 		"goal": "Taş mühür üç haneli bir sayı bekliyor.",
@@ -225,7 +249,9 @@ const HINTS: Dictionary = {
 
 ## Oda -> sırayla bakılacak çözülmemiş bulmaca. Günlük ipucu bunu kullanır.
 const ROOM_PUZZLES: Dictionary = {
-	"awakening": [&"awakening_weight"],
+	"awakening": [&"awakening_weight", &"awakening_corpse_plate"],
+	"awakening_balcony": [&"awakening_balcony_crossed"],
+	"awakening_crypt": [&"awakening_crypt_pages", &"awakening_crypt_bed"],
 	"awakening_passage": [&"awakening_memory_code"],
 	"awakening_seal": [&"awakening_memory_code"],
 	"decay_weight": [&"decay_weight_latch"],

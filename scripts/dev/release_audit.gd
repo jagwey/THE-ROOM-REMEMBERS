@@ -36,7 +36,7 @@ const PUZZLE_SOURCE := {
 	"mirrors_gallery": ["mirrors_gallery", ""],
 	"decay_shilda_wall_broken": ["decay_shilda_wall", ""],
 	"ability_soul_slash": ["library_forbidden_wing", ""],
-	"soul_seal_balcony": ["awakening_balcony", "ability_soul_slash"],
+	"awakening_balcony_crossed": ["awakening_balcony", ""],
 	"seal_shard_1": ["library_forbidden_wing", ""],
 	"seal_shard_2": ["mirrors_shrine", ""],
 }

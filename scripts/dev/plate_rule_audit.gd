@@ -5,6 +5,7 @@ var failures := 0
 
 ## accept_player = true olan plakalar yalnız burada olabilir (oda:Düğüm, gerekçe).
 const ACCEPT_PLAYER_WHITELIST := {
+	"awakening_crypt:BedPlate": "Faz 2: yalnız-ceset plaka (accept_stone=false, accept_player=false); latch_on_press ile anı kalıcı açılır",
 	"decay_greenhouse:SharedPlate": "Faz 2'de saksı tasarımı; odada taş yok, ceset garanti değil, kapı latch_on_press ile kalıcı çözülür",
 }
 const CLEARANCE := 48.0
@@ -33,6 +34,8 @@ func _reset_awakening(pm: Node, state: Node) -> void:
 	pz.erase("awakening_weight")
 	state.set_world_flag(&"awakening_door_opened", false)
 	pm.set_live(&"awakening_weight", false)
+	## Faz 2: kapı ayrıca ceset plakasını bekler; bu audit yalnız taş plakasını sınar, ceset plakası çözülmüş sayılır.
+	pm.solved["awakening_corpse_plate"] = true
 
 
 func _run() -> void:

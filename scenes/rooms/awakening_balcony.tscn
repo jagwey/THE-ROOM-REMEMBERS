@@ -1,14 +1,15 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
 [ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore"]
-[ext_resource type="Script" path="res://scripts/world/soul_seal.gd" id="soul"]
+[ext_resource type="Script" path="res://scripts/world/echo_point.gd" id="echo"]
+[ext_resource type="Script" path="res://scripts/world/crossing_zone.gd" id="cross"]
 
 [sub_resource type="RectangleShape2D" id="Interact"]
 size = Vector2(40, 48)
 
-[sub_resource type="RectangleShape2D" id="Gate"]
-size = Vector2(24, 120)
+[sub_resource type="RectangleShape2D" id="Cross"]
+size = Vector2(40, 120)
 
 [node name="AwakeningBalcony" type="Node2D"]
 script = ExtResource("room")
@@ -17,7 +18,7 @@ region_id = &"awakening"
 room_width = 960.0
 bg_region = "awakening"
 checkpoint = Vector2(120, 288)
-doors = [{"x": 40.0, "to": "awakening", "spawn": "from_awakening_balcony"}, {"x": 920.0, "to": "awakening_crypt", "spawn": "from_awakening_balcony", "req": "soul_seal_balcony", "msg": "Mor mühür kapıyı tutuyor. Ruh Kesimi ile kır."}]
+doors = [{"x": 40.0, "to": "awakening", "spawn": "from_awakening_balcony"}, {"x": 920.0, "to": "awakening_crypt", "spawn": "from_awakening_balcony", "req": "awakening_balcony_crossed", "msg": "Boşluğu aşmadan kapı açılmaz."}]
 floor_gaps = PackedVector2Array(660.0, 724.0)
 
 [node name="Spawns" type="Node2D" parent="."]
@@ -49,8 +50,22 @@ evidence_title = "Silinmiş Yüz"
 evidence_body = "Fotoğrafta yanımdaki kişinin yüzü kazınmış. Notta: Sesini kaybetmeyeceğim."
 evidence_section = "notlar"
 
-[node name="SoulSeal" type="StaticBody2D" parent="Interactive"]
-position = Vector2(810, 288.0)
-script = ExtResource("soul")
-puzzle_id = &"soul_seal_balcony"
-back_side = 1
+[node name="BalconyTelescope" type="Area2D" parent="Interactive"]
+position = Vector2(350, 268)
+script = ExtResource("echo")
+echo_id = &"balcony_telescope"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BalconyTelescope"]
+shape = SubResource("Interact")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/BalconyTelescope"]
+texture_filter = 0
+centered = true
+
+[node name="CrossedZone" type="Area2D" parent="Interactive"]
+position = Vector2(800, 270)
+script = ExtResource("cross")
+puzzle_id = &"awakening_balcony_crossed"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/CrossedZone"]
+shape = SubResource("Cross")

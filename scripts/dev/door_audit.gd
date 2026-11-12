@@ -158,7 +158,7 @@ func _run() -> void:
 		check(rm.get_active_room_id() == &"awakening_vigil", "unlocked door travels (%s)" % rm.get_active_room_id())
 	## 4) Gözlem Balkonu: mahzen tarafından girilince ruh mührü oyuncuyu hapsetmemeli.
 	gate.set_story(false)
-	check(not pm.is_solved(&"soul_seal_balcony"), "balcony soul seal starts closed")
+	check(not pm.is_solved(&"awakening_balcony_crossed"), "balcony crossing starts unsolved")
 	rm.enter_room(&"awakening_balcony", &"from_awakening_crypt")
 	await create_timer(0.4).timeout
 	dm.clear()
@@ -172,14 +172,14 @@ func _run() -> void:
 		Input.action_release(&"ui_left")
 		dm.clear()
 		gate.set_story(false)
-	check(pm.is_solved(&"soul_seal_balcony"), "seal opens when approached from crypt side")
+	check(pm.is_solved(&"awakening_balcony_crossed"), "crossing trigger fires when walking left from crypt side")
 	await process_frame
 	await process_frame
 	Input.action_press(&"ui_left")
 	await create_timer(1.5).timeout
 	Input.action_release(&"ui_left")
 	dm.clear()
-	check(player.global_position.x < 780.0, "player walks past the seal from crypt side (%.0f → %.0f)" % [start_x, player.global_position.x])
+	check(player.global_position.x < 780.0, "player walks past the crossing zone from crypt side (%.0f → %.0f)" % [start_x, player.global_position.x])
 	## 5) Ayna Tapınağı yan kapısı: bulunabilir olmalı, dönüş spawn'ı sahnede tanımlı olmalı.
 	var shrine_scene := load("res://scenes/rooms/mirrors_shrine.tscn") as PackedScene
 	var st := shrine_scene.get_state()

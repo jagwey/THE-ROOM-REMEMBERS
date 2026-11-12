@@ -40,6 +40,21 @@ var _catalog: Dictionary = {
 		},
 		"memory_code": "314",
 	},
+	"balcony_telescope": {
+		"evidence_id": "ev_balcony_digit_1",
+		"lines": [
+			["Yankı", "Camın ötesinde bir iz: eski Noroi boşluğa bedenini bıraktı."],
+			["Yankı", "Karşıya o bedenin üstünden geçti. Elinde bir halka vardı."],
+			["Yankı", "Halkanın ilk hanesi parlıyor: üç."],
+		],
+		"journal": {
+			"section": "izler",
+			"title": "Halkanın ilk hanesi",
+			"body": "Dürbünün camında eski Noroi'nin yolu ve halkanın ilk hanesi var: 3. Gerisini başka yerde aramalıyım.",
+			"kind": "evidence",
+		},
+		"memory_code": "",
+	},
 	"crypt_first_bodies": {
 		"evidence_id": "ev_crypt_rebirth",
 		"lines": [

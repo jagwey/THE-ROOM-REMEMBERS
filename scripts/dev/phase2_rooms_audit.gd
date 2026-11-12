@@ -32,6 +32,7 @@ func _run() -> void:
 	await _components()
 	await _dialogue()
 	await _shade_water()
+	await _rooms_01_03()
 	quit(1 if failures > 0 else 0)
 
 
@@ -468,3 +469,174 @@ func _shade_water() -> void:
 	gs.world_memory_state["flags"].erase("p2w_level")
 	for n in [water, water2, water3, water4, valve, player]:
 		n.queue_free()
+
+
+# ---------------------------------------------------------------- Oda 01-03
+func _room_root(rid: StringName) -> Node:
+	return (root.get_node("RoomManager")._rooms[rid] as Dictionary)["root"]
+
+
+func _clear_corpses() -> void:
+	var gs := root.get_node("GameState")
+	(gs.world_memory_state["corpses"] as Array).clear()
+	root.get_node("CorpseManager").rebuild_world_corpses()
+
+
+func _unsolve(ids: Array) -> void:
+	var pm := root.get_node("PuzzleManager")
+	var gs := root.get_node("GameState")
+	for id in ids:
+		pm.solved.erase(String(id))
+		(gs.world_memory_state["puzzles"] as Dictionary).erase(String(id))
+		pm.set_live(StringName(id), false)
+
+
+func _rooms_01_03() -> void:
+	var rm := root.get_node("RoomManager")
+	var pm := root.get_node("PuzzleManager")
+	var gs := root.get_node("GameState")
+	var cm := root.get_node("CorpseManager")
+	var em := root.get_node("EchoManager")
+	root.get_node("DialogueManager").clear()
+	root.get_node("UiGate").set_story(false)
+	# ---- 01 awakening ----
+	rm.enter_room(&"awakening", &"default")
+	await create_timer(0.4).timeout
+	var player: Node2D = current_scene.get_node("Player")
+	var aw: Node = _room_root(&"awakening")
+	var stone: Node = aw.find_child("WeightStone", true, false)
+	var splate: Node = aw.find_child("PressurePlate", true, false)
+	var cplate: Node = aw.find_child("CorpsePlate", true, false)
+	var gate: Node = aw.find_child("DoorGate", true, false)
+	var thorn: Node = aw.find_child("AwakeningThorn", true, false)
+	var clock: Node = aw.find_child("ClockHint", true, false)
+	check(stone != null and splate != null and cplate != null and gate != null, "aw_nodes_exist")
+	check(thorn != null and thorn.is_in_group("blood_thorn"), "aw_thorn_exists")
+	check(clock != null, "aw_clock_hint_exists")
+	if stone == null or splate == null or cplate == null or gate == null:
+		return
+	check(float(stone.max_x) == 880.0 and float(stone.max_x) <= 1220.0 - 48.0, "aw_stone_max_x_880")
+	check(cplate.accept_stone == false and cplate.accept_player == false, "aw_corpse_plate_corpse_only")
+	check(cplate.puzzle_id == &"awakening_corpse_plate" and splate.puzzle_id == &"awakening_weight", "aw_plate_ids")
+	check(Array(gate.puzzle_listen_all) == ["awakening_weight", "awakening_corpse_plate"] and gate.legacy_puzzle == &"awakening_weight", "aw_gate_listens_both_with_legacy")
+	check(thorn != null and absf(float(thorn.anchor_x) - cplate.global_position.x) < 1.0 and thorn.puzzle_hint == &"awakening_corpse_plate", "aw_thorn_anchors_on_corpse_plate")
+	var clock_ok := false
+	if clock != null:
+		clock_ok = clock.lines.size() >= 1
+		for l in clock.lines:
+			var t := String(l).get_slice("|", 1)
+			if t.length() > 70 or not t.ends_with("."):
+				clock_ok = false
+	check(clock_ok, "aw_clock_hint_lines_le_70")
+	# mantik: yalniz tas -> kapali; + ceset -> acik; legacy -> acik
+	_clear_corpses()
+	_unsolve(["awakening_weight", "awakening_corpse_plate"])
+	gs.set_world_flag(&"awakening_door_opened", false)
+	var home: Vector2 = stone.global_position
+	player.global_position = Vector2(home.x - 300.0, home.y)
+	stone.global_position = Vector2(splate.global_position.x, home.y)
+	await create_timer(0.5).timeout
+	check(pm.is_live(&"awakening_weight") and not gate._is_open(), "aw_stone_only_gate_closed")
+	cm.record_corpse_at(Vector2(cplate.global_position.x, home.y), &"audit")
+	await create_timer(0.5).timeout
+	check(pm.is_live(&"awakening_corpse_plate") and gate._is_open(), "aw_stone_plus_corpse_gate_open")
+	stone.global_position = home
+	await create_timer(0.5).timeout
+	check(not gate._is_open(), "aw_corpse_only_gate_closed")
+	_clear_corpses()
+	await create_timer(0.3).timeout
+	pm.mark_solved(&"awakening_weight")
+	check(gate._is_open(), "aw_legacy_solved_gate_open")
+	_unsolve(["awakening_weight", "awakening_corpse_plate"])
+	gs.set_world_flag(&"awakening_door_opened", false)
+	# ---- 02 balcony ----
+	rm.enter_room(&"awakening_balcony", &"default")
+	await create_timer(0.4).timeout
+	var bal: Node = _room_root(&"awakening_balcony")
+	check(bal.find_child("SoulSeal", true, false) == null, "bal_no_soul_seal_node")
+	var bad_req := false
+	var gate_req := ""
+	for d in bal.doors:
+		var req := String(d.get("req", ""))
+		if req == "soul_seal_balcony" or req.contains("soul_slash"):
+			bad_req = true
+		if float(d.get("x", 0.0)) == 920.0:
+			gate_req = req
+	check(not bad_req, "bal_no_soul_door_req")
+	check(gate_req == "awakening_balcony_crossed", "bal_crypt_door_req_crossed")
+	var tele: Node = bal.find_child("BalconyTelescope", true, false)
+	check(tele != null and tele.echo_id == &"balcony_telescope", "bal_telescope_echo_point")
+	var cat: Dictionary = em._catalog
+	var tele_text := ""
+	for pair in (cat.get("balcony_telescope", {}) as Dictionary).get("lines", []):
+		tele_text += String(pair[1]) + " "
+	check(cat.has("balcony_telescope") and tele_text.contains("üç"), "bal_telescope_echo_shows_first_digit")
+	var obs: Node2D = bal.get_node_or_null("Spawns/keeper_observe")
+	check(obs != null and obs.position.x >= 760.0, "bal_keeper_observe_clear_of_gap")
+	var zone: Node2D = bal.find_child("CrossedZone", true, false)
+	check(zone != null and zone.position.x >= 760.0, "bal_crossed_zone_beyond_gap")
+	_unsolve(["awakening_balcony_crossed"])
+	check(not pm.is_solved(&"awakening_balcony_crossed"), "bal_crossed_starts_unsolved")
+	if zone != null:
+		player.global_position = Vector2(300, 288)
+		await create_timer(0.3).timeout
+		check(not pm.is_solved(&"awakening_balcony_crossed"), "bal_crossed_not_before_gap")
+		player.global_position = Vector2(zone.global_position.x, 288)
+		await create_timer(0.4).timeout
+		check(pm.is_solved(&"awakening_balcony_crossed"), "bal_crossed_solved_on_entry")
+		player.global_position = Vector2(300, 288)
+	# legacy: soul_seal_balcony cozulu kayit kapidan gecmeli
+	_unsolve(["awakening_balcony_crossed"])
+	(gs.world_memory_state["puzzles"] as Dictionary)["soul_seal_balcony"] = true
+	pm.sync_from_world()
+	check(pm.is_solved(&"awakening_balcony_crossed"), "bal_legacy_soul_seal_save_passes")
+	_unsolve(["awakening_balcony_crossed", "soul_seal_balcony"])
+	# ---- 03 crypt ----
+	rm.enter_room(&"awakening_crypt", &"default")
+	await create_timer(0.4).timeout
+	var cr: Node = _room_root(&"awakening_crypt")
+	var shrine: Node = cr.find_child("PagesShrine", true, false)
+	check(shrine != null and shrine.puzzle_id == &"awakening_crypt_pages" and shrine.order.size() == 3, "crypt_shrine_order_3")
+	var bed: Node = cr.find_child("BedPlate", true, false)
+	check(bed != null and bed.puzzle_id == &"awakening_crypt_bed" and bed.accept_stone == false and bed.accept_player == false, "crypt_bed_plate_corpse_only")
+	var shortcut_ok := false
+	for d in cr.doors:
+		if float(d.get("x", 0.0)) == 920.0:
+			shortcut_ok = String(d.get("req", "")) == "decay_shilda_wall_broken" and String(d.get("to", "")) == "decay_shilda_wall"
+	check(shortcut_ok, "crypt_x920_shortcut_unchanged")
+	var tablet: Node = cr.find_child("RingTablet", true, false)
+	var memory: Node = cr.find_child("BedMemory", true, false)
+	check(tablet != null and tablet.requires_puzzle == &"awakening_crypt_pages", "crypt_tablet_gated_by_pages")
+	check(memory != null and memory.requires_puzzle == &"awakening_crypt_bed" and memory.lines.size() >= 3, "crypt_memory_scene_gated_by_bed")
+	if shrine != null:
+		_unsolve(["awakening_crypt_pages"])
+		var steps: Dictionary = {}
+		for c in shrine.get_children():
+			if "step_id" in c:
+				steps[String(c.step_id)] = c
+		var order: PackedStringArray = shrine.order
+		var ok_steps := steps.size() == 3 and order.size() == 3
+		if ok_steps:
+			for s in order:
+				if not steps.has(s):
+					ok_steps = false
+		check(ok_steps, "crypt_pages_three_steps_match_order")
+		if ok_steps:
+			# yanlis sira: sonuncuyu once bas -> cozulmez
+			shrine.press(order[2], steps[order[2]])
+			shrine.press(order[1], steps[order[1]])
+			check(not pm.is_solved(&"awakening_crypt_pages"), "crypt_wrong_order_not_solved")
+			for s in order:
+				shrine.press(s, steps[s])
+			check(pm.is_solved(&"awakening_crypt_pages"), "crypt_chronological_order_solves")
+			# etiketler tarih tasir; order kronolojik
+			var keys: Array = []
+			var rx := RegEx.create_from_string("(\\d+) (\\S+) (\\d{4})")
+			var months := ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"]
+			for s in order:
+				var m := rx.search(String((steps[s] as Node).label))
+				keys.append(int(m.get_string(3)) * 10000 + months.find(m.get_string(2)) * 100 + int(m.get_string(1)) if m else -1)
+			check(keys.size() == 3 and keys[0] > 0 and keys[0] < keys[1] and keys[1] < keys[2], "crypt_order_is_chronological_by_label")
+		_unsolve(["awakening_crypt_pages"])
+	rm.enter_room(&"awakening", &"default")
+	await create_timer(0.3).timeout

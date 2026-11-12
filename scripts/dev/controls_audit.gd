@@ -72,15 +72,11 @@ func _mechanics(player: CharacterBody2D, state: Node, dm: Node) -> void:
 	await create_timer(0.4).timeout
 	dm.clear()
 	check(player.global_position.x > 572.0, "shadow dash passes curse barrier")
-	# Ruh Kesimi
-	state.player_progress_knowledge["ability_soul_slash"] = true
-	await _enter(&"awakening_balcony", Vector2(780, 288), dm)
-	player._facing = 1.0
-	player.sprite.flip_h = false
-	player._on_skill()
+	# Balkon: ruh mührü kalktı (Faz 2); boşluğun ötesindeki geçiş alanı kapıyı açar
+	await _enter(&"awakening_balcony", Vector2(800, 288), dm)
 	await create_timer(0.5).timeout
 	dm.clear()
-	check(pm.is_solved(&"soul_seal_balcony"), "soul slash opens the balcony soul seal")
+	check(pm.is_solved(&"awakening_balcony_crossed"), "balcony crossing zone marks awakening_balcony_crossed")
 	# Yankı ikizi (experiment_circuit): ikiz plakayı tutar, oyuncu kristali çeker
 	await _enter(&"experiment_circuit", Vector2(480, 288), dm)
 	var altar := _first_in_room("echo_altar", &"experiment_circuit")

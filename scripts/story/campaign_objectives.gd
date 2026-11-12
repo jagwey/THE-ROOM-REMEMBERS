@@ -21,8 +21,8 @@ const _BY_ROOM: Dictionary = {
 	"core_threshold": "İzler sende. Shilda ile konuş, sonra mühür odasına geç.",
 	"core_seal_chamber": "Tanıklıklar birleşince son kapı nefes alır.",
 	"core": "Aşağı in. Mührü Shilda ile birlikte kır.",
-	"awakening_balcony": "Kopuk taşın üstünden geç. Mor mühür Ruh Kesimi ister.",
-	"awakening_crypt": "Yataklar dolu. Defteri oku, duvara bak.",
+	"awakening_balcony": "Boşluğu cesetle köprüle, teleskoba bak.",
+	"awakening_crypt": "Sayfaları tarih sırasına diz; bedenini yatağa bırak.",
 	"decay_catacombs": "Çiçekli bedenin ışığıyla yürü. Sembolleri oku, mührü aç.",
 	"decay_shilda_wall": "Gözleri kızarınca son adımda kenara çekil. Duvarı o yıkar.",
 	"library_upper_stacks": "Ses, mühür, çiçek sırasıyla seç; tahta inince tırman.",
@@ -57,13 +57,20 @@ static func get_objective(room_id: String) -> String:
 static func objective_for_room(room_id: String) -> String:
 	if room_id == "awakening":
 		return _awakening_objective()
-	## Mor mühür Ruh Kesimi ister; yetenek yoksa oyuncuyu nereye gideceğine yönlendir.
 	if room_id == "awakening_balcony":
-		if PuzzleManager.is_solved(&"soul_seal_balcony"):
-			return "Mühür söndü. Kapı açık, mahzene in."
-		if _has_soul_slash():
-			return "Kopuk taşın üstünden geç. Mor mühre Ruh Kesimi uygula."
-		return "Kopuk taşın üstünden geç. Mor mühür Ruh Kesimi ister."
+		if PuzzleManager.is_solved(&"awakening_balcony_crossed"):
+			return "Karşıya geçtin. Kapı açık, mahzene in."
+		return "Boşluğu cesetle köprüle, teleskoba bak."
+	if room_id == "awakening_crypt":
+		var pages := PuzzleManager.is_solved(&"awakening_crypt_pages")
+		var bed := PuzzleManager.is_solved(&"awakening_crypt_bed")
+		if pages and bed:
+			return "Halkanın hanelerini topladın. Defteri oku."
+		if pages:
+			return "Bedenini yatağa bırak, anıyı aç."
+		if bed:
+			return "Defter sayfalarını tarih sırasına diz."
+		return "Sayfaları tarih sırasına diz; bedenini yatağa bırak."
 	var raw := String(_BY_ROOM.get(room_id, "Kayıtları incele; sağdaki geçidi takip et."))
 	var i := raw.find(" · ")
 	if i > 0 and i <= 32:
@@ -77,7 +84,7 @@ static func objective_for_room(room_id: String) -> String:
 	return raw
 
 
-## Uyanış: kalan adımlar "Saate bak · Gölgeyle konuş · plakaya bas" biçiminde kısalır.
+## Uyanış: kalan adımlar "Saate bak · Gölgeyle konuş · taşı plakaya it · ceset plakası" biçiminde kısalır.
 static func _awakening_objective() -> String:
 	var k: Dictionary = GameState.player_progress_knowledge
 	var steps: PackedStringArray = []
@@ -86,7 +93,9 @@ static func _awakening_objective() -> String:
 	if GameState.has_story_flag(&"first_death_completed") and not GameState.is_shilda_named():
 		steps.append("Gölgeyle konuş")
 	if not (PuzzleManager.is_solved(&"awakening_weight") or PuzzleManager.is_live(&"awakening_weight")):
-		steps.append("plakaya bas")
+		steps.append("taşı plakaya it")
+	if not (PuzzleManager.is_solved(&"awakening_corpse_plate") or PuzzleManager.is_live(&"awakening_corpse_plate")):
+		steps.append("cesedini ceset plakasına bırak")
 	if steps.is_empty():
 		return "Kırık Geçit açık. Kırmızı yarıklara basma."
 	var first := steps[0]
