@@ -117,6 +117,7 @@ func reset_character_life(keep_room: StringName = &"", keep_cp: Vector2 = Vector
 		"interacted": [],
 		"dialogue_flags": {},
 		"warned_hazard": false,
+		"flower_in_hand": false,
 	}
 	hearts = max_hearts
 	hearts_changed.emit(hearts, max_hearts)

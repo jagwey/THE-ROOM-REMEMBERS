@@ -55,7 +55,7 @@ const ROOM_DEFS := {
 const SIDE_DOORS := {
 	"awakening": [{"x": 672.0, "to": "awakening_balcony"}],
 	"decay_vines": [{"x": 896.0, "to": "decay_catacombs"}],
-	"decay_weight": [{"x": 720.0, "to": "decay_cistern", "ability": "ability_shadow_dash"}],
+	"decay_weight": [{"x": 720.0, "to": "decay_cistern"}],
 	"library_hall": [{"x": 784.0, "to": "library_upper_stacks"}],
 	"library_witness": [{"x": 590.0, "to": "library_reading_cell"}],
 	"experiment_cells": [{"x": 784.0, "to": "experiment_quarantine"}],

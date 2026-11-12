@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
 [ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore"]
@@ -8,6 +8,8 @@
 [ext_resource type="Script" path="res://scripts/world/gate_blocker.gd" id="gate"]
 [ext_resource type="Texture2D" path="res://assets/props/door_closed.png" id="door_tex"]
 [ext_resource type="Script" path="res://scripts/world/memory_seal_point.gd" id="memory_seal_pt"]
+[ext_resource type="Script" path="res://scripts/world/flower_source.gd" id="flower_src"]
+[ext_resource type="Texture2D" path="res://assets/props/red_flower.png" id="flower_tex"]
 
 [sub_resource type="RectangleShape2D" id="Interact"]
 size = Vector2(40, 48)
@@ -27,6 +29,19 @@ floor_gaps = PackedVector2Array(380.0, 470.0, 820.0, 900.0)
 dark = true
 
 [node name="Interactive" type="Node2D" parent="."]
+
+[node name="FlowerSource" type="Area2D" parent="Interactive"]
+position = Vector2(150.0, 288.0)
+script = ExtResource("flower_src")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/FlowerSource"]
+shape = SubResource("Interact")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/FlowerSource"]
+texture_filter = 1
+position = Vector2(0, -16)
+scale = Vector2(0.32, 0.32)
+texture = ExtResource("flower_tex")
 
 [node name="Warning" type="Area2D" parent="Interactive"]
 position = Vector2(200.0, 288.0)

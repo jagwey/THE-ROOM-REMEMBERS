@@ -108,6 +108,16 @@ func is_live(puzzle_id: StringName) -> bool:
 
 
 const HINTS: Dictionary = {
+	&"decay_catacombs": {
+		"goal": "Karanlıkta yol, ölülerin ışığıdır.",
+		"orientation": "Çiçeği al, sonra dikende öl. Çiçekli beden ışık olur.",
+		"explicit": "Girişteki çiçeği al, dikene dokun. Cesedin fener gibi yanar; onu yola taşı."
+	},
+	&"decay_catacomb_seal": {
+		"goal": "Karanlıkta yol, ölülerin ışığıdır.",
+		"orientation": "Çiçeği al, sonra dikende öl. Çiçekli beden ışık olur.",
+		"explicit": "Girişteki çiçeği al, dikene dokun. Cesedin fener gibi yanar; onu yola taşı."
+	},
 	&"awakening_weight": {
 		"goal": "Kapıyı açık tutmak için bir ağırlık gerekiyor.",
 		"orientation": "Taş yürür. Onu plakanın üstüne bırakırsan kapı açık kalır.",

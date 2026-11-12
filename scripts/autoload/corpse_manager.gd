@@ -30,12 +30,16 @@ func record_corpse_at(pos: Vector2, reason: StringName = &"unknown") -> String:
 		for s in pl.get_trail():
 			if s is Array and s.size() >= 4 and (bounds.size.x <= 0.0 or bounds.grow(8.0).has_point(Vector2(float(s[0]), float(s[1])))):
 				trail.append(s)
+	var has_flower := bool(GameState.character_current_life_knowledge.get("flower_in_hand", false))
+	if has_flower:
+		GameState.character_current_life_knowledge["flower_in_hand"] = false
+		GameState.world_memory_state["flowers_left"] = int(GameState.world_memory_state["flowers_left"]) + 1
 	var entry := {
 		"id": id,
 		"position": {"x": pos.x, "y": pos.y},
 		"room": String(room),
 		"life_index": int(GameState.player_progress_knowledge["deaths"]),
-		"has_flower": false,
+		"has_flower": has_flower,
 		"echo_id": "echo_%s" % id,
 		"weight": 1,
 		"usable_for_puzzle": true,
@@ -147,8 +151,9 @@ func set_corpse_anchored(corpse_id: String, anchored: bool = true) -> void:
 func mark_flower_on_corpse(corpse_id: String) -> void:
 	for c in GameState.world_memory_state["corpses"]:
 		if c is Dictionary and String(c.get("id", "")) == corpse_id:
+			if not bool(c.get("has_flower", false)):
+				GameState.world_memory_state["flowers_left"] = int(GameState.world_memory_state["flowers_left"]) + 1
 			c["has_flower"] = true
-			GameState.world_memory_state["flowers_left"] = int(GameState.world_memory_state["flowers_left"]) + 1
 			break
 	rebuild_world_corpses()
 
