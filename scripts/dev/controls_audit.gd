@@ -151,7 +151,9 @@ func _mechanics(player: CharacterBody2D, state: Node, dm: Node) -> void:
 	# Bulmacayı tutan ceset silinmez
 	var corpses: Array = state.world_memory_state["corpses"]
 	corpses.clear()
-	corpses.append({"id": "qa_anchor", "room": "awakening_seal", "position": {"x": 340, "y": 288}, "anchoring": true})
+	## Trim kurali (0714840): baska odada tutulan ceset once kirpilir; tutulan ceset AKTIF odada olmali.
+	var active_room := String(root.get_node("RoomManager").get_active_room_id())
+	corpses.append({"id": "qa_anchor", "room": active_room, "position": {"x": 340, "y": 288}, "anchoring": true})
 	var cm := root.get_node("CorpseManager")
 	for i in 4:
 		cm.record_corpse_at(Vector2(100 + i * 10, 288), &"qa")
