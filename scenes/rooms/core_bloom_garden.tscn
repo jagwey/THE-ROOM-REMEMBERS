@@ -87,7 +87,7 @@ script = ExtResource("thorn")
 anchor_x = 260.0
 puzzle_hint = &"core_bloom_weight"
 body_line = "Dokunursam ölürüm, beden plakanın üstünde kalmalı."
-solved_line = "Plaka sustu, beden taşları uyandırıyor."
+solved_line = "Plaka sustu, beden ağırlığını verdi."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BloodThorn"]
 shape = SubResource("PlateShape")

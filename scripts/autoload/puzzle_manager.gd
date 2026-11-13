@@ -325,7 +325,7 @@ const HINTS: Dictionary = {
 	},
 	&"core_bloom_weight": {
 		"goal": "Taşlar uyanmadan önce plakada bir beden durmalı.",
-		"orientation": "Dikene değ, bedenin plakanın üstünde kalsın.",
+		"orientation": "Dikene dokun, bedenin plakanın üstünde kalsın.",
 		"explicit": "Dikene dokun; beden plakayı tutarken taşlara dokun."
 	},
 	&"core_vault_order": {
