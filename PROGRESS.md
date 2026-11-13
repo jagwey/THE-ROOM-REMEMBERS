@@ -412,3 +412,21 @@ oom_door\) <= 44.0 px mesafede -200 etkileÅŸim Ã¶ncelik bonusu eklendi.
 - [x] Faz 4 T1 fix 1 (2026-11-13): `_migrate_trust_flags_v118` tek seferlik (`migrated_v118` ilerleme işareti; `_build_data` her kayda yazar, eski dosyada yok); geri yürüyüşte trusted_keeper/truth_seen silinmez; audit +5 durum (phase4_rooms 36 PASS); kullanılmayan audit yardımcıları temizlendi.
 
 - [x] Faz 4 T2 (2026-11-13): oda 28-40 ana yolu doğrusal (kapı+spawn grafiği; `SIDE_DOORS` yalnız awakening/decay; labirent->tapınak kapısı başlık+işaret; core_ascent spawn'ları from_core_*; Shard/ShrineEcho/Vault/Reconcile kapıdan >=96 px'e taşındı); `phase4_rooms_audit._graph()`, door/release/room_graph audit güncellendi; tüm audit'ler + e2e 0.
+- [x] Faz 4 T2 düzeltme 83fb23c (2026-11-13): core `BackGarden` başlığı "Çiçek Bahçesi"; labirent/1927 kilitli kapı metni ("Yanıltıcı yolu aşmadan ilerleyemem.", "Gecenin tanıklığını dinlemeliyim.").
+
+## DEVİR NOTU — Faz 4 durumu (başka YZ devralırsa BURADAN başla) — güncel: 2026-11-13
+**Hedef:** Oda revizyonu (spec `docs/superpowers/specs/2026-11-12-room-overhaul-design.md`), Faz 4 = oda 28-40 + final, sürüm v1.18.0. Plan: `docs/superpowers/plans/2026-11-13-phase4-rooms-28-40.md` (T1-T8). Dal: `feat/phase4-rooms` (main'e merge/push YOK).
+**Ayrıntılı defter:** `.superpowers/sdd/2026-11-13-phase4-rooms-28-40/progress.md` (git'e eklenmez; her görevin brief/report/review dosyaları orada). `Task N: complete` satırı olan görev bitti, tekrar yapma.
+**Durum:**
+- [x] T1 bileşenler + göç (2831908, a860ec2)
+- [x] T2 doğrusal ana yol 28-40 (799d3fb, 83fb23c)
+- [ ] T3 odalar 28-31 (reverse ters kontrol, dual aynalı yankı+ceset, gallery 3 ceset plakası, unbroken yankı yol taklidi) — UYGULANIYOR
+- [ ] T4 odalar 32-34 (labirent ana yolda + ceset köprüsü, tapınak Gölge Atılması testi, 1927 sessiz dizi + X'in adı; lore_canon `x_name_late`)
+- [ ] T5 odalar 35-37 (eşik lanet bulutu+ceset kalkanı, yükseliş 3 test, mühür odası 3 bağ; trusted_keeper burada YAZILMAZ)
+- [ ] T6 odalar 38-39 (kasa önceki ipuçlarından kod; bahçe 4-1-2, trusted_keeper YALNIZ burada; `add_vigil_trust(1)`; lore_canon `vault_irony`/`garden_hint`)
+- [ ] T7 `core_defense.gd` final (3 dalga 2/3/4 gölge, kristal HP 5, kayıpta ölüm yok dalga sıfırlanır, `EndingManager.final_variant()` together/apart, "BÖLÜM I SONU")
+- [ ] T8 ölü kod (mirror_relay.gd, archive_door.gd — önce grep), `_softlock()` + `_main_path_walk()`, e2e 01→40, sürüm 1.18.0 / version/code 48, README + PROGRESS + CLAUDE.md "Güncel sürüm"; tam suite "38 dev denetimi, 0 basarisiz"
+- [ ] Faz 4 final review (tüm dal) + 1 düzeltme turu
+- [ ] APK `TheRoomRemembers-1.18.0-android-arm64.apk` derle → `gh release create v1.18.0 <apk> --repo jagwey/THE-ROOM-REMEMBERS-release --title v1.18.0 --notes "..."` → iki repoda en yeni 4 dışını sil (`gh release list` önce; latest asla silinmez). Kullanıcı bu release'i önceden onayladı.
+**Nasıl çalışılıyor:** her görev: brief → uygulayıcı ajan → inceleme ajanı → düzeltme → defter + bu dosya. Audit tek tek: `TORIMON_TEST=1 "<Godot console exe>" --headless --path . -s res://scripts/dev/<x>.gd`; tam suite `docs/gelistirme/Run-Audit.ps1`. Commit sonu: `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`. `docs/gelistirme/results-v1140/` ve `.superpowers/` asla git add edilmez.
+**Park edilen küçük bulgular:** invert_x bölge içinde yeniden doğunca girişe kadar normal kalır; phase4 audit ölüm kontrolü yalnız respawn_at; Faz 3'ten: cells gölgesi x790 from_circuit spawn'ına (880) yakın, P4 cilasında bak.
