@@ -28,6 +28,6 @@ Yan görünüşlü bellek/lanet oyunu. Kapalı kaynak, private repo. Paket: com.
 - **Release temizliği (ZORUNLU, GitHub 2 GB sınırı):** her iki repoda (`THE-ROOM-REMEMBERS-release` ve `THE-ROOM-REMEMBERS`) en fazla güncel sürüm + 3 eski sürüm kalır. Yeni release yayınlandıktan sonra en yeni 4'ten eskilerini sil: `gh release delete vX.Y.Z --repo <repo> --cleanup-tag --yes`. Silmeden önce `gh release list --repo <repo>` ile kontrol et; `latest` asla silinmez.
 
 ## Kritik kararlar
-- Güncel sürüm: v1.16.0 (kaynak: `project.godot` `config/version`; bu satır bayatlayabilir, orayı kontrol et)
+- Güncel sürüm: v1.17.0 (kaynak: `project.godot` `config/version`; bu satır bayatlayabilir, orayı kontrol et)
 - v0.10.1: awakening gate, objective, softlock korumaları, tek final (BÖLÜM I SONU / END OF PART I), core_choice kaldırıldı
 - Çalışma planı ve durum: `PROGRESS.md` (her alt görevden sonra güncelle, sıkıştırma sonrası ilk onu oku)
