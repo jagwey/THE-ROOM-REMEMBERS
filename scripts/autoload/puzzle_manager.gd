@@ -240,7 +240,7 @@ const HINTS: Dictionary = {
 	},
 	&"library_witnesses": {
 		"goal": "Üç tanık aynı anda mührün yanında olmalı.",
-		"orientation": "Beden plakada, yankı plakada, sen mühürde.",
+		"orientation": "Beden plakada, yankı plakada, sen mühürde dur.",
 		"explicit": "Dikene değ, sunağa dokun, plakaya bas, sonra mühre koş."
 	},
 	&"library_clockroom": {

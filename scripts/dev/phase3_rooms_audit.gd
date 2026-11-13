@@ -262,6 +262,11 @@ func _rooms_14_17() -> void:
 		hs.press("muhur", null)
 		await create_timer(0.2).timeout
 		check(pm.is_solved(&"library_hall_shelves") and pm.is_solved(&"library_catalog"), "r14_hall_shelves_solve_catalog")
+		var evd: Dictionary = gs.player_progress_knowledge.get("evidence", {})
+		check(evd.has("ev_hall_shelf_digit") and String(evd["ev_hall_shelf_digit"].get("body", "")).contains("iki"), "r14_hall_digit_journaled")
+		dm.clear()
+		hs.press("saat", null)
+		check(dm.is_open, "r14_hall_resolved_shrine_repeats_clue")
 		dm.clear()
 	var card: Node = hall.find_child("CardLeft", true, false)
 	var cb := String(card.body) if card != null else ""
@@ -298,6 +303,36 @@ func _rooms_14_17() -> void:
 		var echo_x: float = altar.position.x + Vector2(altar.switch_positions[0]).x
 		var spaced: bool = absf(cplate.position.x - echo_x) >= 200.0 and absf(cplate.position.x - seal.position.x) >= 200.0 and absf(echo_x - seal.position.x) >= 200.0
 		check(spaced, "r15_plates_and_seal_spaced_200")
+		# geometri: dikenin x aralığı plakayı kapsar; altar -> mühür yürüyüşü 8 sn'den kısa
+		var tcs: Node = tw.find_child("CollisionShape2D", true, false) if tw != null else null
+		var thalf := 20.0
+		if tcs != null and tcs.shape is RectangleShape2D:
+			thalf = (tcs.shape as RectangleShape2D).size.x * 0.5
+		check(tw != null and cplate.position.x >= tw.position.x - thalf and cplate.position.x <= tw.position.x + thalf, "r15_thorn_range_covers_plate")
+		var walk := (absf(seal.position.x - altar.position.x) + absf(echo_x - altar.position.x)) / 175.0
+		check(walk < 8.0, "r15_altar_to_seal_walk_under_8s")
+		var anchors: Array = []
+		for nm in ["ClockEcho", "FlowerEcho", "SealEcho", "WitnessAltar"]:
+			var an: Node = wit.find_child(nm, true, false)
+			if an != null:
+				anchors.append(an)
+		check(anchors.size() == 4, "r15_witness_anchor_nodes")
+		var overlap_bad := false
+		for ia in anchors.size():
+			for ib in range(ia + 1, anchors.size()):
+				if absf(anchors[ia].position.x - anchors[ib].position.x) < 90.0:
+					overlap_bad = true
+		check(not overlap_bad, "r15_echoes_altar_spaced_90")
+		var cp_bad := false
+		for ni in wit.find_children("*", "Area2D", true, false):
+			if ni.has_method("on_interact") and absf(ni.global_position.x - wit.checkpoint.x) < 40.0:
+				cp_bad = true
+		check(not cp_bad, "r15_checkpoint_clear_of_interactables")
+		var shilda_bad := false
+		for ni in wit.find_children("*", "Area2D", true, false):
+			if ni.has_method("on_interact") and absf(ni.global_position.x - 702.0) < 120.0:
+				shilda_bad = true
+		check(not shilda_bad, "r15_shilda_clear_of_interactables")
 		var hud_nodes: Array = get_nodes_in_group("hud")
 		for h in hud_nodes:
 			h.remove_from_group("hud")

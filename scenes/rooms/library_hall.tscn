@@ -180,7 +180,10 @@ script = ExtResource("shrine")
 puzzle_id = &"library_hall_shelves"
 order = PackedStringArray("saat", "cicek", "muhur")
 fail_line = "Raflar tutmadı. Kayıtlara dön."
-success_line = "Saatin sözü kaldı: iki."
+success_line = "Raf bir rakam bıraktı: iki."
+evidence_id = "ev_hall_shelf_digit"
+evidence_title = "Raf rakamı"
+evidence_body = "Raflar saat, çiçek, mühür sırasıyla çekilince bir rakam kaldı: iki."
 also_solve = PackedStringArray("library_catalog")
 
 [node name="BookSaat" type="Area2D" parent="Interactive/HallShrine"]

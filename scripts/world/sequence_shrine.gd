@@ -16,6 +16,11 @@ const DRESS := preload("res://scripts/world/platform_dress.gd")
 ## Çözümde ek olarak çözülü işaretlenecek (eski kayıt) bulmaca kimlikleri.
 @export var also_solve: PackedStringArray = PackedStringArray()
 
+## Çözümde günlüğe yazılacak ipucu (boşsa yazılmaz). Çözülmüş rafa tekrar dokunmak satırı yineler.
+@export var evidence_id: String = ""
+@export var evidence_title: String = ""
+@export var evidence_body: String = ""
+
 var _progress: int = 0
 
 
@@ -35,6 +40,7 @@ func press(step_id: String, source: Node = null) -> void:
 	if order.is_empty():
 		return
 	if PuzzleManager.is_solved(puzzle_id):
+		_repeat_clue()
 		return
 	var want := String(order[_progress])
 	if step_id == want:
@@ -48,6 +54,7 @@ func press(step_id: String, source: Node = null) -> void:
 				PuzzleManager.mark_solved(StringName(extra))
 			_burst(source)
 			_spawn_bridge()
+			_add_evidence()
 			if success_line != "":
 				DialogueManager.say("Noroi", success_line)
 		return
@@ -64,6 +71,29 @@ func press(step_id: String, source: Node = null) -> void:
 			CurseManager.add_curse(1.0)
 		if fail_line != "":
 			DialogueManager.say("Noroi", fail_line)
+
+
+func _repeat_clue() -> void:
+	_add_evidence()
+	if success_line != "" and not DialogueManager.is_open:
+		DialogueManager.say("Noroi", success_line)
+
+
+func _add_evidence() -> void:
+	if evidence_id == "":
+		return
+	if not GameState.player_progress_knowledge.has("evidence"):
+		GameState.player_progress_knowledge["evidence"] = {}
+	var ev: Dictionary = GameState.player_progress_knowledge["evidence"]
+	if ev.has(evidence_id):
+		return
+	ev[evidence_id] = {"id": evidence_id, "discovered": true, "kind": "evidence", "title": evidence_title, "body": evidence_body, "section": "notlar"}
+	var notes: Array = GameState.player_progress_knowledge.get("journal_notes", [])
+	notes.append({"evidence_id": evidence_id, "section": "notlar", "title": evidence_title, "body": evidence_body, "kind": "evidence"})
+	GameState.player_progress_knowledge["journal_notes"] = notes
+	GameState.player_progress_knowledge["journal_unlocked"] = true
+	EchoManager.journal_updated.emit()
+	SaveManager.save_game()
 
 
 func _set_all_lit(on: bool) -> void:

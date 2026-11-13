@@ -48,7 +48,7 @@ const ROOM_PRESENCE := {
 	"awakening_balcony": {"mode": "silhouette", "pos": Vector2(820, 280)},
 	"decay_garden": {"mode": "present", "pos": Vector2(700, 280)},
 	"decay_shilda_wall": {"mode": "present", "pos": Vector2(760, 280)},
-	"library_witness": {"mode": "present", "pos": Vector2(560, 280)},
+	"library_witness": {"mode": "present", "pos": Vector2(702, 280)},
 	"library_forbidden_wing": {"mode": "silhouette", "pos": Vector2(140, 280)},
 	"experiment_authority": {"mode": "silhouette", "pos": Vector2(820, 280)},
 	"experiment_quarantine": {"mode": "silhouette", "pos": Vector2(860, 280)},
