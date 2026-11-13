@@ -604,12 +604,13 @@ func on_interact(_by: Node) -> void:
 		return
 	# İyi yol: hazırlık varsa güven teklifi
 	var st: Dictionary = EndingManager.prep_status()
-	if st["weight"] and st["code"] and st["echo"] and not st["trusted"]:
+	if st["weight"] and st["code"] and st["echo"] and not st["trusted"] and not bool(GameState.player_progress_knowledge.get("keeper_trust_offered", false)):
 		DialogueManager.say(GameState.keeper_speaker_name(), "Bana… güvenebilir misin?")
 		DialogueManager.say("Noroi", "…Güveniyorum.")
 		DialogueManager.say(GameState.keeper_speaker_name(), "O zaman Çekirdek'e git. Birlikte mühürleyelim.")
 		await _await_dialogue_or_smoke()
-		GameState.player_progress_knowledge["trusted_keeper"] = true
+		GameState.player_progress_knowledge["keeper_trust_offered"] = true
+		GameState.add_vigil_trust(1)
 		set_mode(Mode.INTIMACY)
 		SaveManager.save_game()
 		return

@@ -320,16 +320,28 @@ func _check_canon_decisions(texts: Dictionary) -> void:
 	if om != null:
 		for q in om.get_string(1).split(","):
 			sol.append(q.strip_edges().trim_prefix("\"").trim_suffix("\""))
-	var hint_src: Array[String] = [garden, str(game.get("res://scripts/story/campaign_objectives.gd", ""))]
+	## Cevap sahne metnine yazilmaz: taclarin pips'i ("en cok, en az, kalan") emri verir; acik ipucu yalniz puzzle_manager'da.
+	var pips: Dictionary = {}
+	for pm_ in RegEx.create_from_string(r'step_id = "(\d+)"[^\[]*?pips = (\d+)').search_all(garden):
+		pips[pm_.get_string(1)] = int(pm_.get_string(2))
+	var by_pips: Array[String] = []
+	var keys: Array = pips.keys()
+	keys.sort_custom(func(x, y): return pips[x] > pips[y])
+	if keys.size() == 3:
+		by_pips = [keys[0], keys[2], keys[1]]
+	var pm_src := str(game.get("res://scripts/autoload/puzzle_manager.gd", ""))
+	var blk_at := pm_src.find("&\"core_bloom_order\": {")
+	var blk_end := pm_src.find("},", blk_at)
+	var blk := pm_src.substr(blk_at, blk_end - blk_at) if blk_at >= 0 else ""
 	var hint_re := RegEx.create_from_string(r"((?:dört|bir|iki|üç|beş)(?:, (?:dört|bir|iki|üç|beş))+)")
 	var hints: Array = []
-	for src in hint_src:
-		for m in hint_re.search_all(src):
-			var nums: Array[String] = []
-			for wd in m.get_string(1).split(", "):
-				nums.append(NUM_WORDS[wd])
-			hints.append(nums)
-	var garden_ok := sol.size() == 3 and hints.size() >= 2
+	for m in hint_re.search_all(blk):
+		var nums: Array[String] = []
+		for wd in m.get_string(1).split(", "):
+			nums.append(NUM_WORDS[wd])
+		hints.append(nums)
+	var garden_ok := sol.size() == 3 and by_pips.size() == 3 and str(by_pips) == str(sol) and blk.contains("en çok") and blk.contains("en az")
+	garden_ok = garden_ok and hints.size() >= 1 and not hint_re.search(garden)
 	for hnt in hints:
 		if str(hnt) != str(sol):
 			garden_ok = false

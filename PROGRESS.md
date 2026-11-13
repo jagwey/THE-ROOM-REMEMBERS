@@ -424,8 +424,8 @@ oom_door\) <= 44.0 px mesafede -200 etkileÅŸim Ã¶ncelik bonusu eklendi.
 - [x] T2 doğrusal ana yol 28-40 (799d3fb, 83fb23c)
 - [x] T3 odalar 28-31 (reverse ters kontrol, dual aynalı yankı+ceset, gallery 3 ceset plakası, unbroken yankı yol taklidi) (185575f, b791bf0)
 - [x] T4 odalar 32-34 (labirent ana yolda + ceset köprüsü, tapınak Gölge Atılması testi, 1927 sessiz dizi + X'in adı; lore_canon `x_name_late`) (738adb4, bb1ac17, 4318dd4)
-- [ ] T5 odalar 35-37 (eşik lanet bulutu+ceset kalkanı, yükseliş 3 test, mühür odası 3 bağ; trusted_keeper burada YAZILMAZ) — UYGULANIYOR
-- [ ] T6 odalar 38-39 (kasa önceki ipuçlarından kod; bahçe 4-1-2, trusted_keeper YALNIZ burada; `add_vigil_trust(1)`; lore_canon `vault_irony`/`garden_hint`)
+- [x] T5 odalar 35-37 (eşik lanet bulutu+ceset kalkanı, yükseliş 3 test, mühür odası 3 bağ; trusted_keeper burada YAZILMAZ) (bcb416c, fba38f8)
+- [ ] T6 odalar 38-39 (kasa önceki ipuçlarından kod; bahçe 4-1-2, trusted_keeper YALNIZ burada; `add_vigil_trust(1)`; lore_canon `vault_irony`/`garden_hint`) — UYGULANIYOR
 - [ ] T7 `core_defense.gd` final (3 dalga 2/3/4 gölge, kristal HP 5, kayıpta ölüm yok dalga sıfırlanır, `EndingManager.final_variant()` together/apart, "BÖLÜM I SONU")
 - [ ] T8 ölü kod (mirror_relay.gd, archive_door.gd — önce grep), `_softlock()` + `_main_path_walk()`, e2e 01→40, sürüm 1.18.0 / version/code 48, README + PROGRESS + CLAUDE.md "Güncel sürüm"; tam suite "38 dev denetimi, 0 basarisiz"
 - [ ] Faz 4 final review (tüm dal) + 1 düzeltme turu
@@ -434,3 +434,4 @@ oom_door\) <= 44.0 px mesafede -200 etkileÅŸim Ã¶ncelik bonusu eklendi.
 **Park edilen küçük bulgular:** invert_x bölge içinde yeniden doğunca girişe kadar normal kalır; phase4 audit ölüm kontrolü yalnız respawn_at; Faz 3'ten: cells gölgesi x790 from_circuit spawn'ına (880) yakın, P4 cilasında bak.
 
 - Faz 4 T3: oda 28–31 (mirrors_reverse/dual/gallery/unbroken) yeniden yazıldı; gate also_solve düzeltmesi, plate_hold_seconds, unbroken_confrontation.gd; phase4/plate_rule/dialogue_lint/e2e(53/53)/phase3 audit yeşil.
+- Faz 4 T6: oda 38-39 yeniden yazıldı (kasa yıl sırası + `truth_seen` tek yazar; bahçe kan dikeni + `core_bloom_weight` ceset plakası, taçlar en çok/en az/kalan; `trusted_keeper` tek yazar = Uzlaşma + `trust_gate`; shilda_garden_trust/keeper_controller `add_vigil_trust`); phase4/lore_canon/story_flags/keeper_naming/plate_rule/dialogue_lint/dialogue_data/release/room_graph/e2e(53/53) yeşil.

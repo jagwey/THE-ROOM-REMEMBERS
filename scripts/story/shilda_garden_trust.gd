@@ -36,7 +36,7 @@ func on_interact(_by: Node) -> void:
 	if trusted:
 		DialogueManager.say("Noroi", "Seni dinliyorum, çiçeklere zarar vermedim.")
 		DialogueManager.say(keeper_name, "Fark ettim, aceleci değilsin. Sana inanmak istiyorum.")
-		GameState.player_progress_knowledge["trusted_keeper"] = true
+		GameState.add_vigil_trust(1)
 	else:
 		DialogueManager.say("Noroi", "Buradan nasıl çıkarım?")
 		DialogueManager.say(keeper_name, "Acele ediyorsun. Burada güven adım adım kazanılır.")

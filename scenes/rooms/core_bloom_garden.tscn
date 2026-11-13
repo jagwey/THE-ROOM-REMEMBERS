@@ -1,9 +1,14 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
 [ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore"]
 [ext_resource type="Script" path="res://scripts/world/sequence_shrine.gd" id="shrine"]
 [ext_resource type="Script" path="res://scripts/world/sequence_step.gd" id="step"]
+[ext_resource type="Script" path="res://scripts/world/pressure_plate.gd" id="plate"]
+[ext_resource type="Script" path="res://scripts/world/blood_thorn.gd" id="thorn"]
+
+[sub_resource type="RectangleShape2D" id="PlateShape"]
+size = Vector2(44, 18)
 
 [node name="CoreBloomGarden" type="Node2D"]
 script = ExtResource("room")
@@ -23,16 +28,18 @@ script = ExtResource("lore")
 lore_id = &"bloom_memory"
 texture_path = "res://assets/layers/flowers.png"
 sprite_scale = 0.35
-lines = PackedStringArray("Noroi|Çekirdeğin içinde bir bahçe açmış, her ölümüme bir çiçek ekilmiş.", "Shilda|Taçları say: en çok, en az, sonra kalan.")
+lines = PackedStringArray("Noroi|Çekirdeğin içinde bir bahçe açmış.", "Shilda|Her ölümüne bir çiçek. Taçları say.", "Shilda|Önce en çok, sonra en az, sonra kalan.")
 evidence_title = "Çiçek Bahçesi"
-evidence_body = "Shilda her ölüm için bir çiçek saklamış. Taşlar dört, bir, iki diye uyanıyor."
+evidence_body = "Shilda her ölüm için bir çiçek saklamış. Taşlar taçlardaki çiçek sayısına göre uyanıyor."
 evidence_section = "notlar"
 
 [node name="BloomShrine" type="Node2D" parent="Interactive"]
 script = ExtResource("shrine")
 puzzle_id = &"core_bloom_order"
 order = PackedStringArray("4", "1", "2")
-fail_line = "Yanlış taş: önce dört, sonra bir, sonra iki."
+require_live = PackedStringArray("core_bloom_weight")
+require_line = "Taşlar ağırlık bekliyor. Bedenim plakada kalmalı."
+fail_line = "Taç soldu. Baştan say."
 success_line = "Çiçekler uyandı, Shilda artık konuşabilir."
 
 [node name="Step4" type="Area2D" parent="Interactive/BloomShrine"]
@@ -62,17 +69,42 @@ pips = 2
 sprite_scale = 0.55
 tint = Color(0.82, 0.28, 0.36, 1)
 
+[node name="WeightPlate" type="Area2D" parent="Interactive"]
+position = Vector2(260.0, 288.0)
+collision_layer = 0
+collision_mask = 1
+script = ExtResource("plate")
+puzzle_id = &"core_bloom_weight"
+accept_player = false
+accept_stone = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/WeightPlate"]
+shape = SubResource("PlateShape")
+
+[node name="BloodThorn" type="Area2D" parent="Interactive"]
+position = Vector2(320.0, 290.0)
+script = ExtResource("thorn")
+anchor_x = 260.0
+puzzle_hint = &"core_bloom_weight"
+body_line = "Dokunursam ölürüm, beden plakanın üstünde kalmalı."
+solved_line = "Plaka sustu, beden taşları uyandırıyor."
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BloodThorn"]
+shape = SubResource("PlateShape")
+
 [node name="Reconcile" type="Area2D" parent="Interactive"]
-position = Vector2(820.0, 288.0)
+position = Vector2(790.0, 288.0)
 script = ExtResource("lore")
 lore_id = &"bloom_reconcile"
 texture_path = "res://assets/props/red_flower.png"
 sprite_scale = 0.8
 requires_puzzle = &"core_bloom_order"
-locked_lines = PackedStringArray("Shilda|Taşlar uyuyor. En çok, en az, sonra kalan: dört, bir, iki.", "Noroi|Önce onları uyandırayım.")
-lines = PackedStringArray("Shilda|Kaç kez kılıç kaldırdığını sayamıyorum. Yine de buradayım.", "Noroi|Hatırlamıyorum ama özür dilerim.", "Shilda|…Bu yeter. Yanındayım.")
+locked_lines = PackedStringArray("Shilda|Taşlar hâlâ uyuyor.", "Noroi|Önce taşları uyandırmalıyım.")
+lines = PackedStringArray("Shilda|Sana güveniyorum. Sen de yanımda kal.", "Noroi|Hatırlamıyorum ama özür dilerim.", "Shilda|…Bu yeter. Yanındayım.")
 repeat_line = "Shilda|Yanındayım."
+untrusted_lines = PackedStringArray("Shilda|Henüz değil. Önce sen anlat.")
+trust_gate = true
+set_progress_key = "trusted_keeper"
 evidence_title = "Çiçek Bahçesi"
 evidence_body = "Shilda her ölümüm için bir çiçeği Çekirdek'in içinde saklamış. Barıştık."
 evidence_section = "notlar"
-set_progress_key = "trusted_keeper"

@@ -20,6 +20,9 @@ extends Area2D
 ## Çözülmeden satırlar, kanıt ve bayrak verilmez.
 @export var requires_puzzle: StringName = &""
 @export var locked_lines: PackedStringArray = PackedStringArray()
+## Açıksa satırlar ve set_progress_key yalnız GameState.is_shilda_trusted() iken işler; değilse untrusted_lines söylenir, bayrak yazılmaz.
+@export var trust_gate: bool = false
+@export var untrusted_lines: PackedStringArray = PackedStringArray()
 
 var _busy: bool = false
 
@@ -106,6 +109,16 @@ func on_interact(_by: Node) -> void:
 			DialogueManager.say("Noroi", "Henüz değil.")
 		else:
 			for l in locked_lines:
+				_say(l)
+		await DialogueManager.dialogue_finished
+		_busy = false
+		return
+	if trust_gate and not GameState.is_shilda_trusted():
+		_busy = true
+		if untrusted_lines.is_empty():
+			DialogueManager.say("Noroi", "Henüz değil.")
+		else:
+			for l in untrusted_lines:
 				_say(l)
 		await DialogueManager.dialogue_finished
 		_busy = false

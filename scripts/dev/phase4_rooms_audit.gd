@@ -34,6 +34,7 @@ func _run() -> void:
 	await _rooms_28_31()
 	await _rooms_32_34()
 	await _rooms_35_37()
+	await _rooms_38_39()
 	quit(1 if failures > 0 else 0)
 
 
@@ -919,6 +920,249 @@ func _rooms_35_37() -> void:
 	var fn_end := src_txt.find("func _evidence", fn_at)
 	check(fn_at >= 0 and not src_txt.substr(fn_at, fn_end - fn_at).contains("trusted_keeper"), "r37_no_trusted_keeper_writer")
 	_clear_corpses()
+
+
+func _word_hits(text: String, pattern: String) -> int:
+	return RegEx.create_from_string(pattern).search_all(text).size()
+
+
+func _src_files(dir_path: String, ext: String, skip_dev: bool, out: Array) -> void:
+	var d := DirAccess.open(dir_path)
+	if d == null:
+		return
+	for f in d.get_files():
+		if f.ends_with(ext):
+			out.append(dir_path.path_join(f))
+	for sub in d.get_directories():
+		if skip_dev and sub == "dev":
+			continue
+		_src_files(dir_path.path_join(sub), ext, skip_dev, out)
+
+
+func _bloom_nodes(gr: Node) -> Dictionary:
+	var out := {"mem": null, "rec": null, "plate": null, "thorn": null, "shrine": null, "steps": {}}
+	for n in gr.find_children("*", "Node2D", true, false):
+		if "lore_id" in n and String(n.lore_id) == "bloom_memory":
+			out["mem"] = n
+		elif "lore_id" in n and String(n.lore_id) == "bloom_reconcile":
+			out["rec"] = n
+		elif "accept_stone" in n and String(n.puzzle_id) == "core_bloom_weight":
+			out["plate"] = n
+		elif n.is_in_group("blood_thorn"):
+			out["thorn"] = n
+		elif "order" in n and "puzzle_id" in n and String(n.puzzle_id) == "core_bloom_order":
+			out["shrine"] = n
+		elif "step_id" in n:
+			(out["steps"] as Dictionary)[String(n.step_id)] = n
+	return out
+
+
+func _rooms_38_39() -> void:
+	var pm := root.get_node("PuzzleManager")
+	var rm := root.get_node("RoomManager")
+	var gs := root.get_node("GameState")
+	var cur := root.get_node("CurseManager")
+	var dm := root.get_node("DialogueManager")
+	var player: Node2D = current_scene.get_node("Player")
+	var seen: Array = gs.player_progress_knowledge.get("lore_seen", [])
+	for sid in ["memory_vault", "bloom_reconcile", "bloom_memory"]:
+		seen.erase(sid)
+	gs.player_progress_knowledge["lore_seen"] = seen
+	# --- 38 core_memory_vault ---
+	_unsolve(["core_vault_order"])
+	gs.player_progress_knowledge["truth_seen"] = false
+	_clear_corpses()
+	rm.enter_room(&"core_memory_vault")
+	await process_frame
+	await process_frame
+	var vr := _room_root(&"core_memory_vault")
+	var v_echo: Node = null
+	var v_shrine: Node = null
+	var v_lore: Node = null
+	var v_steps := {}
+	for n in vr.find_children("*", "Node2D", true, false):
+		if "npc_id" in n and String(n.npc_id) == "vault_voice":
+			v_echo = n
+		elif "order" in n and "puzzle_id" in n and String(n.puzzle_id) == "core_vault_order":
+			v_shrine = n
+		elif "lore_id" in n and String(n.lore_id) == "memory_vault":
+			v_lore = n
+		elif "step_id" in n:
+			v_steps[String(n.step_id)] = n
+	check(v_echo != null and absf(v_echo.position.x - 200.0) < 1.0, "r38_echo_x200")
+	check(v_shrine != null and v_shrine.order == PackedStringArray(["1927", "1995", "son"]), "r38_order_1927_1995_son")
+	var steps_ok: bool = v_steps.size() == 3
+	if steps_ok:
+		steps_ok = absf(v_steps["1927"].position.x - 360.0) < 1.0 and absf(v_steps["1995"].position.x - 500.0) < 1.0 and absf(v_steps["son"].position.x - 640.0) < 1.0
+	check(steps_ok, "r38_steps_360_500_640")
+	check(v_lore != null and absf(v_lore.position.x - 780.0) < 1.0 and String(v_lore.requires_puzzle) == "core_vault_order" and String(v_lore.set_progress_key) == "truth_seen", "r38_lore_780_gated_truth")
+	check(v_shrine != null and v_shrine.fail_line == "Kasa susuyor. Sıra yanlış." and not bool(v_shrine.penalize_wrong), "r38_fail_line_and_no_penalty")
+	if v_echo == null or v_shrine == null or v_lore == null or not steps_ok:
+		return
+	var vtexts: Array = []
+	vtexts.append_array(Array(v_echo.dialogue_sets))
+	vtexts.append(String(v_shrine.fail_line))
+	vtexts.append_array(Array(v_lore.locked_lines))
+	var objs := FileAccess.get_file_as_string("res://scripts/story/campaign_objectives.gd")
+	var vo := RegEx.create_from_string('"core_memory_vault":\\s*"([^"]*)"').search(objs)
+	var bo := RegEx.create_from_string('"core_bloom_garden":\\s*"([^"]*)"').search(objs)
+	if vo != null:
+		vtexts.append(vo.get_string(1))
+	check(vo != null and bo != null, "r38_objectives_found")
+	var vleak := []
+	for t in vtexts:
+		if _word_hits(String(t), "1927|1995|\\b[Ss]on\\b") > 0:
+			vleak.append(t)
+	check(vleak.is_empty(), "r38_no_answer_leak_in_texts", vleak)
+	# kilitli: bayrak yok
+	await _beat_run(v_lore, player)
+	check(not bool(gs.player_progress_knowledge.get("truth_seen", false)), "r38_truth_false_when_locked")
+	# yanlis sira
+	cur.curse = 0.0
+	v_steps["1995"].on_interact(player)
+	v_steps["son"].on_interact(player)
+	check(not pm.is_solved(&"core_vault_order") and cur.curse < 0.5, "r38_wrong_order_unsolved_no_curse", cur.curse)
+	v_steps["1927"].on_interact(player)
+	v_steps["son"].on_interact(player)
+	check(not pm.is_solved(&"core_vault_order"), "r38_skip_step_unsolved")
+	dm.clear()
+	check(not _fwd_door_open(&"core_memory_vault"), "r38_fwd_door_closed_before")
+	v_steps["1927"].on_interact(player)
+	v_steps["1995"].on_interact(player)
+	v_steps["son"].on_interact(player)
+	check(pm.is_solved(&"core_vault_order"), "r38_correct_order_solves_after_retry")
+	check(_fwd_door_open(&"core_memory_vault"), "r38_fwd_door_opens")
+	dm.clear()
+	check(not bool(gs.player_progress_knowledge.get("truth_seen", false)), "r38_truth_false_until_last_memory")
+	await _beat_run(v_lore, player)
+	check(bool(gs.player_progress_knowledge.get("truth_seen", false)), "r38_truth_true_after_last_memory")
+	check(v_lore.lines.size() >= 4 and v_lore.lines.size() <= 6, "r38_memory_4_to_6_lines", v_lore.lines.size())
+	var vdx: Array = []
+	for d in _doors_of(vr):
+		vdx.append(d.position.x)
+	check(_min_dx(vdx, [v_lore, v_steps["1927"], v_steps["son"], v_echo]) >= 96.0, "r38_door_clearance")
+	# --- 39 core_bloom_garden ---
+	_unsolve(["core_bloom_order", "core_bloom_weight"])
+	gs.player_progress_knowledge["trusted_keeper"] = false
+	gs.player_progress_knowledge["keeper_hurt"] = false
+	gs.player_progress_knowledge["keeper_withdrew"] = false
+	_clear_corpses()
+	dm.clear()
+	rm.enter_room(&"core_bloom_garden")
+	await process_frame
+	await process_frame
+	var gr := _room_root(&"core_bloom_garden")
+	var g := _bloom_nodes(gr)
+	var gok: bool = g["mem"] != null and g["rec"] != null and g["plate"] != null and g["thorn"] != null and g["shrine"] != null and (g["steps"] as Dictionary).size() == 3
+	check(gok, "r39_nodes_present")
+	if not gok:
+		return
+	check(absf(g["mem"].position.x - 200.0) < 1.0, "r39_memory_x200")
+	var pips := {}
+	for sk in g["steps"]:
+		var sn: Node = g["steps"][sk]
+		pips[sk] = [int(sn.pips), sn.position.x, sn.position.y]
+	check(pips == {"4": [4, 400.0, 246.0], "1": [1, 520.0, 246.0], "2": [2, 660.0, 246.0]}, "r39_crowns_unchanged", pips)
+	var gp: Node = g["plate"]
+	check(absf(gp.position.x - 260.0) < 1.0 and not bool(gp.accept_player) and not bool(gp.accept_stone), "r39_weight_plate_config")
+	var gt: Node = g["thorn"]
+	check(absf(gt.anchor_x - 260.0) < 1.0 and String(gt.puzzle_hint) == "core_bloom_weight", "r39_thorn_anchor_260")
+	var gs_: Node = g["shrine"]
+	check(Array(gs_.require_live) == ["core_bloom_weight"] and gs_.require_line == "Taşlar ağırlık bekliyor. Bedenim plakada kalmalı." and gs_.fail_line == "Taç soldu. Baştan say.", "r39_shrine_requires_weight")
+	var grec: Node = g["rec"]
+	check(absf(grec.position.x - 790.0) < 1.0 and String(grec.requires_puzzle) == "core_bloom_order" and bool(grec.trust_gate) and String(grec.set_progress_key) == "trusted_keeper", "r39_reconcile_790_gated")
+	var gtexts: Array = [String(gs_.fail_line), String(gs_.require_line)]
+	gtexts.append_array(Array(grec.locked_lines))
+	gtexts.append_array(Array(grec.untrusted_lines))
+	if bo != null:
+		gtexts.append(bo.get_string(1))
+	var gleak := []
+	for t in gtexts:
+		if _word_hits(String(t), "\\b([Dd]ört|[Bb]ir|[Ii]ki)\\b|[0-9]") > 0:
+			gleak.append(t)
+	check(gleak.is_empty(), "r39_no_answer_leak_in_texts", gleak)
+	var gdx: Array = []
+	for d in _doors_of(gr):
+		gdx.append(d.position.x)
+	check(_min_dx(gdx, [grec, g["mem"], gp, gt]) >= 96.0, "r39_door_clearance")
+	# cesetsiz: adim reddi
+	g["steps"]["4"].on_interact(player)
+	check(gs_.get_progress() == 0 and not pm.is_solved(&"core_bloom_order"), "r39_step_refused_without_corpse")
+	g["steps"]["1"].on_interact(player)
+	g["steps"]["2"].on_interact(player)
+	check(not pm.is_solved(&"core_bloom_order"), "r39_no_solve_without_corpse")
+	dm.clear()
+	# gercek olum
+	var death := root.get_node("DeathManager")
+	player.global_position = Vector2(gt.position.x, 288)
+	gt._armed = true
+	await gt.on_interact(player)
+	var tw := 0.0
+	while death.is_dying and tw < 30.0:
+		await process_frame
+		tw += 0.016
+	for i in 6:
+		await physics_frame
+	dm.clear()
+	var cs: Array = gs.world_memory_state["corpses"]
+	var cx := -1.0
+	if cs.size() > 0:
+		cx = float(((cs[0] as Dictionary).get("position", {}) as Dictionary).get("x", -1.0))
+	check(cs.size() == 1 and absf(cx - 260.0) < 3.0, "r39_thorn_death_one_corpse_on_plate", [cs.size(), cx])
+	check(pm.is_live(&"core_bloom_weight"), "r39_corpse_holds_plate")
+	gr = _room_root(&"core_bloom_garden")
+	g = _bloom_nodes(gr)
+	player = current_scene.get_node("Player")
+	g["steps"]["1"].on_interact(player)
+	g["steps"]["4"].on_interact(player)
+	g["steps"]["2"].on_interact(player)
+	check(not pm.is_solved(&"core_bloom_order"), "r39_wrong_order_unsolved")
+	dm.clear()
+	g["steps"]["4"].on_interact(player)
+	g["steps"]["1"].on_interact(player)
+	g["steps"]["2"].on_interact(player)
+	check(pm.is_solved(&"core_bloom_order"), "r39_corpse_then_4_1_2_solves")
+	check((gs.world_memory_state["corpses"] as Array).size() <= 1, "r39_needs_at_most_one_corpse")
+	check(_fwd_door_open(&"core_bloom_garden"), "r39_fwd_door_opens")
+	dm.clear()
+	# Uzlasma: guvensiz -> yazmaz
+	gs.player_progress_knowledge["trusted_keeper"] = false
+	gs.player_progress_knowledge["keeper_hurt"] = true
+	check(not gs.is_shilda_trusted(), "r39_untrusted_precondition")
+	await _beat_run(g["rec"], player)
+	check(not bool(gs.player_progress_knowledge.get("trusted_keeper", false)), "r39_untrusted_reconcile_writes_nothing")
+	gs.player_progress_knowledge["keeper_hurt"] = false
+	check(gs.is_shilda_trusted(), "r39_trusted_precondition")
+	await _beat_run(g["rec"], player)
+	check(bool(gs.player_progress_knowledge.get("trusted_keeper", false)), "r39_trusted_reconcile_sets_flag")
+	# tek yazici
+	var bad: Array = []
+	var gd_files: Array = []
+	_src_files("res://scripts", ".gd", true, gd_files)
+	var wr := RegEx.create_from_string('"(trusted_keeper|truth_seen)"\\]\\s*=\\s*true')
+	for f in gd_files:
+		if wr.search(FileAccess.get_file_as_string(f)) != null:
+			bad.append(f)
+	check(bad.is_empty(), "single_writer_no_gd_true_writes", bad)
+	var tscn_files: Array = []
+	_src_files("res://scenes", ".tscn", false, tscn_files)
+	var tk := []
+	var ts := []
+	for f in tscn_files:
+		var tx := FileAccess.get_file_as_string(f)
+		if tx.contains('set_progress_key = "trusted_keeper"'):
+			tk.append(String(f).get_file())
+		if tx.contains('set_progress_key = "truth_seen"'):
+			ts.append(String(f).get_file())
+	check(tk == ["core_bloom_garden.tscn"] and ts == ["core_memory_vault.tscn"], "single_writer_scene_keys", [tk, ts])
+	var sg := FileAccess.get_file_as_string("res://scripts/story/shilda_garden_trust.gd")
+	var kc := FileAccess.get_file_as_string("res://scripts/keeper/keeper_controller.gd")
+	check(not sg.contains("trusted_keeper") and sg.contains("add_vigil_trust(1)"), "garden_trust_uses_vigil_trust")
+	check(kc.contains("add_vigil_trust(1)"), "keeper_controller_uses_vigil_trust")
+	check(not FileAccess.get_file_as_string("res://scripts/story/story_beat.gd").contains("truth_seen"), "story_beat_no_truth_seen")
+	_clear_corpses()
+	gs.player_progress_knowledge["trusted_keeper"] = false
+	gs.player_progress_knowledge["truth_seen"] = false
 
 
 func _migrations() -> void:

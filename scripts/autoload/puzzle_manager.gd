@@ -321,7 +321,12 @@ const HINTS: Dictionary = {
 	&"core_bloom_order": {
 		"goal": "Bahçedeki üç taş uyanmadan çiçek konuşmuyor.",
 		"orientation": "Taşlardaki noktaları say: önce en çok, sonra en az, sonra kalan.",
-		"explicit": "Sıra dört, bir, iki. Yanlış taş zinciri başa sarar."
+		"explicit": "Önce bedenini plakaya bırak. Sıra dört, bir, iki; yanlış taç zinciri başa sarar."
+	},
+	&"core_bloom_weight": {
+		"goal": "Taşlar uyanmadan önce plakada bir beden durmalı.",
+		"orientation": "Dikene değ, bedenin plakanın üstünde kalsın.",
+		"explicit": "Dikene dokun; beden plakayı tutarken taşlara dokun."
 	},
 	&"core_vault_order": {
 		"goal": "Hafıza kasası karanlık. Üç sütun bir tarih sırası istiyor.",
