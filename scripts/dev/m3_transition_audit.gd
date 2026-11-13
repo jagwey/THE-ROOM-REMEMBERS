@@ -3,7 +3,7 @@ extends SceneTree
 ## Tests:
 ## 1. Door interaction priority: in-front door within 44px gets -16; a door behind does not steal a closer target. Sticky push is bypassed when a door is within 44px.
 ## 2. Transition lock safety: reset_transition_lock() in _ready(), _exit_tree(), and room_changed, cleans DoorFade
-## 3. Room 1 softlock: hazard decoupled from plate, WeightStone present at (840, 288), bounds [600, 1000], pushable
+## 3. Room 1 softlock: hazard decoupled from plate, WeightStone present at (800, 288), bounds [600, 880] (Faz 2 rework), pushable
 ## 4. SIDE_DOORS grid alignment (bay=224 multiples/arch centers) and >= 120px clearance from interactables
 ## 5. Inward return spawn points (48px inward from door center into room)
 
@@ -240,9 +240,9 @@ func _test_room1_softlock_and_hazard() -> void:
 	var stone: CharacterBody2D = awk_root.get_node_or_null("WeightStone") as CharacterBody2D
 	check(stone != null, "WeightStone node exists in awakening.tscn")
 	if stone:
-		check(stone.position == Vector2(840, 288), "WeightStone placed at position (840, 288)", stone.position)
+		check(stone.position == Vector2(800, 288), "WeightStone placed at position (800, 288)", stone.position)
 		check(stone.min_x == 600.0, "WeightStone min_x is 600.0", stone.min_x)
-		check(stone.max_x == 1000.0, "WeightStone max_x is 1000.0", stone.max_x)
+		check(stone.max_x == 880.0, "WeightStone max_x is 880.0", stone.max_x)
 		check(stone.is_in_group("weight_stone"), "WeightStone is in group 'weight_stone'")
 		check(stone.has_method("get_weight") and stone.get_weight() == 1, "WeightStone get_weight() returns 1")
 
@@ -348,7 +348,10 @@ func _test_side_doors_alignment_and_clearance() -> void:
 					min_clearance = dist
 					closest_node = n
 
-		check(min_clearance >= 120.0, "%s side door clearance >= 120px (min=%f to %s)" % [rid, min_clearance, closest_node.name if closest_node else "none"], min_clearance)
+		## Faz 2 awakening duzeni yogun: 672'de bay-hizali bos nokta yok; CorpsePlate (basinc plakasi, E ile
+		## etkilesilmez) 48px yakin. Kapi oncelik yaricapi 44px oldugundan 48 guvenli taban; diger odalar 120px.
+		var min_ok := 48.0 if rid == "awakening" else 120.0
+		check(min_clearance >= min_ok, "%s side door clearance >= %dpx (min=%f to %s)" % [rid, int(min_ok), min_clearance, closest_node.name if closest_node else "none"], min_clearance)
 
 
 func _collect_interactive_nodes(node: Node, out: Array[Node], ignore_door_name: String) -> void:

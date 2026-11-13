@@ -157,7 +157,7 @@ scale = Vector2(0.32, 0.32)
 texture = ExtResource("flower_tex")
 
 [node name="VineLever" type="Area2D" parent="Interactive"]
-position = Vector2(780, 268)
+position = Vector2(776, 268)
 collision_layer = 8
 collision_mask = 0
 monitoring = false
