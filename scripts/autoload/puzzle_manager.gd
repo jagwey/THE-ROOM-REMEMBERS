@@ -131,7 +131,7 @@ const HINTS: Dictionary = {
 	&"decay_catacombs": {
 		"goal": "Karanlıkta yol, ölülerin ışığıdır.",
 		"orientation": "Çiçeği al, dikende öl. Uçurumda beden köprü olur.",
-		"explicit": "Çiçeği al, çukurdaki dikene dokun; beden köprü ve ışık olur, üstünden geç."
+		"explicit": "Çiçeği al, dikene dokun; beden köprü ve ışık olur, geç."
 	},
 	&"decay_garden_bloom": {
 		"goal": "Çiçeklerin açış sırası kapıyı açar.",
@@ -146,7 +146,7 @@ const HINTS: Dictionary = {
 	&"decay_catacomb_seal": {
 		"goal": "Karanlıkta yol, ölülerin ışığıdır.",
 		"orientation": "Çiçeği al, sonra dikende öl. Çiçekli beden ışık olur.",
-		"explicit": "Girişteki çiçeği al, dikene dokun. Cesedin fener gibi yanar; onu yola taşı."
+		"explicit": "Girişteki çiçeği al, dikene dokun. Ceset fener olur; yola taşı."
 	},
 	&"awakening_weight": {
 		"goal": "Kapıyı açık tutmak için bir ağırlık gerekiyor.",
@@ -176,7 +176,7 @@ const HINTS: Dictionary = {
 	&"awakening_passage_rings": {
 		"goal": "Geçidin çıkışı halkalara bağlı.",
 		"orientation": "Üç halkanın çentik sayısı yankıdaki sırayla eşleşmeli.",
-		"explicit": "Halkalar çıkışı açıyor."
+		"explicit": "Halkaları yankıdaki çentik sırasına çevir; çıkış açılır."
 	},
 	&"awakening_seal_weight": {
 		"goal": "Kapı bir beden ağırlığı istiyor.",
@@ -226,12 +226,12 @@ const HINTS: Dictionary = {
 	&"decay_shilda_wall_broken": {
 		"goal": "Çatlak duvar kılıçla inmez.",
 		"orientation": "Gözler kızarınca atılır. Son anda kenara çekil; duvara çarpsın.",
-		"explicit": "İki çarpma duvarı yıkar. Kovalamacada üç kez öldüysen tek çarpma yeter."
+		"explicit": "İki çarpma duvarı yıkar. Üç kez öldüysen tek çarpma yeter."
 	},
 	&"decay_archive_key": {
-		"goal": "Arşiv kapısı mühürlü; kilitte bir çiçek motifi yer alıyor.",
-		"orientation": "Bahçedeki kırmızı yaprakları incele ve gölgenin güvenini kazan.",
-		"explicit": "Gölgeyle konuşup çiçeğin anısını günlüğüne kaydet; kilit açılır."
+		"goal": "Arşiv kapısı mühürlü; kilitte çiçek motifi var.",
+		"orientation": "Bahçedeki çiçeğin ışığına bak; çiçek anısı kilidi açar.",
+		"explicit": "Bahçede çiçeği aç, gölgeyle konuş; anı günlüğe işlenir."
 	},
 	&"library_clockroom": {
 		"goal": "İki saat iki geceyi tutuyor.",
@@ -261,7 +261,7 @@ const HINTS: Dictionary = {
 	&"core_seal": {
 		"goal": "Çekirdeğin ana mührü kırılmalı, çıkış açılmalı.",
 		"orientation": "Her iki mühür parçası birleşmeden çekirdek savunması gevşemez.",
-		"explicit": "Gölgeyle birlikte çekirdeğin merkezine yaklaş ve Ruh Kesimi ile mührü kır."
+		"explicit": "Gölgeyle çekirdeğin merkezine yaklaş, Ruh Kesimi ile mührü kır."
 	},
 	&"core_bloom_order": {
 		"goal": "Bahçedeki üç taş uyanmadan çiçek konuşmuyor.",
@@ -334,6 +334,9 @@ const LEGACY_ROOM_DONE: Dictionary = {
 	"decay_greenhouse": [&"decay_greenhouse"],
 	"decay_garden": [&"decay_archive_key"],
 	"decay_cistern": [&"decay_cistern"],
+	"decay_catacombs": [&"decay_catacomb_seal"],
+	"awakening_passage": [&"awakening_memory_code"],
+	"awakening_seal": [&"awakening_memory_code"],
 }
 
 

@@ -39,7 +39,7 @@ room_width = 1440.0
 bg_region = "decay"
 checkpoint = Vector2(120, 288)
 doors = [{"x": 40.0, "to": "decay_vines", "spawn": "from_decay_catacombs"}]
-floor_gaps = PackedVector2Array(380.0, 470.0, 750.0, 1030.0)
+floor_gaps = PackedVector2Array(380.0, 470.0, 766.0, 1030.0)
 dark = true
 
 [node name="Interactive" type="Node2D" parent="."]
@@ -76,11 +76,11 @@ lines = PackedStringArray("Noroi|Zifiri karanlık, duvarda bir şey kazılı ama
 [node name="Thorn" type="Area2D" parent="Interactive"]
 position = Vector2(725.0, 290.0)
 script = ExtResource("thorn")
-anchor_x = 890.0
+anchor_x = 898.0
 anchor_y = 288.0
 hold_corpse = true
 puzzle_hint = &"catacomb_bridge_thorn"
-body_line = "Dokunursam ölürüm; bedenim uçurumun üstünde köprü olur, çiçek alırsa yanar."
+body_line = "Çiçek bendeyken dikene dokunursam ölürüm; bedenim köprü ve ışık olur."
 solved_line = "Diken sustu; köprü zaten kuruldu."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/Thorn"]

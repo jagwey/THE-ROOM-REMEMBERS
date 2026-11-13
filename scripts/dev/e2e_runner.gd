@@ -672,7 +672,8 @@ func _run_tier_4_scenarios() -> void:
 		var gap := float(rift.get("ring_gap_deg"))
 		var spin := float(rift.get("ring_spin"))
 		var grace := float(rift.get("arm_grace"))
-		var cp := passage.to_global(passage.checkpoint)
+		var reg_cp: Vector2 = (root.get_node("RoomManager")._rooms[&"awakening_passage"]["checkpoint"]) as Vector2
+		var cp := passage.to_global(reg_cp) ## respawn the registered (runtime) checkpoint, not the scene export
 		var clearance := cp.distance_to(rift.global_position) - radius
 		var spr := rift.get_node_or_null("Sprite2D") as CanvasItem
 		var sprite_hidden := spr != null and not spr.visible

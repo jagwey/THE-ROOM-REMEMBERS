@@ -37,6 +37,8 @@ func _run() -> void:
 	await _rooms_04_06()
 	await _rooms_07_10()
 	await _rooms_11_13()
+	await _cata_physics()
+	_checkpoint_registry()
 	await _softlock()
 	quit(1 if failures > 0 else 0)
 
@@ -1659,8 +1661,8 @@ func _rooms_11_13() -> void:
 		t15 += 1.0 / 60.0
 		if vy2 > 0.0 and y2 >= -corpse_top:
 			break
-	check(half < speed * t15 - 4.0, "cata_gap_halves_jumpable_from_corpse_top (%.1f < %.1f, t15 %.3f)" % [half, speed * t15 - 4.0, t15])
-	## Not: tam headless fizik simulasyonu (Player sahnesi kare kare) bilincli atlandi; sabit-turev aritmetigi + e2e yeterli.
+	check(half < speed * t15 - 16.0, "cata_gap_halves_jumpable_with_16px_margin (%.1f < %.1f, t15 %.3f)" % [half, speed * t15 - 16.0, t15])
+	## Gercek fizik testi: _cata_physics() (kare kare Player).
 	var th: Node = cat.find_child("Thorn", true, false)
 	check(th != null and th.is_in_group("blood_thorn") and th.puzzle_hint == &"catacomb_bridge_thorn", "cata_thorn_hint")
 	if th != null:
@@ -1881,6 +1883,9 @@ func _objective(room: String) -> String:
 
 const SL_ROOMS := ["awakening", "awakening_balcony", "awakening_crypt", "awakening_passage", "awakening_seal", "awakening_vigil", "decay_vines", "decay_weight", "decay_greenhouse", "decay_shilda_wall", "decay_garden", "decay_catacombs", "decay_cistern"]
 ## v1.15 kayitlarinda var olan bulmaca ID'leri (oda 01-13).
+const SL_LEGACY_FLAGS := ["awakening_door_opened", "awakening_crystal_cracked", "decay_vine_open", "decay_archive_open", "decay_weight_latched"]
+## v1.15 kaydinda kapali kalabilen ama ayni odada cozulebilen yeni-id kapilar ("oda/dugum"). Bos = hepsi acik olmali.
+const SL_INPLACE := []
 const SL_LEGACY := ["awakening_weight", "soul_seal_balcony", "awakening_seal_weight", "awakening_memory_code", "awakening_vigil", "decay_vine_shortcut", "decay_weight_latch", "decay_greenhouse", "decay_shilda_wall_broken", "decay_archive_key", "decay_catacomb_seal", "decay_cistern"]
 
 
@@ -1921,40 +1926,76 @@ func _softlock() -> void:
 	for extra in ["awakening_balcony_crossed", "awakening_crypt_pages", "awakening_crypt_bed", "awakening_corpse_plate", "awakening_seal_second", "awakening_vigil_trace", "decay_weight_corpse", "decay_cistern_drain", "decay_garden_bloom", "catacomb_bridge_thorn", "awakening_passage_rings"]:
 		if not all_ids.has(extra):
 			all_ids.append(extra)
+	var locked: Array = []
+	var closed: Array = []
+	var inplace: Array = []
+	var ndoors := 0
+	var ngates := 0
+	var nside := 0
+	## v1.15 kaydi iki bicimde: yalniz puzzle id'leri / id'ler + v1.15 dunya bayraklari (mark_solved'in kurdugu).
+	for with_flags in [false, true]:
+		_unsolve(all_ids)
+		_unsolve(SL_LEGACY)
+		for fl in SL_LEGACY_FLAGS:
+			gs.set_world_flag(StringName(fl), with_flags)
+		for id in SL_LEGACY:
+			(gs.world_memory_state["puzzles"] as Dictionary)[id] = true
+		pm.sync_from_world()
+		for r in SL_ROOMS:
+			rm.enter_room(StringName(r), &"default")
+			await create_timer(0.25).timeout
+			var rr := _room_root(StringName(r))
+			for d in _doors_of(rr):
+				if with_flags:
+					ndoors += 1
+					if String(d.name).begins_with("Side_"):
+						nside += 1
+				if d.is_locked():
+					locked.append("%s/%s/flags=%s" % [r, String(d.name), with_flags])
+			for g in _gates_of(rr):
+				if with_flags:
+					ngates += 1
+				## Ana yol kapisi: v1.15 kaydinda (legacy id'ler cozulu) acik olmali; yalniz yeni-id kapilar
+				## SL_INPLACE listesinde "yerinde cozulebilir" diye sayilir (bulmaca ayni odada, ayni turda cozulur).
+				if not g._is_open():
+					var gk := "%s/%s" % [r, String(g.name)]
+					if SL_INPLACE.has(gk):
+						inplace.append(gk)
+					else:
+						closed.append("%s/flags=%s ids=%s" % [gk, with_flags, str(g._listen_ids())])
+	check(ndoors >= 20 and ngates >= 5, "softlock_a_scanned_doors_and_gates (%d doors, %d gates)" % [ndoors, ngates])
+	check(nside >= 3, "softlock_a_side_doors_included (%d Side_ doors)" % nside)
+	check(locked.is_empty(), "softlock_a_v115_save_all_doors_unlocked %s" % str(locked))
+	check(closed.is_empty(), "softlock_a_v115_save_every_main_path_gate_open_or_inplace %s" % str(closed))
+	print("PHASE2 INFO softlock_a in-place gates: ", inplace)
+	_unsolve(SL_LEGACY)
+	for fl in SL_LEGACY_FLAGS:
+		gs.set_world_flag(StringName(fl), false)
+	pm.sync_from_world()
+	## Negatif test: yeni oyuncu (taze kayit, yalniz uyanis agirligi cozulu) halkalari ATLAYAMAZ; kapi kapali kalir.
+	_unsolve(all_ids)
+	_unsolve(SL_LEGACY)
+	pm.mark_solved(&"awakening_weight")
+	pm.sync_from_world()
+	check(not pm.is_solved(&"awakening_passage_rings") and not pm.is_solved(&"awakening_memory_code") and not pm.is_solved(&"awakening_seal_weight"), "rings_fresh_save_not_auto_solved")
+	rm.enter_room(&"awakening_passage", &"default")
+	await create_timer(0.3).timeout
+	var ring_doors := 0
+	var ring_unlocked := 0
+	for d in _doors_of(_room_root(&"awakening_passage")):
+		if d.required_puzzle == &"awakening_passage_rings":
+			ring_doors += 1
+			if not d.is_locked():
+				ring_unlocked += 1
+	check(ring_doors >= 1 and ring_unlocked == 0, "rings_fresh_save_exit_door_locked (%d doors, %d unlocked)" % [ring_doors, ring_unlocked])
+	check(not bool(gs.get_world_flag(&"awakening_crystal_cracked", false)), "rings_fresh_save_crystal_flag_unset")
+	## Pozitif: gercek v1.15 kaydi (seal mührü cozulu) halkalari atlar.
+	(gs.world_memory_state["puzzles"] as Dictionary)["awakening_memory_code"] = true
+	pm.sync_from_world()
+	check(pm.is_solved(&"awakening_passage_rings"), "rings_legacy_save_with_memory_code_auto_solved")
 	_unsolve(all_ids)
 	_unsolve(SL_LEGACY)
 	gs.set_world_flag(&"awakening_door_opened", false)
-	for id in SL_LEGACY:
-		(gs.world_memory_state["puzzles"] as Dictionary)[id] = true
-	pm.sync_from_world()
-	var locked: Array = []
-	var closed: Array = []
-	var ndoors := 0
-	var ngates := 0
-	for r in SL_ROOMS:
-		rm.enter_room(StringName(r), &"default")
-		await create_timer(0.25).timeout
-		var rr := _room_root(StringName(r))
-		for d in _doors_of(rr):
-			ndoors += 1
-			if d.is_locked():
-				locked.append("%s/%s" % [r, String(d.name)])
-		for g in _gates_of(rr):
-			ngates += 1
-			## legacy_puzzle'li kapi ya da dinledigi id'lerin hepsi legacy kumede olan kapi
-			var ids: PackedStringArray = g._listen_ids()
-			var legacy_only: bool = g.legacy_puzzle != &""
-			if not legacy_only and not ids.is_empty():
-				legacy_only = true
-				for id in ids:
-					if not SL_LEGACY.has(String(id)):
-						legacy_only = false
-			if legacy_only and not g._is_open():
-				closed.append("%s/%s" % [r, String(g.name)])
-	check(ndoors >= 20 and ngates >= 5, "softlock_a_scanned_doors_and_gates (%d doors, %d gates)" % [ndoors, ngates])
-	check(locked.is_empty(), "softlock_a_v115_save_all_doors_unlocked %s" % str(locked))
-	check(closed.is_empty(), "softlock_a_v115_save_all_legacy_gates_open %s" % str(closed))
-	_unsolve(SL_LEGACY)
 	pm.sync_from_world()
 	# ---- (b) muhur: iki plaka cesetle dolu, uc ceset siniri; bir plaka bosalirsa yeniden doldurulabilir ----
 	_unsolve(["awakening_seal_weight", "awakening_seal_second", "awakening_memory_code", "awakening_corpse_plate"])
@@ -1975,22 +2016,61 @@ func _softlock() -> void:
 		await create_timer(0.4).timeout
 		var lst: Array = gs.world_memory_state["corpses"]
 		check(lst.size() <= cm.MAX_CORPSES and _plate_live(sp1) and _plate_live(sp2), "softlock_b_third_corpse_within_cap_plates_stay (%d corpses)" % lst.size())
-		## bir plaka cesedi kirpildi/kayboldu: plaka bosalir, kapi kapanir
-		var removed: Dictionary = {}
-		for i in lst.size():
-			var c: Dictionary = lst[i] as Dictionary
-			if absf(float((c.get("position", {}) as Dictionary).get("x", 0.0)) - sp1.global_position.x) < 20.0:
-				removed = c
-				lst.remove_at(i)
-				break
-		cm.rebuild_world_corpses()
-		await create_timer(0.5).timeout
-		check(not removed.is_empty() and not _plate_live(sp1) and not sgate._is_open(), "softlock_b_plate_empties_when_its_corpse_gone")
-		## oyuncu olmeden tek yeni ceset ile yeniden doldurabilir (toplam <= 3)
-		_corpse_at(sp1.global_position.x, 288.0)
+		var held_n := 0
+		for c in lst:
+			if bool((c as Dictionary).get("anchored", false)) or bool((c as Dictionary).get("anchoring", false)):
+				held_n += 1
+		print("PHASE2 INFO softlock_b held plate corpses before 4th death: ", held_n)
+		## 4. olum: GERCEK _trim_excess. Plaka cesetleri tutulmussa (anchored) ya da degilse (en eskiye gider) sonuc kurala uymali.
+		var ids_before: Array = []
+		for c in lst:
+			ids_before.append(String((c as Dictionary).get("id", "")))
+		var deaths_before: int = int(gs.player_progress_knowledge["deaths"])
+		_corpse_at(150.0, 288.0)
 		await create_timer(0.5).timeout
 		lst = gs.world_memory_state["corpses"]
-		check(_plate_live(sp1) and _plate_live(sp2) and sgate._is_open() and lst.size() <= cm.MAX_CORPSES, "softlock_b_refill_plate_with_one_corpse (%d corpses)" % lst.size())
+		check(lst.size() == cm.MAX_CORPSES, "softlock_b_4th_death_trimmed_to_cap (%d corpses)" % lst.size())
+		var plate_ids_present := 0
+		var gone: Array = []
+		for idb in ids_before:
+			var found := false
+			for c in lst:
+				if String((c as Dictionary).get("id", "")) == idb:
+					found = true
+			if not found:
+				gone.append(idb)
+		for c in lst:
+			if absf(float(((c as Dictionary).get("position", {}) as Dictionary).get("x", 0.0)) - sp1.global_position.x) < 20.0 or absf(float(((c as Dictionary).get("position", {}) as Dictionary).get("x", 0.0)) - sp2.global_position.x) < 20.0:
+				plate_ids_present += 1
+		## Kural: tutulan plaka cesetleri korunur, kirpilan ilk tutulmayan (plakada olmayan) cesettir.
+		check(gone.size() == 1, "softlock_b_4th_death_trims_exactly_one (%s)" % str(gone))
+		if held_n >= 2:
+			check(gone.size() == 1 and ids_before.size() == 3 and gone[0] == ids_before[2], "softlock_b_trimmed_corpse_is_the_off_plate_one")
+			check(plate_ids_present == 2 and _plate_live(sp1) and _plate_live(sp2) and sgate._is_open(), "softlock_b_4th_death_keeps_held_plate_corpses_gate_open")
+		else:
+			## Plaka cesetleri tutulmuyorsa en eski (plaka) ceset kirpilir: bir plaka bosalir.
+			check(plate_ids_present >= 1 and (not _plate_live(sp1) or not _plate_live(sp2) or plate_ids_present == 2), "softlock_b_4th_death_follows_trim_rules_unheld")
+		await create_timer(0.3).timeout
+		## Yeniden doldurma OLUM OLMADAN: kalan tutulmayan cesetlerden biri bos plakaya tasinir (ya da plakalar zaten dolu).
+		var empty_p: Node = null
+		if not _plate_live(sp1):
+			empty_p = sp1
+		elif not _plate_live(sp2):
+			empty_p = sp2
+		if empty_p != null:
+			var mover: Dictionary = {}
+			for c in lst:
+				var cx: float = float(((c as Dictionary).get("position", {}) as Dictionary).get("x", 0.0))
+				if absf(cx - sp1.global_position.x) >= 20.0 and absf(cx - sp2.global_position.x) >= 20.0 and not bool((c as Dictionary).get("anchored", false)):
+					mover = c
+					break
+			check(not mover.is_empty(), "softlock_b_spare_off_plate_corpse_available_to_refill")
+			if not mover.is_empty():
+				(mover["position"] as Dictionary)["x"] = empty_p.global_position.x
+				cm.rebuild_world_corpses()
+				await create_timer(0.5).timeout
+		check(_plate_live(sp1) and _plate_live(sp2) and sgate._is_open(), "softlock_b_plates_refillable_without_extra_death")
+		check(int(gs.player_progress_knowledge["deaths"]) == deaths_before, "softlock_b_no_extra_death_counted_by_refill")
 	else:
 		check(false, "softlock_b_seal_nodes_found")
 	_clear_corpses()
@@ -2082,16 +2162,48 @@ func _softlock() -> void:
 			if d.is_locked():
 				locked2.append("%s/%s" % [r, String(d.name)])
 	check(locked2.is_empty(), "softlock_d_reentry_after_solve_doors_open %s" % str(locked2))
-	gs.player_progress_knowledge["vigil_talk_done"] = true
-	gs.player_progress_knowledge["vigil_parted"] = true
+	## Her guard tek basina yetmeli: bayraklardan YALNIZ biri kurulu iken soru sorulmamali.
 	var keepers := get_nodes_in_group("keeper")
 	if keepers.size() > 0:
-		rm.enter_room(&"awakening_vigil", &"default")
-		await create_timer(0.4).timeout
-		var asked: int = await _answer_vigil(dm, [1, 1, 1], keepers[0])
-		check(asked == 0, "softlock_d_vigil_not_reasked_after_solve (%d)" % asked)
+		for case_i in 2:
+			gs.player_progress_knowledge.erase("vigil_talk_done")
+			gs.player_progress_knowledge.erase("vigil_answers")
+			rm.enter_room(&"awakening", &"default")
+			await create_timer(0.1).timeout
+			if case_i == 0:
+				gs.player_progress_knowledge["vigil_talk_done"] = true
+				(gs.world_memory_state["puzzles"] as Dictionary).erase("awakening_vigil")
+			else:
+				(gs.world_memory_state["puzzles"] as Dictionary)["awakening_vigil"] = true
+			pm.sync_from_world()
+			check(gs.player_progress_knowledge.get("vigil_talk_done", false) == (case_i == 0) and pm.is_solved(&"awakening_vigil") == (case_i == 1), "softlock_d_vigil_case%d_only_one_guard_set" % case_i)
+			rm.enter_room(&"awakening_vigil", &"default")
+			await create_timer(0.4).timeout
+			var asked: int = await _answer_vigil(dm, [1, 1, 1], keepers[0])
+			check(asked == 0, "softlock_d_vigil_not_reasked_case%d (%d)" % [case_i, asked])
 	else:
 		check(false, "softlock_d_keeper_found")
+	## Yeniden giriste kapilar/kapilar (gate) hala acik ve hicbir secim sorusu acilmiyor (Shilda duvari + katakomb).
+	pm.mark_solved(&"awakening_vigil")
+	var prompts := [0]
+	var on_prompt := func(_i): prompts[0] += 1
+	dm.choice_made.connect(on_prompt)
+	var gate_closed2: Array = []
+	for re_i in 2:
+		for r in ["decay_shilda_wall", "decay_catacombs", "decay_garden"]:
+			rm.enter_room(&"awakening", &"default")
+			await create_timer(0.1).timeout
+			rm.enter_room(StringName(r), &"default")
+			await create_timer(0.3).timeout
+			if dm.has_choices():
+				prompts[0] += 100
+				dm.clear()
+			for g in _gates_of(_room_root(StringName(r))):
+				if not g._is_open():
+					gate_closed2.append("%s/%s" % [r, String(g.name)])
+	dm.choice_made.disconnect(on_prompt)
+	check(prompts[0] == 0, "softlock_d_shilda_wall_no_choice_reprompt_on_reentry (%d)" % prompts[0])
+	check(gate_closed2.is_empty(), "softlock_d_gates_still_open_after_reentry %s" % str(gate_closed2))
 	gs.player_progress_knowledge.erase("vigil_talk_done")
 	gs.player_progress_knowledge.erase("vigil_parted")
 	gs.player_progress_knowledge.erase("vigil_answers")
@@ -2099,3 +2211,91 @@ func _softlock() -> void:
 	_unsolve(SL_LEGACY)
 	_clear_corpses()
 	dm.clear()
+
+
+## Gercek Player fizigi: run-jump ile katakomb ucurumu. Cesetsiz dusmeli, ceset koprusuyle iki ziplamada gecilmeli.
+func _cata_physics() -> void:
+	var rm := root.get_node("RoomManager")
+	var cm := root.get_node("CorpseManager")
+	var mim := root.get_node("MobileInputManager")
+	var dm := root.get_node("DialogueManager")
+	rm.enter_room(&"decay_catacombs", &"default")
+	await create_timer(0.3).timeout
+	dm.clear()
+	var cat: Node = _room_root(&"decay_catacombs")
+	var gap := Vector2(766.0, 1030.0)
+	var gaps: PackedVector2Array = cat.floor_gaps
+	for gv2 in gaps:
+		if gv2.y - gv2.x > gap.y - gap.x - 1.0:
+			gap = gv2
+	var th: Node = cat.find_child("Thorn", true, false)
+	var player: CharacterBody2D = current_scene.get_node("Player")
+	for with_corpse in [false, true]:
+		_clear_corpses()
+		if with_corpse:
+			cm.record_corpse_at(Vector2(th.anchor_x, th.anchor_y), &"thorn")
+			var ids_p: Array = th._corpse_ids()
+			ids_p.pop_back()
+			th._hold_new_corpse(ids_p)
+			await create_timer(0.3).timeout
+		var cx := float(th.anchor_x)
+		var cnodes := get_nodes_in_group("corpse")
+		var corpse_half := 14.0
+		player.global_position = Vector2(gap.x - 140.0, 288.0)
+		player.velocity = Vector2.ZERO
+		player._state = &"idle"
+		player._dash_cd = 0.0
+		player._input_locked = false
+		await create_timer(0.2).timeout
+		mim.move_vector = Vector2(1.0, 0.0)
+		var jumped1 := false
+		var jumped2 := false
+		var on_corpse := false
+		var fell := false
+		var crossed := false
+		for f in 240:
+			await physics_frame
+			var px := player.global_position.x
+			var py := player.global_position.y
+			if not jumped1 and px >= gap.x - 1.0 and player.is_on_floor():
+				mim.jump_pressed.emit()
+				jumped1 = true
+			elif jumped1 and not jumped2 and player.is_on_floor() and px > gap.x and py < 280.0:
+				on_corpse = true
+				if px >= cx + corpse_half - 6.0:
+					mim.jump_pressed.emit()
+					jumped2 = true
+			if py > 335.0:
+				fell = true
+				break
+			if player.is_on_floor() and px >= gap.y + 4.0:
+				crossed = true
+				break
+		mim.move_vector = Vector2.ZERO
+		mim.jump_released.emit()
+		if with_corpse:
+			check(cnodes.size() > 0 and on_corpse and crossed and not fell, "cata_physics_cross_with_bridge_corpse (corpse %s, crossed %s, fell %s)" % [on_corpse, crossed, fell])
+		else:
+			check(fell and not crossed, "cata_physics_fall_without_corpse (fell %s, crossed %s)" % [fell, crossed])
+		_clear_corpses()
+		player.global_position = Vector2(120.0, 288.0)
+		player.velocity = Vector2.ZERO
+		await create_timer(0.2).timeout
+
+
+## Runtime checkpoint (RoomManager) == scene export; passage keeps >= 96 px clearance from the rift ring.
+func _checkpoint_registry() -> void:
+	var rm := root.get_node("RoomManager")
+	for rid in SL_ROOMS:
+		var root_n: Node = _room_root(StringName(rid))
+		var reg: Vector2 = rm._rooms[StringName(rid)]["checkpoint"] as Vector2
+		var scn: Variant = root_n.get("checkpoint") if root_n != null else null
+		if scn == null:
+			continue ## hand-built room (awakening) has no scene export
+		check(scn is Vector2 and (scn as Vector2).is_equal_approx(reg), "checkpoint_registry_matches_scene_%s (%s vs %s)" % [rid, reg, scn])
+	var pr: Node = _room_root(&"awakening_passage")
+	var rift: Node2D = pr.find_child("MemoryStrip", true, false) as Node2D
+	if rift != null:
+		var reg_cp: Vector2 = rm._rooms[&"awakening_passage"]["checkpoint"] as Vector2
+		var clear: float = pr.to_global(reg_cp).distance_to(rift.global_position) - float(rift.get("ring_radius"))
+		check(clear >= 96.0, "passage_registered_checkpoint_96px_from_rift (%.1f)" % clear)
