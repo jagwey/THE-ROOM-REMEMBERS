@@ -16,6 +16,8 @@ const SWITCH_SCRIPT := preload("res://scripts/world/echo_switch.gd")
 @export var switch_kinds: PackedStringArray = PackedStringArray(["plate", "lever"])
 @export var switch_positions: PackedVector2Array = PackedVector2Array([Vector2(-180, 32), Vector2(230, 0)])
 @export var lever_hold_seconds: float = 1.6
+## true: tüm anahtarlar aktifken puzzle_id yalnız "canlı" olur (çözülmez); biri düşünce canlılık söner.
+@export var live_only: bool = false
 
 var _recording: bool = false
 var _elapsed: float = 0.0
@@ -205,6 +207,14 @@ func _on_twin_finished() -> void:
 
 
 func _on_switch_changed(_active: bool) -> void:
+	if live_only:
+		var all_on := not _switches.is_empty()
+		for sw in _switches:
+			if not bool(sw.get("active")):
+				all_on = false
+				break
+		PuzzleManager.set_live(puzzle_id, all_on)
+		return
 	if PuzzleManager.is_solved(puzzle_id) or _switches.is_empty():
 		return
 	for sw in _switches:

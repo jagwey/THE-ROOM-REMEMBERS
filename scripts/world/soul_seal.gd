@@ -9,6 +9,11 @@ extends StaticBody2D
 @export var back_side: int = 0
 ## Yetenek yokken söylenen ret repliği (boşsa varsayılan satır). Yeteneğin alındığı odanın adını içermeli.
 @export var refusal_line: String = ""
+## Doluysa bu puzzle çözülmeden kesim reddedilir (yanlış kesim hiçbir şeyi bozmaz).
+@export var requires: StringName = &""
+## false: çarpışma gövdesi yok (duvardaki damar); yine de kesimle açılır.
+@export var blocking: bool = true
+@export var wrong_line: String = ""
 
 var _vis: Node2D
 var _shape: CollisionShape2D
@@ -23,6 +28,7 @@ func _ready() -> void:
 	var rect := RectangleShape2D.new()
 	rect.size = Vector2(28, height)
 	_shape.shape = rect
+	_shape.disabled = not blocking
 	_shape.position = Vector2(0, -height * 0.5)
 	add_child(_shape)
 	_vis = Node2D.new()
@@ -77,6 +83,10 @@ func _on_back_body(body: Node) -> void:
 
 func receive_soul_slash(_from: Node) -> void:
 	if PuzzleManager.is_solved(puzzle_id):
+		return
+	if requires != &"" and not PuzzleManager.is_solved(requires):
+		if wrong_line != "":
+			DialogueManager.whisper("Noroi", wrong_line)
 		return
 	_solve("Mühür ruhumu tanıdı… ve çözüldü.")
 

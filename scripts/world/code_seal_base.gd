@@ -11,6 +11,9 @@ extends Area2D
 @export var wrong_line: String = "…Yanlış, mühür kımıldamadı."
 ## true ise yanlış kod girişi lanete +1 ekler.
 @export var penalize_wrong: bool = false
+## Doluysa: listedeki her ID canlı veya çözülmüş olmadan tuş takımı açılmaz; require_line söylenir.
+@export var require_live: PackedStringArray = []
+@export var require_line: String = ""
 
 var _busy: bool = false
 var _session: int = 0
@@ -34,6 +37,10 @@ func on_interact(_by: Node) -> void:
 		return
 	if PuzzleManager.is_solved(puzzle_id):
 		DialogueManager.say("Noroi", "Mühür zaten açık.")
+		return
+	if not _requirements_met():
+		if require_line != "":
+			DialogueManager.say("Noroi", require_line)
 		return
 	_busy = true
 	_session += 1
@@ -96,6 +103,14 @@ func on_interact(_by: Node) -> void:
 			DialogueManager.say("Noroi", "Bir yerde… bir yankı bunu söylemiş olmalı.")
 		await DialogueManager.dialogue_finished
 	_busy = false
+
+
+func _requirements_met() -> bool:
+	for id in require_live:
+		var sid := StringName(id)
+		if not (PuzzleManager.is_live(sid) or PuzzleManager.is_solved(sid)):
+			return false
+	return true
 
 
 ## penalize_wrong açıksa yanlış kod lanete +1 yazar.

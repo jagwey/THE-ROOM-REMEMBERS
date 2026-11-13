@@ -348,11 +348,25 @@ func _apply_data(data: Dictionary, apply_room: bool) -> bool:
 	GameState.hearts_changed.emit(GameState.hearts, GameState.max_hearts)
 	if data.has("curse") and CurseManager:
 		CurseManager.restore_curse(_float_of(data.get("curse", 0.0)))
+	_migrate_soul_slash_for_late_rooms()
 	PuzzleManager.sync_from_world()
 	if apply_room:
 		CorpseManager.rebuild_world_corpses()
 	GameState.knowledge_changed.emit(&"world")
 	return true
+
+
+## Faz 3 göçü: Ruh Kesimi artık deney hücrelerinden önce verilir. Eski kayıt library_forbidden_wing'den
+## sonraki bir odadaysa ve yetenek yoksa ver (yoksa kilitlenirdi).
+func _migrate_soul_slash_for_late_rooms() -> void:
+	if bool(GameState.player_progress_knowledge.get("ability_soul_slash", false)):
+		return
+	var life := GameState.character_current_life_knowledge
+	var room_id := str(life.get("room", life.get("checkpoint_room", "")))
+	var order: PackedStringArray = RoomManager.ROOM_ORDER
+	var idx := order.find(room_id)
+	if idx > order.find("library_forbidden_wing"):
+		GameState.player_progress_knowledge["ability_soul_slash"] = true
 
 
 func _serialize_seals(seals: Array[StringName]) -> Array:
