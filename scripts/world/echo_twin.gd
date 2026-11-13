@@ -15,6 +15,8 @@ var _e: int = 0
 var _sprite: AnimatedSprite2D
 var _body: AnimatableBody2D
 var _done: bool = false
+## >= 0 ise kayıt x'i bu eksene göre aynalanır (x' = 2*axis - x), bakış ters verilir.
+var _mirror_axis: float = -1.0
 
 
 func _ready() -> void:
@@ -43,6 +45,16 @@ func _ready() -> void:
 	add_child(_body)
 
 
+func set_mirror(axis: float) -> void:
+	_mirror_axis = axis
+
+
+func _mx(p: Vector2) -> Vector2:
+	if _mirror_axis >= 0.0:
+		return Vector2(2.0 * _mirror_axis - p.x, p.y)
+	return p
+
+
 func play_recording(frames: Array, events: Array) -> void:
 	_frames = frames
 	_events = events
@@ -50,7 +62,7 @@ func play_recording(frames: Array, events: Array) -> void:
 	_i = 0
 	_e = 0
 	if not _frames.is_empty():
-		global_position = _frames[0][1]
+		global_position = _mx(_frames[0][1])
 
 
 func get_weight() -> int:
@@ -66,8 +78,8 @@ func _physics_process(delta: float) -> void:
 	while _i < _frames.size() - 1 and float(_frames[_i + 1][0]) <= _t:
 		_i += 1
 	var f: Array = _frames[_i]
-	global_position = f[1]
-	_sprite.flip_h = bool(f[2])
+	global_position = _mx(f[1])
+	_sprite.flip_h = bool(f[2]) != (_mirror_axis >= 0.0)
 	var anim := String(f[3])
 	if _sprite.sprite_frames.has_animation(anim) and _sprite.animation != anim:
 		_sprite.play(anim)

@@ -66,6 +66,8 @@ var _last_safe_floor_pos: Vector2 = Vector2.ZERO
 var _safe_floor_pos: Vector2 = Vector2.ZERO
 ## Giriş yönü (çarpışma sonrası hız değil): taşlar omuz itişi için bunu okur.
 var input_x: float = 0.0
+## control_invert bölgesi: yatay eksen ters. Oda çıkışı/ölüm/yeniden doğuşta sıfırlanır.
+var invert_x: bool = false
 var _push_node: Node2D = null
 var _push_ms: int = -10000
 const PUSH_STICKY_MS := 1200
@@ -270,6 +272,8 @@ func _physics_process(delta: float) -> void:
 				_state = &"idle"
 		&"idle", &"run":
 			var axis := MobileInputManager.get_move_axis()
+			if invert_x:
+				axis.x = -axis.x
 			axis.x = _apply_curse_drift(axis.x, delta)
 			input_x = axis.x if absf(axis.x) > 0.1 else 0.0
 			## Sol ve sağ aynı büyüklük: geri yürüme cezası ve yönlü hız çarpanı yok.
@@ -820,6 +824,7 @@ func get_trail() -> Array:
 
 
 func respawn_at(pos: Vector2) -> void:
+	invert_x = false
 	_exit_shadow_dash()
 	_last_safe_floor_pos = pos
 	_trail.clear()

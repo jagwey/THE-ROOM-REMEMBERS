@@ -2,6 +2,8 @@ extends Area2D
 ## Oyuncu bölgeye ilk kez girince bulmacayı çözer (yol ödülü). Engel değildir.
 
 @export var puzzle_id: StringName = &"reached"
+## Ulaşınca ek olarak çözülü işaretlenecek (eski kayıt) kimlikler.
+@export var also_solve: PackedStringArray = PackedStringArray()
 
 
 func _ready() -> void:
@@ -26,3 +28,5 @@ func _on_body(b: Node) -> void:
 	if puzzle_id == &"" or PuzzleManager.is_solved(puzzle_id):
 		return
 	PuzzleManager.mark_solved(puzzle_id)
+	for extra in also_solve:
+		PuzzleManager.mark_solved(StringName(extra))

@@ -21,6 +21,10 @@ const DRESS := preload("res://scripts/world/platform_dress.gd")
 @export var evidence_title: String = ""
 @export var evidence_body: String = ""
 
+## Listedeki her bulmaca canlı ya da çözülü değilse adım kabul edilmez (zincir bozulmaz).
+@export var require_live: PackedStringArray = PackedStringArray()
+@export var require_line: String = ""
+
 var _progress: int = 0
 
 
@@ -42,6 +46,12 @@ func press(step_id: String, source: Node = null) -> void:
 	if PuzzleManager.is_solved(puzzle_id):
 		_repeat_clue()
 		return
+	for rid in require_live:
+		var sid := StringName(rid)
+		if not (PuzzleManager.is_live(sid) or PuzzleManager.is_solved(sid)):
+			if require_line != "":
+				DialogueManager.say("Noroi", require_line)
+			return
 	var want := String(order[_progress])
 	if step_id == want:
 		_progress += 1

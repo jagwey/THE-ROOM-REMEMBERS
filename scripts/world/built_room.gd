@@ -13,7 +13,7 @@ const DRESS := preload("res://scripts/world/platform_dress.gd")
 @export var platforms: PackedVector3Array = PackedVector3Array()
 ## Zemindeki boşluklar: Vector2(x_start, x_end) — düşen ölür (hazard).
 @export var floor_gaps: PackedVector2Array = PackedVector2Array()
-## Her öğe: {"x": float, "y": float(ops.), "to": String, "spawn": String, "req": String, "msg": String}
+## Her öğe: {"x": float, "y": float(ops.), "to": String, "spawn": String, "req": String, "msg": String, "title"?, "mark"?, "label_dy"?}
 @export var doors: Array = []
 @export var dark: bool = false
 @export var dark_color: Color = Color(0.16, 0.13, 0.2, 1.0)
@@ -287,12 +287,18 @@ func _build_spawns_and_doors() -> void:
 			door.set("required_puzzle", StringName(String(d.get("req"))))
 		if String(d.get("msg", "")) != "":
 			door.set("locked_message", String(d.get("msg")))
+		if String(d.get("title", "")) != "":
+			door.set("door_title", String(d.get("title")))
+		if d.has("label_dy"):
+			door.set("label_dy", float(d.get("label_dy")))
 		var cs := CollisionShape2D.new()
 		var rect := RectangleShape2D.new()
 		rect.size = Vector2(44, 96)
 		cs.shape = rect
 		door.add_child(cs)
 		interactive.add_child(door)
+		if bool(d.get("mark", false)):
+			DOOR_SCRIPT.add_door_mark(door)
 		## Bu kapıdan gelene spawn: kapının biraz içi.
 		var sname := "from_%s" % target
 		if spawns.get_node_or_null(sname) == null:

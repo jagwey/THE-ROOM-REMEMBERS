@@ -19,6 +19,9 @@ const SWITCH_SCRIPT := preload("res://scripts/world/echo_switch.gd")
 ## true: tüm anahtarlar aktifken puzzle_id yalnız "canlı" olur (çözülmez); biri düşünce canlılık söner.
 @export var live_only: bool = false
 
+## >= 0 ise ikiz kaydı bu x eksenine göre aynalı oynatır (x' = 2*axis - x).
+@export var mirror_axis_x: float = -1.0
+
 var _recording: bool = false
 var _elapsed: float = 0.0
 var _frames: Array = [] ## [t, pos, facing, anim]
@@ -196,6 +199,8 @@ func _finish_recording() -> void:
 	_twin = Node2D.new()
 	_twin.set_script(TWIN_SCRIPT)
 	get_parent().add_child(_twin)
+	if mirror_axis_x >= 0.0:
+		_twin.call("set_mirror", mirror_axis_x)
 	_twin.call("play_recording", _frames.duplicate(), _events.duplicate())
 	_twin.connect("finished", _on_twin_finished)
 	_sfx(&"echo_playback")

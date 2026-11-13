@@ -408,3 +408,30 @@ func _make_fade(tree: SceneTree) -> CanvasLayer:
 	layer.add_child(r)
 	tree.root.add_child(layer)
 	return layer
+
+
+## Keşfedilmesi gereken kapıya soluk, nabız atan ek ışık (main.gd ve built_room paylaşır).
+static func add_door_mark(door: Area2D) -> void:
+	var mark := Sprite2D.new()
+	mark.name = "DoorMark"
+	var gt := GradientTexture2D.new()
+	gt.width = 64
+	gt.height = 64
+	gt.fill = GradientTexture2D.FILL_RADIAL
+	gt.fill_from = Vector2(0.5, 0.5)
+	gt.fill_to = Vector2(1.0, 0.5)
+	var grad := Gradient.new()
+	grad.set_color(0, Color(0.7, 0.55, 1.0, 0.5))
+	grad.set_color(1, Color(0.5, 0.35, 0.9, 0.0))
+	gt.gradient = grad
+	mark.texture = gt
+	var mat := CanvasItemMaterial.new()
+	mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	mark.material = mat
+	mark.position = Vector2(0, -60)
+	mark.scale = Vector2(2.4, 3.2)
+	mark.z_index = 1
+	door.add_child(mark)
+	var tw := mark.create_tween().set_loops()
+	tw.tween_property(mark, "modulate:a", 0.45, 1.4)
+	tw.tween_property(mark, "modulate:a", 1.0, 1.4)

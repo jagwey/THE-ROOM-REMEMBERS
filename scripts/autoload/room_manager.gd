@@ -243,6 +243,9 @@ func enter_room(room_id: StringName, spawn_id: StringName = &"default", apply_ro
 		push_warning("RoomManager.enter_room: unknown room %s" % String(room_id))
 		return
 	var from_id := _current
+	var inv_player := get_tree().get_first_node_in_group("player")
+	if inv_player and "invert_x" in inv_player:
+		inv_player.set("invert_x", false)
 	## Oda değişti: eski "Kaydet ve Çık" konumu artık geçersiz.
 	GameState.character_current_life_knowledge.erase("resume")
 	_deactivate_all_rooms()
