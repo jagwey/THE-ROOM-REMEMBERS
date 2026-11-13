@@ -156,6 +156,8 @@ func _on_room_changed(from_room: StringName, to_room: StringName) -> void:
 
 func _exit_tree() -> void:
 	_cancel_recording()
+	if live_only:
+		PuzzleManager.set_live(puzzle_id, false)
 	if RoomManager.room_changed.is_connected(_on_room_changed):
 		RoomManager.room_changed.disconnect(_on_room_changed)
 

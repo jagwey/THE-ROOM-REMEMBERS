@@ -82,6 +82,18 @@ func _components() -> void:
 	await process_frame
 	check(dial3.values() == PackedInt32Array([3, 9, 6]), "dial_solved_room_shows_targets")
 	dial3.queue_free()
+	var dial4 := Node2D.new()
+	dial4.set_script(load("res://scripts/world/dial_puzzle.gd"))
+	dial4.puzzle_id = &"p3_dial4"
+	dial4.targets = PackedInt32Array([3, 3])
+	scene.add_child(dial4)
+	await process_frame
+	var dchild: Node = dial4.get_node_or_null("Dial0")
+	check(dchild != null and dchild.has_method("on_interact"), "dial_child_has_on_interact")
+	if dchild:
+		dchild.on_interact(scene.get_node("Player"))
+		check(dial4.values()[0] == 1, "dial_child_on_interact_turns_value")
+	dial4.queue_free()
 	_unsolve(["p3_dial", "p3_dial_a", "p3_dial_b"])
 	# --- echo_altar live_only ---
 	var altar := Area2D.new()
@@ -105,7 +117,12 @@ func _components() -> void:
 		sws[0].call("_set_active", false)
 		check(not pm.is_live(&"p3_echo"), "echo_live_drops_when_switch_ends")
 		check(not pm.is_solved(&"p3_echo"), "echo_live_never_solved")
+	if sws.size() == 2:
+		sws[0].call("pull_by_echo")
+		check(pm.is_live(&"p3_echo"), "echo_live_relit_before_free")
 	altar.queue_free()
+	await process_frame
+	check(not pm.is_live(&"p3_echo"), "echo_live_only_freed_altar_clears_live")
 	pm.set_live(&"p3_echo", false)
 	# --- code_seal require_live ---
 	var hud_nodes: Array = get_nodes_in_group("hud")
@@ -155,7 +172,14 @@ func _components() -> void:
 	ss.wrong_line = "Henüz değil."
 	scene.add_child(ss)
 	ss.global_position = Vector2(7800, 0)
+	var seen := []
+	var on_line := func(_sp: String, t: String): seen.append(t)
+	dm.line_shown.connect(on_line)
 	ss.receive_soul_slash(null)
+	await process_frame
+	dm.line_shown.disconnect(on_line)
+	check(seen.has("Henüz değil."), "soul_refused_cut_speaks_wrong_line")
+	dm.clear()
 	check(not pm.is_solved(&"p3_soul"), "soul_requires_unsolved_refuses_cut")
 	pm.mark_solved(&"p3_v1")
 	ss.receive_soul_slash(null)
@@ -168,7 +192,18 @@ func _components() -> void:
 	scene.add_child(vein)
 	var vshape := vein.get_child(0) as CollisionShape2D
 	check(vshape != null and vshape.disabled, "soul_nonblocking_has_no_collision")
+	vein.global_position = Vector2(8200, 0)
+	var wave := Area2D.new()
+	wave.set_script(load("res://scripts/player/soul_slash_wave.gd"))
+	scene.add_child(wave)
+	wave.global_position = Vector2(8200 - 12, -30)
+	for i in 10:
+		await physics_frame
+	check(pm.is_solved(&"p3_vein"), "soul_nonblocking_vein_cut_by_real_wave")
+	if is_instance_valid(wave):
+		wave.queue_free()
 	vein.queue_free()
+	dm.clear()
 	_unsolve(["p3_soul", "p3_v1", "p3_vein"])
 	# --- save migration: soul slash for rooms after library_forbidden_wing ---
 	var sm := root.get_node("SaveManager")
