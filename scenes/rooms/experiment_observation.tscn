@@ -22,7 +22,7 @@ doors = [{"x": 40.0, "to": "experiment_core_conduit", "spawn": "from_experiment_
 [node name="Interactive" type="Node2D" parent="."]
 
 [node name="Glass" type="Polygon2D" parent="Interactive"]
-z_index = 1
+z_index = -1
 color = Color(0.6, 0.8, 1.0, 0.1)
 polygon = PackedVector2Array(380, 170, 800, 170, 800, 276, 380, 276)
 

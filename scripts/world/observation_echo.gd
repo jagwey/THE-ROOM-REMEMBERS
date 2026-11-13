@@ -69,9 +69,28 @@ func _on_reached(_id: StringName) -> void:
 		return
 	_finishing = true
 	var lines: Array = DialogueData.get_set(ROOM_ID, &"notes")
+	var last_prefix := ""
+	if not lines.is_empty():
+		last_prefix = String(lines[lines.size() - 1][1]).substr(0, 12)
+	var seen_last := [false]
+	var on_line := func(_sp: String, t: String):
+		if last_prefix != "" and t.replace("\n", " ").begins_with(last_prefix):
+			seen_last[0] = true
+	DialogueManager.line_shown.connect(on_line)
 	for line in lines:
 		DialogueManager.say(String(line[0]), String(line[1]))
-	var ok: bool = await DialogueManager.dialogue_finished
+	# Başka bir diyalogun bitişi sayılmasın: notların son satırı gösterilene dek bekle.
+	var ok := false
+	var guard := 0
+	while guard < 16:
+		guard += 1
+		var done: bool = await DialogueManager.dialogue_finished
+		if not done:
+			break
+		if seen_last[0]:
+			ok = true
+			break
+	DialogueManager.line_shown.disconnect(on_line)
 	if ok:
 		LorePointScript.record_evidence("ev_observation_notes", "Sayım Notu",
 			"Gözlem camının masasında Denek 14'ün ölümleri sayılı. İmza kazınmış, yüz yok.", "izler")

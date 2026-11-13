@@ -18,6 +18,7 @@ extends StaticBody2D
 var _vis: Node2D
 var _shape: CollisionShape2D
 var _hint_done: bool = false
+var _solving: bool = false
 
 
 func _ready() -> void:
@@ -50,7 +51,7 @@ func _ready() -> void:
 	var tw := sigil.create_tween().set_loops()
 	tw.tween_property(sigil, "modulate:a", 0.5, 0.9)
 	tw.tween_property(sigil, "modulate:a", 1.0, 0.9)
-	PuzzleManager.puzzle_solved.connect(func(id: StringName): if id == puzzle_id and _shape.disabled == false: _open(false))
+	PuzzleManager.puzzle_solved.connect(func(id: StringName): if id == puzzle_id and not _solving and (_shape.disabled == false or not blocking): _open(false))
 	if PuzzleManager.is_solved(puzzle_id):
 		_open(false)
 	elif back_side != 0:
@@ -92,6 +93,7 @@ func receive_soul_slash(_from: Node) -> void:
 
 
 func _solve(line: String) -> void:
+	_solving = true
 	PuzzleManager.mark_solved(puzzle_id)
 	MobileInputManager.vibrate(35)
 	var am := get_node_or_null("/root/AudioManager")

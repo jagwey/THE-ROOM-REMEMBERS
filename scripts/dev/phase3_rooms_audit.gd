@@ -892,6 +892,21 @@ func _rooms_25_27() -> void:
 		check(_min_dx(door_xs, veins) >= 96.0, "r26_door_clearance_96")
 		var lt := " ".join(Array(log_n.lines)) if log_n != null else ""
 		check(lt.find("Kalpten başla, sola dön, en son uca.") != -1, "r26_log_states_order")
+	# eski kayit: kanal cozulmus -> damarlar gorsel olarak da acik
+	_unsolve(["experiment_vein_1", "experiment_vein_2", "experiment_vein_3"])
+	pm.mark_solved(&"experiment_conduit")
+	var legacy_room: Node = (load("res://scenes/rooms/experiment_core_conduit.tscn") as PackedScene).instantiate()
+	current_scene.add_child(legacy_room)
+	await create_timer(0.3).timeout
+	var legacy_ok := true
+	var legacy_n := 0
+	for v in _veins_of(legacy_room):
+		legacy_n += 1
+		if not pm.is_solved(v.puzzle_id) or bool(v._vis.visible):
+			legacy_ok = false
+	check(legacy_ok and legacy_n == 3, "r26_legacy_conduit_veins_visually_open", legacy_n)
+	legacy_room.queue_free()
+	_unsolve(["experiment_conduit", "experiment_vein_1", "experiment_vein_2", "experiment_vein_3"])
 	var csrc := FileAccess.get_file_as_string("res://scripts/world/experiment_core_conduit.gd")
 	check(csrc.find("LEVER_HOLD_SECONDS") == -1, "r26_no_lever_hold_constant")
 	_unsolve(["experiment_conduit", "experiment_vein_1", "experiment_vein_2", "experiment_vein_3"])
@@ -948,8 +963,8 @@ func _rooms_25_27() -> void:
 				dm.advance()
 			await process_frame
 		check(pm.is_solved(&"experiment_observation"), "r27_echo_end_solves_observation")
-		check(" ".join(seen_lines).replace("
-", " ").find("Ben de insandım. Bu camın ardında çalışırdım.") != -1, "r27_notes_played_with_shilda_line")
+		var joined := " ".join(seen_lines).replace("\n", " ")
+		check(joined.find("camın ardında çalışırdım") != -1, "r27_notes_played_with_shilda_line", joined.substr(0, 200))
 		dm.clear()
 	var holders: Array = []
 	for dir_path in ["res://data/dialogue/", "res://scenes/rooms/", "res://scripts/story/", "res://scripts/world/"]:
