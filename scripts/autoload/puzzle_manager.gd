@@ -291,10 +291,10 @@ const HINTS: Dictionary = {
 	&"soul_seal_forbidden": {
 		"goal": "Yasak kanatta iki mor mühür yolu kesiyor.",
 		"orientation": "Havadaki kesik Ruh Kesimi'ni verir. Mühürler o güçle açılır.",
-		"explicit": "Ruh Kesimi ile mührü kes. Önce yakındaki mührü kes."
+		"explicit": "Ruh Kesimi ile önce yakındaki mührü kes."
 	},
 	&"soul_seal_forbidden_2": {
-		"goal": "İlk mühür çözüldü, ikincisi hâlâ yolda duruyor.",
+		"goal": "İlk mühür kesildi, ikincisi hâlâ yolda duruyor.",
 		"orientation": "İkinci mühür yalnız ilk mühürden sonra tanır seni.",
 		"explicit": "Ruh Kesimi ile ikinci mührü de kes."
 	},
