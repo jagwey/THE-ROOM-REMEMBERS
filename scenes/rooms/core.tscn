@@ -46,7 +46,7 @@ monitorable = true
 script = ExtResource("11")
 target_room_id = &"core_bloom_garden"
 target_spawn_id = &"from_core"
-door_title = "Mühür Odası"
+door_title = "Çiçek Bahçesi"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="BackGarden"]
 shape = SubResource("DoorShape")
