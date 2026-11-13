@@ -31,7 +31,7 @@ evidence_body = "Hücrenin duvarı 1927 gecesine kadar gün gün çentilmiş, so
 position = Vector2(560, 288)
 script = ExtResource("soul")
 puzzle_id = &"library_reading_cabin"
-refusal_line = "Kabini ruhla keseceğim. Bu güç Yasak Kanat'ta duruyordu."
+refusal_line = "Bu mührü ruhla kesmeliyim. Güç Yasak Kanat'taydı."
 
 [node name="CellShade" type="Node2D" parent="Interactive"]
 script = ExtResource("shade")

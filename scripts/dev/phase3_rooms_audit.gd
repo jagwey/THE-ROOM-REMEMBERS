@@ -445,7 +445,8 @@ func _rooms_18_20() -> void:
 	var lib: Node = st.find_child("Librarian", true, false)
 	if lib != null:
 		lib_txt = " ".join(Array(lib.dialogue_sets)).to_lower()
-	check(lib != null and lib_txt.find("ses, mühür, çiçek") == -1, "r18_librarian_states_no_answer")
+	check(lib != null and not (lib_txt.find("ses") != -1 and lib_txt.find("mühür") != -1 and lib_txt.find("çiçek") != -1), "r18_librarian_states_no_answer")
+	check(lib != null and lib_txt.find("sırası") != -1, "r18_librarian_hints_at_order")
 	# ---- 19 forbidden_wing ----
 	rm.enter_room(&"library_forbidden_wing", &"default")
 	await create_timer(0.4).timeout
@@ -479,7 +480,11 @@ func _rooms_18_20() -> void:
 		seals[1].receive_soul_slash(null)
 		check(pm.is_solved(&"soul_seal_forbidden_2"), "r19_legacy_first_solved_second_cuttable")
 		dm.clear()
-	check(pm.HINTS.has(&"soul_seal_forbidden_2") or pm.HINTS.has(&"soul_seal_forbidden"), "r19_hint_exists")
+	for hid in [&"soul_seal_forbidden", &"soul_seal_forbidden_2", &"library_reading_cabin", &"library_reading_cell"]:
+		var hh: Dictionary = pm.HINTS.get(hid, {})
+		check(hh.size() == 3, "r19_hint_exists_" + String(hid))
+		for tier in hh.values():
+			check(String(tier).length() <= 70, "r19_hint_len_" + String(hid))
 	_unsolve(["soul_seal_forbidden", "soul_seal_forbidden_2"])
 	# ---- 20 reading_cell ----
 	_unsolve(["library_reading_cell", "library_reading_cabin"])
@@ -499,8 +504,9 @@ func _rooms_18_20() -> void:
 		check(js.find(bad) == -1, "r20_json_no_" + bad)
 	check(js.find("@shilda") == -1, "r20_json_no_shilda")
 	var kc := FileAccess.get_file_as_string("res://scripts/keeper/keeper_controller.gd")
-	var kb := kc.substr(kc.find('"library_reading_cell"'), 80)
-	check(kb.find('"present"') == -1, "r20_shilda_not_present")
+	var ki := kc.find('"library_reading_cell"')
+	var kb := kc.substr(ki, 60) if ki != -1 else ""
+	check(ki != -1 and kb.find('"hidden"') != -1 and kb.find('"present"') == -1, "r20_shilda_hidden")
 	if notches != null:
 		notches.on_interact(null)
 		var gn := 0
@@ -519,10 +525,38 @@ func _rooms_18_20() -> void:
 		check(shades == 1, "r20_trace_shade_spawned", shades)
 	var fwd3: Node = null
 	for d in _doors_of(rc):
+		if cabin != null:
+			check(absf(d.position.x - cabin.position.x) >= 96.0, "r20_door_clear_of_cabin_%s" % String(d.target_room_id))
 		if d.target_room_id == &"experiment_cells":
 			fwd3 = d
 	check(fwd3 != null and fwd3.required_puzzle == &"library_reading_cell", "r20_forward_door_gate")
 	dm.clear()
+	_migration_shelf_order()
+
+
+func _migration_shelf_order() -> void:
+	var sm := root.get_node("SaveManager")
+	var gs := root.get_node("GameState")
+	var life: Dictionary = gs.character_current_life_knowledge
+	var puzzles: Dictionary = gs.world_memory_state["puzzles"]
+	var old_room: Variant = life.get("room", "")
+	var old_shelf: Variant = puzzles.get("library_shelf_order", null)
+	puzzles.erase("library_shelf_order")
+	life["room"] = "library_forbidden_wing"
+	sm._migrate_shelf_order_for_late_rooms()
+	check(bool(puzzles.get("library_shelf_order", false)), "mig_old_save_past_stacks_gets_shelf_order")
+	var snap := puzzles.duplicate(true)
+	sm._migrate_shelf_order_for_late_rooms()
+	check(puzzles == snap, "mig_idempotent")
+	puzzles.erase("library_shelf_order")
+	life["room"] = "library_upper_stacks"
+	sm._migrate_shelf_order_for_late_rooms()
+	check(not puzzles.has("library_shelf_order"), "mig_in_stacks_untouched")
+	life["room"] = old_room
+	if old_shelf == null:
+		puzzles.erase("library_shelf_order")
+	else:
+		puzzles["library_shelf_order"] = old_shelf
 
 
 func _echo_block(src: String, id: String) -> String:

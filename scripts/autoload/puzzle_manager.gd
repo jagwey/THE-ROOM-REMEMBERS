@@ -288,15 +288,25 @@ const HINTS: Dictionary = {
 		"orientation": "Arşivci üç kitabın adını sırayla söyledi.",
 		"explicit": "Ses, mühür, çiçek. Bu sıra tahtayı indirir."
 	},
-	&"soul_seal_forbidden_2": {
-		"goal": "Yasak kanatta iki mor mühür sırayla kesilmeli.",
+	&"soul_seal_forbidden": {
+		"goal": "Yasak kanatta iki mor mühür yolu kesiyor.",
 		"orientation": "Havadaki kesik Ruh Kesimi'ni verir. Mühürler o güçle açılır.",
-		"explicit": "Ruh Kesimi ile mührü kes. Önce yakın olanı, sonra ötekini."
+		"explicit": "Ruh Kesimi ile mührü kes. Önce yakındaki mührü kes."
+	},
+	&"soul_seal_forbidden_2": {
+		"goal": "İlk mühür çözüldü, ikincisi hâlâ yolda duruyor.",
+		"orientation": "İkinci mühür yalnız ilk mühürden sonra tanır seni.",
+		"explicit": "Ruh Kesimi ile ikinci mührü de kes."
+	},
+	&"library_reading_cabin": {
+		"goal": "Hücrenin kabini mor mührün ardında kapalı.",
+		"orientation": "Mor mührü ruhla kesmeden kabine girilmez.",
+		"explicit": "Ruh Kesimi ile kabin mührünü kes."
 	},
 	&"library_reading_cell": {
-		"goal": "Hücrenin kabini mühürlü; çentikler içeride.",
-		"orientation": "Mor mührü ruhla kesmeden kabine girilmez.",
-		"explicit": "Ruh Kesimi ile kabin mührünü kes, çentik duvarını oku."
+		"goal": "Kabin açıldı, duvardaki çentikler seni bekliyor.",
+		"orientation": "Duvar bir günü bile atlamadan sayılmış.",
+		"explicit": "Kabinin içindeki çentik duvarını oku."
 	},
 	&"mirrors_labyrinth_crossed": {
 		"goal": "Uçurumun karşısı tavandaki aynada görünüyor.",

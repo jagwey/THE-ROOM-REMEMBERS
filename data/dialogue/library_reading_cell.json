@@ -2,7 +2,6 @@
   "room": "library_reading_cell",
   "sets": {
     "notches": [
-      {"s": "Noroi", "t": "Duvar gün gün çentilmiş, bir el saymış."},
       {"s": "Noroi", "t": "Biri burada her gün bir çentik atmış."},
       {"s": "Noroi", "t": "Son çentik 1927 gecesine ait, sonrası boşluk."},
       {"s": "Noroi", "t": "Çentiklerin ucu, saymayı bıraktığı günde titriyor."},
