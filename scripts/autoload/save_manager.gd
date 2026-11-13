@@ -120,6 +120,8 @@ func commit_save(reason: StringName = &"commit", safe_position: Vector2 = Vector
 
 
 func _build_data() -> Dictionary:
+	## v1.18 göçü tek seferlik: bu kodla yazılan her kayıt işaretli (eski dosyalarda yok).
+	GameState.player_progress_knowledge["migrated_v118"] = true
 	return {
 		"version": SAVE_VERSION,
 		"player_progress_knowledge": GameState.player_progress_knowledge.duplicate(true),
@@ -433,14 +435,17 @@ func _migrate_shadow_dash_for_late_rooms() -> void:
 
 
 ## Faz 4 göçü: güven (trusted_keeper) yalnız bahçedeki Uzlaşma'da, truth_seen yalnız kasada yazılır.
-## Kayıt bu odalardan öncesindeyse eski erken yazımı geri al. Idempotent.
+## Yalnız `migrated_v118` işaretsiz (eski) kayıtta, bir kez çalışır; sonra geri yürüyüş bayrakları silmez.
 func _migrate_trust_flags_v118() -> void:
+	var prog := GameState.player_progress_knowledge
+	if bool(prog.get("migrated_v118", false)):
+		return
 	var life := GameState.character_current_life_knowledge
 	var room_id := str(life.get("room", life.get("checkpoint_room", "")))
 	var here := RoomManager.ROOM_ORDER.find(room_id)
 	if here < 0:
 		return
-	var prog := GameState.player_progress_knowledge
+	prog["migrated_v118"] = true
 	if here < RoomManager.ROOM_ORDER.find("core_bloom_garden") and bool(prog.get("trusted_keeper", false)):
 		prog["trusted_keeper"] = false
 		GameState.get_shilda_trust_state()["reconciled"] = true

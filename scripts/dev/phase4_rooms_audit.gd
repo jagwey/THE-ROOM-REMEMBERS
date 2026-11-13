@@ -194,7 +194,7 @@ func _migrations() -> void:
 	var vault_ids := ["core_vault_order", "core_bloom_order"]
 	# core_threshold: eski kayıt (yeni kimlikler yok, dash yok, trusted_keeper erken yazılmış)
 	gs.world_memory_state["puzzles"] = {}
-	_apply_old("core_threshold", {"trusted_keeper": true, "truth_seen": true, "ability_shadow_dash": false})
+	_apply_old("core_threshold", {"trusted_keeper": true, "truth_seen": true, "ability_shadow_dash": false, "migrated_v118": false})
 	var puz: Dictionary = gs.world_memory_state["puzzles"]
 	check(bool(puz.get("mirrors_labyrinth_crossed", false)) and bool(puz.get("mirrors_shrine_trial", false)), "mig_threshold_gets_labyrinth_shrine")
 	check(bool(puz.get("mirrors_1927", false)) and bool(puz.get("mirrors_1927_walk", false)), "mig_threshold_gets_1927")
@@ -209,16 +209,28 @@ func _migrations() -> void:
 	sm._migrate_shadow_dash_for_late_rooms()
 	sm._migrate_trust_flags_v118()
 	check(puz == snap and gs.player_progress_knowledge == psnap, "mig_idempotent")
+	# işaretli kayıt: erken odada bile güven bayrakları korunur
+	gs.world_memory_state["puzzles"] = {}
+	_apply_old("core_threshold", {"trusted_keeper": true, "truth_seen": true, "migrated_v118": true})
+	check(bool(gs.player_progress_knowledge.get("trusted_keeper", false)) and bool(gs.player_progress_knowledge.get("truth_seen", false)), "mig_marked_save_keeps_trust_flags")
+	# eski kayıt (işaret yok): bir kez temizlenir, ikinci yükleme kararlı
+	_apply_old("core_threshold", {"trusted_keeper": true, "truth_seen": true, "migrated_v118": false})
+	check(not bool(gs.player_progress_knowledge.get("trusted_keeper", true)) and bool(gs.player_progress_knowledge.get("migrated_v118", false)), "mig_legacy_save_clears_once")
+	gs.player_progress_knowledge["trusted_keeper"] = true
+	var sd: Dictionary = sm._build_data()
+	check(bool((sd["player_progress_knowledge"] as Dictionary).get("migrated_v118", false)), "save_writes_marker")
+	sm._apply_data(sd, false)
+	check(bool(gs.player_progress_knowledge.get("trusted_keeper", false)), "mig_second_load_stable")
 	# core: vault/bloom çözülü, güven korunur
 	gs.world_memory_state["puzzles"] = {}
-	_apply_old("core", {"trusted_keeper": true, "truth_seen": true, "ability_shadow_dash": false})
+	_apply_old("core", {"trusted_keeper": true, "truth_seen": true, "ability_shadow_dash": false, "migrated_v118": false})
 	puz = gs.world_memory_state["puzzles"]
 	check(bool(puz.get("core_vault_order", false)) and bool(puz.get("core_bloom_order", false)), "mig_core_gets_vault_bloom")
 	check(bool(gs.player_progress_knowledge.get("trusted_keeper", false)), "mig_core_keeps_trusted_keeper")
 	check(bool(gs.player_progress_knowledge.get("truth_seen", false)), "mig_core_keeps_truth_seen")
 	# mirrors_unbroken: hiçbiri eklenmez
 	gs.world_memory_state["puzzles"] = {}
-	_apply_old("mirrors_unbroken", {"ability_shadow_dash": false})
+	_apply_old("mirrors_unbroken", {"ability_shadow_dash": false, "migrated_v118": false})
 	puz = gs.world_memory_state["puzzles"]
 	check(not new_ids.any(func(i): return puz.has(i)) and not vault_ids.any(func(i): return puz.has(i)), "mig_unbroken_adds_nothing")
 	check(not bool(gs.player_progress_knowledge.get("ability_shadow_dash", false)), "mig_unbroken_no_shadow_dash")
@@ -243,24 +255,6 @@ func _apply_old(room: String, prog: Dictionary) -> void:
 	sm._apply_data(data, false)
 
 
-func _fn_body(src: String, fname: String) -> String:
-	var a := src.find("func " + fname)
-	if a == -1:
-		return ""
-	var b := src.find("\nfunc ", a + 10)
-	return src.substr(a, (b if b != -1 else src.length()) - a)
-
-
-func _drive_busy(n: Node, dm: Node) -> void:
-	var g := 0
-	await process_frame
-	while g < 600 and bool(n.get("_busy")):
-		g += 1
-		if dm.is_open:
-			dm.advance()
-		await process_frame
-
-
 func _min_dx(door_xs: Array, props: Array) -> float:
 	var m := 99999.0
 	for dx in door_xs:
@@ -276,15 +270,6 @@ func _plates_of(room: Node) -> Array:
 			out.append(n)
 	out.sort_custom(func(a, b): return a.position.x < b.position.x)
 	return out
-
-
-func _thorns_of(room: Node) -> Array:
-	var out: Array = []
-	for n in room.find_children("*", "Area2D", true, false):
-		if "anchor_x" in n and "puzzle_hint" in n:
-			out.append(n)
-	return out
-
 
 
 func _veins_of(room: Node) -> Array:
