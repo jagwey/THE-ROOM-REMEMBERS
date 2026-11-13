@@ -5,7 +5,9 @@
 [ext_resource type="Texture2D" path="res://assets/backgrounds/mirrors/front.png" id="3"]
 [ext_resource type="Script" path="res://scripts/world/room_root.gd" id="4"]
 [ext_resource type="Script" path="res://scripts/world/room_transition.gd" id="5"]
-[ext_resource type="Script" path="res://scripts/story/story_beat.gd" id="6"]
+[ext_resource type="Script" path="res://scripts/world/control_invert.gd" id="6"]
+[ext_resource type="Script" path="res://scripts/world/memory_hazard.gd" id="hazard"]
+[ext_resource type="Script" path="res://scripts/world/reach_marker.gd" id="reach"]
 [ext_resource type="Texture2D" path="res://assets/layers/mirror.png" id="7"]
 
 [ext_resource type="Texture2D" path="res://assets/tiles/tile_00.png" id="walk_tile"]
@@ -20,8 +22,8 @@ size = Vector2(40, 400)
 [sub_resource type="RectangleShape2D" id="Hit"]
 size = Vector2(44, 96)
 
-[sub_resource type="RectangleShape2D" id="Interact"]
-size = Vector2(40, 48)
+[sub_resource type="RectangleShape2D" id="HazardStrip"]
+size = Vector2(50, 40)
 
 [node name="MirrorsReverse" type="Node2D"]
 script = ExtResource("4")
@@ -117,26 +119,10 @@ script = ExtResource("5")
 target_room_id = &"mirrors_dual"
 target_spawn_id = &"from_mirrors_reverse"
 required_puzzle = &"mirrors_reverse"
-locked_message = "Aynadaki işaretin gerçek yönünü bulmalıyım."
+locked_message = "Aynalı zemini geçip karşı uca varmalıyım."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ForwardDual"]
 shape = SubResource("Hit")
-
-[node name="ReverseBeat" type="Area2D" parent="Interactive"]
-position = Vector2(480, 268)
-collision_layer = 8
-collision_mask = 0
-monitoring = false
-monitorable = true
-script = ExtResource("6")
-beat_id = &"mirrors_reverse"
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ReverseBeat"]
-shape = SubResource("Interact")
-
-[node name="Sprite2D" type="Sprite2D" parent="Interactive/ReverseBeat"]
-texture_filter = 0
-centered = true
 
 [node name="Corpse" type="Node2D" parent="." groups=["corpses_root"]]
 
@@ -325,3 +311,51 @@ position = Vector2(195, 288)
 position = Vector2(195, 288)
 script = ExtResource("memory_seal_pt")
 room_id = &"mirrors_reverse"
+
+[node name="InvertZone" type="Area2D" parent="Interactive"]
+position = Vector2(500, 268)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("6")
+size = Vector2(400, 200)
+enter_line = "Burada sağ sola dönüyor, adımlarımı ters atmalıyım."
+
+[node name="HazardA" type="Area2D" parent="Interactive"]
+position = Vector2(445, 306)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("hazard")
+hazard_id = &"mirrors_reverse_floor_a"
+arm_requires_mystery = false
+passage_one_heart_cap = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/HazardA"]
+shape = SubResource("HazardStrip")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/HazardA"]
+texture_filter = 0
+modulate = Color(0.65, 0.25, 0.22, 0.42)
+centered = true
+
+[node name="HazardB" type="Area2D" parent="Interactive"]
+position = Vector2(585, 306)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("hazard")
+hazard_id = &"mirrors_reverse_floor_b"
+arm_requires_mystery = false
+passage_one_heart_cap = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/HazardB"]
+shape = SubResource("HazardStrip")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/HazardB"]
+texture_filter = 0
+modulate = Color(0.65, 0.25, 0.22, 0.42)
+centered = true
+
+[node name="CrossedMarker" type="Area2D" parent="Interactive"]
+position = Vector2(760, 288)
+script = ExtResource("reach")
+puzzle_id = &"mirrors_reverse_crossed"
+also_solve = PackedStringArray("mirrors_reverse")

@@ -16,6 +16,8 @@ const SWITCH_SCRIPT := preload("res://scripts/world/echo_switch.gd")
 @export var switch_kinds: PackedStringArray = PackedStringArray(["plate", "lever"])
 @export var switch_positions: PackedVector2Array = PackedVector2Array([Vector2(-180, 32), Vector2(230, 0)])
 @export var lever_hold_seconds: float = 1.6
+## Plaka anahtarları üstünden inildikten sonra bu kadar süre aktif kalır (0 = anında söner).
+@export var plate_hold_seconds: float = 0.0
 ## true: tüm anahtarlar aktifken puzzle_id yalnız "canlı" olur (çözülmez); biri düşünce canlılık söner.
 @export var live_only: bool = false
 
@@ -64,6 +66,7 @@ func _build_switches() -> void:
 		sw.set_script(SWITCH_SCRIPT)
 		sw.set("kind", switch_kinds[i])
 		sw.set("hold_seconds", lever_hold_seconds)
+		sw.set("release_delay", plate_hold_seconds)
 		sw.position = position + (switch_positions[i] if i < switch_positions.size() else Vector2(120 * i, 0))
 		get_parent().add_child(sw)
 		sw.connect("state_changed", _on_switch_changed)

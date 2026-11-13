@@ -253,15 +253,40 @@ const HINTS: Dictionary = {
 		"orientation": "Önce deney, sonra kapı, sonda mühür. Kartları böyle diz.",
 		"explicit": "Deneyin başlangıcından mührün kapanışına kadar olayları sırala."
 	},
-	&"mirrors_gallery": {
-		"goal": "Camlar ölü bedenlerini tutuyor.",
-		"orientation": "Duvar, hatırladığından fazla ceset sayar.",
-		"explicit": "Ortadaki duvarı dinle; sayıyı kabul edince kırılmayan ayna açılır."
+	&"mirrors_reverse_crossed": {
+		"goal": "Aynalı zeminde sağ sol yer değiştiriyor.",
+		"orientation": "Kırmızı şeritler zeminde. Yönün ters, atlayarak geç.",
+		"explicit": "Şeritlerin önünde dur, ters yöne bas ve sağ uca var."
 	},
-	&"mirrors_dual": {
-		"goal": "Geçit, iki kristalin aynı anda uyanmasını bekliyor.",
-		"orientation": "Yansıma sana ters yöne gider; iki kristali aynı anda uyandır.",
-		"explicit": "Yankın bir kristali tutarken koşup ötekini uyandır."
+	&"mirrors_dual_echo": {
+		"goal": "Yankın aynalı yürür; kolu o çeker, plakada sen dur.",
+		"orientation": "Sunağa kaydet, yankı sağdan koşar. Sen plakada bekle.",
+		"explicit": "Sunağı kaydet, ortaya yürü, dokun; sonra plakaya dön."
+	},
+	&"mirrors_dual_weight": {
+		"goal": "Dikenli plakayı bir beden basık tutmalı.",
+		"orientation": "Dikene değ, bedenin plakanın üstünde kalsın.",
+		"explicit": "Dikene dokun; beden plakayı tutarken kapı açık kalır."
+	},
+	&"mirrors_gallery_plate_1": {
+		"goal": "Galerinin üç plakası bedenle basılmalı.",
+		"orientation": "Her plakanın yanında diken var. Sırayla üçünü de bas.",
+		"explicit": "İlk dikene dokun; beden ilk plakada kalır."
+	},
+	&"mirrors_gallery_plate_2": {
+		"goal": "Galerinin üç plakası bedenle basılmalı.",
+		"orientation": "Plakalar bedeni tutar. İkincisi ortadaki.",
+		"explicit": "Ortadaki dikene dokun; beden plakada kalır."
+	},
+	&"mirrors_gallery_plate_3": {
+		"goal": "Galerinin üç plakası bedenle basılmalı.",
+		"orientation": "Üçüncü plaka en sağda. Bedeni orada bırak.",
+		"explicit": "Sağdaki dikene dokun; beden son plakada kalır."
+	},
+	&"mirrors_unbroken_mimic": {
+		"goal": "Yansıma bir yol yürüyor; yankın aynı yolu izlemeli.",
+		"orientation": "Yol üç nokta: yer, yüksek taş, yer. Yankıyı oradan geçir.",
+		"explicit": "Sunağı kaydet; yankı alçak, yüksek, alçak noktaya sırayla uğrasın."
 	},
 	&"core_ascent": {
 		"goal": "Son merdiven iki yetenek ve bir yankı istiyor.",
@@ -363,8 +388,10 @@ const ROOM_PUZZLES: Dictionary = {
 	"experiment_quarantine": [&"experiment_quarantine_done"],
 	"experiment_core_conduit": [&"experiment_conduit"],
 	"experiment_observation": [&"experiment_observation"],
-	"mirrors_dual": [&"mirrors_dual"],
-	"mirrors_gallery": [&"mirrors_gallery"],
+	"mirrors_reverse": [&"mirrors_reverse_crossed"],
+	"mirrors_dual": [&"mirrors_dual_echo", &"mirrors_dual_weight"],
+	"mirrors_gallery": [&"mirrors_gallery_plate_1", &"mirrors_gallery_plate_2", &"mirrors_gallery_plate_3"],
+	"mirrors_unbroken": [&"mirrors_unbroken_mimic"],
 	"mirrors_labyrinth": [&"mirrors_labyrinth_crossed"],
 	"core_bloom_garden": [&"core_bloom_order"],
 	"core_memory_vault": [&"core_vault_order"],

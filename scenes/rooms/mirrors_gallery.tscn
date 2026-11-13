@@ -1,7 +1,18 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
 [ext_resource type="Script" path="res://scripts/world/ordered_relic.gd" id="relic"]
+
+[ext_resource type="Script" path="res://scripts/world/pressure_plate.gd" id="plate"]
+[ext_resource type="Script" path="res://scripts/world/gate_blocker.gd" id="gate"]
+[ext_resource type="Script" path="res://scripts/world/blood_thorn.gd" id="thorn"]
+[ext_resource type="Texture2D" path="res://assets/props/door_closed.png" id="gate_tex"]
+
+[sub_resource type="RectangleShape2D" id="PlateShape"]
+size = Vector2(44, 18)
+
+[sub_resource type="RectangleShape2D" id="GateShape"]
+size = Vector2(32, 88)
 
 [node name="MirrorsGallery" type="Node2D"]
 script = ExtResource("room")
@@ -11,7 +22,7 @@ room_width = 1280.0
 bg_region = "mirrors"
 checkpoint = Vector2(120, 288)
 default_spawn = Vector2(120, 288)
-doors = [{"x": 40.0, "to": "mirrors_dual", "spawn": "from_mirrors_gallery"}, {"x": 1240.0, "to": "mirrors_unbroken", "spawn": "from_mirrors_gallery", "req": "mirrors_gallery", "msg": "Önce duvardaki bedenleri say."}]
+doors = [{"x": 40.0, "to": "mirrors_dual", "spawn": "from_mirrors_gallery"}, {"x": 1240.0, "to": "mirrors_unbroken", "spawn": "from_mirrors_gallery", "req": "mirrors_gallery", "msg": "Üç plakayı bedenlerle basık tutmalıyım."}]
 
 [node name="Spawns" type="Node2D" parent="."]
 
@@ -26,7 +37,113 @@ script = ExtResource("relic")
 relic_id = "gallery_wall"
 dialogue_room = &"mirrors_gallery"
 dialogue_set = &"reflections"
-solve_puzzle = &"mirrors_gallery"
+solve_puzzle = &""
 count_line = true
 evidence_title = "Bedenler Duvarı"
 evidence_body = "Her cam bir ölümü tutuyor; duvar, hatırladığımdan fazla beden sayıyor."
+
+[node name="Plate1" type="Area2D" parent="Interactive"]
+position = Vector2(360, 288)
+collision_layer = 0
+collision_mask = 1
+script = ExtResource("plate")
+puzzle_id = &"mirrors_gallery_plate_1"
+accept_player = false
+accept_stone = false
+latch_on_press = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/Plate1"]
+shape = SubResource("PlateShape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/Plate1"]
+texture_filter = 0
+centered = true
+
+[node name="Thorn1" type="Area2D" parent="Interactive"]
+position = Vector2(415, 290)
+script = ExtResource("thorn")
+anchor_x = 360.0
+puzzle_hint = &"mirrors_gallery_plate_1"
+body_line = "Dokunursam ölürüm. Beden plakanın üstünde kalır."
+solved_line = "Plaka sustu. Beden onu tutuyor."
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/Thorn1"]
+shape = SubResource("PlateShape")
+
+[node name="Plate2" type="Area2D" parent="Interactive"]
+position = Vector2(640, 288)
+collision_layer = 0
+collision_mask = 1
+script = ExtResource("plate")
+puzzle_id = &"mirrors_gallery_plate_2"
+accept_player = false
+accept_stone = false
+latch_on_press = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/Plate2"]
+shape = SubResource("PlateShape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/Plate2"]
+texture_filter = 0
+centered = true
+
+[node name="Thorn2" type="Area2D" parent="Interactive"]
+position = Vector2(695, 290)
+script = ExtResource("thorn")
+anchor_x = 640.0
+puzzle_hint = &"mirrors_gallery_plate_2"
+body_line = "Dokunursam ölürüm. Beden plakanın üstünde kalır."
+solved_line = "Plaka sustu. Beden onu tutuyor."
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/Thorn2"]
+shape = SubResource("PlateShape")
+
+[node name="Plate3" type="Area2D" parent="Interactive"]
+position = Vector2(920, 288)
+collision_layer = 0
+collision_mask = 1
+script = ExtResource("plate")
+puzzle_id = &"mirrors_gallery_plate_3"
+accept_player = false
+accept_stone = false
+latch_on_press = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/Plate3"]
+shape = SubResource("PlateShape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/Plate3"]
+texture_filter = 0
+centered = true
+
+[node name="Thorn3" type="Area2D" parent="Interactive"]
+position = Vector2(975, 290)
+script = ExtResource("thorn")
+anchor_x = 920.0
+puzzle_hint = &"mirrors_gallery_plate_3"
+body_line = "Dokunursam ölürüm. Beden plakanın üstünde kalır."
+solved_line = "Plaka sustu. Beden onu tutuyor."
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/Thorn3"]
+shape = SubResource("PlateShape")
+
+[node name="PathGate" type="StaticBody2D" parent="Interactive"]
+position = Vector2(1120, 268)
+collision_layer = 1
+collision_mask = 0
+script = ExtResource("gate")
+puzzle_listen = &"mirrors_gallery_plate_1"
+puzzle_listen_all = PackedStringArray("mirrors_gallery_plate_1", "mirrors_gallery_plate_2", "mirrors_gallery_plate_3")
+legacy_puzzle = &"mirrors_gallery"
+also_solve = PackedStringArray("mirrors_gallery")
+ignore_world_flag = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/PathGate"]
+shape = SubResource("GateShape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/PathGate"]
+texture_filter = 0
+position = Vector2(0, -28)
+texture = ExtResource("gate_tex")
+centered = true
+modulate = Color(0.48, 0.42, 0.46, 1)
+

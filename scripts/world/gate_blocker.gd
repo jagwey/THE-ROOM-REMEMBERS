@@ -70,6 +70,14 @@ func _all_solved(ids: PackedStringArray) -> bool:
 	return true
 
 
+## also_solve kimlikleri hâlâ çözülmediyse geçiş kilidi (solve-on-pass) çalışmaya devam eder.
+func _also_done() -> bool:
+	for id in also_solve:
+		if not PuzzleManager.is_solved(StringName(id)):
+			return false
+	return true
+
+
 func _is_open() -> bool:
 	if PuzzleManager.gate_open(_listen_ids(), legacy_puzzle):
 		return true
@@ -112,7 +120,7 @@ func _on_live(puzzle_id: StringName, live: bool) -> void:
 
 func _physics_process(_delta: float) -> void:
 	var ids := _listen_ids()
-	if ids.is_empty() or _all_solved(ids) or not PuzzleManager.gate_open(ids):
+	if ids.is_empty() or (_all_solved(ids) and _also_done()) or not PuzzleManager.gate_open(ids):
 		_entry_side = 0
 		_last_player_x = NAN
 		return

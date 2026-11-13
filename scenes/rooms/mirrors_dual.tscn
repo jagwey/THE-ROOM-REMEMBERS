@@ -8,6 +8,16 @@
 [ext_resource type="Script" path="res://scripts/world/echo_altar.gd" id="6"]
 
 [ext_resource type="Texture2D" path="res://assets/tiles/tile_00.png" id="walk_tile"]
+[ext_resource type="Script" path="res://scripts/world/pressure_plate.gd" id="plate"]
+[ext_resource type="Script" path="res://scripts/world/gate_blocker.gd" id="gate"]
+[ext_resource type="Script" path="res://scripts/world/blood_thorn.gd" id="thorn"]
+[ext_resource type="Texture2D" path="res://assets/props/door_closed.png" id="gate_tex"]
+
+[sub_resource type="RectangleShape2D" id="PlateShape"]
+size = Vector2(44, 18)
+
+[sub_resource type="RectangleShape2D" id="GateShape"]
+size = Vector2(32, 88)
 
 [sub_resource type="RectangleShape2D" id="Floor"]
 size = Vector2(1000, 48)
@@ -105,24 +115,27 @@ script = ExtResource("5")
 target_room_id = &"mirrors_gallery"
 target_spawn_id = &"from_mirrors_dual"
 required_puzzle = &"mirrors_dual"
-locked_message = "İki yankıyı aynı anda uyandırmalıyım."
+locked_message = "Yankıyı yürütüp bedenle ağırlığı tutmalıyım."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ForwardGallery"]
 shape = SubResource("Hit")
 
 [node name="DualBeat" type="Area2D" parent="Interactive"]
-position = Vector2(480, 268)
+position = Vector2(160, 268)
 collision_layer = 8
 collision_mask = 0
 monitoring = false
 monitorable = true
 script = ExtResource("6")
-puzzle_id = &"mirrors_dual"
-intro_text = "İki kristali aynı anda uyandır: yankın birini tutsun, sen ötekine dokun."
-solved_text = "İki iz birleşti, sağdaki geçit açıldı."
-switch_kinds = PackedStringArray("lever", "lever")
-switch_positions = PackedVector2Array(-260, 0, 320, 0)
-lever_hold_seconds = 1.8
+puzzle_id = &"mirrors_dual_echo"
+intro_text = "Yankın ters yürür. Sen düz git."
+solved_text = "Yankı yoluna girdi."
+switch_kinds = PackedStringArray("plate", "lever")
+switch_positions = PackedVector2Array(100, 20, 220, 0)
+lever_hold_seconds = 6.0
+plate_hold_seconds = 6.0
+live_only = true
+mirror_axis_x = 480.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/DualBeat"]
 shape = SubResource("Interact")
@@ -130,6 +143,54 @@ shape = SubResource("Interact")
 [node name="Sprite2D" type="Sprite2D" parent="Interactive/DualBeat"]
 texture_filter = 0
 centered = true
+
+[node name="CorpsePlate" type="Area2D" parent="Interactive"]
+position = Vector2(620, 288)
+collision_layer = 0
+collision_mask = 1
+script = ExtResource("plate")
+puzzle_id = &"mirrors_dual_weight"
+accept_player = false
+accept_stone = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/CorpsePlate"]
+shape = SubResource("PlateShape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/CorpsePlate"]
+texture_filter = 0
+centered = true
+
+[node name="BloodThorn" type="Area2D" parent="Interactive"]
+position = Vector2(675, 290)
+script = ExtResource("thorn")
+anchor_x = 620.0
+puzzle_hint = &"mirrors_dual_weight"
+body_line = "Dokunursam ölürüm. Beden plakanın üstünde kalır."
+solved_line = "Plaka sustu. Beden onu tutuyor."
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BloodThorn"]
+shape = SubResource("PlateShape")
+
+[node name="PathGate" type="StaticBody2D" parent="Interactive"]
+position = Vector2(840, 268)
+collision_layer = 1
+collision_mask = 0
+script = ExtResource("gate")
+puzzle_listen = &"mirrors_dual_echo"
+puzzle_listen_all = PackedStringArray("mirrors_dual_echo", "mirrors_dual_weight")
+legacy_puzzle = &"mirrors_dual"
+also_solve = PackedStringArray("mirrors_dual")
+ignore_world_flag = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/PathGate"]
+shape = SubResource("GateShape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/PathGate"]
+texture_filter = 0
+position = Vector2(0, -28)
+texture = ExtResource("gate_tex")
+centered = true
+modulate = Color(0.48, 0.42, 0.46, 1)
 
 [node name="Corpse" type="Node2D" parent="." groups=["corpses_root"]]
 

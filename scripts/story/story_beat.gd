@@ -5,9 +5,6 @@ extends Area2D
 @export var beat_id: StringName = &"library_hall"
 
 var _busy: bool = false
-var _relay_seconds := 0.0
-var _relay_label: Label
-var _choice_layer: CanvasLayer
 
 func _ready() -> void:
 
@@ -25,8 +22,6 @@ func _ready() -> void:
 		if $Sprite2D.texture == null:
 			$Sprite2D.texture = load("res://assets/props/memory_echo.png")
 			$Sprite2D.scale = Vector2(0.5, 0.5)
-	if beat_id == &"mirrors_dual":
-		_build_relay()
 
 func on_interact(_by: Node) -> void:
 
@@ -61,14 +56,6 @@ func on_interact(_by: Node) -> void:
 		&"experiment_authority":
 
 			await _experiment_authority()
-
-		&"mirrors_reverse":
-
-			await _mirrors_reverse()
-
-		&"mirrors_dual":
-
-			await _mirrors_dual()
 
 		&"mirrors_unbroken":
 
@@ -256,55 +243,27 @@ func _experiment_authority() -> void:
 
 	SaveManager.save_game()
 
-func _mirrors_reverse() -> void:
-	if PuzzleManager.is_solved(&"mirrors_reverse"):
-		DialogueManager.say("Noroi", "Aynadaki sol, gerçekte sağ; geçit açık.")
-		return
-	DialogueManager.say("Noroi", "Aynada çiçek soldaki kapıda, ama yansıma yönleri ters gösteriyor.")
-	DialogueManager.say("Noroi", "Gerçek kapı hangisi?")
-	var ok: bool = await DialogueManager.dialogue_finished
-	if not ok:
-		return
-	_open_mirror_choice()
-
-func _mirrors_dual() -> void:
-	if PuzzleManager.is_solved(&"mirrors_dual"):
-		DialogueManager.say("Noroi", "İki iz birleşti, yol açık.")
-		return
-	DialogueManager.say("Shilda", "Yankın bu anahtarı sekiz saniye tutar. Sağdaki kristale yetiş.")
-	DialogueManager.say("Shilda", "Yetişemezsen yeniden dene. Bu oda affeder.")
-	var ok: bool = await DialogueManager.dialogue_finished
-	if not ok:
-		return
-	_relay_seconds = 8.0
-
 func _mirrors_unbroken() -> void:
-
+	if PuzzleManager.is_solved(&"mirrors_unbroken"):
+		DialogueManager.say("Noroi", "Yansıma yolunu bitirdi. Geçit açık.")
+		return
+	if not PuzzleManager.is_solved(&"mirrors_unbroken_mimic"):
+		DialogueManager.say("Noroi", "Önce yansımanın yürüdüğü yolu yankımla yürümeliyim.")
+		return
 	DialogueManager.say("Noroi", "Neden her seferinde çiçek bırakıyorsun?")
 	DialogueManager.say("Shilda", "…")
 	DialogueManager.say("Shilda", "Çünkü birinin onları hatırlaması gerekiyor.")
-
 	DialogueManager.say("Noroi", "Beni değil, bir sırrı koruyordun.")
-
 	DialogueManager.say("Shilda", "İkisini ayırmayı unuttum.")
-
 	DialogueManager.say("Noroi", "Döngüyü sürdürmemi de susmanı kabul etmemi de isteyemezsin.")
-	DialogueManager.say("Noroi", "Ama gerçeği saklamadan yanımda durabilirsin.")
-	DialogueManager.say("Shilda", "Çekirdekte son mühür var. Onu birlikte açacağız.")
-	DialogueManager.say("Shilda", "Çekirdeğe gitmeden Ayna Tapınağı'na uğra.")
-	DialogueManager.say("Shilda", "Gölgen orada bekliyor.")
-	DialogueManager.say("Noroi", "Artık gerçeği biliyorum, sağ uçtaki geçidi açıyorum.")
-
+	if GameState.is_shilda_trusted():
+		DialogueManager.say("Shilda", "Yanındayım. Sırrı sen taşı.")
+	else:
+		DialogueManager.say("Shilda", "Bana kızgınsın. Yine de yürü.")
 	var ok: bool = await DialogueManager.dialogue_finished
-
 	if not ok:
-
 		return
-
-	GameState.player_progress_knowledge["truth_seen"] = true
-
 	PuzzleManager.mark_solved(&"mirrors_unbroken")
-
 	GameState.set_world_flag(&"core_path_open", true)
 
 	var cam := get_tree().get_first_node_in_group("follow_camera")
@@ -398,83 +357,3 @@ func _evidence(eid: String, title: String, body: String, kind: String, section: 
 	EchoManager.journal_updated.emit()
 
 	preload("res://scripts/world/lore_point.gd").learn_authority_code_if_ready()
-
-func _open_mirror_choice() -> void:
-	_choice_layer = CanvasLayer.new()
-	_choice_layer.layer = 26
-	get_tree().current_scene.add_child(_choice_layer)
-	var modal := GothicModalPanel.new()
-	modal.setup("Aynalar", Vector2(500, 190))
-	_choice_layer.add_child(modal)
-	modal.on_close = _answer_mirror.bind("Geri dön")
-	modal.add_label("Aynada çiçek solda. Gerçek kapı hangisi?", UiTheme.BODY)
-	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 6)
-	modal.body.add_child(row)
-	for option in ["Soldaki kapı", "Sağdaki kapı", "Geri dön"]:
-		var button := modal.add_button(option, _answer_mirror.bind(option), row)
-		button.custom_minimum_size = Vector2(120, 36)
-		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	UiGate.set_story(true)
-
-func _answer_mirror(option: String) -> void:
-	if not is_instance_valid(_choice_layer):
-		return
-	_choice_layer.queue_free()
-	_choice_layer = null
-	UiGate.set_story(false)
-	if option == "Sağdaki kapı":
-		PuzzleManager.mark_solved(&"mirrors_reverse")
-		SaveManager.save_game()
-		DialogueManager.say("Noroi", "Yansımanın değil, gerçeğin yolunu seçtim; sağdaki geçit açıldı.")
-	elif option == "Soldaki kapı":
-		DialogueManager.say("Shilda", "Aynada sol, gerçekte sağ olur. Canın yanmadı.")
-		DialogueManager.say("Shilda", "Yeniden inceleyebilirsin.")
-
-func _build_relay() -> void:
-	var relay := Area2D.new()
-	relay.name = "SecondRelay"
-	relay.set_script(load("res://scripts/world/mirror_relay.gd"))
-	relay.set("source", self)
-	relay.position = Vector2(190, 0)
-	add_child(relay)
-	var collider := CollisionShape2D.new()
-	var rect := RectangleShape2D.new()
-	rect.size = Vector2(38, 48)
-	collider.shape = rect
-	relay.add_child(collider)
-	var sprite := Sprite2D.new()
-	sprite.texture = load("res://assets/props/crystal.png")
-	sprite.scale = Vector2(0.6, 0.6)
-	relay.add_child(sprite)
-	_relay_label = Label.new()
-	_relay_label.position = Vector2(-70, -66)
-	_relay_label.text = "İkinci anahtar"
-	UiTheme.apply_outlined(_relay_label, UiTheme.HINT)
-	relay.add_child(_relay_label)
-
-func _process(delta: float) -> void:
-	if beat_id != &"mirrors_dual" or _relay_seconds <= 0:
-		return
-	if RoomManager.get_active_room_id() != &"mirrors_dual":
-		_relay_seconds = 0
-		return
-	if UiGate.pauses_world_threats():
-		return
-	_relay_seconds = maxf(0, _relay_seconds - delta)
-	_relay_label.text = "%s: birleştir · %.1f" % [MobileInputManager.control_name(&"interact"), _relay_seconds]
-	if _relay_seconds == 0:
-		_relay_label.text = "Süre doldu. Sola dön."
-
-func finish_relay() -> void:
-	if PuzzleManager.is_solved(&"mirrors_dual"):
-		return
-	if _relay_seconds <= 0:
-		DialogueManager.say("Noroi", "Önce soldaki mühürde yankıyı başlatmalıyım.")
-		return
-	_relay_seconds = 0
-	_relay_label.text = "İki iz birleşti"
-	PuzzleManager.mark_solved(&"mirrors_dual")
-	SaveManager.save_game()
-	DialogueManager.say("Noroi", "Yankım geçmişi tuttu, ben yeni bir adım attım; sağdaki geçit açıldı.")
-

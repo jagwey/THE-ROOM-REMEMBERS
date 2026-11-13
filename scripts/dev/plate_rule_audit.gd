@@ -6,6 +6,9 @@ var failures := 0
 ## accept_player = true olan plakalar yalnız burada olabilir (oda:Düğüm, gerekçe).
 const ACCEPT_PLAYER_WHITELIST := {
 	"awakening_crypt:BedPlate": "Faz 2: yalnız-ceset plaka (accept_stone=false, accept_player=false); latch_on_press ile anı kalıcı açılır",
+	"mirrors_gallery:Plate1": "Faz 4: yalnız-ceset plaka (accept_player=false, accept_stone=false); latch_on_press ile basık kalır",
+	"mirrors_gallery:Plate2": "Faz 4: yalnız-ceset plaka (accept_player=false, accept_stone=false); latch_on_press ile basık kalır",
+	"mirrors_gallery:Plate3": "Faz 4: yalnız-ceset plaka (accept_player=false, accept_stone=false); latch_on_press ile basık kalır",
 }
 const CLEARANCE := 48.0
 

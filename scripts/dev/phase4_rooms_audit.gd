@@ -31,6 +31,7 @@ func _run() -> void:
 	root.get_node("UiGate").set_story(false)
 	await _components()
 	await _graph()
+	await _rooms_28_31()
 	quit(1 if failures > 0 else 0)
 
 
@@ -225,6 +226,244 @@ func _graph() -> void:
 	check(lab_fwd.size() == 1 and String(lab_fwd[0].door_title) == "Ayna Tapınağı", "graph_labyrinth_door_title")
 	check(lab_fwd.size() == 1 and lab_fwd[0].get_node_or_null("DoorMark") != null, "graph_labyrinth_door_marked")
 	check(lab_fwd.size() == 1 and is_equal_approx(float(lab_fwd[0].label_dy), -74.0), "graph_labyrinth_door_label_dy")
+
+
+func _fwd_door_open(rid: StringName) -> bool:
+	var rm := root.get_node("RoomManager")
+	var order: Array = Array(rm.ROOM_ORDER)
+	var nxt := String(order[order.find(String(rid)) + 1])
+	var room := _room_root(rid)
+	for d in _doors_of(room):
+		if String(d.target_room_id) == nxt:
+			return not d.is_locked()
+	return false
+
+
+func _play_pass(altar: Node, plate_sw_x: float, frames: Array) -> void:
+	var player: Node2D = current_scene.get_node("Player")
+	root.get_node("DialogueManager").clear()
+	player.global_position = Vector2(plate_sw_x, 288)
+	altar.debug_play(frames, [[0.35, "interact"]])
+	await create_timer(0.7).timeout
+	player.global_position = Vector2(plate_sw_x, 288)
+	for i in 8:
+		await physics_frame
+
+
+func _beat_run(beat: Node, player: Node2D) -> void:
+	var dm := root.get_node("DialogueManager")
+	var f := [false]
+	dm.dialogue_finished.connect(func(_ok): f[0] = true, CONNECT_ONE_SHOT)
+	beat.on_interact(player)
+	await _drive_dialogue(f, dm)
+
+
+func _rooms_28_31() -> void:
+	var pm := root.get_node("PuzzleManager")
+	var rm := root.get_node("RoomManager")
+	var gs := root.get_node("GameState")
+	var scene: Node = current_scene
+	var player: Node2D = scene.get_node("Player")
+	var truth_before: Variant = gs.get_world_flag(&"truth_seen", false)
+	# --- 28 mirrors_reverse ---
+	_unsolve(["mirrors_reverse", "mirrors_reverse_crossed"])
+	rm.enter_room(&"mirrors_reverse")
+	await process_frame
+	var rv := _room_root(&"mirrors_reverse")
+	var sb_src := FileAccess.get_file_as_string("res://scripts/story/story_beat.gd")
+	check(not sb_src.contains("_open_mirror_choice"), "r28_no_mirror_menu")
+	check(rv.find_children("ReverseBeat", "", true, false).is_empty(), "r28_no_reverse_beat")
+	var zone: Node = null
+	var hz: Array = []
+	var mk: Node = null
+	for n in rv.find_children("*", "Area2D", true, false):
+		if "passage_one_heart_cap" in n:
+			hz.append(n)
+		elif "also_solve" in n and "puzzle_id" in n:
+			mk = n
+		elif "enter_line" in n and "size" in n:
+			zone = n
+	check(zone != null and absf(zone.global_position.x - 500.0) < 1.0 and zone.size == Vector2(400, 200), "r28_invert_zone_geometry")
+	check(zone != null and String(zone.enter_line) == "Burada sağ sola dönüyor, adımlarımı ters atmalıyım.", "r28_invert_enter_line")
+	check(hz.size() == 2, "r28_two_hazard_strips", hz.size())
+	check(mk != null and String(mk.puzzle_id) == "mirrors_reverse_crossed" and absf(mk.global_position.x - 760.0) < 1.0, "r28_marker_geometry")
+	check(mk != null and Array(mk.also_solve).has("mirrors_reverse"), "r28_marker_also_solve")
+	player.global_position = Vector2(500, 288)
+	for i in 5:
+		await physics_frame
+	check(bool(player.invert_x), "r28_invert_in_zone")
+	rm.enter_room(&"mirrors_dual")
+	check(not bool(player.invert_x), "r28_invert_cleared_after_enter_room")
+	rm.enter_room(&"mirrors_reverse")
+	await process_frame
+	check(not pm.is_solved(&"mirrors_reverse") and not _fwd_door_open(&"mirrors_reverse"), "r28_locked_before_marker")
+	player.global_position = Vector2(760, 288)
+	for i in 5:
+		await physics_frame
+	check(pm.is_solved(&"mirrors_reverse_crossed") and pm.is_solved(&"mirrors_reverse"), "r28_marker_solves")
+	rm.enter_room(&"mirrors_dual")
+	rm.enter_room(&"mirrors_reverse")
+	await process_frame
+	check(_fwd_door_open(&"mirrors_reverse"), "r28_door_open_on_reentry")
+	root.get_node("DialogueManager").clear()
+	# --- 29 mirrors_dual ---
+	_unsolve(["mirrors_dual", "mirrors_dual_echo", "mirrors_dual_weight"])
+	_clear_corpses()
+	rm.enter_room(&"mirrors_dual")
+	await process_frame
+	await process_frame
+	var du := _room_root(&"mirrors_dual")
+	var altar: Node = null
+	for n in du.find_children("*", "Area2D", true, false):
+		if n.is_in_group("echo_altar"):
+			altar = n
+	check(altar != null and String(altar.puzzle_id) == "mirrors_dual_echo" and bool(altar.live_only) and absf(altar.mirror_axis_x - 480.0) < 0.1, "r29_altar_config")
+	check(altar != null and String(altar.intro_text) == "Yankın ters yürür. Sen düz git.", "r29_intro_line")
+	var plates := _plates_of(du)
+	check(plates.size() == 1 and String(plates[0].puzzle_id) == "mirrors_dual_weight" and not plates[0].accept_player and not plates[0].accept_stone, "r29_weight_plate")
+	var dgate: Node2D = null
+	if _gates_of(du).size() > 0:
+		dgate = _gates_of(du)[0]
+	check(dgate != null and Array(dgate.puzzle_listen_all) == ["mirrors_dual_echo", "mirrors_dual_weight"] and Array(dgate.also_solve) == ["mirrors_dual"], "r29_gate_config")
+	var plate_sw_x: float = altar.global_position.x + 100.0
+	var frames: Array = [
+		[0.0, Vector2(altar.global_position.x, 288), false, "idle"],
+		[0.1, Vector2(altar.global_position.x, 288), false, "idle"],
+		[0.2, Vector2(580, 288), true, "idle"],
+		[0.5, Vector2(580, 288), true, "idle"],
+		[0.9, Vector2(580, 288), true, "idle"],
+	]
+	await _play_pass(altar, plate_sw_x, frames)
+	var dbg := []
+	for sw in altar._switches:
+		dbg.append([sw.kind, sw.global_position, sw.active])
+	check(pm.is_live(&"mirrors_dual_echo"), "r29_twin_lever_plus_player_plate_is_live", [dbg, player.global_position, altar._twin.global_position if altar._twin else "notwin"])
+	await _cross(dgate)
+	check(not pm.is_solved(&"mirrors_dual"), "r29_twin_alone_does_not_solve")
+	_unsolve(["mirrors_dual", "mirrors_dual_echo", "mirrors_dual_weight"])
+	_clear_corpses()
+	_corpse_at(620.0, 288.0)
+	for i in 8:
+		await physics_frame
+	check(pm.is_live(&"mirrors_dual_weight") or pm.is_solved(&"mirrors_dual_weight"), "r29_corpse_holds_weight_plate")
+	await _cross(dgate)
+	check(not pm.is_solved(&"mirrors_dual"), "r29_corpse_alone_does_not_solve")
+	_unsolve(["mirrors_dual", "mirrors_dual_echo", "mirrors_dual_weight"])
+	_clear_corpses()
+	for i in 4:
+		await physics_frame
+	_corpse_at(620.0, 288.0)
+	await create_timer(6.6).timeout
+	for i in 8:
+		await physics_frame
+	await _play_pass(altar, plate_sw_x, frames)
+	check(pm.is_live(&"mirrors_dual_echo") and (pm.is_live(&"mirrors_dual_weight") or pm.is_solved(&"mirrors_dual_weight")), "r29_both_layers_live")
+	await _cross(dgate)
+	check(pm.is_solved(&"mirrors_dual") and pm.is_solved(&"mirrors_dual_echo") and pm.is_solved(&"mirrors_dual_weight"), "r29_both_layers_solve_on_pass")
+	rm.enter_room(&"mirrors_reverse")
+	rm.enter_room(&"mirrors_dual")
+	await process_frame
+	check(_fwd_door_open(&"mirrors_dual"), "r29_door_open_on_reentry")
+	_clear_corpses()
+	# --- 30 mirrors_gallery ---
+	_unsolve(["mirrors_gallery", "mirrors_gallery_plate_1", "mirrors_gallery_plate_2", "mirrors_gallery_plate_3"])
+	rm.enter_room(&"mirrors_gallery")
+	await process_frame
+	await process_frame
+	var ga := _room_root(&"mirrors_gallery")
+	var gplates := _plates_of(ga)
+	check(gplates.size() == 3, "r30_three_plates", gplates.size())
+	var gxs := [360.0, 640.0, 920.0]
+	for i in mini(3, gplates.size()):
+		var pl: Node = gplates[i]
+		check(absf(pl.position.x - gxs[i]) < 1.0 and bool(pl.latch_on_press) and not pl.accept_player and not pl.accept_stone and String(pl.puzzle_id) == "mirrors_gallery_plate_%d" % (i + 1), "r30_plate_%d_config" % (i + 1))
+	var thorns := 0
+	for n in ga.find_children("*", "Area2D", true, false):
+		if "anchor_x" in n and "puzzle_hint" in n:
+			thorns += 1
+	check(thorns == 3, "r30_three_thorns", thorns)
+	var ggate: Node2D = null
+	if _gates_of(ga).size() > 0:
+		ggate = _gates_of(ga)[0]
+	check(ggate != null and absf(ggate.global_position.x - 1120.0) < 1.0 and Array(ggate.puzzle_listen_all).size() == 3 and Array(ggate.also_solve) == ["mirrors_gallery"], "r30_gate_config")
+	var wall: Node = null
+	for n in ga.find_children("*", "Area2D", true, false):
+		if "count_line" in n:
+			wall = n
+	check(wall != null and bool(wall.count_line) and String(wall.solve_puzzle) == "", "r30_wall_config")
+	player.global_position = Vector2(wall.global_position.x, 288)
+	await _beat_run(wall, player)
+	check(not pm.is_solved(&"mirrors_gallery"), "r30_wall_alone_does_not_solve")
+	for i in 3:
+		_clear_corpses()
+		_corpse_at(gxs[i], 288.0)
+		for k in 8:
+			await physics_frame
+		check(pm.is_solved(StringName("mirrors_gallery_plate_%d" % (i + 1))), "r30_plate_%d_latches" % (i + 1))
+	_clear_corpses()
+	for k in 4:
+		await physics_frame
+	check(pm.is_solved(&"mirrors_gallery_plate_1") and pm.is_solved(&"mirrors_gallery_plate_3"), "r30_latch_survives_corpse_removal")
+	check(not pm.is_solved(&"mirrors_gallery"), "r30_plates_alone_do_not_solve_room")
+	await _cross(ggate)
+	check(pm.is_solved(&"mirrors_gallery"), "r30_gate_pass_solves")
+	rm.enter_room(&"mirrors_dual")
+	rm.enter_room(&"mirrors_gallery")
+	await process_frame
+	check(_fwd_door_open(&"mirrors_gallery"), "r30_door_open_on_reentry")
+	# --- 31 mirrors_unbroken ---
+	_unsolve(["mirrors_unbroken", "mirrors_unbroken_mimic", "mirrors_unbroken_echo"])
+	rm.enter_room(&"mirrors_unbroken")
+	await process_frame
+	await process_frame
+	var un := _room_root(&"mirrors_unbroken")
+	var ualt: Node = null
+	var beat: Node = null
+	var mim: Node = null
+	for n in un.find_children("*", "Area2D", true, false):
+		if n.is_in_group("echo_altar"):
+			ualt = n
+		elif "beat_id" in n:
+			beat = n
+	for n in un.find_children("*", "Node2D", true, false):
+		if n.is_in_group("path_mimic"):
+			mim = n
+	check(ualt != null and String(ualt.puzzle_id) == "mirrors_unbroken_echo" and bool(ualt.live_only) and ualt.switch_kinds.size() == 0, "r31_altar_config")
+	check(mim != null and String(mim.puzzle_id) == "mirrors_unbroken_mimic" and mim.checkpoints.size() == 3 and bool(mim.echo_only), "r31_mimic_config")
+	check(beat != null and absf(beat.global_position.x - 780.0) < 1.0, "r31_beat_at_780")
+	var refl: Node = null
+	for n in un.find_children("*", "Node2D", true, false):
+		if "shade_id" in n and String(n.shade_id) == "mirrors_unbroken_reflection":
+			refl = n
+	check(refl != null and absf(refl.global_position.x - 260.0) < 40.0, "r31_reflection_spawned")
+	check(refl != null and refl.waypoints == PackedVector2Array([Vector2(340, 288), Vector2(520, 246), Vector2(700, 288)]), "r31_reflection_waypoints")
+	player.global_position = Vector2(780, 288)
+	await _beat_run(beat, player)
+	check(not pm.is_solved(&"mirrors_unbroken"), "r31_beat_before_mimic_does_not_solve")
+	var ghost := Node2D.new()
+	ghost.add_to_group("echo_twin_body")
+	un.add_child(ghost)
+	ghost.global_position = Vector2(5000, 5000)
+	for pt in [Vector2(340, 288), Vector2(520, 246), Vector2(700, 288)]:
+		ghost.global_position = pt
+		await physics_frame
+		await physics_frame
+	check(pm.is_solved(&"mirrors_unbroken_mimic"), "r31_echo_path_solves_mimic")
+	ghost.queue_free()
+	for trusted in [true, false]:
+		_unsolve(["mirrors_unbroken"])
+		gs.player_progress_knowledge["keeper_hurt"] = not trusted
+		gs.player_progress_knowledge["trusted_keeper"] = trusted
+		check(bool(gs.is_shilda_trusted()) == trusted, "r31_variant_setup_trusted_%s" % trusted)
+		await _beat_run(beat, player)
+		check(pm.is_solved(&"mirrors_unbroken"), "r31_beat_solves_trusted_%s" % trusted)
+	gs.player_progress_knowledge["keeper_hurt"] = false
+	gs.player_progress_knowledge["trusted_keeper"] = false
+	check(gs.get_world_flag(&"truth_seen", false) == truth_before, "r31_truth_seen_unchanged")
+	rm.enter_room(&"mirrors_gallery")
+	rm.enter_room(&"mirrors_unbroken")
+	await process_frame
+	check(_fwd_door_open(&"mirrors_unbroken"), "r31_door_open_on_reentry")
 
 
 func _migrations() -> void:

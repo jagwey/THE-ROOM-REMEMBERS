@@ -61,12 +61,7 @@ func on_interact(_by: Node) -> void:
 		for line in lines:
 			DialogueManager.say(String(line[0]), String(line[1]))
 	if count_line:
-		var deaths := int(GameState.player_progress_knowledge.get("deaths", 0))
-		var bodies := 0
-		var corpses: Variant = GameState.world_memory_state.get("corpses", [])
-		if corpses is Array:
-			bodies = (corpses as Array).size()
-		DialogueManager.say("Noroi", "Duvar %d beden tutuyor, ben %d ölüm hatırlıyorum." % [bodies, deaths])
+		DialogueManager.say("Noroi", "Duvar üç beden sayıyor. Üçü de benim.")
 	var ok: bool = await DialogueManager.dialogue_finished
 	if ok:
 		if evidence_title != "":

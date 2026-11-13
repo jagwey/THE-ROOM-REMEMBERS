@@ -6,10 +6,13 @@ signal state_changed(active: bool)
 
 @export var kind: String = "plate"
 @export var hold_seconds: float = 1.6
+## "plate": üstünden inildikten sonra bu kadar süre aktif kalır (0 = anında söner).
+@export var release_delay: float = 0.0
 
 var active: bool = false
 var _locked: bool = false
 var _lever_timer: float = 0.0
+var _release_timer: float = 0.0
 var _sprite: Sprite2D
 
 
@@ -51,7 +54,15 @@ func _physics_process(delta: float) -> void:
 			if b.is_in_group("player") or b.is_in_group("echo_twin_body") or b.is_in_group("corpse") or b.is_in_group("weight_stone"):
 				on = true
 				break
-		_set_active(on)
+		if on:
+			_release_timer = release_delay
+			_set_active(true)
+		elif active and _release_timer > 0.0:
+			_release_timer -= delta
+			if _release_timer <= 0.0:
+				_set_active(false)
+		else:
+			_set_active(false)
 	elif _lever_timer > 0.0:
 		_lever_timer -= delta
 		if _lever_timer <= 0.0:

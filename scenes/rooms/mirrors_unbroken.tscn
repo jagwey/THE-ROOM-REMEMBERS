@@ -8,6 +8,12 @@
 [ext_resource type="Script" path="res://scripts/story/story_beat.gd" id="6"]
 
 [ext_resource type="Texture2D" path="res://assets/tiles/tile_00.png" id="walk_tile"]
+[ext_resource type="Script" path="res://scripts/world/echo_altar.gd" id="altar"]
+[ext_resource type="Script" path="res://scripts/world/path_mimic.gd" id="mimic"]
+[ext_resource type="Script" path="res://scripts/world/unbroken_confrontation.gd" id="confront"]
+
+[sub_resource type="RectangleShape2D" id="PlatShape"]
+size = Vector2(140, 12)
 
 [sub_resource type="RectangleShape2D" id="Floor"]
 size = Vector2(1000, 48)
@@ -114,7 +120,7 @@ locked_message = "Gölgeyle son anıyı konuşmalıyım."
 shape = SubResource("Hit")
 
 [node name="UnbrokenBeat" type="Area2D" parent="Interactive"]
-position = Vector2(480, 268)
+position = Vector2(780, 268)
 collision_layer = 8
 collision_mask = 0
 monitoring = false
@@ -128,6 +134,50 @@ shape = SubResource("Interact")
 [node name="Sprite2D" type="Sprite2D" parent="Interactive/UnbrokenBeat"]
 texture_filter = 0
 centered = true
+
+[node name="EchoAltar" type="Area2D" parent="Interactive"]
+position = Vector2(160, 268)
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+monitorable = true
+script = ExtResource("altar")
+puzzle_id = &"mirrors_unbroken_echo"
+intro_text = "Yansımanın yolunu yankınla yürü."
+solved_text = "Yankı yansımanın izini buldu."
+switch_kinds = PackedStringArray()
+switch_positions = PackedVector2Array()
+live_only = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/EchoAltar"]
+shape = SubResource("Interact")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/EchoAltar"]
+texture_filter = 0
+centered = true
+
+[node name="PathMimic" type="Node2D" parent="Interactive"]
+script = ExtResource("mimic")
+puzzle_id = &"mirrors_unbroken_mimic"
+checkpoints = PackedVector2Array(340, 288, 520, 246, 700, 288)
+echo_only = true
+
+[node name="Reflection" type="Node2D" parent="Interactive"]
+script = ExtResource("confront")
+
+[node name="Platform" type="StaticBody2D" parent="."]
+position = Vector2(530, 252)
+collision_layer = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platform"]
+shape = SubResource("PlatShape")
+one_way_collision = true
+
+[node name="Sprite2D" type="Sprite2D" parent="Platform"]
+texture_filter = 0
+modulate = Color(0.55, 0.6, 0.75, 0.9)
+scale = Vector2(4.375, 0.375)
+texture = ExtResource("walk_tile")
 
 [node name="Corpse" type="Node2D" parent="." groups=["corpses_root"]]
 
