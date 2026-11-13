@@ -19,7 +19,7 @@ region_id = &"library"
 room_width = 960.0
 bg_region = "library"
 checkpoint = Vector2(120, 288)
-doors = [{"x": 40.0, "to": "library_upper_stacks", "spawn": "from_library_forbidden_wing"}, {"x": 912.0, "to": "library_reading_cell", "spawn": "from_library_forbidden_wing", "req": "soul_seal_forbidden", "msg": "Mühür açılmadan ilerleyemem."}]
+doors = [{"x": 40.0, "to": "library_upper_stacks", "spawn": "from_library_forbidden_wing"}, {"x": 912.0, "to": "library_reading_cell", "spawn": "from_library_forbidden_wing", "req": "soul_seal_forbidden_2", "msg": "İki mühür de kesilmeden geçemem."}]
 
 [node name="Spawns" type="Node2D" parent="."]
 
@@ -48,13 +48,21 @@ tint = Color(1, 0.75, 0.8, 1)
 lines = PackedStringArray("Noroi|Kırık bir mührün yarısı, kenarında bekçi damgası.", "Shilda|(uzaktan) Diğer yarısı aynaların ardında.")
 
 [node name="ProtocolSeal" type="StaticBody2D" parent="Interactive"]
-position = Vector2(720.0, 288.0)
+position = Vector2(600.0, 288.0)
 script = ExtResource("soul")
 puzzle_id = &"soul_seal_forbidden"
 back_side = 1
 
+[node name="ProtocolSeal2" type="StaticBody2D" parent="Interactive"]
+position = Vector2(780.0, 288.0)
+script = ExtResource("soul")
+puzzle_id = &"soul_seal_forbidden_2"
+back_side = 1
+requires = &"soul_seal_forbidden"
+wrong_line = "Bu mühür, ilk mühür çözülmeden kıpırdamıyor."
+
 [node name="Protocol" type="Area2D" parent="Interactive"]
-position = Vector2(800.0, 288.0)
+position = Vector2(690.0, 288.0)
 script = ExtResource("lore")
 lore_id = &"forbidden_protocol"
 texture_path = "res://assets/layers/bookshelf.png"

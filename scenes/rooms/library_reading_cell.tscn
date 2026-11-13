@@ -1,7 +1,9 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
 [ext_resource type="Script" path="res://scripts/world/ordered_relic.gd" id="relic"]
+[ext_resource type="Script" path="res://scripts/world/soul_seal.gd" id="soul"]
+[ext_resource type="Script" path="res://scripts/world/reading_cell_shade.gd" id="shade"]
 
 [node name="LibraryReadingCell" type="Node2D"]
 script = ExtResource("room")
@@ -16,7 +18,7 @@ doors = [{"x": 40.0, "to": "library_forbidden_wing", "spawn": "from_library_read
 [node name="Interactive" type="Node2D" parent="."]
 
 [node name="Notches" type="Area2D" parent="Interactive"]
-position = Vector2(480, 288)
+position = Vector2(700, 288)
 script = ExtResource("relic")
 relic_id = "reading_notches"
 dialogue_room = &"library_reading_cell"
@@ -24,3 +26,12 @@ dialogue_set = &"notches"
 solve_puzzle = &"library_reading_cell"
 evidence_title = "Gün Çentikleri"
 evidence_body = "Hücrenin duvarı 1927 gecesine kadar gün gün çentilmiş, sonra el durmuş."
+
+[node name="ReadingCabin" type="StaticBody2D" parent="Interactive"]
+position = Vector2(560, 288)
+script = ExtResource("soul")
+puzzle_id = &"library_reading_cabin"
+refusal_line = "Kabini ruhla keseceğim. Bu güç Yasak Kanat'ta duruyordu."
+
+[node name="CellShade" type="Node2D" parent="Interactive"]
+script = ExtResource("shade")

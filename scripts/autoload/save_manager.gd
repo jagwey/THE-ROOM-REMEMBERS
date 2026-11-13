@@ -349,6 +349,7 @@ func _apply_data(data: Dictionary, apply_room: bool) -> bool:
 	if data.has("curse") and CurseManager:
 		CurseManager.restore_curse(_float_of(data.get("curse", 0.0)))
 	_migrate_soul_slash_for_late_rooms()
+	_migrate_shelf_order_for_late_rooms()
 	PuzzleManager.sync_from_world()
 	if apply_room:
 		CorpseManager.rebuild_world_corpses()
@@ -367,6 +368,19 @@ func _migrate_soul_slash_for_late_rooms() -> void:
 	var idx := order.find(room_id)
 	if idx > order.find("library_forbidden_wing"):
 		GameState.player_progress_knowledge["ability_soul_slash"] = true
+
+
+## Faz 3 göçü: Yasak Kanat kapısı artık library_shelf_order ister (eskiden library_page_order). Eski kayıt
+## üst raflardan sonraki bir odadaysa ve raf sırası kayıtlı değilse çözülmüş say (yoksa geri dönüşte kapı kilitli kalırdı).
+func _migrate_shelf_order_for_late_rooms() -> void:
+	var puzzles: Variant = GameState.world_memory_state.get("puzzles", null)
+	if not (puzzles is Dictionary) or bool((puzzles as Dictionary).get("library_shelf_order", false)):
+		return
+	var life := GameState.character_current_life_knowledge
+	var room_id := str(life.get("room", life.get("checkpoint_room", "")))
+	var idx := RoomManager.ROOM_ORDER.find(room_id)
+	if idx > RoomManager.ROOM_ORDER.find("library_upper_stacks"):
+		(puzzles as Dictionary)["library_shelf_order"] = true
 
 
 func _serialize_seals(seals: Array[StringName]) -> Array:

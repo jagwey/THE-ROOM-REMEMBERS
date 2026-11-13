@@ -288,6 +288,16 @@ const HINTS: Dictionary = {
 		"orientation": "Arşivci üç kitabın adını sırayla söyledi.",
 		"explicit": "Ses, mühür, çiçek. Bu sıra tahtayı indirir."
 	},
+	&"soul_seal_forbidden_2": {
+		"goal": "Yasak kanatta iki mor mühür sırayla kesilmeli.",
+		"orientation": "Havadaki kesik Ruh Kesimi'ni verir. Mühürler o güçle açılır.",
+		"explicit": "Ruh Kesimi ile mührü kes. Önce yakın olanı, sonra ötekini."
+	},
+	&"library_reading_cell": {
+		"goal": "Hücrenin kabini mühürlü; çentikler içeride.",
+		"orientation": "Mor mührü ruhla kesmeden kabine girilmez.",
+		"explicit": "Ruh Kesimi ile kabin mührünü kes, çentik duvarını oku."
+	},
 	&"mirrors_labyrinth_crossed": {
 		"goal": "Uçurumun karşısı tavandaki aynada görünüyor.",
 		"orientation": "Mavi yansıma gerçek taş. Soluk kırmızı olan yalan.",
@@ -326,6 +336,8 @@ const ROOM_PUZZLES: Dictionary = {
 	"library_clockroom": [&"library_clockroom"],
 	"library_page": [&"library_page_order"],
 	"library_upper_stacks": [&"library_shelf_order"],
+	"library_forbidden_wing": [&"soul_seal_forbidden", &"soul_seal_forbidden_2"],
+	"library_reading_cell": [&"library_reading_cabin", &"library_reading_cell"],
 	"experiment_intake": [&"experiment_intake"],
 	"experiment_circuit": [&"experiment_circuit"],
 	"experiment_quarantine": [&"experiment_quarantine_done"],

@@ -13,7 +13,7 @@ region_id = &"library"
 room_width = 1280.0
 bg_region = "library"
 checkpoint = Vector2(120, 288)
-doors = [{"x": 40.0, "to": "library_page", "spawn": "from_stacks"}, {"x": 1200.0, "y": 128.0, "to": "library_forbidden_wing", "spawn": "from_library_upper_stacks", "req": "library_page_order", "msg": "Önce unutulmuş sayfanın sırasını kur."}]
+doors = [{"x": 40.0, "to": "library_page", "spawn": "from_stacks"}, {"x": 1200.0, "y": 128.0, "to": "library_forbidden_wing", "spawn": "from_library_upper_stacks", "req": "library_shelf_order", "msg": "Önce rafların sırasını bul."}]
 platforms = PackedVector3Array(150.0, 248.0, 120.0, 310.0, 208.0, 110.0, 460.0, 168.0, 110.0, 820.0, 168.0, 110.0, 970.0, 128.0, 120.0, 1110.0, 128.0, 170.0)
 
 [node name="Interactive" type="Node2D" parent="."]
@@ -25,7 +25,7 @@ npc_id = &"librarian"
 idle_anim = "librarian_idle"
 walk_anim = "librarian_walk"
 wander = 20.0
-dialogue_sets = PackedStringArray("Arşivci|Yine mi sen? Raflar senin adımlarını ezberlemiş.;;Noroi|Beni tanıyor musun?;;Arşivci|Eline verdiğim kitapları ben ciltledim, gezgin.", "Arşivci|Üç kitap bir sıra bilir: ses, mühür, çiçek.;;Arşivci|Tahta o sıra gelince iner. Yasak kanat yukarıda.", "Arşivci|Kesik sende olunca balkona dön. Mor mühür seni bekliyor.;;Arşivci|Kılıç bedenleri keser. Ruh, mühürleri.")
+dialogue_sets = PackedStringArray("Arşivci|Yine mi sen? Raflar adımlarını ezberlemiş.;;Noroi|Beni tanıyor musun?;;Arşivci|Ciltlediğim kitaplar senin elinden geçti, gezgin.", "Arşivci|Kitapların bir sırası var. Sırayı raf bilir, ben değil.;;Arşivci|Yere düşenlere bak. Birinde not kalmış.", "Arşivci|Kesik sende olunca yasak kanada geç.;;Arşivci|Kılıç bedenleri keser. Mühürleri ruh.")
 
 [node name="FallenBooks" type="Area2D" parent="Interactive"]
 position = Vector2(280.0, 288.0)
@@ -42,8 +42,8 @@ evidence_section = "notlar"
 script = ExtResource("shrine")
 puzzle_id = &"library_shelf_order"
 order = PackedStringArray("ses", "muhur", "cicek")
-fail_line = "Yanlış kitap; sıra ses, mühür, çiçek."
-success_line = "Tahta indi, yasak kanada çıkabilirsin."
+fail_line = "Yanlış kitap. Raflar sessiz kaldı."
+success_line = "Tahta indi; yasak kanada çıkabilirsin."
 bridge = Vector3(560, 168, 280)
 
 [node name="BookSes" type="Area2D" parent="Interactive/ShelfShrine"]

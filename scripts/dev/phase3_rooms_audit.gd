@@ -32,6 +32,7 @@ func _run() -> void:
 	await _components()
 	await _graph()
 	await _rooms_14_17()
+	await _rooms_18_20()
 	quit(1 if failures > 0 else 0)
 
 
@@ -422,6 +423,105 @@ func _rooms_14_17() -> void:
 		check(pg.visible, "r17_page_opens_with_clockroom")
 		pg._hide_puzzle()
 		_unsolve(["library_clockroom"])
+	dm.clear()
+
+
+func _rooms_18_20() -> void:
+	var rm := root.get_node("RoomManager")
+	var pm := root.get_node("PuzzleManager")
+	var dm := root.get_node("DialogueManager")
+	var gs := root.get_node("GameState")
+	dm.clear()
+	# ---- 18 upper_stacks ----
+	rm.enter_room(&"library_upper_stacks", &"default")
+	await create_timer(0.4).timeout
+	var st: Node = _room_root(&"library_upper_stacks")
+	var fwd: Node = null
+	for d in _doors_of(st):
+		if d.target_room_id == &"library_forbidden_wing":
+			fwd = d
+	check(fwd != null and fwd.required_puzzle == &"library_shelf_order", "r18_forward_door_needs_shelf_order")
+	var lib_txt := ""
+	var lib: Node = st.find_child("Librarian", true, false)
+	if lib != null:
+		lib_txt = " ".join(Array(lib.dialogue_sets)).to_lower()
+	check(lib != null and lib_txt.find("ses, mühür, çiçek") == -1, "r18_librarian_states_no_answer")
+	# ---- 19 forbidden_wing ----
+	rm.enter_room(&"library_forbidden_wing", &"default")
+	await create_timer(0.4).timeout
+	var fw: Node = _room_root(&"library_forbidden_wing")
+	var seals: Array = []
+	for n in fw.find_children("*", "StaticBody2D", true, false):
+		if n.is_in_group("soul_seal"):
+			seals.append(n)
+	seals.sort_custom(func(a, b): return a.position.x < b.position.x)
+	check(seals.size() == 2, "r19_two_soul_seals", seals.size())
+	if seals.size() == 2:
+		check(seals[0].puzzle_id == &"soul_seal_forbidden" and seals[1].puzzle_id == &"soul_seal_forbidden_2", "r19_seal_ids")
+		check(seals[1].requires == &"soul_seal_forbidden", "r19_second_seal_requires_first")
+		var pick: Node = fw.find_child("SoulSlash", true, false)
+		check(pick != null and pick.position.x < seals[0].position.x, "r19_slash_before_first_seal")
+		var fwd2: Node = null
+		for d in _doors_of(fw):
+			if d.target_room_id == &"library_reading_cell":
+				fwd2 = d
+		check(fwd2 != null and fwd2.required_puzzle == &"soul_seal_forbidden_2", "r19_forward_door_needs_second_seal")
+		if fwd2 != null:
+			for s in seals:
+				check(absf(s.position.x - fwd2.position.x) >= 96.0, "r19_door_clear_of_seal_%s" % String(s.puzzle_id))
+		_unsolve(["soul_seal_forbidden", "soul_seal_forbidden_2"])
+		pm.solved.erase("soul_seal_forbidden")
+		seals[1].receive_soul_slash(null)
+		check(not pm.is_solved(&"soul_seal_forbidden_2"), "r19_second_seal_refuses_out_of_order")
+		dm.clear()
+		# eski kayit: yalniz ilk muhur cozulmus -> ikincisi hala kesilebilir
+		pm.mark_solved(&"soul_seal_forbidden")
+		seals[1].receive_soul_slash(null)
+		check(pm.is_solved(&"soul_seal_forbidden_2"), "r19_legacy_first_solved_second_cuttable")
+		dm.clear()
+	check(pm.HINTS.has(&"soul_seal_forbidden_2") or pm.HINTS.has(&"soul_seal_forbidden"), "r19_hint_exists")
+	_unsolve(["soul_seal_forbidden", "soul_seal_forbidden_2"])
+	# ---- 20 reading_cell ----
+	_unsolve(["library_reading_cell", "library_reading_cabin"])
+	(gs.player_progress_knowledge.get("relics", {}) as Dictionary).erase("reading_notches")
+	rm.enter_room(&"library_reading_cell", &"default")
+	await create_timer(0.4).timeout
+	var rc: Node = _room_root(&"library_reading_cell")
+	var cabin: Node = null
+	for n in rc.find_children("*", "StaticBody2D", true, false):
+		if n.is_in_group("soul_seal") and n.puzzle_id == &"library_reading_cabin":
+			cabin = n
+	var notches: Node = rc.find_child("Notches", true, false)
+	check(cabin != null, "r20_cabin_soul_seal")
+	check(cabin != null and notches != null and notches.position.x > cabin.position.x, "r20_notches_inside_cabin")
+	var js := FileAccess.get_file_as_string("res://data/dialogue/library_reading_cell.json")
+	for bad in ["Kitap okurdum", "Adımı unutmuşsun", "sesimi kaybettim"]:
+		check(js.find(bad) == -1, "r20_json_no_" + bad)
+	check(js.find("@shilda") == -1, "r20_json_no_shilda")
+	var kc := FileAccess.get_file_as_string("res://scripts/keeper/keeper_controller.gd")
+	var kb := kc.substr(kc.find('"library_reading_cell"'), 80)
+	check(kb.find('"present"') == -1, "r20_shilda_not_present")
+	if notches != null:
+		notches.on_interact(null)
+		var gn := 0
+		while gn < 300 and not pm.is_solved(&"library_reading_cell"):
+			gn += 1
+			if dm.is_open:
+				dm.advance()
+			await process_frame
+		dm.clear()
+		check(pm.is_solved(&"library_reading_cell"), "r20_notches_solve_reading_cell")
+		await create_timer(0.2).timeout
+		var shades := 0
+		for n in rc.find_children("*", "Node2D", true, false):
+			if "shade_id" in n and not bool(n.fake):
+				shades += 1
+		check(shades == 1, "r20_trace_shade_spawned", shades)
+	var fwd3: Node = null
+	for d in _doors_of(rc):
+		if d.target_room_id == &"experiment_cells":
+			fwd3 = d
+	check(fwd3 != null and fwd3.required_puzzle == &"library_reading_cell", "r20_forward_door_gate")
 	dm.clear()
 
 

@@ -39,7 +39,7 @@ const ROOM_PRESENCE := {
 	"awakening_vigil": {"mode": "present", "pos": Vector2(640, 280)},
 	"decay_greenhouse": {"mode": "silhouette", "pos": Vector2(980, 280)},
 	"library_clockroom": {"mode": "silhouette", "pos": Vector2(640, 280)},
-	"library_reading_cell": {"mode": "present", "pos": Vector2(720, 280)},
+	"library_reading_cell": {"mode": "hidden", "pos": Vector2(720, 280)},
 	"experiment_intake": {"mode": "silhouette", "pos": Vector2(980, 280)},
 	"mirrors_gallery": {"mode": "present", "pos": Vector2(900, 280)},
 	"mirrors_1927": {"mode": "silhouette", "pos": Vector2(760, 280)},
