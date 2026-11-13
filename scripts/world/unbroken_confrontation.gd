@@ -14,7 +14,16 @@ func _ready() -> void:
 	add_to_group("unbroken_reflection")
 	if PuzzleManager.is_solved(MIMIC_ID) or PuzzleManager.is_solved(&"mirrors_unbroken"):
 		return
+	PuzzleManager.puzzle_solved.connect(_on_solved)
 	_spawn()
+
+
+func _on_solved(id: StringName) -> void:
+	if id != MIMIC_ID and id != &"mirrors_unbroken":
+		return
+	if is_instance_valid(_shade):
+		_shade.queue_free()
+	_shade = null
 
 
 func _spawn() -> void:

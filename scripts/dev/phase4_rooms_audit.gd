@@ -325,19 +325,27 @@ func _rooms_28_31() -> void:
 	if _gates_of(du).size() > 0:
 		dgate = _gates_of(du)[0]
 	check(dgate != null and Array(dgate.puzzle_listen_all) == ["mirrors_dual_echo", "mirrors_dual_weight"] and Array(dgate.also_solve) == ["mirrors_dual"], "r29_gate_config")
-	var plate_sw_x: float = altar.global_position.x + 100.0
+	# Oyuncu x=700'de durup 580'de kolu çeker; aynalı yankı (eksen 480) plakada 260, kolda 380 olur.
+	var idle_x: float = 100.0
 	var frames: Array = [
-		[0.0, Vector2(altar.global_position.x, 288), false, "idle"],
-		[0.1, Vector2(altar.global_position.x, 288), false, "idle"],
+		[0.0, Vector2(700, 288), false, "idle"],
+		[0.1, Vector2(700, 288), false, "idle"],
 		[0.2, Vector2(580, 288), true, "idle"],
 		[0.5, Vector2(580, 288), true, "idle"],
 		[0.9, Vector2(580, 288), true, "idle"],
 	]
-	await _play_pass(altar, plate_sw_x, frames)
-	var dbg := []
+	var plate_x: float = altar.global_position.x + 100.0
+	await _play_pass(altar, idle_x, frames)
+	var plate_on := false
+	var lever_on := false
 	for sw in altar._switches:
-		dbg.append([sw.kind, sw.global_position, sw.active])
-	check(pm.is_live(&"mirrors_dual_echo"), "r29_twin_lever_plus_player_plate_is_live", [dbg, player.global_position, altar._twin.global_position if altar._twin else "notwin"])
+		if String(sw.kind) == "plate":
+			plate_on = bool(sw.active)
+		elif String(sw.kind) == "lever":
+			lever_on = bool(sw.active)
+	check(absf(player.global_position.x - plate_x) > 60.0, "r29_player_off_plate")
+	check(plate_on and lever_on, "r29_mirrored_twin_presses_plate_and_lever")
+	check(pm.is_live(&"mirrors_dual_echo"), "r29_mirrored_twin_alone_is_live")
 	await _cross(dgate)
 	check(not pm.is_solved(&"mirrors_dual"), "r29_twin_alone_does_not_solve")
 	_unsolve(["mirrors_dual", "mirrors_dual_echo", "mirrors_dual_weight"])
@@ -356,7 +364,7 @@ func _rooms_28_31() -> void:
 	await create_timer(6.6).timeout
 	for i in 8:
 		await physics_frame
-	await _play_pass(altar, plate_sw_x, frames)
+	await _play_pass(altar, idle_x, frames)
 	check(pm.is_live(&"mirrors_dual_echo") and (pm.is_live(&"mirrors_dual_weight") or pm.is_solved(&"mirrors_dual_weight")), "r29_both_layers_live")
 	await _cross(dgate)
 	check(pm.is_solved(&"mirrors_dual") and pm.is_solved(&"mirrors_dual_echo") and pm.is_solved(&"mirrors_dual_weight"), "r29_both_layers_solve_on_pass")

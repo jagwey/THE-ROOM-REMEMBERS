@@ -165,8 +165,8 @@ position = Vector2(675, 290)
 script = ExtResource("thorn")
 anchor_x = 620.0
 puzzle_hint = &"mirrors_dual_weight"
-body_line = "Dokunursam ölürüm. Beden plakanın üstünde kalır."
-solved_line = "Plaka sustu. Beden onu tutuyor."
+body_line = "Dokunursam ölürüm, beden plakanın üstünde kalmalı."
+solved_line = "Plaka sustu, beden onu tutuyor."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BloodThorn"]
 shape = SubResource("PlateShape")

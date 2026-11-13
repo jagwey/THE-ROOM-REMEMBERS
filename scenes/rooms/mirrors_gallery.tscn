@@ -64,8 +64,8 @@ position = Vector2(415, 290)
 script = ExtResource("thorn")
 anchor_x = 360.0
 puzzle_hint = &"mirrors_gallery_plate_1"
-body_line = "Dokunursam ölürüm. Beden plakanın üstünde kalır."
-solved_line = "Plaka sustu. Beden onu tutuyor."
+body_line = "Dokunursam ölürüm, beden plakanın üstünde kalmalı."
+solved_line = "Plaka sustu, beden onu tutuyor."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/Thorn1"]
 shape = SubResource("PlateShape")
@@ -92,8 +92,8 @@ position = Vector2(695, 290)
 script = ExtResource("thorn")
 anchor_x = 640.0
 puzzle_hint = &"mirrors_gallery_plate_2"
-body_line = "Dokunursam ölürüm. Beden plakanın üstünde kalır."
-solved_line = "Plaka sustu. Beden onu tutuyor."
+body_line = "Dokunursam ölürüm, beden plakanın üstünde kalmalı."
+solved_line = "Plaka sustu, beden onu tutuyor."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/Thorn2"]
 shape = SubResource("PlateShape")
@@ -120,8 +120,8 @@ position = Vector2(975, 290)
 script = ExtResource("thorn")
 anchor_x = 920.0
 puzzle_hint = &"mirrors_gallery_plate_3"
-body_line = "Dokunursam ölürüm. Beden plakanın üstünde kalır."
-solved_line = "Plaka sustu. Beden onu tutuyor."
+body_line = "Dokunursam ölürüm, beden plakanın üstünde kalmalı."
+solved_line = "Plaka sustu, beden onu tutuyor."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/Thorn3"]
 shape = SubResource("PlateShape")
