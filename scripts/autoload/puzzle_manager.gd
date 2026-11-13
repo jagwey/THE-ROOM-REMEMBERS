@@ -295,8 +295,8 @@ const HINTS: Dictionary = {
 	},
 	&"core_threshold_crossed": {
 		"goal": "Kırmızı bulut canlıyı yer; geçit bulutun ötesinde.",
-		"orientation": "Ölü beden laneti emer. Bulutun içinde iki beden bırak.",
-		"explicit": "Bulutta ölüp iki beden bırak, aralarından geç, sağ uca var."
+		"orientation": "Ölü beden laneti emer. Bulutun içindeki kırmızı kristallerle iki beden bırak.",
+		"explicit": "Soldaki kristale iki kez dokunup öl, sonraki kristalde bunu tekrarla, geç."
 	},
 	&"core_seal_bond_1": {
 		"goal": "Mührün üç bağı var; hepsi Ruh Kesimi ile kesilir.",

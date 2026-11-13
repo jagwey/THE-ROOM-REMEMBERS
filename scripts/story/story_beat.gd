@@ -289,7 +289,7 @@ func _core_threshold() -> void:
 	DialogueManager.say("Noroi", "Biliyorum.")
 	DialogueManager.say("Shilda", "Hayır. Henüz bilmiyorsun.")
 	DialogueManager.say("Shilda", "Yine de kapı artık senden bir can istemiyor.")
-	DialogueManager.say("Noroi", "Bulutun içinde bedenim kalkan olur, geçidi öyle açacağım.")
+	DialogueManager.say("Noroi", "Bulutun girişindeki kırmızı kristale dokunup bedenimi kalkan yapacağım.")
 
 	var ok: bool = await DialogueManager.dialogue_finished
 
@@ -313,9 +313,9 @@ func _core_seal_chamber() -> void:
 	DialogueManager.say("Kayıt", "Deney başladı. Kapı kapandı. Koruma mührü devreye girdi.")
 	DialogueManager.say("Noroi", "Silinen hafızalar burada kaldı, hiçbiri kayıp değil artık.")
 
-	DialogueManager.say("Shilda", "Mührün bağları çekirdeğin başında.")
-	DialogueManager.say("Shilda", "Ruh Kesimi onları kesebilir.")
-	DialogueManager.say("Noroi", "Hazırım, kristale dokunduğumda bitecek.")
+	DialogueManager.say("Shilda", "Bağlar çekirdeğin başındaydı.")
+	DialogueManager.say("Shilda", "Üç bağ da kesildi.")
+	DialogueManager.say("Noroi", "Mühür artık kimseyi tutmuyor.")
 
 	var ok: bool = await DialogueManager.dialogue_finished
 

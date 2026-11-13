@@ -744,7 +744,7 @@ func _rooms_35_37() -> void:
 			tseal = n
 	check(cloud != null and absf(cloud.position.x - 590.0) < 2.0 and cloud.size == Vector2(420, 150) and is_equal_approx(cloud.safe_radius, 120.0), "r35_cloud_config")
 	check(marker != null and absf(marker.position.x - 840.0) < 2.0 and Array(marker.also_solve).has("core_threshold"), "r35_marker_also_solves_legacy")
-	check(tbeat != null and absf(tbeat.position.x - 300.0) < 2.0, "r35_threshbeat_x300")
+	check(tbeat != null and absf(tbeat.position.x - 280.0) < 2.0, "r35_threshbeat_x280")
 	check(tseal != null and tseal.position == Vector2(200, 288), "r35_memory_seal_200")
 	var ctsp: Dictionary = rm._rooms[&"core_threshold"].spawns
 	check(ctsp.has(&"seal_core_threshold") and ctsp[&"seal_core_threshold"] == Vector2(200, 288), "r35_seal_marker_200")
@@ -755,6 +755,70 @@ func _rooms_35_37() -> void:
 		await physics_frame
 	check(cur.curse > 5.0, "r35_cloud_without_corpse_adds_curse", cur.curse)
 	check(cloud != null and not cloud._is_safe(Vector2(590, 288)), "r35_unshielded_not_safe")
+	# golge atilmasi tek basina bulutu gecemez
+	var dash_dist: float = float(player.DASH_SPEED) * float(player.DASH_TIME)
+	check(cloud != null and dash_dist < float(cloud.size.x) * 0.5, "r35_dash_cannot_cross_cloud", dash_dist)
+	# gercek oda ici olum: iki kan dikeni -> iki ceset -> bulut guvenli
+	var thorns: Array = []
+	for n in ct.find_children("*", "Area2D", true, false):
+		if n.is_in_group("blood_thorn"):
+			thorns.append(n)
+	thorns.sort_custom(func(a, c): return a.position.x < c.position.x)
+	check(thorns.size() == 2 and absf(thorns[0].anchor_x - 480.0) < 1.0 and absf(thorns[1].anchor_x - 700.0) < 1.0, "r35_two_thorns_anchor_480_700", thorns.size())
+	if thorns.size() == 2:
+		var tsp: Dictionary = rm._rooms[&"core_threshold"].spawns
+		var spacing_ok := true
+		for t in thorns:
+			for n in ct.find_children("*", "Area2D", true, false):
+				if n == t or n.get_parent() != t.get_parent():
+					continue
+				var need := 96.0 if n.get_script() == load("res://scripts/world/room_transition.gd") else 80.0
+				if absf(n.position.x - t.position.x) < need:
+					spacing_ok = false
+			for sk in tsp:
+				if absf(Vector2(tsp[sk]).x - t.position.x) < 20.0:
+					spacing_ok = false
+			spacing_ok = spacing_ok and t.position.y >= 270.0 and t.position.x > 150.0 and t.position.x < 880.0
+		check(spacing_ok, "r35_thorn_spacing_and_floor")
+		var death := root.get_node("DeathManager")
+		var kill_idx := 0
+		for t in thorns:
+			cur.curse = 0.0 if kill_idx == 0 else cur.curse
+			player.global_position = Vector2(t.position.x, 288)
+			t._armed = true
+			await t.on_interact(player)
+			var tw := 0.0
+			while death.is_dying and tw < 30.0:
+				await process_frame
+				tw += 0.016
+			await process_frame
+			await process_frame
+			kill_idx += 1
+		var cs: Array = gs.world_memory_state["corpses"]
+		check(cs.size() == 2, "r35_thorn_deaths_make_two_corpses", cs.size())
+		var cloud2: Node = null
+		for n in _room_root(&"core_threshold").find_children("*", "Node2D", true, false):
+			if n.is_in_group("curse_cloud"):
+				cloud2 = n
+		var cov2 := cloud2 != null
+		var xq := 384.0
+		while cloud2 != null and xq <= 796.0:
+			cov2 = cov2 and cloud2._is_safe(Vector2(xq, 288))
+			xq += 4.0
+		check(cov2, "r35_thorn_corpses_cover_cloud")
+		check(cur.curse < 100.0, "r35_curse_below_100_after_two_deaths", cur.curse)
+		var base_curse: float = cur.curse
+		player.global_position = Vector2(590, 288)
+		for i in 30:
+			await physics_frame
+		check(cur.curse <= base_curse + 1.0, "r35_thorn_corridor_adds_no_curse", cur.curse)
+		_unsolve(["core_threshold", "core_threshold_crossed"])
+		player.global_position = Vector2(840, 288)
+		for i in 8:
+			await physics_frame
+		check(pm.is_solved(&"core_threshold"), "r35_thorn_route_solves_threshold")
+	_clear_corpses()
+	await process_frame
 	# 2 ceset (x480, x700) koridoru kapatir: bulutun tamami guvenli
 	_corpse_at(480, 288)
 	_corpse_at(700, 288)

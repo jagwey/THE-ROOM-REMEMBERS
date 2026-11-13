@@ -18,7 +18,7 @@ const _BY_ROOM: Dictionary = {
 	"mirrors_reverse": "Aynalı zeminde yön ters; kırmızı şeritlere basmadan sağ uca var.",
 	"mirrors_dual": "Yankın ters yürür; kolu o çeksin. Plakayı bedenle bastır.",
 	"mirrors_unbroken": "Yansıma bir yol yürür; yankınla izle, sonra Shilda ile yüzleş.",
-	"core_threshold": "Cesedini bulutun içine bırak, güvenli koridordan karşıya geç.",
+	"core_threshold": "Bulutun kırmızı kristallerinde öl, cesetlerin korumasıyla karşıya geç.",
 	"core_seal_chamber": "Üç bağı Ruh Kesimi ile soldan sağa kes, sonra kayda dokun.",
 	"core": "Aşağı in. Mührü Shilda ile birlikte kır.",
 	"awakening_balcony": "Sütunlara bedenini basamak yap, karşıya geç.",

@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="Texture2D" path="res://assets/backgrounds/core/far.png" id="1"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/core/mid.png" id="2"]
@@ -11,6 +11,7 @@
 [ext_resource type="Script" path="res://scripts/world/memory_seal_point.gd" id="memory_seal_pt"]
 [ext_resource type="Script" path="res://scripts/world/curse_cloud.gd" id="cloud"]
 [ext_resource type="Script" path="res://scripts/world/reach_marker.gd" id="reach"]
+[ext_resource type="Script" path="res://scripts/world/blood_thorn.gd" id="thorn"]
 
 [sub_resource type="RectangleShape2D" id="Floor"]
 size = Vector2(1000, 48)
@@ -117,7 +118,7 @@ locked_message = "Bulutun öte yakasına geçmeliyim."
 shape = SubResource("Hit")
 
 [node name="ThreshBeat" type="Area2D" parent="Interactive"]
-position = Vector2(300, 268)
+position = Vector2(280, 268)
 collision_layer = 8
 collision_mask = 0
 monitoring = false
@@ -131,6 +132,34 @@ shape = SubResource("Interact")
 [node name="Sprite2D" type="Sprite2D" parent="Interactive/ThreshBeat"]
 texture_filter = 0
 centered = true
+
+[node name="CloudThornA" type="Area2D" parent="Interactive"]
+position = Vector2(370, 270)
+script = ExtResource("thorn")
+anchor_x = 480.0
+anchor_y = 288.0
+hold_corpse = true
+hold_id = &"core_threshold_cloud_a"
+puzzle_hint = &"core_threshold_crossed"
+solved_line = "Kristal sustu, beden bulutu tutuyor."
+body_line = "Bulutun girişinde ölürsem cesedim koridorun ilk yarısını korur."
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/CloudThornA"]
+shape = SubResource("Interact")
+
+[node name="CloudThornB" type="Area2D" parent="Interactive"]
+position = Vector2(500, 270)
+script = ExtResource("thorn")
+anchor_x = 700.0
+anchor_y = 288.0
+hold_corpse = true
+hold_id = &"core_threshold_cloud_b"
+puzzle_hint = &"core_threshold_crossed"
+solved_line = "Kristal sustu, beden bulutu tutuyor."
+body_line = "Cesedimin gölgesinde ikinci kristale varırsam bulutun öte yarısı da açılır."
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/CloudThornB"]
+shape = SubResource("Interact")
 
 [node name="Corpse" type="Node2D" parent="." groups=["corpses_root"]]
 
