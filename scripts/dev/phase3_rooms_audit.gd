@@ -35,6 +35,7 @@ func _run() -> void:
 	await _rooms_18_20()
 	await _rooms_21_24()
 	await _rooms_25_27()
+	await _softlock()
 	quit(1 if failures > 0 else 0)
 
 
@@ -1150,3 +1151,219 @@ func _graph() -> void:
 	check(spawn_bad.is_empty(), "GRAPH every door target spawn exists", spawn_bad)
 	check(back_bad.is_empty(), "GRAPH every back door targets previous room", back_bad)
 	check(dash_bad.is_empty(), "GRAPH no shadow dash door in 14-27", dash_bad)
+
+
+const SL_LEGACY_V116: PackedStringArray = [
+	"library_catalog", "library_witnesses", "library_clockroom", "experiment_intake", "experiment_authority",
+]
+const SL_NEW_IDS: PackedStringArray = [
+	"library_hall_shelves", "library_witness_corpse", "library_witness_echo", "library_clock_dials", "library_shelf_order",
+	"library_reading_cabin", "library_reading_cell", "experiment_cell_a", "experiment_cell_b", "experiment_cell_c",
+	"experiment_cells_seen", "experiment_intake_corpse", "experiment_intake_stone", "experiment_quarantine_done",
+	"experiment_vein_1", "experiment_vein_2", "experiment_vein_3", "experiment_conduit", "experiment_observation",
+	"experiment_observation_projector",
+]
+
+
+## Bir odanin cozumunde dokunulan tum bulmaca id'lerini sahneden toplar (kapi, kapi-engel, damar, kadran, plaka).
+func _ids_of_room(rid: StringName, room: Node) -> Array:
+	var ids: Array = []
+	var add := func(v: Variant) -> void:
+		var t := String(v)
+		if t != "" and not ids.has(t):
+			ids.append(t)
+	for id in root.get_node("PuzzleManager").ROOM_PUZZLES.get(String(rid), []):
+		add.call(id)
+	for d in _doors_of(room):
+		add.call(d.required_puzzle)
+	for g in _gates_of(room):
+		add.call(g.legacy_puzzle)
+		for id in g.puzzle_listen_all:
+			add.call(id)
+		for id in g.also_solve:
+			add.call(id)
+	for v in _veins_of(room):
+		add.call(v.puzzle_id)
+	for n in room.find_children("*", "Node2D", true, false):
+		if "targets" in n and n.has_method("turn"):
+			add.call(n.puzzle_id)
+			for id in n.also_solve:
+				add.call(id)
+	for p in _plates_of(room):
+		add.call(p.puzzle_id)
+	return ids
+
+
+func _softlock() -> void:
+	var gs := root.get_node("GameState")
+	var pm := root.get_node("PuzzleManager")
+	var rm := root.get_node("RoomManager")
+	var sm := root.get_node("SaveManager")
+	var dm := root.get_node("DialogueManager")
+	dm.clear()
+	_clear_corpses()
+	# ---- (a) v1.16 tarzi kayit: yalniz eski id'ler cozulu, Ruh Kesimi yok, oda experiment_cells ----
+	_unsolve(Array(SL_NEW_IDS) + Array(SL_LEGACY_V116))
+	for id in SL_LEGACY_V116:
+		pm.mark_solved(StringName(id))
+	rm.enter_room(&"experiment_cells", &"default")
+	await create_timer(0.4).timeout
+	var puz: Dictionary = gs.world_memory_state["puzzles"]
+	for id in SL_NEW_IDS:
+		puz.erase(String(id))
+	gs.player_progress_knowledge["ability_soul_slash"] = false
+	var saved: bool = sm.save_game()
+	check(saved, "sl_a_v116_style_save_written")
+	## Bellegi boz, diskten yukle: gercek yukleme yolu + gocler.
+	pm.solved.clear()
+	puz.clear()
+	gs.player_progress_knowledge["ability_soul_slash"] = false
+	var loaded: bool = sm.load_game(false)
+	check(loaded, "sl_a_v116_style_save_loaded")
+	check(bool(gs.player_progress_knowledge.get("ability_soul_slash", false)), "sl_a_soul_slash_granted_on_load")
+	for id in SL_LEGACY_V116:
+		check(pm.is_solved(StringName(id)), "sl_a_legacy_%s_still_solved" % id)
+	var fwd_pairs := {
+		"library_hall": "library_witness", "library_witness": "library_clockroom", "library_clockroom": "library_page",
+		"experiment_intake": "experiment_circuit", "experiment_authority": "experiment_quarantine",
+	}
+	for rid in fwd_pairs.keys():
+		rm.enter_room(StringName(rid), &"default")
+		await create_timer(0.3).timeout
+		var rr := _room_root(StringName(rid))
+		var fwd_open := false
+		var bad_gate: Array = []
+		for d in _doors_of(rr):
+			if String(d.target_room_id) == String(fwd_pairs[rid]) and float(d.global_position.x) > 400.0:
+				fwd_open = not d.is_locked()
+		for g in _gates_of(rr):
+			if not g._is_open():
+				bad_gate.append(String(g.name))
+		check(fwd_open, "sl_a_%s_forward_door_open_for_v116_save" % rid)
+		check(bad_gate.is_empty(), "sl_a_%s_gates_open_for_v116_save" % rid, bad_gate)
+	_unsolve(Array(SL_NEW_IDS) + Array(SL_LEGACY_V116))
+	# ---- (b) cells: iki ceset plakada, ceset siniri kirpar; plaka yeniden dolar, kapi gecilince cozulu kalir ----
+	_clear_corpses()
+	rm.enter_room(&"experiment_cells", &"default")
+	await create_timer(0.4).timeout
+	var cells: Node = _room_root(&"experiment_cells")
+	var cg: Array = _gates_of(cells)
+	cg.sort_custom(func(a, b): return a.position.x < b.position.x)
+	var cp: Array = _plates_of(cells)
+	cp.sort_custom(func(a, b): return a.position.x < b.position.x)
+	if cg.size() == 3 and cp.size() == 3:
+		_corpse_at(cp[0].global_position.x, 288.0)
+		await create_timer(0.1).timeout
+		_corpse_at(cp[1].global_position.x, 288.0)
+		await create_timer(0.4).timeout
+		check(pm.is_live(&"experiment_cell_a") and pm.is_live(&"experiment_cell_b"), "sl_b_two_corpses_fill_plates_a_b")
+		var first_id := String((gs.world_memory_state["corpses"] as Array)[0].get("id", ""))
+		## Ucuncu olum baska yerde, dorduncu olum siniri asar: en eski ceset (plaka A) kirpilir.
+		_corpse_at(60.0, 288.0)
+		await create_timer(0.2).timeout
+		_corpse_at(110.0, 288.0)
+		await create_timer(0.5).timeout
+		var lst: Array = gs.world_memory_state["corpses"]
+		var oldest_gone := true
+		for c in lst:
+			if String((c as Dictionary).get("id", "")) == first_id:
+				oldest_gone = false
+		check(lst.size() <= root.get_node("CorpseManager").MAX_CORPSES, "sl_b_corpse_cap_holds (%d)" % lst.size())
+		print("PHASE3 INFO sl_b oldest corpse trimmed: ", oldest_gone)
+		## Plaka cesetleri tutuluyorsa trim baska ceseti keser; en eski cesedin silinmesi senaryosunu elle zorla.
+		if not oldest_gone:
+			for k in range(lst.size() - 1, -1, -1):
+				if String((lst[k] as Dictionary).get("id", "")) == first_id:
+					lst.remove_at(k)
+			root.get_node("CorpseManager").rebuild_world_corpses()
+			await create_timer(0.4).timeout
+		check(not pm.is_live(&"experiment_cell_a"), "sl_b_plate_a_empty_after_oldest_corpse_removed")
+		## Her plakaya sirayla ceset koy (bos ise yeniden doldur), kapiyi gec, cozulu kalmali.
+		var ids := ["experiment_cell_a", "experiment_cell_b", "experiment_cell_c"]
+		for i in 3:
+			if not pm.is_live(StringName(ids[i])) and not pm.is_solved(StringName(ids[i])):
+				_corpse_at(cp[i].global_position.x, 288.0)
+				await create_timer(0.5).timeout
+			check(pm.is_live(StringName(ids[i])) or pm.is_solved(StringName(ids[i])), "sl_b_plate_%d_fillable_after_trim" % i)
+			check(bool(cg[i]._is_open()), "sl_b_gate_%d_opens_on_plate" % i)
+			await _cross(cg[i])
+			check(pm.is_solved(StringName(ids[i])), "sl_b_gate_%d_cross_latches_solved" % i)
+			## Plaka sonradan bosalsa da kapi acik kalir.
+			(gs.world_memory_state["corpses"] as Array).clear()
+			root.get_node("CorpseManager").rebuild_world_corpses()
+			await create_timer(0.3).timeout
+			check(pm.is_solved(StringName(ids[i])) and bool(cg[i]._is_open()), "sl_b_gate_%d_stays_open_without_corpse" % i)
+	else:
+		check(false, "sl_b_cells_layout_found", "%d gates %d plates" % [cg.size(), cp.size()])
+	_clear_corpses()
+	_unsolve(Array(SL_NEW_IDS))
+	# ---- (c) her 14-27 odasi: cozum sonrasi yeniden giris ----
+	var chain: Array = Array(MAIN_PATH_P3).slice(0, 14)
+	for i in chain.size():
+		var rid := StringName(chain[i])
+		rm.enter_room(rid, &"default")
+		await create_timer(0.3).timeout
+		var room := _room_root(rid)
+		var ids2 := _ids_of_room(rid, room)
+		for id in ids2:
+			pm.mark_solved(StringName(id))
+		dm.clear()
+		rm.enter_room(&"awakening", &"default")
+		await create_timer(0.25).timeout
+		rm.enter_room(rid, &"default")
+		await create_timer(0.3).timeout
+		room = _room_root(rid)
+		var want := String(MAIN_PATH_P3[i + 1])
+		var door_ok := false
+		for d in _doors_of(room):
+			if String(d.target_room_id) == want and float(d.global_position.x) > 400.0:
+				door_ok = not d.is_locked()
+		check(door_ok, "sl_c_%s_forward_door_open_on_reentry" % rid)
+		var shut: Array = []
+		for g in _gates_of(room):
+			if not g._is_open():
+				shut.append(String(g.name))
+		check(shut.is_empty(), "sl_c_%s_gates_open_on_reentry" % rid, shut)
+		## Taze ornek (_ready cozulu durumu okur): damarlar kesik, kadran hedefte, muhur tekrar sormaz.
+		var packed := load("res://scenes/rooms/%s.tscn" % String(rid)) as PackedScene
+		if packed != null:
+			var fresh: Node = packed.instantiate()
+			current_scene.add_child(fresh)
+			await create_timer(0.3).timeout
+			var vein_bad: Array = []
+			for v in _veins_of(fresh):
+				var before: bool = bool(v._vis.visible)
+				v.receive_soul_slash(null)
+				if before or bool(v._vis.visible) or not pm.is_solved(v.puzzle_id):
+					vein_bad.append(String(v.puzzle_id))
+			var dial_bad: Array = []
+			for n in fresh.find_children("*", "Node2D", true, false):
+				if "targets" in n and n.has_method("turn") and n.values() != n.targets:
+					dial_bad.append(String(n.puzzle_id))
+			check(vein_bad.is_empty(), "sl_c_%s_veins_cut_and_never_ask_again" % rid, vein_bad)
+			check(dial_bad.is_empty(), "sl_c_%s_dials_at_target" % rid, dial_bad)
+			fresh.queue_free()
+			await create_timer(0.1).timeout
+		dm.clear()
+		_unsolve(ids2)
+	# ---- (d) kanal: yanlis sira 3 kez, yine cozulebilir ----
+	_unsolve(["experiment_conduit", "experiment_vein_1", "experiment_vein_2", "experiment_vein_3"])
+	rm.enter_room(&"experiment_core_conduit", &"default")
+	await create_timer(0.4).timeout
+	var veins: Array = _veins_of(_room_root(&"experiment_core_conduit"))
+	if veins.size() == 3:
+		var by_id: Dictionary = {}
+		for v in veins:
+			by_id[String(v.puzzle_id)] = v
+		for wrong in ["experiment_vein_3", "experiment_vein_2", "experiment_vein_3"]:
+			by_id[wrong].receive_soul_slash(null)
+			await create_timer(0.1).timeout
+		check(not pm.is_solved(&"experiment_vein_2") and not pm.is_solved(&"experiment_vein_3") and not pm.is_solved(&"experiment_conduit"), "sl_d_three_wrong_cuts_change_nothing")
+		for k in ["experiment_vein_1", "experiment_vein_2", "experiment_vein_3"]:
+			by_id[k].receive_soul_slash(null)
+			await create_timer(0.1).timeout
+		check(pm.is_solved(&"experiment_conduit"), "sl_d_still_solvable_after_wrong_order")
+	else:
+		check(false, "sl_d_three_veins_found", veins.size())
+	dm.clear()
+	_unsolve(["experiment_conduit", "experiment_vein_1", "experiment_vein_2", "experiment_vein_3"])
