@@ -100,9 +100,7 @@ func _library_hall() -> void:
 
 	DialogueManager.say("Noroi", "Hangisine inanayım?")
 
-	DialogueManager.say("Arşivci", "Sağdaki odada saat, çiçek ve mühür var. Üçünü de dinle.")
-
-	DialogueManager.say("Arşivci", "Sonra ortadaki kayıtla karşılaştır. Sıra kayıp sayfayı açar.")
+	DialogueManager.say("Arşivci", "Kayıtlar yazılı. Raflar sırayla çekilir.")
 
 	var ok: bool = await DialogueManager.dialogue_finished
 
@@ -111,8 +109,6 @@ func _library_hall() -> void:
 		return
 
 	_evidence("ev_catalog_conflict", "Kazınmış imzalar", "Sayısız kişi bu yere girmiş. Hepsinin kaydında imza kazınmış. En sonda bir yıl var: 1995.", "open_question", "notlar")
-
-	PuzzleManager.mark_solved(&"library_catalog")
 
 	SaveManager.save_game()
 
@@ -136,15 +132,10 @@ func _library_witness() -> void:
 
 	if ev.has("ev_witness_clock") and ev.has("ev_witness_flower") and ev.has("ev_witness_seal"):
 
-		DialogueManager.say("Noroi", "1927'de boyut kuruldu, son kayıt 1995'te düşülmüş.")
-		DialogueManager.say("Noroi", "Önce deney, sonra kapı, en son mühür; kod iki, beş, bir.")
 		DialogueManager.say("Noroi", "Felaketi mühür başlatmamış, içeride tutmuş.")
 		var understood: bool = await DialogueManager.dialogue_finished
 		if not understood:
 			return
-		GameState.learn_memory_code("library_witness", "251")
-		PuzzleManager.mark_solved(&"library_witnesses")
-
 		SaveManager.save_game()
 
 	else:

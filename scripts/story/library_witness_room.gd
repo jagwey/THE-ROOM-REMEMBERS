@@ -1,18 +1,18 @@
-﻿extends Node
+extends Node
 ## Tanık odası — kısa EchoManager kayıtları (_ready).
+## Yankılar yalnız ipucu verir: saat saatleri, çiçek ve mühür birer rakam söyler.
 
 
 func _ready() -> void:
 	EchoManager.register_echo("witness_clock", {
 		"evidence_id": "ev_witness_clock",
 		"lines": [
-			["Yankı", "…tik. 1927. Boyut kuruldu."],
-			["Yankı", "Zaman burada durdu. Kapı o an hâlâ açıktı."],
+			["Yankı", "1927'de gece üçte durdum. Sonra dokuzda, en son altıda."],
 		],
 		"journal": {
 			"section": "izler",
 			"title": "Tanık: Saat",
-			"body": "1927 damgası. Zaman durduğunda kapı henüz kapanmamıştı.",
+			"body": "Saat üç, dokuz ve altıda durmuş. Kadranlar bunu ister.",
 			"kind": "evidence",
 		},
 		"memory_code": "",
@@ -20,13 +20,12 @@ func _ready() -> void:
 	EchoManager.register_echo("witness_flower", {
 		"evidence_id": "ev_witness_flower",
 		"lines": [
-			["Yankı", "Solgun kırmızı bir çiçek. Yas deneyden önce gelmiş."],
-			["Yankı", "Biri 1995'e kadar çiçek bırakıp bekledi."],
+			["Yankı", "Solgun çiçeğin beş yaprağı kaldı."],
 		],
 		"journal": {
 			"section": "izler",
 			"title": "Tanık: Çiçek",
-			"body": "Çiçek yasını deneyden önce taşımış; 1995'e kadar beklenmiş.",
+			"body": "Çiçeğin sözü: beş.",
 			"kind": "evidence",
 		},
 		"memory_code": "",
@@ -34,13 +33,12 @@ func _ready() -> void:
 	EchoManager.register_echo("witness_seal", {
 		"evidence_id": "ev_witness_seal",
 		"lines": [
-			["Yankı", "Kırmızı mühür kapanıyor. İki, beş, bir."],
-			["Yankı", "Koruma sonra devreye girdi, felaketi içeride tuttu."],
+			["Yankı", "Kırmızı mühür kapanırken bir kez vurdu."],
 		],
 		"journal": {
 			"section": "izler",
 			"title": "Tanık: Mühür",
-			"body": "Koruma mührü olaydan sonra devreye girmiş. Kod: 251. Kronoloji: 1927 kuruluş → deney → 1995 giriş.",
+			"body": "Mührün sözü: bir.",
 			"kind": "evidence",
 		},
 		"memory_code": "",

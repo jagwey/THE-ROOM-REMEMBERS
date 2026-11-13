@@ -13,6 +13,8 @@ const DRESS := preload("res://scripts/world/platform_dress.gd")
 @export var bridge: Vector3 = Vector3.ZERO
 ## Açıksa yanlış adım (zinciri yeniden başlatmayan) lanete +1 yazar.
 @export var penalize_wrong: bool = false
+## Çözümde ek olarak çözülü işaretlenecek (eski kayıt) bulmaca kimlikleri.
+@export var also_solve: PackedStringArray = PackedStringArray()
 
 var _progress: int = 0
 
@@ -42,6 +44,8 @@ func press(step_id: String, source: Node = null) -> void:
 		_tick(source)
 		if _progress >= order.size():
 			PuzzleManager.mark_solved(puzzle_id)
+			for extra in also_solve:
+				PuzzleManager.mark_solved(StringName(extra))
 			_burst(source)
 			_spawn_bridge()
 			if success_line != "":

@@ -48,7 +48,7 @@ const ROOM_PRESENCE := {
 	"awakening_balcony": {"mode": "silhouette", "pos": Vector2(820, 280)},
 	"decay_garden": {"mode": "present", "pos": Vector2(700, 280)},
 	"decay_shilda_wall": {"mode": "present", "pos": Vector2(760, 280)},
-	"library_witness": {"mode": "silhouette", "pos": Vector2(820, 280)},
+	"library_witness": {"mode": "present", "pos": Vector2(560, 280)},
 	"library_forbidden_wing": {"mode": "silhouette", "pos": Vector2(140, 280)},
 	"experiment_authority": {"mode": "silhouette", "pos": Vector2(820, 280)},
 	"experiment_quarantine": {"mode": "silhouette", "pos": Vector2(860, 280)},
@@ -629,7 +629,9 @@ func on_interact(_by: Node) -> void:
 
 ## §19 asama konusmasi: bolgeye gore Shilda sozu (1 Mesafeli, 2 Merak, 3 Guven, 4 Aci, 5 Ortak amac).
 func _queue_stage_talk(room: String) -> void:
-	if room.begins_with("library"):
+	if room == "library_witness":
+		DialogueManager.say("Shilda", "Ben seyrederim. Tanık olan sensin.")
+	elif room.begins_with("library"):
 		DialogueManager.say("Noroi", "Beni neden takip ediyorsun?")
 		DialogueManager.say("Shilda", "Seni takip etmiyorum.")
 		DialogueManager.say("Noroi", "O zaman neden sürekli karşıma çıkıyorsun?")

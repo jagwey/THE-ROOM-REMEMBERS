@@ -233,10 +233,20 @@ const HINTS: Dictionary = {
 		"orientation": "Bahçedeki çiçeğin ışığına bak; çiçek anısı kilidi açar.",
 		"explicit": "Bahçede çiçeği aç, gölgeyle konuş; anı günlüğe işlenir."
 	},
+	&"library_hall_shelves": {
+		"goal": "Raflardaki üç kitap sırayla çekilmeli.",
+		"orientation": "Kayıt A sırayı söylüyor. Kitapları o sırayla çek.",
+		"explicit": "Önce saat, sonra çiçek, en son mühür kitabını çek."
+	},
+	&"library_witnesses": {
+		"goal": "Üç tanık aynı anda mührün yanında olmalı.",
+		"orientation": "Beden plakada, yankı plakada, sen mühürde.",
+		"explicit": "Dikene değ, sunağa dokun, plakaya bas, sonra mühre koş."
+	},
 	&"library_clockroom": {
-		"goal": "İki saat iki geceyi tutuyor.",
-		"orientation": "Önce 1927, sonra 1995. Cep saatin aynı geceyi sayıyor.",
-		"explicit": "Soldaki saati dinle, sonra sağdakini. Sayfa kapısı açılır."
+		"goal": "Üç kadran var; saatler yankıda söylenmişti.",
+		"orientation": "Kadranlar sırayla: 1927, 1995, bugün. Tanıkları hatırla.",
+		"explicit": "Kadranları sırayla üç, dokuz ve altıya getir."
 	},
 	&"library_page_order": {
 		"goal": "Dağılmış sayfaları oldukları sıraya diz.",
@@ -311,6 +321,8 @@ const ROOM_PUZZLES: Dictionary = {
 	"decay_garden": [&"decay_garden_bloom"],
 	"decay_catacombs": [&"decay_catacomb_seal"],
 	"decay_cistern": [&"decay_cistern"],
+	"library_hall": [&"library_hall_shelves"],
+	"library_witness": [&"library_witnesses"],
 	"library_clockroom": [&"library_clockroom"],
 	"library_page": [&"library_page_order"],
 	"library_upper_stacks": [&"library_shelf_order"],

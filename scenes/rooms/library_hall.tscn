@@ -12,6 +12,8 @@
 
 [ext_resource type="Texture2D" path="res://assets/characters/npc/frame_00.png" id="archivist_art"]
 [ext_resource type="Script" path="res://scripts/world/memory_seal_point.gd" id="memory_seal_pt"]
+[ext_resource type="Script" path="res://scripts/world/sequence_shrine.gd" id="shrine"]
+[ext_resource type="Script" path="res://scripts/world/sequence_step.gd" id="step"]
 
 [sub_resource type="RectangleShape2D" id="Floor"]
 size = Vector2(1000, 48)
@@ -122,7 +124,7 @@ script = ExtResource("5")
 target_room_id = &"library_witness"
 target_spawn_id = &"from_hall"
 required_puzzle = &"library_catalog"
-locked_message = "Arşivciyi dinlemeliyim."
+locked_message = "Rafları doğru sırayla çekmeliyim."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ForwardWitness"]
 shape = SubResource("Hit")
@@ -152,7 +154,7 @@ monitorable = true
 script = ExtResource("7")
 evidence_id = &"ev_catalog_left"
 title = "Kayıt A"
-body = "Önce kapı, sonra deney."
+body = "Önce saat konuştu, sonra çiçek, en son mühür."
 section = "notlar"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/CardLeft"]
@@ -172,6 +174,41 @@ section = "notlar"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/CardRight"]
 shape = SubResource("Interact")
+
+[node name="HallShrine" type="Node2D" parent="Interactive"]
+script = ExtResource("shrine")
+puzzle_id = &"library_hall_shelves"
+order = PackedStringArray("saat", "cicek", "muhur")
+fail_line = "Raflar tutmadı. Kayıtlara dön."
+success_line = "Saatin sözü kaldı: iki."
+also_solve = PackedStringArray("library_catalog")
+
+[node name="BookSaat" type="Area2D" parent="Interactive/HallShrine"]
+position = Vector2(210, 272)
+script = ExtResource("step")
+step_id = "saat"
+label = "Saat"
+texture_path = "res://assets/layers/books.png"
+sprite_scale = 0.32
+tint = Color(0.55, 0.62, 0.85, 1)
+
+[node name="BookCicek" type="Area2D" parent="Interactive/HallShrine"]
+position = Vector2(400, 272)
+script = ExtResource("step")
+step_id = "cicek"
+label = "Çiçek"
+texture_path = "res://assets/props/red_flower.png"
+sprite_scale = 0.5
+tint = Color(0.9, 0.35, 0.4, 1)
+
+[node name="BookMuhur" type="Area2D" parent="Interactive/HallShrine"]
+position = Vector2(780, 272)
+script = ExtResource("step")
+step_id = "muhur"
+label = "Mühür"
+texture_path = "res://assets/layers/books.png"
+sprite_scale = 0.32
+tint = Color(0.72, 0.55, 0.85, 1)
 
 [node name="Corpse" type="Node2D" parent="." groups=["corpses_root"]]
 

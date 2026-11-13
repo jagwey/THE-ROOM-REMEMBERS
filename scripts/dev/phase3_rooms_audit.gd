@@ -31,6 +31,7 @@ func _run() -> void:
 	root.get_node("UiGate").set_story(false)
 	await _components()
 	await _graph()
+	await _rooms_14_17()
 	quit(1 if failures > 0 else 0)
 
 
@@ -230,6 +231,171 @@ func _components() -> void:
 	gs.character_current_life_knowledge = bak_life
 	gs.story_flags = bak_flags
 	gs.discovered_seals = bak_seals
+
+
+
+func _rooms_14_17() -> void:
+	var rm := root.get_node("RoomManager")
+	var pm := root.get_node("PuzzleManager")
+	var dm := root.get_node("DialogueManager")
+	var gs := root.get_node("GameState")
+	dm.clear()
+	_clear_corpses()
+	# ---- 14 hall ----
+	_unsolve(["library_hall_shelves", "library_catalog"])
+	rm.enter_room(&"library_hall", &"default")
+	await create_timer(0.4).timeout
+	var hall: Node = _room_root(&"library_hall")
+	var hs: Node = hall.find_child("HallShrine", true, false)
+	check(hs != null and Array(hs.order) == ["saat", "cicek", "muhur"], "r14_hall_shrine_order")
+	if hs != null:
+		check(hs.puzzle_id == &"library_hall_shelves", "r14_hall_shrine_id")
+		var books := 0
+		for c in hs.get_children():
+			if "step_id" in c:
+				books += 1
+		check(books == 3, "r14_hall_three_books")
+		hs.press("muhur", null)
+		hs.press("saat", null)
+		check(not pm.is_solved(&"library_catalog"), "r14_hall_wrong_order_no_catalog")
+		hs.press("cicek", null)
+		hs.press("muhur", null)
+		await create_timer(0.2).timeout
+		check(pm.is_solved(&"library_hall_shelves") and pm.is_solved(&"library_catalog"), "r14_hall_shelves_solve_catalog")
+		dm.clear()
+	var card: Node = hall.find_child("CardLeft", true, false)
+	var cb := String(card.body) if card != null else ""
+	check(cb.findn("saat") >= 0 and cb.findn("saat") < cb.findn("çiçek") and cb.findn("çiçek") < cb.findn("mühür"), "r14_hall_card_states_order")
+	_unsolve(["library_hall_shelves", "library_catalog"])
+	var beat: Node = hall.find_child("HallBeat", true, false)
+	if beat != null:
+		beat.on_interact(null)
+		var gdn := 0
+		while gdn < 200:
+			gdn += 1
+			if dm.is_open:
+				dm.advance()
+			await process_frame
+		check(not pm.is_solved(&"library_catalog"), "r14_hall_archivist_alone_not_catalog")
+	dm.clear()
+	# ---- 15 witness ----
+	_unsolve(["library_witnesses", "library_witness_corpse", "library_witness_echo"])
+	rm.enter_room(&"library_witness", &"default")
+	await create_timer(0.4).timeout
+	var wit: Node = _room_root(&"library_witness")
+	var seal: Node = wit.find_child("WitnessSeal", true, false)
+	var cplate: Node = wit.find_child("CorpsePlate", true, false)
+	var altar: Node = wit.find_child("WitnessAltar", true, false)
+	check(seal != null and cplate != null and altar != null, "r15_witness_nodes")
+	if seal != null and cplate != null and altar != null:
+		var rl: Array = Array(seal.require_live)
+		check(rl.size() == 2 and "library_witness_corpse" in rl and "library_witness_echo" in rl, "r15_seal_requires_two_live")
+		check(seal.story_code == "251" and seal.puzzle_id == &"library_witnesses", "r15_seal_code_251_solves_witnesses")
+		check(not bool(cplate.accept_stone), "r15_corpse_plate_no_stone")
+		check(bool(altar.live_only) and altar.puzzle_id == &"library_witness_echo", "r15_altar_live_only")
+		var tw: Node = wit.find_child("WitnessThorn", true, false)
+		check(tw != null and tw.puzzle_hint == &"library_witness_corpse" and absf(float(tw.anchor_x) - cplate.position.x) < 1.0, "r15_thorn_anchored_on_plate")
+		var echo_x: float = altar.position.x + Vector2(altar.switch_positions[0]).x
+		var spaced: bool = absf(cplate.position.x - echo_x) >= 200.0 and absf(cplate.position.x - seal.position.x) >= 200.0 and absf(echo_x - seal.position.x) >= 200.0
+		check(spaced, "r15_plates_and_seal_spaced_200")
+		var hud_nodes: Array = get_nodes_in_group("hud")
+		for h in hud_nodes:
+			h.remove_from_group("hud")
+		var mock := Node.new()
+		var src := GDScript.new()
+		src.source_code = "extends Node\nfunc prompt_seal_code():\n\treturn \"251\"\n"
+		src.reload()
+		mock.set_script(src)
+		mock.add_to_group("hud")
+		wit.add_child(mock)
+		seal.on_interact(null)
+		check(not seal._busy, "r15_seal_closed_nothing_live")
+		dm.clear()
+		pm.set_live(&"library_witness_corpse", true)
+		seal.on_interact(null)
+		check(not seal._busy, "r15_seal_closed_corpse_only")
+		dm.clear()
+		pm.set_live(&"library_witness_echo", true)
+		seal.on_interact(null)
+		check(seal._busy, "r15_seal_opens_corpse_and_echo")
+		var g2 := 0
+		while not pm.is_solved(&"library_witnesses") and g2 < 600:
+			g2 += 1
+			if dm.is_open:
+				dm.advance()
+			await process_frame
+		check(pm.is_solved(&"library_witnesses"), "r15_code_251_solves_witnesses")
+		dm.clear()
+		mock.queue_free()
+		for h in hud_nodes:
+			if is_instance_valid(h):
+				h.add_to_group("hud")
+		pm.set_live(&"library_witness_corpse", false)
+		pm.set_live(&"library_witness_echo", false)
+	var sb := FileAccess.get_file_as_string("res://scripts/story/story_beat.gd")
+	var wstart := sb.find("func _library_witness")
+	var wend := sb.find("\nfunc ", wstart + 10)
+	var wbody := sb.substr(wstart, (wend if wend != -1 else sb.length()) - wstart)
+	check(not wbody.contains("251") and not wbody.contains("mark_solved") and not wbody.contains("learn_memory_code"), "r15_story_beat_no_251")
+	var ws := FileAccess.get_file_as_string("res://scripts/story/library_witness_room.gd")
+	var clk := _echo_block(ws, "witness_clock")
+	var flo := _echo_block(ws, "witness_flower")
+	var sea := _echo_block(ws, "witness_seal")
+	check(clk.contains("üç") and clk.contains("dokuz") and clk.contains("altı"), "r15_clock_echo_hours")
+	check(flo.contains("beş") and sea.contains("bir"), "r15_flower_five_seal_one")
+	check(not ws.contains("251"), "r15_echo_texts_no_251")
+	_unsolve(["library_witnesses", "library_witness_corpse", "library_witness_echo"])
+	# ---- 16 clockroom ----
+	_unsolve(["library_clock_dials", "library_clockroom"])
+	rm.enter_room(&"library_clockroom", &"default")
+	await create_timer(0.4).timeout
+	var ck: Node = _room_root(&"library_clockroom")
+	var dial: Node = ck.find_child("ClockDials", true, false)
+	check(dial != null and dial.targets == PackedInt32Array([3, 9, 6]), "r16_dial_targets_396")
+	if dial != null:
+		check(dial.puzzle_id == &"library_clock_dials" and "library_clockroom" in Array(dial.also_solve), "r16_dial_also_solves_clockroom")
+		for i in 3:
+			dial.turn(0)
+		for i in 9:
+			dial.turn(1)
+		for i in 6:
+			dial.turn(2)
+		dm.clear()
+		check(pm.is_solved(&"library_clock_dials") and pm.is_solved(&"library_clockroom"), "r16_dials_solve_clockroom")
+	for n in ck.find_children("*", "Area2D", true, false):
+		if "relic_id" in n:
+			check(n.solve_puzzle == &"", "r16_relic_no_solve_" + String(n.relic_id))
+	_unsolve(["library_clock_dials", "library_clockroom"])
+	# ---- 17 page ----
+	rm.enter_room(&"library_page", &"default")
+	await create_timer(0.4).timeout
+	var pgs: Array = get_nodes_in_group("library_page_puzzle")
+	var pg: Node = pgs[0] if pgs.size() > 0 else null
+	check(pg != null, "r17_page_puzzle_exists")
+	if pg != null:
+		_unsolve(["library_witnesses", "library_clockroom", "library_page_order"])
+		pg.open_puzzle()
+		check(not pg.visible, "r17_page_closed_without_prereq")
+		dm.clear()
+		pm.mark_solved(&"library_witnesses")
+		pg.open_puzzle()
+		check(pg.visible, "r17_page_opens_with_legacy_witnesses")
+		pg._hide_puzzle()
+		_unsolve(["library_witnesses"])
+		pm.mark_solved(&"library_clockroom")
+		pg.open_puzzle()
+		check(pg.visible, "r17_page_opens_with_clockroom")
+		pg._hide_puzzle()
+		_unsolve(["library_clockroom"])
+	dm.clear()
+
+
+func _echo_block(src: String, id: String) -> String:
+	var a := src.find('register_echo("%s"' % id)
+	if a == -1:
+		return ""
+	var b := src.find("register_echo(", a + 10)
+	return src.substr(a, (b if b != -1 else src.length()) - a)
 
 
 func _room_root(rid: StringName) -> Node:

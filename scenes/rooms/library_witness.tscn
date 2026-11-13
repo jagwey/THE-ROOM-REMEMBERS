@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3]
+[gd_scene load_steps=21 format=3]
 
 [ext_resource type="Texture2D" path="res://assets/backgrounds/library/far.png" id="1"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/library/mid.png" id="2"]
@@ -13,6 +13,11 @@
 [ext_resource type="Script" path="res://scripts/story/library_witness_room.gd" id="11"]
 
 [ext_resource type="Texture2D" path="res://assets/tiles/tile_00.png" id="walk_tile"]
+[ext_resource type="Script" path="res://scripts/world/pressure_plate.gd" id="plate"]
+[ext_resource type="Script" path="res://scripts/world/blood_thorn.gd" id="thorn"]
+[ext_resource type="Script" path="res://scripts/world/echo_altar.gd" id="altar"]
+[ext_resource type="Script" path="res://scripts/world/code_seal_base.gd" id="seal"]
+[ext_resource type="Texture2D" path="res://assets/props/pressure_plate.png" id="plate_art"]
 
 [sub_resource type="RectangleShape2D" id="Floor"]
 size = Vector2(1000, 48)
@@ -22,6 +27,9 @@ size = Vector2(40, 400)
 
 [sub_resource type="RectangleShape2D" id="Hit"]
 size = Vector2(44, 96)
+
+[sub_resource type="RectangleShape2D" id="PlateShape"]
+size = Vector2(40, 16)
 
 [sub_resource type="RectangleShape2D" id="Interact"]
 size = Vector2(40, 48)
@@ -38,7 +46,7 @@ atmosphere_bg = "res://assets/backgrounds/library"
 [node name="Spawns" type="Node2D" parent="."]
 
 [node name="keeper_observe" type="Marker2D" parent="Spawns"]
-position = Vector2(810, 288)
+position = Vector2(540, 288)
 
 [node name="default" type="Marker2D" parent="Spawns"]
 position = Vector2(120, 288)
@@ -100,7 +108,7 @@ target_spawn_id = &"from_witness"
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BackHall"]
 shape = SubResource("Hit")
 
-[node name="ForwardPage" type="Area2D" parent="Interactive"]
+[node name="ForwardClock" type="Area2D" parent="Interactive"]
 position = Vector2(920, 268)
 collision_layer = 8
 collision_mask = 0
@@ -110,13 +118,13 @@ script = ExtResource("5")
 target_room_id = &"library_clockroom"
 target_spawn_id = &"from_library_witness"
 required_puzzle = &"library_witnesses"
-locked_message = "Önce saat, çiçek ve mührü dinlemeliyim."
+locked_message = "Mühür açılmadan geçemem."
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ForwardPage"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ForwardClock"]
 shape = SubResource("Hit")
 
 [node name="ClockEcho" type="Area2D" parent="Interactive"]
-position = Vector2(260, 270)
+position = Vector2(140, 270)
 collision_layer = 8
 collision_mask = 0
 monitoring = false
@@ -133,7 +141,7 @@ texture = ExtResource("8")
 centered = true
 
 [node name="FlowerEcho" type="Area2D" parent="Interactive"]
-position = Vector2(480, 272)
+position = Vector2(210, 272)
 collision_layer = 8
 collision_mask = 0
 monitoring = false
@@ -150,7 +158,7 @@ texture = ExtResource("9")
 centered = true
 
 [node name="SealEcho" type="Area2D" parent="Interactive"]
-position = Vector2(700, 270)
+position = Vector2(280, 270)
 collision_layer = 8
 collision_mask = 0
 monitoring = false
@@ -167,7 +175,7 @@ texture = ExtResource("10")
 centered = true
 
 [node name="WitnessBeat" type="Area2D" parent="Interactive"]
-position = Vector2(370, 238)
+position = Vector2(500, 238)
 collision_layer = 8
 collision_mask = 0
 monitoring = false
@@ -179,6 +187,71 @@ beat_id = &"library_witness"
 shape = SubResource("Interact")
 
 [node name="Sprite2D" type="Sprite2D" parent="Interactive/WitnessBeat"]
+texture_filter = 0
+centered = true
+
+[node name="CorpsePlate" type="Area2D" parent="Interactive"]
+position = Vector2(610, 300)
+script = ExtResource("plate")
+puzzle_id = &"library_witness_corpse"
+accept_stone = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/CorpsePlate"]
+shape = SubResource("PlateShape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/CorpsePlate"]
+texture_filter = 0
+position = Vector2(0, 4)
+texture = ExtResource("plate_art")
+centered = true
+modulate = Color(1, 0.62, 0.66, 1)
+
+[node name="WitnessThorn" type="Area2D" parent="Interactive"]
+position = Vector2(680, 290)
+script = ExtResource("thorn")
+anchor_x = 610.0
+puzzle_hint = &"library_witness_corpse"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/WitnessThorn"]
+shape = SubResource("PlateShape")
+
+[node name="WitnessAltar" type="Area2D" parent="Interactive"]
+position = Vector2(330, 268)
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+monitorable = true
+script = ExtResource("altar")
+puzzle_id = &"library_witness_echo"
+intro_text = "Sunağa dokun, plakaya bas. Yankın orada kalsın."
+solved_text = "Yankı plakada duruyor."
+switch_kinds = PackedStringArray("plate")
+switch_positions = PackedVector2Array(80, 32)
+live_only = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/WitnessAltar"]
+shape = SubResource("Interact")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/WitnessAltar"]
+texture_filter = 0
+centered = true
+
+[node name="WitnessSeal" type="Area2D" parent="Interactive"]
+position = Vector2(820, 268)
+script = ExtResource("seal")
+code_key = "library_witness"
+puzzle_id = &"library_witnesses"
+story_code = "251"
+intro_line = "Mühürde üç boşluk var."
+solved_line = "Mühür gevşedi."
+wrong_line = "Yanlış, mühür kımıldamadı."
+require_live = PackedStringArray("library_witness_corpse", "library_witness_echo")
+require_line = "Üç tanık aynı anda burada olmalı."
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/WitnessSeal"]
+shape = SubResource("Interact")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/WitnessSeal"]
 texture_filter = 0
 centered = true
 

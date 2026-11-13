@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
 [ext_resource type="Script" path="res://scripts/world/ordered_relic.gd" id="relic"]
+[ext_resource type="Script" path="res://scripts/world/dial_puzzle.gd" id="dial"]
 [ext_resource type="Texture2D" path="res://assets/trr_refresh/library/clock_1927.png" id="clock_1927"]
 [ext_resource type="Texture2D" path="res://assets/trr_refresh/library/clock_1995.png" id="clock_1995"]
 
@@ -13,7 +14,7 @@ room_width = 1280.0
 bg_region = "library"
 checkpoint = Vector2(120, 288)
 default_spawn = Vector2(120, 288)
-doors = [{"x": 40.0, "to": "library_witness", "spawn": "from_page"}, {"x": 1240.0, "to": "library_page", "spawn": "from_witness", "req": "library_clockroom", "msg": "İki saati de dinle, sonra sayfa kapısı açılır."}]
+doors = [{"x": 40.0, "to": "library_witness", "spawn": "from_page"}, {"x": 1240.0, "to": "library_page", "spawn": "from_witness", "req": "library_clockroom", "msg": "Kadranlar doğru saati göstermeli."}]
 
 [node name="Spawns" type="Node2D" parent="."]
 
@@ -23,7 +24,7 @@ position = Vector2(640, 288)
 [node name="Interactive" type="Node2D" parent="."]
 
 [node name="Clock1927" type="Area2D" parent="Interactive"]
-position = Vector2(420, 288)
+position = Vector2(200, 288)
 script = ExtResource("relic")
 relic_id = "clock_1927"
 dialogue_room = &"library_clockroom"
@@ -32,16 +33,24 @@ evidence_title = "1927 Saati"
 evidence_body = "Saatler Odası'ndaki ilk saat 1927 gecesinde durmuş, cep saatiyle aynı gece."
 
 [node name="Clock1995" type="Area2D" parent="Interactive"]
-position = Vector2(860, 288)
+position = Vector2(400, 288)
 script = ExtResource("relic")
 relic_id = "clock_1995"
 needs = "clock_1927"
 dialogue_room = &"library_clockroom"
 dialogue_set = &"clock_1995"
-solve_puzzle = &"library_clockroom"
 locked_line = "Önce 1927 saatini dinlemeliyim."
 evidence_title = "1995 Saati"
-evidence_body = "İkinci saat 1995'te durmuş. İki gece birleşince sayfa kapısı açıldı."
+evidence_body = "İkinci saat 1995'te durmuş. İki gece birleşince kadranlar anlam kazandı."
+
+[node name="ClockDials" type="Node2D" parent="Interactive"]
+position = Vector2(840, 280)
+script = ExtResource("dial")
+puzzle_id = &"library_clock_dials"
+targets = PackedInt32Array(3, 9, 6)
+labels = PackedStringArray("1927", "1995", "BUGÜN")
+also_solve = PackedStringArray("library_clockroom")
+solved_line = "Kadranlar yerine oturdu. Sayfa kapısı açıldı."
 
 [node name="RelicArt" type="Sprite2D" parent="Interactive/Clock1927"]
 texture_filter = 1
