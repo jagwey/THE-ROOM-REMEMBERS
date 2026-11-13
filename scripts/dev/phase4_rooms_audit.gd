@@ -1334,15 +1334,24 @@ func _room_40_final() -> void:
 		await physics_frame
 	check(df.hp() == 4 and df.shade_count() == 1, "r40_shade_hits_crystal_only", [df.hp(), df.shade_count()])
 	check(int(gs.hearts) == hearts0 and not dth.is_dying, "r40_player_unharmed")
+	# son golge de kristale degerse dalga ilerler (softlock korumasi)
+	var s1: Node2D = df._shades[0]
+	s1.global_position = Vector2(470, 288)
+	for i in 10:
+		await physics_frame
+	await process_frame
+	check(df.hp() == 3 and df.wave_index() == 1 and df.shade_count() == 3, "r40_last_shade_reach_advances_wave", [df.hp(), df.wave_index(), df.shade_count()])
+	check(df.is_active(), "r40_wave_active_after_reach")
+	# gercek kilic yolu: bir golge oldurulunce sayi duser
+	var sw: Node = df._shades[0]
+	sw.receive_sword_hit(player, 1.0, 2)
+	await create_timer(0.6).timeout
+	check(df.shade_count() == 2 and df.wave_index() == 1, "r40_sword_kill_drops_count", [df.shade_count(), df.wave_index()])
 	# 3 dalga
 	df.debug_clear_wave()
 	await process_frame
 	await process_frame
-	check(df.wave_index() == 1 and df.shade_count() == 3, "r40_wave1_three", [df.wave_index(), df.shade_count()])
-	df.debug_clear_wave()
-	await process_frame
-	await process_frame
-	check(df.wave_index() == 2 and df.shade_count() == 4, "r40_wave2_four", [df.wave_index(), df.shade_count()])
+	check(df.wave_index() == 2 and df.shade_count() == 4, "r40_wave2_four_early", [df.wave_index(), df.shade_count()])
 	check(not pm.is_solved(&"core_defense"), "r40_not_solved_before_last")
 	df.debug_clear_wave()
 	await process_frame
@@ -1353,7 +1362,9 @@ func _room_40_final() -> void:
 	df.start()
 	await process_frame
 	for i in 5:
-		df.hit_crystal()
+		await process_frame
+		if df.shade_count() > 0:
+			df.shade_reached(df._shades[0])
 	await process_frame
 	await process_frame
 	check(df.wave_index() == 0 and df.hp() == df.crystal_hp, "r40_loss_resets_waves", [df.wave_index(), df.hp()])

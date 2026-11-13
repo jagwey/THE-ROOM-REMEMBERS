@@ -266,7 +266,8 @@ func _headless_faz67_smoke() -> void:
 	var good_ok := EndingManager.last_ending == EndingManager.Ending.PART_ONE and GameState.has_story_flag(&"final_seal_broken") and GameState.has_story_flag(&"x_revealed") and GameState.has_story_flag(&"game_completed")
 	print("SMOKE_FINAL_DONE ", good_ok)
 	var variant_ok: bool = String(FinalSequence.last_run.get("variant", "")) in ["together", "apart"]
-	var msg := "FAZ67_SMOKE ok variant=" + str(variant_ok) + " curse_possession=%s curse50=%s world=%s bad=%s good=%s rooms=%s indicator=%s" % [
+	var msg := "FAZ67_SMOKE ok variant=%s curse_possession=%s curse50=%s world=%s bad=%s good=%s rooms=%s indicator=%s" % [
+		str(variant_ok),
 		str(curse_fail_ok),
 		str(curse_safe_ok),
 		str(world_kept),

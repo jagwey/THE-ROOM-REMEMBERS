@@ -122,13 +122,13 @@ func play(tree: SceneTree, fast_mode: bool = false) -> void:
 	])
 	await _portal_leave()
 	if last_run["variant"] == "together":
-		GameState.set_story_flag(&"final_together", true)
 		await _say([
 			["Shilda", "Noroi… beni duyuyor musun?"],
 			["Noroi", "Duyuyorum; bu sefer adın aklımda kalacak."],
 			["Shilda", "O zaman yürü. Oda bizi bekleyemez."],
 			["Shilda", "Bu kez yanında yürüyorum."],
 		])
+		GameState.set_story_flag(&"final_together", true)
 	else:
 		await _say([
 			["Shilda", "Noroi… duyuyor musun?"],

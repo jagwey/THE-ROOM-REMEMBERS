@@ -37,6 +37,8 @@ func _ready() -> void:
 func _exit_tree() -> void:
 	if RoomManager.room_changed.is_connected(_on_room_changed):
 		RoomManager.room_changed.disconnect(_on_room_changed)
+	_active = false
+	_gen += 1
 	_cancel()
 
 
@@ -105,7 +107,10 @@ func shade_reached(shade: Node) -> void:
 	_forget(shade)
 	if is_instance_valid(shade):
 		shade.queue_free()
-	_hit_crystal()
+	if _hit_crystal():
+		return  # kayip: dalgalar zaten sifirlandi
+	if _active and _hp > 0 and _shades.is_empty():
+		_wave_done()
 
 
 ## Test ve savunma içi: kristale doğrudan 1 hasar.
@@ -114,7 +119,8 @@ func hit_crystal() -> void:
 		_hit_crystal()
 
 
-func _hit_crystal() -> void:
+## Dönüş: kristal çöktü ve dalgalar sıfırlandıysa true.
+func _hit_crystal() -> bool:
 	_hp = maxi(_hp - 1, 0)
 	_update_label()
 	var c := get_tree().get_first_node_in_group("core_crystal") as CanvasItem
@@ -123,6 +129,8 @@ func _hit_crystal() -> void:
 		c.create_tween().tween_property(c, "modulate", Color.WHITE, 0.3)
 	if _hp <= 0:
 		_fail()
+		return true
+	return false
 
 
 func _fail() -> void:
@@ -139,6 +147,8 @@ func _after(sec: float, cb: Callable) -> void:
 	var g := _gen
 	if sec <= 0.0:
 		cb.call_deferred()
+		return
+	if not is_inside_tree():
 		return
 	get_tree().create_timer(sec).timeout.connect(func() -> void:
 		if g == _gen and _active:
