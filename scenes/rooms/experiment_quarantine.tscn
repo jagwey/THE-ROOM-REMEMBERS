@@ -19,7 +19,7 @@ bg_region = "experiment"
 checkpoint = Vector2(120, 288)
 doors = [{"x": 40.0, "to": "experiment_authority", "spawn": "from_quarantine"}, {"x": 1240.0, "to": "experiment_core_conduit", "spawn": "from_experiment_quarantine", "req": "experiment_quarantine_done", "msg": "Önce kasetteki kaydı dinlemeliyim."}]
 floor_gaps = PackedVector2Array(1040.0, 1160.0)
-platforms = PackedVector3Array(1000.0, 248.0, 200.0)
+platforms = PackedVector3Array(960.0, 248.0, 200.0)
 
 [node name="Interactive" type="Node2D" parent="."]
 

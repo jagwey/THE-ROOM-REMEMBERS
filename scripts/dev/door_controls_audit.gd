@@ -114,8 +114,8 @@ func _run() -> void:
 		[&"awakening", &"awakening_balcony"],
 		[&"decay_vines", &"decay_catacombs"],
 		[&"decay_greenhouse", &"decay_shilda_wall"],
-		[&"library_hall", &"library_upper_stacks"],
-		[&"experiment_cells", &"experiment_quarantine"],
+		[&"library_page", &"library_upper_stacks"],
+		[&"experiment_authority", &"experiment_quarantine"],
 		[&"mirrors_reverse", &"mirrors_labyrinth"],
 		[&"core_threshold", &"core_memory_vault"],
 	]

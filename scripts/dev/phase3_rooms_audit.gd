@@ -346,6 +346,22 @@ func _graph() -> void:
 					has_back = true
 			if not has_back:
 				back_bad.append(String(rid))
+	var gap_bad: Array = []
+	for rid in MAIN_PATH_P3:
+		var rroot: Node = rm._rooms[StringName(rid)].root
+		var gaps = rroot.get("floor_gaps")
+		var plats = rroot.get("platforms")
+		for sname in (rm._rooms[StringName(rid)].spawns as Dictionary).keys():
+			var sx: float = (rm._rooms[StringName(rid)].spawns[sname] as Vector2).x
+			if gaps != null:
+				for g in (gaps as PackedVector2Array):
+					if sx > g.x - 16.0 and sx < g.y + 16.0:
+						gap_bad.append("%s:%s gap" % [rid, sname])
+			if plats != null:
+				for p in (plats as PackedVector3Array):
+					if sx > p.x - 16.0 and sx < p.x + p.z + 16.0 and p.y > 200.0:
+						gap_bad.append("%s:%s under platform" % [rid, sname])
+	check(gap_bad.is_empty(), "GRAPH arrival spawns not over gap or under low platform", gap_bad)
 	check(spawn_bad.is_empty(), "GRAPH every door target spawn exists", spawn_bad)
 	check(back_bad.is_empty(), "GRAPH every back door targets previous room", back_bad)
 	check(dash_bad.is_empty(), "GRAPH no shadow dash door in 14-27", dash_bad)
