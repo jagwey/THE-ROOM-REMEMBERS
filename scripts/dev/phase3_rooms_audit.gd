@@ -36,6 +36,7 @@ func _run() -> void:
 	await _rooms_21_24()
 	await _rooms_25_27()
 	await _softlock()
+	await _observation_leak()
 	quit(1 if failures > 0 else 0)
 
 
@@ -1155,11 +1156,12 @@ func _graph() -> void:
 
 const SL_LEGACY_V116: PackedStringArray = [
 	"library_catalog", "library_witnesses", "library_clockroom", "experiment_intake", "experiment_authority",
+	"library_page_order", "experiment_cells_seen", "experiment_circuit",
 ]
 const SL_NEW_IDS: PackedStringArray = [
 	"library_hall_shelves", "library_witness_corpse", "library_witness_echo", "library_clock_dials", "library_shelf_order",
 	"library_reading_cabin", "library_reading_cell", "experiment_cell_a", "experiment_cell_b", "experiment_cell_c",
-	"experiment_cells_seen", "experiment_intake_corpse", "experiment_intake_stone", "experiment_quarantine_done",
+	"experiment_intake_corpse", "experiment_intake_stone", "experiment_quarantine_done",
 	"experiment_vein_1", "experiment_vein_2", "experiment_vein_3", "experiment_conduit", "experiment_observation",
 	"experiment_observation_projector",
 ]
@@ -1206,7 +1208,7 @@ func _softlock() -> void:
 	_unsolve(Array(SL_NEW_IDS) + Array(SL_LEGACY_V116))
 	for id in SL_LEGACY_V116:
 		pm.mark_solved(StringName(id))
-	rm.enter_room(&"experiment_cells", &"default")
+	rm.enter_room(&"mirrors_reverse", &"default")
 	await create_timer(0.4).timeout
 	var puz: Dictionary = gs.world_memory_state["puzzles"]
 	for id in SL_NEW_IDS:
@@ -1223,24 +1225,16 @@ func _softlock() -> void:
 	check(bool(gs.player_progress_knowledge.get("ability_soul_slash", false)), "sl_a_soul_slash_granted_on_load")
 	for id in SL_LEGACY_V116:
 		check(pm.is_solved(StringName(id)), "sl_a_legacy_%s_still_solved" % id)
-	var fwd_pairs := {
-		"library_hall": "library_witness", "library_witness": "library_clockroom", "library_clockroom": "library_page",
-		"experiment_intake": "experiment_circuit", "experiment_authority": "experiment_quarantine",
-	}
-	for rid in fwd_pairs.keys():
-		rm.enter_room(StringName(rid), &"default")
-		await create_timer(0.3).timeout
-		var rr := _room_root(StringName(rid))
-		var fwd_open := false
-		var bad_gate: Array = []
-		for d in _doors_of(rr):
-			if String(d.target_room_id) == String(fwd_pairs[rid]) and float(d.global_position.x) > 400.0:
-				fwd_open = not d.is_locked()
-		for g in _gates_of(rr):
-			if not g._is_open():
-				bad_gate.append(String(g.name))
-		check(fwd_open, "sl_a_%s_forward_door_open_for_v116_save" % rid)
-		check(bad_gate.is_empty(), "sl_a_%s_gates_open_for_v116_save" % rid, bad_gate)
+	## v1.16 kaydi (oda mirrors_reverse): ana yoldaki 14 odanin hepsinde ileri kapi + kapilar acik olmali.
+	await _v116_walk_check(MAIN_PATH_P3.size() - 1, "end")
+	## Orta yol kaydi (experiment_circuit): geri donus yolundaki odalar (kendisine kadar) acik olmali.
+	rm.enter_room(&"experiment_circuit", &"default")
+	await create_timer(0.4).timeout
+	_save_v116_style(puz)
+	pm.solved.clear()
+	puz.clear()
+	check(sm.load_game(false), "sl_a_midpath_save_loaded")
+	await _v116_walk_check(MAIN_PATH_P3.find("experiment_circuit"), "mid")
 	_unsolve(Array(SL_NEW_IDS) + Array(SL_LEGACY_V116))
 	# ---- (b) cells: iki ceset plakada, ceset siniri kirpar; plaka yeniden dolar, kapi gecilince cozulu kalir ----
 	_clear_corpses()
@@ -1367,3 +1361,59 @@ func _softlock() -> void:
 		check(false, "sl_d_three_veins_found", veins.size())
 	dm.clear()
 	_unsolve(["experiment_conduit", "experiment_vein_1", "experiment_vein_2", "experiment_vein_3"])
+
+
+func _save_v116_style(puz: Dictionary) -> void:
+	var gs := root.get_node("GameState")
+	var sm := root.get_node("SaveManager")
+	for id in SL_NEW_IDS:
+		puz.erase(String(id))
+	gs.player_progress_knowledge["ability_soul_slash"] = false
+	sm.save_game()
+
+
+## Yuklenmis v1.16 kaydiyla ana yolun ilk `upto`+1 odasini gez: ileri kapi (ana yol hedefi) acik, kapilar acik.
+func _v116_walk_check(upto: int, tag: String) -> void:
+	var rm := root.get_node("RoomManager")
+	for i in range(0, upto + 1):
+		var rid := String(MAIN_PATH_P3[i])
+		var want := String(MAIN_PATH_P3[i + 1]) if i + 1 < MAIN_PATH_P3.size() else ""
+		if want == "":
+			continue
+		rm.enter_room(StringName(rid), &"default")
+		await create_timer(0.3).timeout
+		var rr := _room_root(StringName(rid))
+		var fwd_open := false
+		var bad_gate: Array = []
+		for d in _doors_of(rr):
+			if String(d.target_room_id) == want and float(d.global_position.x) > 400.0:
+				fwd_open = not d.is_locked()
+		for g in _gates_of(rr):
+			if not g._is_open():
+				bad_gate.append(String(g.name))
+		check(fwd_open, "sl_a_%s_%s_forward_door_open_for_v116_save" % [tag, rid])
+		check(bad_gate.is_empty(), "sl_a_%s_%s_gates_open_for_v116_save" % [tag, rid], bad_gate)
+
+
+## observation_echo: notlar oynarken oda silinirse DialogueManager'da ölü bağlantı kalmamalı.
+func _observation_leak() -> void:
+	var dm := root.get_node("DialogueManager")
+	var pm := root.get_node("PuzzleManager")
+	_unsolve(["experiment_observation", "experiment_observation_projector"])
+	dm.clear()
+	var base_shown: int = dm.line_shown.get_connections().size()
+	var base_fin: int = dm.dialogue_finished.get_connections().size()
+	var echo: Node2D = Node2D.new()
+	echo.set_script(load("res://scripts/world/observation_echo.gd"))
+	root.add_child(echo)
+	await process_frame
+	echo.call("_on_reached", &"x")
+	await process_frame
+	check(dm.is_open, "obs_leak_notes_started")
+	check(dm.dialogue_finished.get_connections().size() == base_fin + 1, "obs_leak_finish_connected_while_playing")
+	echo.free()
+	check(dm.line_shown.get_connections().size() == base_shown, "obs_leak_line_shown_back_to_baseline")
+	check(dm.dialogue_finished.get_connections().size() == base_fin, "obs_leak_dialogue_finished_back_to_baseline")
+	dm.clear()
+	root.get_node("UiGate").set_story(false)
+	check(not pm.is_solved(&"experiment_observation"), "obs_leak_not_solved_when_freed_midway")

@@ -12,12 +12,29 @@ const PATH := [Vector2(440, 250), Vector2(590, 250), Vector2(740, 250)]
 
 var _shade: Node2D = null
 var _finishing: bool = false
+var _finish_cb: Callable = Callable()
+
+signal _notes_done(ok: bool)
 
 
 func _ready() -> void:
 	add_to_group("observation_echo")
 	PuzzleManager.live_changed.connect(_on_live)
 	call_deferred("_sync")
+
+
+func _on_notes_finished(completed: bool) -> void:
+	_notes_done.emit(completed)
+
+
+func _drop_finish_cb() -> void:
+	if _finish_cb.is_valid() and DialogueManager.dialogue_finished.is_connected(_finish_cb):
+		DialogueManager.dialogue_finished.disconnect(_finish_cb)
+	_finish_cb = Callable()
+
+
+func _exit_tree() -> void:
+	_drop_finish_cb()
 
 
 func _sync() -> void:
@@ -69,28 +86,14 @@ func _on_reached(_id: StringName) -> void:
 		return
 	_finishing = true
 	var lines: Array = DialogueData.get_set(ROOM_ID, &"notes")
-	var last_prefix := ""
-	if not lines.is_empty():
-		last_prefix = String(lines[lines.size() - 1][1]).substr(0, 12)
-	var seen_last := [false]
-	var on_line := func(_sp: String, t: String):
-		if last_prefix != "" and t.replace("\n", " ").begins_with(last_prefix):
-			seen_last[0] = true
-	DialogueManager.line_shown.connect(on_line)
+	## Kuyruk yalnız son satır gösterilip bitince tamamlanır (dialogue_finished(true)); iptal = false.
+	## Bağlantı üyede tutulur: oda yarıda silinirse _exit_tree çözer, autoload'da ölü bağlantı kalmaz.
+	_finish_cb = Callable(self, "_on_notes_finished")
+	DialogueManager.dialogue_finished.connect(_finish_cb)
 	for line in lines:
 		DialogueManager.say(String(line[0]), String(line[1]))
-	# Başka bir diyalogun bitişi sayılmasın: notların son satırı gösterilene dek bekle.
-	var ok := false
-	var guard := 0
-	while guard < 16:
-		guard += 1
-		var done: bool = await DialogueManager.dialogue_finished
-		if not done:
-			break
-		if seen_last[0]:
-			ok = true
-			break
-	DialogueManager.line_shown.disconnect(on_line)
+	var ok: bool = await _notes_done
+	_drop_finish_cb()
 	if ok:
 		LorePointScript.record_evidence("ev_observation_notes", "Sayım Notu",
 			"Gözlem camının masasında Denek 14'ün ölümleri sayılı. İmza kazınmış, yüz yok.", "izler")

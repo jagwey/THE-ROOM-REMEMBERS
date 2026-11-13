@@ -497,7 +497,7 @@ func _setup_m3_mechanics(room_id: StringName, root: Node2D, spawns: Dictionary) 
 
 	# 3. Shielded Shades setup (F23)
 	const SHIELDED_SHADES := {
-		"experiment_cells": [Vector2(600, 288)],
+		"experiment_cells": [Vector2(790, 288)],
 		"experiment_circuit": [Vector2(480, 288)],
 		"mirrors_reverse": [Vector2(480, 288)],
 		"mirrors_labyrinth": [Vector2(1060, 288)],

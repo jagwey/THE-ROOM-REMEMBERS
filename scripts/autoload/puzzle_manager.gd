@@ -285,7 +285,7 @@ const HINTS: Dictionary = {
 	},
 	&"library_shelf_order": {
 		"goal": "Yasak kanada giden tahta henüz inmedi.",
-		"orientation": "Arşivci üç kitabın adını sırayla söyledi.",
+		"orientation": "Yere düşen kitaptaki notu oku, sırayı bul.",
 		"explicit": "Ses, mühür, çiçek. Bu sıra tahtayı indirir."
 	},
 	&"soul_seal_forbidden": {
@@ -300,7 +300,7 @@ const HINTS: Dictionary = {
 	},
 	&"library_reading_cabin": {
 		"goal": "Hücrenin kabini mor mührün ardında kapalı.",
-		"orientation": "Mor mührü ruhla kesmeden kabine girilmez.",
+		"orientation": "Mor mührü kes, kabine gir.",
 		"explicit": "Ruh Kesimi ile kabin mührünü kes."
 	},
 	&"library_reading_cell": {

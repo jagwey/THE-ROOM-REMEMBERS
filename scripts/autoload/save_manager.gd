@@ -350,6 +350,7 @@ func _apply_data(data: Dictionary, apply_room: bool) -> bool:
 		CurseManager.restore_curse(_float_of(data.get("curse", 0.0)))
 	_migrate_soul_slash_for_late_rooms()
 	_migrate_shelf_order_for_late_rooms()
+	_migrate_side_room_puzzles_for_late_rooms()
 	PuzzleManager.sync_from_world()
 	if apply_room:
 		CorpseManager.rebuild_world_corpses()
@@ -381,6 +382,34 @@ func _migrate_shelf_order_for_late_rooms() -> void:
 	var idx := RoomManager.ROOM_ORDER.find(room_id)
 	if idx > RoomManager.ROOM_ORDER.find("library_upper_stacks"):
 		(puzzles as Dictionary)["library_shelf_order"] = true
+
+
+## Faz 3 göçü (v1.16 kayıtları): Yasak Kanat, Okuma Hücresi, Karantina, Ruh Damarları ve Gözlem Camı
+## eskiden çıkmaz yan odaydı; artık ana yolda ve ileri kapıları kilitli. Kayıt bu odaların ilerisindeyse
+## kapı bulmacalarını çözülmüş say (geri dönüşte kapı kilitli kalmasın). Yalnız eksikleri ekler (idempotent).
+const _LATE_ROOM_SOLVED: Array = [
+	["library_forbidden_wing", ["soul_seal_forbidden", "soul_seal_forbidden_2"]],
+	["library_reading_cell", ["library_reading_cabin", "library_reading_cell"]],
+	["experiment_cells", ["experiment_cell_a", "experiment_cell_b", "experiment_cell_c"]],
+	["experiment_quarantine", ["experiment_quarantine_done"]],
+	["experiment_core_conduit", ["experiment_vein_1", "experiment_vein_2", "experiment_vein_3", "experiment_conduit"]],
+	["experiment_observation", ["experiment_observation_projector", "experiment_observation"]],
+]
+
+
+func _migrate_side_room_puzzles_for_late_rooms() -> void:
+	var puzzles: Variant = GameState.world_memory_state.get("puzzles", null)
+	if not (puzzles is Dictionary):
+		return
+	var life := GameState.character_current_life_knowledge
+	var room_id := str(life.get("room", life.get("checkpoint_room", "")))
+	var here := RoomManager.ROOM_ORDER.find(room_id)
+	if here < 0:
+		return
+	for entry in _LATE_ROOM_SOLVED:
+		if here > RoomManager.ROOM_ORDER.find(String(entry[0])):
+			for id in entry[1]:
+				(puzzles as Dictionary)[String(id)] = true
 
 
 func _serialize_seals(seals: Array[StringName]) -> Array:

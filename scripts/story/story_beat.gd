@@ -176,7 +176,6 @@ func _cell_record(cell: String) -> void:
 			DialogueManager.say("Kayıt", "Denek 14: Noroi. Kurucu imza: [kazınmış].")
 			DialogueManager.say("Noroi", "Ben denektim, kurucu değilim.")
 			DialogueManager.say("Shilda", "Kurucu başlattı. Sen içeride kaldın.")
-			DialogueManager.say("Shilda", "Ben kapıda bekledim.")
 			DialogueManager.say("Shilda", "Sesler bedenlerinden koptu. Oda onları sakladı.")
 			DialogueManager.say("Shilda", "Kimseyi feda etmeyeceğiz.")
 			DialogueManager.say("Shilda", "İleride bir devre yankını bekliyor.")
