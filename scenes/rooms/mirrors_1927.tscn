@@ -12,7 +12,7 @@ room_width = 960.0
 bg_region = "mirrors"
 checkpoint = Vector2(120, 288)
 default_spawn = Vector2(120, 288)
-doors = [{"x": 40.0, "to": "mirrors_dual", "spawn": "from_mirrors_1927"}]
+doors = [{"x": 40.0, "to": "mirrors_shrine", "spawn": "from_mirrors_1927"}, {"x": 920.0, "to": "core_threshold", "spawn": "from_mirrors_1927", "req": "mirrors_1927", "msg": "Gecenin tanıklığını bitirmeliyim."}]
 
 [node name="Interactive" type="Node2D" parent="."]
 

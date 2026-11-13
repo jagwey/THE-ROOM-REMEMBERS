@@ -12,7 +12,9 @@ const MAIN_PATH: PackedStringArray = [
 	"experiment_cells", "experiment_intake", "experiment_circuit", "experiment_authority",
 	"experiment_quarantine", "experiment_core_conduit", "experiment_observation",
 	"mirrors_reverse", "mirrors_dual", "mirrors_gallery", "mirrors_unbroken",
-	"core_threshold", "core_ascent", "core_seal_chamber", "core",
+	"mirrors_labyrinth", "mirrors_shrine", "mirrors_1927",
+	"core_threshold", "core_ascent", "core_seal_chamber",
+	"core_memory_vault", "core_bloom_garden", "core",
 ]
 
 

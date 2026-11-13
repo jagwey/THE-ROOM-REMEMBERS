@@ -18,7 +18,7 @@ region_id = &"mirrors"
 room_width = 1280.0
 bg_region = "mirrors"
 checkpoint = Vector2(120, 288)
-doors = [{"x": 40.0, "to": "mirrors_reverse", "spawn": "from_mirrors_labyrinth"}]
+doors = [{"x": 40.0, "to": "mirrors_unbroken", "spawn": "from_mirrors_labyrinth"}, {"x": 1240.0, "to": "mirrors_shrine", "spawn": "from_mirrors_labyrinth", "req": "mirrors_labyrinth_crossed", "msg": "Yanıltıcı yolu geçmeden ilerleyemem.", "title": "Ayna Tapınağı", "mark": true, "label_dy": -74.0}]
 invisible_platforms = PackedVector3Array(290.0, 250.0, 110.0, 430.0, 214.0, 100.0, 560.0, 250.0, 100.0, 700.0, 214.0, 110.0, 850.0, 250.0, 100.0, 980.0, 270.0, 80.0)
 false_reflections = PackedVector3Array(640.0, 188.0, 64.0)
 floor_gaps = PackedVector2Array(300.0, 1000.0)
@@ -48,7 +48,7 @@ script = ExtResource("reach")
 puzzle_id = &"mirrors_labyrinth_crossed"
 
 [node name="Shard" type="Area2D" parent="Interactive"]
-position = Vector2(1210, 288.0)
+position = Vector2(1140, 288.0)
 script = ExtResource("lore")
 lore_id = &"labyrinth_mirror"
 texture_path = "res://assets/layers/mirror_shards.png"

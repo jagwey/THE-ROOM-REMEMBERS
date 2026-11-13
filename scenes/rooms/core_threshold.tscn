@@ -33,6 +33,12 @@ atmosphere_bg = "res://assets/backgrounds/core"
 
 [node name="Spawns" type="Node2D" parent="."]
 
+[node name="from_mirrors_1927" type="Marker2D" parent="Spawns"]
+position = Vector2(120, 288)
+
+[node name="from_core_ascent" type="Marker2D" parent="Spawns"]
+position = Vector2(880, 288)
+
 [node name="keeper_observe" type="Marker2D" parent="Spawns"]
 position = Vector2(590, 288)
 
@@ -80,17 +86,17 @@ centered = false
 
 [node name="Interactive" type="Node2D" parent="."]
 
-[node name="BackMirrors" type="Area2D" parent="Interactive"]
+[node name="BackNight" type="Area2D" parent="Interactive"]
 position = Vector2(40, 268)
 collision_layer = 8
 collision_mask = 0
 monitoring = false
 monitorable = true
 script = ExtResource("5")
-target_room_id = &"mirrors_unbroken"
-target_spawn_id = &"from_threshold"
+target_room_id = &"mirrors_1927"
+target_spawn_id = &"from_core_threshold"
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BackMirrors"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BackNight"]
 shape = SubResource("Hit")
 
 [node name="ForwardSeal" type="Area2D" parent="Interactive"]

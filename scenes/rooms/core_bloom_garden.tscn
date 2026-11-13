@@ -12,7 +12,7 @@ region_id = &"core"
 room_width = 960.0
 bg_region = "core"
 checkpoint = Vector2(120, 288)
-doors = [{"x": 40.0, "to": "core_seal_chamber", "spawn": "from_core_bloom_garden"}]
+doors = [{"x": 40.0, "to": "core_memory_vault", "spawn": "from_core_bloom_garden"}, {"x": 920.0, "to": "core", "spawn": "from_core_bloom_garden", "req": "core_bloom_order", "msg": "Taşlar uyanmadan bahçe bırakmaz."}]
 platforms = PackedVector3Array(340.0, 246.0, 380.0)
 
 [node name="Interactive" type="Node2D" parent="."]
@@ -63,7 +63,7 @@ sprite_scale = 0.55
 tint = Color(0.82, 0.28, 0.36, 1)
 
 [node name="Reconcile" type="Area2D" parent="Interactive"]
-position = Vector2(860.0, 288.0)
+position = Vector2(820.0, 288.0)
 script = ExtResource("lore")
 lore_id = &"bloom_reconcile"
 texture_path = "res://assets/props/red_flower.png"

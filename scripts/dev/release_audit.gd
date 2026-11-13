@@ -47,6 +47,12 @@ const PUZZLE_SOURCE := {
 	"experiment_observation": ["experiment_observation", ""],
 	"seal_shard_1": ["library_forbidden_wing", ""],
 	"seal_shard_2": ["mirrors_shrine", ""],
+	## Faz 4 (v1.18.0) dogrusal yol kilitleri (oda 28-40)
+	"mirrors_labyrinth_crossed": ["mirrors_labyrinth", ""],
+	"mirrors_shrine_trial": ["mirrors_shrine", ""],
+	"mirrors_1927": ["mirrors_1927", ""],
+	"core_vault_order": ["core_memory_vault", ""],
+	"core_bloom_order": ["core_bloom_garden", ""],
 }
 
 
@@ -199,14 +205,14 @@ func run() -> void:
 	else:
 		check_it("WeightStone collision layer has layer 8", false, "weight_stone.gd not found")
 
-	# 2) core.tscn contains exit door leading back to core_seal_chamber
+	# 2) core.tscn contains exit door leading back to core_bloom_garden
 	var core_room: Node = rm._rooms[&"core"].root
 	var core_exit: Node = null
 	for n in core_room.find_children("*", "Area2D", true, false):
-		if n.is_in_group("room_door") and String(n.get("target_room_id")) == "core_seal_chamber":
+		if n.is_in_group("room_door") and String(n.get("target_room_id")) == "core_bloom_garden":
 			core_exit = n
 			break
-	check_it("Core room contains exit door to core_seal_chamber", core_exit != null, core_exit != null)
+	check_it("Core room contains exit door to core_bloom_garden", core_exit != null, core_exit != null)
 
 	# 3) Consecutive Windows saves succeed without ERR_ALREADY_EXISTS
 	var s1: bool = bool(saves.save_game())

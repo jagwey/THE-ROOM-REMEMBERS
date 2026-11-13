@@ -31,21 +31,24 @@ room_id = &"core"
 
 [node name="Spawns" type="Node2D" parent="."]
 
+[node name="from_core_bloom_garden" type="Marker2D" parent="Spawns"]
+position = Vector2(160, 280)
+
 [node name="keeper_observe" type="Marker2D" parent="Spawns"]
 position = Vector2(800, 288)
 
-[node name="BackSealChamber" type="Area2D" parent="." groups=["room_door"]]
+[node name="BackGarden" type="Area2D" parent="." groups=["room_door"]]
 position = Vector2(40, 268)
 collision_layer = 8
 collision_mask = 0
 monitoring = false
 monitorable = true
 script = ExtResource("11")
-target_room_id = &"core_seal_chamber"
-target_spawn_id = &"from_chamber"
+target_room_id = &"core_bloom_garden"
+target_spawn_id = &"from_core"
 door_title = "Mühür Odası"
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="BackSealChamber"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BackGarden"]
 shape = SubResource("DoorShape")
 
 [node name="ParallaxFar" type="Parallax2D" parent="."]

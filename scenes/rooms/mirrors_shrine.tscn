@@ -19,9 +19,12 @@ region_id = &"mirrors"
 room_width = 960.0
 bg_region = "mirrors"
 checkpoint = Vector2(120, 288)
-doors = [{"x": 40.0, "to": "mirrors_unbroken", "spawn": "from_mirrors_shrine"}]
+doors = [{"x": 40.0, "to": "mirrors_labyrinth", "spawn": "from_mirrors_shrine"}, {"x": 920.0, "to": "mirrors_1927", "spawn": "from_mirrors_shrine", "req": "mirrors_shrine_trial", "msg": "Gölgeyle tapınağı geçmeliyim."}]
 
 [node name="Spawns" type="Node2D" parent="."]
+
+[node name="from_mirrors_labyrinth" type="Marker2D" parent="Spawns"]
+position = Vector2(88, 288)
 
 [node name="from_mirrors_unbroken" type="Marker2D" parent="Spawns"]
 position = Vector2(88, 288)
@@ -56,7 +59,7 @@ tint = Color(1, 0.75, 0.8, 1)
 lines = PackedStringArray("Noroi|Mührün öteki yarısında benim adım yazıyor.", "Noroi|İki ad, bir mühür; Çekirdek'i ancak birlikte kapatırız.")
 
 [node name="ShrineEcho" type="Area2D" parent="Interactive"]
-position = Vector2(880.0, 288.0)
+position = Vector2(820.0, 288.0)
 script = ExtResource("npc")
 npc_id = &"echo_shrine"
 idle_anim = "echo_idle"

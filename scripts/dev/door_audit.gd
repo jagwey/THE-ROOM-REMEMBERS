@@ -185,11 +185,11 @@ func _run() -> void:
 	var st := shrine_scene.get_state()
 	var scene_has_spawn := false
 	for i in st.get_node_count():
-		if st.get_node_name(i) == &"from_mirrors_unbroken":
+		if st.get_node_name(i) == &"from_mirrors_labyrinth":
 			scene_has_spawn = true
-	check(scene_has_spawn, "shrine_spawn_exists: mirrors_shrine scene defines from_mirrors_unbroken")
-	var sdoor := _door_in(rm, &"mirrors_unbroken", &"mirrors_shrine")
-	check(sdoor != null and sdoor.name == &"Side_mirrors_shrine", "shrine side door present in mirrors_unbroken")
+	check(scene_has_spawn, "shrine_spawn_exists: mirrors_shrine scene defines from_mirrors_labyrinth")
+	var sdoor := _door_in(rm, &"mirrors_labyrinth", &"mirrors_shrine")
+	check(sdoor != null and sdoor.name == &"Door_mirrors_shrine", "shrine forward door present in mirrors_labyrinth")
 	if sdoor:
 		check(sdoor.door_title == "Ayna Tapınağı" and sdoor.get_node_or_null("DoorLabel") != null \
 				and sdoor.get_node_or_null("DoorInnerLight") != null \

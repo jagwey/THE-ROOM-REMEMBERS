@@ -47,7 +47,7 @@ Oyuncu **Noroi** olarak ne adını ne de neden bu yıkık ve zamandan kopuk yera
   * Faz 2 odalar 07-10: Sarmaşık (çiçekli ceset `vine_gate`'i 64 px içinde yakar, `decay_vines`), Ağırlık (kapı `decay_weight_latch` VE yalnız-ceset `decay_weight_corpse` ister; eski kayıtta latch yeter), Sera (3 yalnız-ceset saksı plakası, doğrusu `decay_greenhouse_pot`; `trace_shade` doğruyu gösterir, `WallInscription` 7-2-9 kaynağı; kapı geçişte eski `decay_greenhouse`'i de çözer), Shilda Duvarı (x200-480 lanet bulutu, düz yürüyüş ~%72 lanet, ceset kalkanıyla ~%10; `FlowerRoom` artık `echo_point`, `shilda_flowers_echo`; kapılar x1120/x1400; `WallThorn` ve yanlış saksı dikenleri kendi çözülmeyen ipucu id'siyle her zaman ölümcül, eski kayıtta çözülmüş oda günlükte ceset ipucu göstermez).
   * **Son Merdiven (`core_ascent`) üç sınav:** soldan sağa Ruh Kesimi mührü (`core_ascent_seal`), 120 px yüksekliğinde Gölge Atılması perdesi (zıplayarak aşılamaz; zıplama tepesi ~58 px; boşluk yok, `core_ascent_gap` ID'si yalnız kayıt uyumu için), yankı plakası (`core_ascent_echo`: sunak + plaka + kapı). Ret repliği yeteneğin alındığı odayı adlandırır (Yasak Kanat, Ayna Tapınağı); `ascent_audit` denetler.
   * **Metin ve veri tutarlılığı (Faz 0 T5):** Yankı Sunağı kayıt süresi her yerde sekiz saniyedir; Çiçeklenme bahçesi ipucu "önce en çok, sonra en az, sonra kalan"; Unutulmuş Sayfa ipucu deney, kapı, mühür sırasını verir; hücre çıkış kapısı `ForwardIntake`; kullanılmayan `core_portal.gd` kaldırıldı.
-  * **Ayna Tapınağı kapısı:** `mirrors_unbroken` sağ yan kapısı `Ayna Tapınağı` başlığı ve nabız atan mor ışıkla (`DoorMark`) işaretlidir; Shilda ilk yüzleşmede tapınağa yönlendirir. `SIDE_DOORS` girişleri isteğe bağlı `title`/`mark`/`label_dy` alır, `door_audit` her yan kapı hedefinde `from_<kaynak>` spawn'ını denetler.
+  * **Ayna Tapınağı kapısı:** artık `mirrors_labyrinth` ileri kapısı (başlık "Ayna Tapınağı", nabız atan `DoorMark`); `door_audit` bunu denetler. (Eski: `mirrors_unbroken` yan kapısı.)
 * Son 3 saniyelik mor **Yankı Tekrarlarını (Echo Replay)** izleyerek ölüm anındaki sırları çözebilirsin,
 * **Beyaz Bekçi Shilda**'nın bedenlerine bıraktığı kızıl ölüm çiçeklerinin ışığıyla karanlıkta gizlenen antik mühürleri ortaya çıkarabilirsin.
 
@@ -214,7 +214,8 @@ Kemik Mahzeni girişinde (x≈150) tükenmez bir çiçek kaynağı durur. Çiçe
 ### v1.14.0 (hazır, yayınlanmadı) — Faz 0 kritik düzeltmeler
 - **Canlı plaka kuralı:** plaka yalnız üstünde ağırlık varken kapıyı açar; içinden geçince kapı kalıcı çözülür ve kaydedilir (`PuzzleManager.set_live/is_live`).
 - **Yükseliş (`core_ascent`):** üç ayrı yetenek sınavı — Ruh Kesimi mührü, Gölge Atılması perdesi, yankı sunağı+plaka. Eski kayıtlar ilerlemeyi korur.
-- **Ayna Tapınağı kapısı:** `mirrors_unbroken` yan kapısı nabız atan işaret ve başlıkla görünür.
+- **Ayna Tapınağı kapısı:** `mirrors_labyrinth` ileri kapısı nabız atan işaret ve başlıkla görünür.
+- **Doğrusal ana yol (oda 28–40, Faz 4 T2):** observation → mirrors_reverse → mirrors_dual → mirrors_gallery → mirrors_unbroken → mirrors_labyrinth → mirrors_shrine → mirrors_1927 → core_threshold → core_ascent → core_seal_chamber → core_memory_vault → core_bloom_garden → core. Oda 28–40 için `SIDE_DOORS` girdisi yoktur; ileri kapı hedefte `from_<önceki_oda>`, geri kapı `from_<sonraki_oda>` spawn'ına gider; eski spawn adları takma ad olarak durur. `phase4_rooms_audit._graph()` denetler.
 - **Katakomb çiçeği / Sarnıç:** yukarıdaki bölüm; softlock'lar kapandı.
 - **Metin düzeltmeleri:** Çiçeklenme ve sayfa ipuçları gerçek sırayla eşleşir, yankı kaydı tek sabit 8 sn, ölü `core_portal.gd` silindi.
 - **Shilda sprite:** ayaklar zemine oturur (offset −59), balkon gözlem noktası boşluktan çıkarıldı.

@@ -32,6 +32,12 @@ atmosphere_bg = "res://assets/backgrounds/mirrors"
 
 [node name="Spawns" type="Node2D" parent="."]
 
+[node name="from_mirrors_reverse" type="Marker2D" parent="Spawns"]
+position = Vector2(120, 288)
+
+[node name="from_mirrors_gallery" type="Marker2D" parent="Spawns"]
+position = Vector2(880, 288)
+
 [node name="default" type="Marker2D" parent="Spawns"]
 position = Vector2(120, 288)
 
@@ -84,12 +90,12 @@ monitoring = false
 monitorable = true
 script = ExtResource("5")
 target_room_id = &"mirrors_reverse"
-target_spawn_id = &"from_dual"
+target_spawn_id = &"from_mirrors_dual"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BackReverse"]
 shape = SubResource("Hit")
 
-[node name="ForwardUnbroken" type="Area2D" parent="Interactive"]
+[node name="ForwardGallery" type="Area2D" parent="Interactive"]
 position = Vector2(920, 268)
 collision_layer = 8
 collision_mask = 0
@@ -101,7 +107,7 @@ target_spawn_id = &"from_mirrors_dual"
 required_puzzle = &"mirrors_dual"
 locked_message = "İki yankıyı aynı anda uyandırmalıyım."
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ForwardUnbroken"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ForwardGallery"]
 shape = SubResource("Hit")
 
 [node name="DualBeat" type="Area2D" parent="Interactive"]

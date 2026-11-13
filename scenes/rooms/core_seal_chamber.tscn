@@ -33,6 +33,12 @@ atmosphere_bg = "res://assets/backgrounds/core"
 
 [node name="Spawns" type="Node2D" parent="."]
 
+[node name="from_core_ascent" type="Marker2D" parent="Spawns"]
+position = Vector2(120, 288)
+
+[node name="from_core_memory_vault" type="Marker2D" parent="Spawns"]
+position = Vector2(880, 288)
+
 [node name="keeper_observe" type="Marker2D" parent="Spawns"]
 position = Vector2(590, 288)
 
@@ -90,19 +96,19 @@ target_spawn_id = &"from_core_seal_chamber"
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BackThresh"]
 shape = SubResource("Hit")
 
-[node name="ForwardCore" type="Area2D" parent="Interactive"]
+[node name="ForwardVault" type="Area2D" parent="Interactive"]
 position = Vector2(920, 268)
 collision_layer = 8
 collision_mask = 0
 monitoring = false
 monitorable = true
 script = ExtResource("5")
-target_room_id = &"core"
-target_spawn_id = &"from_chamber"
+target_room_id = &"core_memory_vault"
+target_spawn_id = &"from_core_seal_chamber"
 required_puzzle = &"core_seal"
 locked_message = "Mühür odasındaki tanıklığı dinlemeliyim."
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ForwardCore"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ForwardVault"]
 shape = SubResource("Hit")
 
 [node name="SealBeat" type="Area2D" parent="Interactive"]

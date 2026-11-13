@@ -310,7 +310,7 @@ func _mirrors_unbroken() -> void:
 	var cam := get_tree().get_first_node_in_group("follow_camera")
 	var door_fx: Node2D = null
 	for n in get_tree().get_nodes_in_group("room_door"):
-		if n is Node2D and String((n as Node).get("target_room_id") if "target_room_id" in n else "") == "core_threshold":
+		if n is Node2D and String((n as Node).get("target_room_id") if "target_room_id" in n else "") == "mirrors_labyrinth":
 			door_fx = n as Node2D
 			break
 	if door_fx == null:

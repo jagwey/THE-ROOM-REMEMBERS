@@ -25,7 +25,7 @@ bg_region = "core"
 platforms = PackedVector3Array(360, 250, 70, 440, 212, 70, 520, 250, 70)
 checkpoint = Vector2(120, 288)
 default_spawn = Vector2(120, 288)
-doors = [{"x": 40.0, "to": "core_threshold", "spawn": "from_seal_chamber"}, {"x": 1240.0, "to": "core_seal_chamber", "spawn": "from_threshold", "req": "core_ascent", "msg": "Ruh Kesimi, Gölge Atılması ve yankı aynı basamakta durmalı."}]
+doors = [{"x": 40.0, "to": "core_threshold", "spawn": "from_core_ascent"}, {"x": 1240.0, "to": "core_seal_chamber", "spawn": "from_core_ascent", "req": "core_ascent", "msg": "Ruh Kesimi, Gölge Atılması ve yankı aynı basamakta durmalı."}]
 
 [node name="Spawns" type="Node2D" parent="."]
 

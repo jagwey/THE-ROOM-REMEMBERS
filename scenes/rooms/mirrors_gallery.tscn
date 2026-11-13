@@ -11,7 +11,7 @@ room_width = 1280.0
 bg_region = "mirrors"
 checkpoint = Vector2(120, 288)
 default_spawn = Vector2(120, 288)
-doors = [{"x": 40.0, "to": "mirrors_dual", "spawn": "from_unbroken"}, {"x": 1240.0, "to": "mirrors_unbroken", "spawn": "from_dual", "req": "mirrors_gallery", "msg": "Önce duvardaki bedenleri say."}]
+doors = [{"x": 40.0, "to": "mirrors_dual", "spawn": "from_mirrors_gallery"}, {"x": 1240.0, "to": "mirrors_unbroken", "spawn": "from_mirrors_gallery", "req": "mirrors_gallery", "msg": "Önce duvardaki bedenleri say."}]
 
 [node name="Spawns" type="Node2D" parent="."]
 

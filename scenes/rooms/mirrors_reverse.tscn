@@ -34,6 +34,9 @@ atmosphere_bg = "res://assets/backgrounds/mirrors"
 
 [node name="Spawns" type="Node2D" parent="."]
 
+[node name="from_mirrors_dual" type="Marker2D" parent="Spawns"]
+position = Vector2(880, 288)
+
 [node name="default" type="Marker2D" parent="Spawns"]
 position = Vector2(120, 288)
 
@@ -112,7 +115,7 @@ monitoring = false
 monitorable = true
 script = ExtResource("5")
 target_room_id = &"mirrors_dual"
-target_spawn_id = &"from_reverse"
+target_spawn_id = &"from_mirrors_reverse"
 required_puzzle = &"mirrors_reverse"
 locked_message = "Aynadaki işaretin gerçek yönünü bulmalıyım."
 

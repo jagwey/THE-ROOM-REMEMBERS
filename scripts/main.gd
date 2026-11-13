@@ -36,17 +36,17 @@ const ROOM_DEFS := {
 	"experiment_authority": {"node": "ExperimentAuthority", "bounds": Rect2(0, 0, 960, 360), "checkpoint": Vector2(200, 288), "bg": "res://assets/backgrounds/experiment",
 		"spawns": {"default": Vector2(120, 288), "from_circuit": Vector2(120, 288), "from_mirrors": Vector2(880, 288), "from_quarantine": Vector2(880, 288), "from_auth": Vector2(120, 288)}},
 	"mirrors_reverse": {"node": "MirrorsReverse", "bounds": Rect2(0, 0, 960, 360), "checkpoint": Vector2(200, 288), "bg": "res://assets/backgrounds/mirrors",
-		"spawns": {"default": Vector2(120, 288), "from_auth": Vector2(120, 288), "from_dual": Vector2(880, 288), "from_observation": Vector2(120, 288), "from_reverse": Vector2(120, 288), "from_mirrors": Vector2(120, 288)}},
+		"spawns": {"default": Vector2(120, 288), "from_auth": Vector2(120, 288), "from_dual": Vector2(880, 288), "from_observation": Vector2(120, 288), "from_reverse": Vector2(120, 288), "from_mirrors": Vector2(120, 288), "from_mirrors_dual": Vector2(880, 288)}},
 	"mirrors_dual": {"node": "MirrorsDual", "bounds": Rect2(0, 0, 960, 360), "checkpoint": Vector2(200, 288), "bg": "res://assets/backgrounds/mirrors",
-		"spawns": {"default": Vector2(120, 288), "from_reverse": Vector2(120, 288), "from_unbroken": Vector2(880, 288), "from_dual": Vector2(120, 288)}},
+		"spawns": {"default": Vector2(120, 288), "from_reverse": Vector2(120, 288), "from_unbroken": Vector2(880, 288), "from_dual": Vector2(120, 288), "from_mirrors_reverse": Vector2(120, 288), "from_mirrors_gallery": Vector2(880, 288)}},
 	"mirrors_unbroken": {"node": "MirrorsUnbroken", "bounds": Rect2(0, 0, 960, 360), "checkpoint": Vector2(200, 288), "bg": "res://assets/backgrounds/mirrors",
-		"spawns": {"default": Vector2(120, 288), "from_dual": Vector2(120, 288), "from_threshold": Vector2(880, 288), "from_unbroken": Vector2(120, 288)}},
+		"spawns": {"default": Vector2(120, 288), "from_dual": Vector2(120, 288), "from_threshold": Vector2(880, 288), "from_unbroken": Vector2(120, 288), "from_mirrors_gallery": Vector2(120, 288), "from_mirrors_labyrinth": Vector2(880, 288)}},
 	"core_threshold": {"node": "CoreThreshold", "bounds": Rect2(0, 0, 960, 360), "checkpoint": Vector2(200, 288), "bg": "res://assets/backgrounds/core",
-		"spawns": {"default": Vector2(120, 288), "from_mirrors": Vector2(120, 288), "from_seal_chamber": Vector2(880, 288), "from_threshold": Vector2(120, 288)}},
+		"spawns": {"default": Vector2(120, 288), "from_mirrors": Vector2(120, 288), "from_seal_chamber": Vector2(880, 288), "from_threshold": Vector2(120, 288), "from_mirrors_1927": Vector2(120, 288), "from_core_ascent": Vector2(880, 288)}},
 	"core_seal_chamber": {"node": "CoreSealChamber", "bounds": Rect2(0, 0, 960, 360), "checkpoint": Vector2(200, 288), "bg": "res://assets/backgrounds/core",
-		"spawns": {"default": Vector2(120, 288), "from_threshold": Vector2(120, 288), "from_chamber": Vector2(880, 288)}},
+		"spawns": {"default": Vector2(120, 288), "from_threshold": Vector2(120, 288), "from_chamber": Vector2(880, 288), "from_core_ascent": Vector2(120, 288), "from_core_memory_vault": Vector2(880, 288)}},
 	"core": {"node": "Core", "bounds": Rect2(0, 0, 960, 360), "checkpoint": Vector2(160, 280), "bg": "res://assets/backgrounds/core",
-		"spawns": {"default": Vector2(160, 280), "from_chamber": Vector2(160, 280)}},
+		"spawns": {"default": Vector2(160, 280), "from_chamber": Vector2(160, 280), "from_core_bloom_garden": Vector2(160, 280)}},
 }
 
 
@@ -56,11 +56,6 @@ const SIDE_DOORS := {
 	"awakening": [{"x": 672.0, "to": "awakening_balcony"}],
 	"decay_vines": [{"x": 896.0, "to": "decay_catacombs"}],
 	"decay_weight": [{"x": 720.0, "to": "decay_cistern"}],
-	"mirrors_reverse": [{"x": 672.0, "to": "mirrors_labyrinth"}],
-	"mirrors_dual": [{"x": 700.0, "to": "mirrors_1927", "req": "mirrors_gallery", "msg": "Önce galerideki bedenleri saymalıyım."}],
-	"mirrors_unbroken": [{"x": 784.0, "to": "mirrors_shrine", "title": "Ayna Tapınağı", "mark": true, "label_dy": -74.0}],
-	"core_threshold": [{"x": 784.0, "to": "core_memory_vault"}],
-	"core_seal_chamber": [{"x": 784.0, "to": "core_bloom_garden"}],
 }
 
 

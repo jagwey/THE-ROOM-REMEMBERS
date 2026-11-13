@@ -32,6 +32,12 @@ atmosphere_bg = "res://assets/backgrounds/mirrors"
 
 [node name="Spawns" type="Node2D" parent="."]
 
+[node name="from_mirrors_gallery" type="Marker2D" parent="Spawns"]
+position = Vector2(120, 288)
+
+[node name="from_mirrors_labyrinth" type="Marker2D" parent="Spawns"]
+position = Vector2(880, 288)
+
 [node name="keeper_observe" type="Marker2D" parent="Spawns"]
 position = Vector2(600, 288)
 
@@ -79,7 +85,7 @@ centered = false
 
 [node name="Interactive" type="Node2D" parent="."]
 
-[node name="BackDual" type="Area2D" parent="Interactive"]
+[node name="BackGallery" type="Area2D" parent="Interactive"]
 position = Vector2(40, 268)
 collision_layer = 8
 collision_mask = 0
@@ -89,22 +95,22 @@ script = ExtResource("5")
 target_room_id = &"mirrors_gallery"
 target_spawn_id = &"from_mirrors_unbroken"
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BackDual"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BackGallery"]
 shape = SubResource("Hit")
 
-[node name="ForwardCore" type="Area2D" parent="Interactive"]
+[node name="ForwardLabyrinth" type="Area2D" parent="Interactive"]
 position = Vector2(920, 268)
 collision_layer = 8
 collision_mask = 0
 monitoring = false
 monitorable = true
 script = ExtResource("5")
-target_room_id = &"core_threshold"
-target_spawn_id = &"from_mirrors"
+target_room_id = &"mirrors_labyrinth"
+target_spawn_id = &"from_mirrors_unbroken"
 required_puzzle = &"mirrors_unbroken"
 locked_message = "Gölgeyle son anıyı konuşmalıyım."
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ForwardCore"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ForwardLabyrinth"]
 shape = SubResource("Hit")
 
 [node name="UnbrokenBeat" type="Area2D" parent="Interactive"]

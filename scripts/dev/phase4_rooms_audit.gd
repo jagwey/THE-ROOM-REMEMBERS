@@ -30,6 +30,7 @@ func _run() -> void:
 	root.get_node("DialogueManager").clear()
 	root.get_node("UiGate").set_story(false)
 	await _components()
+	await _graph()
 	quit(1 if failures > 0 else 0)
 
 
@@ -182,6 +183,48 @@ func _components() -> void:
 	await process_frame
 	rm.enter_room(home_room)
 	await _migrations()
+
+
+func _graph() -> void:
+	var rm := root.get_node("RoomManager")
+	var order: Array = Array(rm.ROOM_ORDER)
+	var main_script: Script = current_scene.get_script()
+	var side_doors: Dictionary = main_script.get_script_constant_map()["SIDE_DOORS"]
+	var src: Dictionary = load("res://scripts/dev/release_audit.gd").get_script_constant_map()["PUZZLE_SOURCE"]
+	for i in range(27, 40):
+		var rid := String(order[i])
+		var room: Node = _room_root(StringName(rid))
+		var doors := _doors_of(room)
+		check(not side_doors.has(rid), "graph_no_side_door_entry_%s" % rid)
+		if i < 39:
+			var nxt := String(order[i + 1])
+			var fwd := doors.filter(func(d): return String(d.target_room_id) == nxt)
+			check(fwd.size() == 1, "graph_one_forward_door_%s" % rid, fwd.size())
+			if fwd.size() == 1:
+				var sp := StringName(fwd[0].target_spawn_id)
+				check((rm._rooms[StringName(nxt)].spawns as Dictionary).has(sp), "graph_forward_spawn_exists_%s" % rid, sp)
+				check(sp == StringName("from_%s" % rid), "graph_forward_spawn_name_%s" % rid, sp)
+				var req := String(fwd[0].required_puzzle)
+				check(req != "" and src.has(req), "graph_forward_req_in_puzzle_source_%s" % rid, req)
+		var prev := String(order[i - 1])
+		var back := doors.filter(func(d): return String(d.target_room_id) == prev)
+		check(back.size() == 1, "graph_one_back_door_%s" % rid, back.size())
+		if back.size() == 1:
+			var bsp := StringName(back[0].target_spawn_id)
+			check((rm._rooms[StringName(prev)].spawns as Dictionary).has(bsp), "graph_back_spawn_exists_%s" % rid, bsp)
+			check(bsp == StringName("from_%s" % rid), "graph_back_spawn_name_%s" % rid, bsp)
+		var close: Array = []
+		for n in room.find_children("*", "Node2D", true, false):
+			if not n.has_method("on_interact") or n.is_in_group("room_door"):
+				continue
+			for d in doors:
+				if (d as Node2D).global_position.distance_to((n as Node2D).global_position) < 96.0:
+					close.append("%s<->%s" % [d.name, n.name])
+		check(close.is_empty(), "graph_door_interactable_96px_%s" % rid, close)
+	var lab_fwd := _doors_of(_room_root(&"mirrors_labyrinth")).filter(func(d): return String(d.target_room_id) == "mirrors_shrine")
+	check(lab_fwd.size() == 1 and String(lab_fwd[0].door_title) == "Ayna Tapınağı", "graph_labyrinth_door_title")
+	check(lab_fwd.size() == 1 and lab_fwd[0].get_node_or_null("DoorMark") != null, "graph_labyrinth_door_marked")
+	check(lab_fwd.size() == 1 and is_equal_approx(float(lab_fwd[0].label_dy), -74.0), "graph_labyrinth_door_label_dy")
 
 
 func _migrations() -> void:
