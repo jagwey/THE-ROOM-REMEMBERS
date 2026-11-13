@@ -289,7 +289,7 @@ func _core_threshold() -> void:
 	DialogueManager.say("Noroi", "Biliyorum.")
 	DialogueManager.say("Shilda", "Hayır. Henüz bilmiyorsun.")
 	DialogueManager.say("Shilda", "Yine de kapı artık senden bir can istemiyor.")
-	DialogueManager.say("Noroi", "Öğrendiklerimi yanıma aldım; son mühür odasında kayıtları birleştireceğim.")
+	DialogueManager.say("Noroi", "Bulutun içinde bedenim kalkan olur, geçidi öyle açacağım.")
 
 	var ok: bool = await DialogueManager.dialogue_finished
 
@@ -297,11 +297,18 @@ func _core_threshold() -> void:
 
 		return
 
-	PuzzleManager.mark_solved(&"core_threshold")
 
 	SaveManager.save_game()
 
 func _core_seal_chamber() -> void:
+
+	if not PuzzleManager.is_solved(&"core_seal_bond_3"):
+
+		DialogueManager.say("Noroi", "Önce üç bağı Ruh Kesimi ile kesmeliyim.")
+
+		await DialogueManager.dialogue_finished
+
+		return
 
 	DialogueManager.say("Kayıt", "Deney başladı. Kapı kapandı. Koruma mührü devreye girdi.")
 	DialogueManager.say("Noroi", "Silinen hafızalar burada kaldı, hiçbiri kayıp değil artık.")
@@ -317,8 +324,6 @@ func _core_seal_chamber() -> void:
 		return
 
 	PuzzleManager.mark_solved(&"core_seal")
-	GameState.player_progress_knowledge["trusted_keeper"] = true
-
 	SaveManager.save_game()
 
 func _evidence(eid: String, title: String, body: String, kind: String, section: String) -> void:

@@ -414,6 +414,7 @@ oom_door\) <= 44.0 px mesafede -200 etkileÅŸim Ã¶ncelik bonusu eklendi.
 - [x] Faz 4 T2 (2026-11-13): oda 28-40 ana yolu doğrusal (kapı+spawn grafiği; `SIDE_DOORS` yalnız awakening/decay; labirent->tapınak kapısı başlık+işaret; core_ascent spawn'ları from_core_*; Shard/ShrineEcho/Vault/Reconcile kapıdan >=96 px'e taşındı); `phase4_rooms_audit._graph()`, door/release/room_graph audit güncellendi; tüm audit'ler + e2e 0.
 - [x] Faz 4 T2 düzeltme 83fb23c (2026-11-13): core `BackGarden` başlığı "Çiçek Bahçesi"; labirent/1927 kilitli kapı metni ("Yanıltıcı yolu aşmadan ilerleyemem.", "Gecenin tanıklığını dinlemeliyim.").
 - Faz 4 T4: oda 32-34 yeniden yazıldı (labirent ceset köprüsü + x1170 kalkanlı gölge + Shilda 'Tapınağa uğra'; tapınak Gölge Atılması sınavı: sunak, 3 perde, boşluk, trial; 1927 sessiz gece: night_walk.gd gölge yürüyüşü -> tuğla + NightEcho, `ordered_relic/hidden_symbol.requires_puzzle`); phase4_rooms/room_graph/door/memory_seal/lore_canon/keeper_naming/story_flags/dialogue_lint/dialogue_data/release + e2e (53/53) temiz.
+- Faz 4 T5: oda 35-37 yeniden yazıldı (eşik `curse_cloud` + 2 ceset kalkanı, `core_threshold_crossed` marker; yükseliş doğrulandı; mühür odası 3 sıralı `soul_seal` bağı `core_seal_bond_1..3`, `trusted_keeper` yazımı kaldırıldı); phase4/ascent/curse_reload/room_graph/door/memory_seal/death_loop/lore_canon/dialogue_lint/release/e2e(53/53) yeşil.
 
 ## DEVİR NOTU — Faz 4 durumu (başka YZ devralırsa BURADAN başla) — güncel: 2026-11-13
 **Hedef:** Oda revizyonu (spec `docs/superpowers/specs/2026-11-12-room-overhaul-design.md`), Faz 4 = oda 28-40 + final, sürüm v1.18.0. Plan: `docs/superpowers/plans/2026-11-13-phase4-rooms-28-40.md` (T1-T8). Dal: `feat/phase4-rooms` (main'e merge/push YOK).
@@ -422,8 +423,8 @@ oom_door\) <= 44.0 px mesafede -200 etkileÅŸim Ã¶ncelik bonusu eklendi.
 - [x] T1 bileşenler + göç (2831908, a860ec2)
 - [x] T2 doğrusal ana yol 28-40 (799d3fb, 83fb23c)
 - [x] T3 odalar 28-31 (reverse ters kontrol, dual aynalı yankı+ceset, gallery 3 ceset plakası, unbroken yankı yol taklidi) (185575f, b791bf0)
-- [ ] T4 odalar 32-34 (labirent ana yolda + ceset köprüsü, tapınak Gölge Atılması testi, 1927 sessiz dizi + X'in adı; lore_canon `x_name_late`) — UYGULANIYOR
-- [ ] T5 odalar 35-37 (eşik lanet bulutu+ceset kalkanı, yükseliş 3 test, mühür odası 3 bağ; trusted_keeper burada YAZILMAZ)
+- [x] T4 odalar 32-34 (labirent ana yolda + ceset köprüsü, tapınak Gölge Atılması testi, 1927 sessiz dizi + X'in adı; lore_canon `x_name_late`) (738adb4, bb1ac17, 4318dd4)
+- [ ] T5 odalar 35-37 (eşik lanet bulutu+ceset kalkanı, yükseliş 3 test, mühür odası 3 bağ; trusted_keeper burada YAZILMAZ) — UYGULANIYOR
 - [ ] T6 odalar 38-39 (kasa önceki ipuçlarından kod; bahçe 4-1-2, trusted_keeper YALNIZ burada; `add_vigil_trust(1)`; lore_canon `vault_irony`/`garden_hint`)
 - [ ] T7 `core_defense.gd` final (3 dalga 2/3/4 gölge, kristal HP 5, kayıpta ölüm yok dalga sıfırlanır, `EndingManager.final_variant()` together/apart, "BÖLÜM I SONU")
 - [ ] T8 ölü kod (mirror_relay.gd, archive_door.gd — önce grep), `_softlock()` + `_main_path_walk()`, e2e 01→40, sürüm 1.18.0 / version/code 48, README + PROGRESS + CLAUDE.md "Güncel sürüm"; tam suite "38 dev denetimi, 0 basarisiz"

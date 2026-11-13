@@ -33,6 +33,7 @@ func _run() -> void:
 	await _graph()
 	await _rooms_28_31()
 	await _rooms_32_34()
+	await _rooms_35_37()
 	quit(1 if failures > 0 else 0)
 
 
@@ -713,6 +714,147 @@ func _rooms_32_34() -> void:
 		for ln in jd["sets"][set_id]:
 			other_x += _x_words(String(ln["t"])) + (1 if String(ln["s"]) == "X" else 0)
 	check(other_x == 0, "canon_x_1927_only_in_echo_set", other_x)
+
+
+func _rooms_35_37() -> void:
+	var pm := root.get_node("PuzzleManager")
+	var rm := root.get_node("RoomManager")
+	var gs := root.get_node("GameState")
+	var cur := root.get_node("CurseManager")
+	var player: Node2D = current_scene.get_node("Player")
+	# --- 35 core_threshold ---
+	_unsolve(["core_threshold", "core_threshold_crossed"])
+	_clear_corpses()
+	rm.enter_room(&"core_threshold")
+	await process_frame
+	await process_frame
+	var ct := _room_root(&"core_threshold")
+	var cloud: Node = null
+	var marker: Node = null
+	var tbeat: Node = null
+	var tseal: Node = null
+	for n in ct.find_children("*", "Node2D", true, false):
+		if n.is_in_group("curse_cloud"):
+			cloud = n
+		elif "puzzle_id" in n and String(n.puzzle_id) == "core_threshold_crossed":
+			marker = n
+		elif "beat_id" in n and String(n.beat_id) == "core_threshold":
+			tbeat = n
+		elif n.has_method("on_interact") and "room_id" in n and String(n.room_id) == "core_threshold":
+			tseal = n
+	check(cloud != null and absf(cloud.position.x - 590.0) < 2.0 and cloud.size == Vector2(420, 150) and is_equal_approx(cloud.safe_radius, 120.0), "r35_cloud_config")
+	check(marker != null and absf(marker.position.x - 840.0) < 2.0 and Array(marker.also_solve).has("core_threshold"), "r35_marker_also_solves_legacy")
+	check(tbeat != null and absf(tbeat.position.x - 300.0) < 2.0, "r35_threshbeat_x300")
+	check(tseal != null and tseal.position == Vector2(200, 288), "r35_memory_seal_200")
+	var ctsp: Dictionary = rm._rooms[&"core_threshold"].spawns
+	check(ctsp.has(&"seal_core_threshold") and ctsp[&"seal_core_threshold"] == Vector2(200, 288), "r35_seal_marker_200")
+	# cesetsiz bulut lanet yer
+	cur.curse = 0.0
+	player.global_position = Vector2(590, 288)
+	for i in 30:
+		await physics_frame
+	check(cur.curse > 5.0, "r35_cloud_without_corpse_adds_curse", cur.curse)
+	check(cloud != null and not cloud._is_safe(Vector2(590, 288)), "r35_unshielded_not_safe")
+	# 2 ceset (x480, x700) koridoru kapatir: bulutun tamami guvenli
+	_corpse_at(480, 288)
+	_corpse_at(700, 288)
+	await process_frame
+	var cov := true
+	var xs := 384.0
+	while xs <= 796.0:
+		cov = cov and cloud._is_safe(Vector2(xs, 288))
+		xs += 4.0
+	check(cov, "r35_two_corpses_cover_cloud")
+	cur.curse = 0.0
+	player.global_position = Vector2(590, 288)
+	for i in 30:
+		await physics_frame
+	check(cur.curse < 1.0, "r35_corridor_safe_with_two_corpses", cur.curse)
+	check((gs.world_memory_state["corpses"] as Array).size() <= 2, "r35_needs_at_most_two_corpses")
+	# ThreshBeat tek basina cozmez
+	_unsolve(["core_threshold", "core_threshold_crossed"])
+	await _beat_run(tbeat, player)
+	check(not pm.is_solved(&"core_threshold"), "r35_threshbeat_does_not_solve")
+	# marker cozer
+	player.global_position = Vector2(840, 288)
+	for i in 8:
+		await physics_frame
+	check(pm.is_solved(&"core_threshold_crossed") and pm.is_solved(&"core_threshold"), "r35_marker_solves_threshold")
+	check(_fwd_door_open(&"core_threshold"), "r35_door_opens_after_marker")
+	_clear_corpses()
+	cur.curse = 0.0
+	# --- 36 core_ascent ---
+	rm.enter_room(&"core_ascent")
+	await process_frame
+	await process_frame
+	var ca := _room_root(&"core_ascent")
+	var ca_doors := _doors_of(ca)
+	var ca_back := ca_doors.filter(func(d): return String(d.target_room_id) == "core_threshold")
+	var ca_fwd := ca_doors.filter(func(d): return String(d.target_room_id) == "core_seal_chamber")
+	check(ca_back.size() == 1 and String(ca_back[0].target_spawn_id) == "from_core_ascent", "r36_back_door")
+	check(ca_fwd.size() == 1 and String(ca_fwd[0].target_spawn_id) == "from_core_ascent" and String(ca_fwd[0].required_puzzle) == "core_ascent", "r36_fwd_door")
+	var ss_ok := false
+	var cb_ok := false
+	for n in ca.find_children("*", "Node2D", true, false):
+		if n.is_in_group("soul_seal") and "refusal_line" in n and String(n.refusal_line).contains("Yasak Kanat"):
+			ss_ok = true
+		if n.is_in_group("curse_barrier") and "refusal_line" in n and String(n.refusal_line).contains("Ayna Tapınağı"):
+			cb_ok = true
+	check(ss_ok and cb_ok, "r36_refusal_lines_name_rooms")
+	# --- 37 core_seal_chamber ---
+	_unsolve(["core_seal", "core_seal_bond_1", "core_seal_bond_2", "core_seal_bond_3"])
+	gs.player_progress_knowledge["trusted_keeper"] = false
+	rm.enter_room(&"core_seal_chamber")
+	await process_frame
+	await process_frame
+	var sc := _room_root(&"core_seal_chamber")
+	var by_id := {}
+	for b in _veins_of(sc):
+		by_id[String(b.puzzle_id)] = b
+	var has3: bool = by_id.has("core_seal_bond_1") and by_id.has("core_seal_bond_2") and by_id.has("core_seal_bond_3")
+	check(has3, "r37_three_bonds", by_id.keys())
+	if has3:
+		var b1: Node = by_id["core_seal_bond_1"]
+		var b2: Node = by_id["core_seal_bond_2"]
+		var b3: Node = by_id["core_seal_bond_3"]
+		check(absf(b1.position.x - 300.0) < 2.0 and absf(b2.position.x - 470.0) < 2.0 and absf(b3.position.x - 640.0) < 2.0, "r37_bond_positions")
+		check(not b1.blocking and not b2.blocking and not b3.blocking, "r37_bonds_not_blocking")
+		check(String(b1.requires) == "" and String(b2.requires) == "core_seal_bond_1" and String(b3.requires) == "core_seal_bond_2", "r37_bond_chain")
+		check(b2.wrong_line == "Bağ direniyor. Önce yakındakini kes." and b3.wrong_line == b2.wrong_line, "r37_wrong_line")
+		b2.receive_soul_slash(player)
+		b3.receive_soul_slash(player)
+		check(not pm.is_solved(&"core_seal_bond_2") and not pm.is_solved(&"core_seal_bond_3"), "r37_out_of_order_refused")
+		var sbeat: Node = null
+		var sseal: Node = null
+		for n in sc.find_children("*", "Node2D", true, false):
+			if "beat_id" in n and String(n.beat_id) == "core_seal_chamber":
+				sbeat = n
+			elif n.has_method("on_interact") and "room_id" in n and String(n.room_id) == "core_seal_chamber":
+				sseal = n
+		check(sbeat != null and absf(sbeat.position.x - 780.0) < 2.0, "r37_sealbeat_x780")
+		check(sseal != null and sseal.position == Vector2(160, 288), "r37_memory_seal_160")
+		var scsp: Dictionary = rm._rooms[&"core_seal_chamber"].spawns
+		check(scsp.has(&"seal_core_seal_chamber") and scsp[&"seal_core_seal_chamber"] == Vector2(160, 288), "r37_seal_marker_160")
+		var doors_x: Array = []
+		for d in _doors_of(sc):
+			doors_x.append(d.position.x)
+		check(_min_dx(doors_x, [sseal]) >= 56.0 and _min_dx([sseal.position.x], [b1, b2, b3, sbeat]) >= 80.0, "r37_memory_seal_spacing")
+		_unsolve(["core_seal"])
+		await _beat_run(sbeat, player)
+		check(not pm.is_solved(&"core_seal"), "r37_beat_refuses_before_bonds")
+		b1.receive_soul_slash(player)
+		b2.receive_soul_slash(player)
+		b3.receive_soul_slash(player)
+		check(pm.is_solved(&"core_seal_bond_1") and pm.is_solved(&"core_seal_bond_2") and pm.is_solved(&"core_seal_bond_3"), "r37_bonds_in_order")
+		await _beat_run(sbeat, player)
+		check(pm.is_solved(&"core_seal"), "r37_beat_solves_core_seal_after_bonds")
+		check(not bool(gs.player_progress_knowledge.get("trusted_keeper", false)), "r37_trusted_keeper_unchanged")
+		check(_fwd_door_open(&"core_seal_chamber"), "r37_door_opens")
+	var src_txt := FileAccess.get_file_as_string("res://scripts/story/story_beat.gd")
+	var fn_at := src_txt.find("func _core_seal_chamber")
+	var fn_end := src_txt.find("func _evidence", fn_at)
+	check(fn_at >= 0 and not src_txt.substr(fn_at, fn_end - fn_at).contains("trusted_keeper"), "r37_no_trusted_keeper_writer")
+	_clear_corpses()
 
 
 func _migrations() -> void:

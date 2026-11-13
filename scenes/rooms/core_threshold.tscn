@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=13 format=3]
 
 [ext_resource type="Texture2D" path="res://assets/backgrounds/core/far.png" id="1"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/core/mid.png" id="2"]
@@ -9,6 +9,8 @@
 
 [ext_resource type="Texture2D" path="res://assets/tiles/tile_00.png" id="walk_tile"]
 [ext_resource type="Script" path="res://scripts/world/memory_seal_point.gd" id="memory_seal_pt"]
+[ext_resource type="Script" path="res://scripts/world/curse_cloud.gd" id="cloud"]
+[ext_resource type="Script" path="res://scripts/world/reach_marker.gd" id="reach"]
 
 [sub_resource type="RectangleShape2D" id="Floor"]
 size = Vector2(1000, 48)
@@ -109,13 +111,13 @@ script = ExtResource("5")
 target_room_id = &"core_ascent"
 target_spawn_id = &"from_core_threshold"
 required_puzzle = &"core_threshold"
-locked_message = "Eşikteki son anıyı tamamlamalıyım."
+locked_message = "Bulutun öte yakasına geçmeliyim."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ForwardSeal"]
 shape = SubResource("Hit")
 
 [node name="ThreshBeat" type="Area2D" parent="Interactive"]
-position = Vector2(480, 268)
+position = Vector2(300, 268)
 collision_layer = 8
 collision_mask = 0
 monitoring = false
@@ -311,9 +313,21 @@ polygon = PackedVector2Array(0, 320, 960, 320, 960, 360, 0, 360)
 color = Color(0.08, 0.06, 0.1, 1)
 
 [node name="seal_core_threshold" type="Marker2D" parent="Spawns"]
-position = Vector2(360, 288)
+position = Vector2(200, 288)
 
 [node name="MemorySeal" type="Area2D" parent="Interactive"]
-position = Vector2(360, 288)
+position = Vector2(200, 288)
 script = ExtResource("memory_seal_pt")
 room_id = &"core_threshold"
+
+[node name="Cloud" type="Area2D" parent="Interactive"]
+position = Vector2(590, 288)
+script = ExtResource("cloud")
+size = Vector2(420, 150)
+safe_radius = 120.0
+
+[node name="Crossed" type="Area2D" parent="Interactive"]
+position = Vector2(840, 288)
+script = ExtResource("reach")
+puzzle_id = &"core_threshold_crossed"
+also_solve = PackedStringArray("core_threshold")

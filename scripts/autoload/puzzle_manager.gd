@@ -293,6 +293,26 @@ const HINTS: Dictionary = {
 		"orientation": "Önce yankının durduğu basamak. Sonra Ruh Kesimi ve Gölge Atılması.",
 		"explicit": "İkisi de açıkken son basamağa dokun; gölge mührü tutar."
 	},
+	&"core_threshold_crossed": {
+		"goal": "Kırmızı bulut canlıyı yer; geçit bulutun ötesinde.",
+		"orientation": "Ölü beden laneti emer. Bulutun içinde iki beden bırak.",
+		"explicit": "Bulutta ölüp iki beden bırak, aralarından geç, sağ uca var."
+	},
+	&"core_seal_bond_1": {
+		"goal": "Mührün üç bağı var; hepsi Ruh Kesimi ile kesilir.",
+		"orientation": "Bağlar soldan sağa sırayla kesilir. Yakındakinden başla.",
+		"explicit": "Ruh Kesimi ile en soldaki bağı kes."
+	},
+	&"core_seal_bond_2": {
+		"goal": "İlk bağ kesildi, ikincisi hâlâ tutuyor.",
+		"orientation": "İkinci bağ ancak birincisinden sonra gevşer.",
+		"explicit": "Ruh Kesimi ile ortadaki bağı kes."
+	},
+	&"core_seal_bond_3": {
+		"goal": "İki bağ kesildi, sonuncusu hâlâ tutuyor.",
+		"orientation": "Son bağ ikincisinden sonra gevşer.",
+		"explicit": "Ruh Kesimi ile en sağdaki bağı kes."
+	},
 	&"core_seal": {
 		"goal": "Çekirdeğin ana mührü kırılmalı, çıkış açılmalı.",
 		"orientation": "Her iki mühür parçası birleşmeden çekirdek savunması gevşemez.",
@@ -401,7 +421,9 @@ const ROOM_PUZZLES: Dictionary = {
 	"mirrors_shrine": [&"mirrors_shrine_trial"],
 	"core_bloom_garden": [&"core_bloom_order"],
 	"core_memory_vault": [&"core_vault_order"],
+	"core_threshold": [&"core_threshold_crossed"],
 	"core_ascent": [&"core_ascent"],
+	"core_seal_chamber": [&"core_seal_bond_1", &"core_seal_bond_2", &"core_seal_bond_3"],
 	"core": [&"core_seal"],
 }
 

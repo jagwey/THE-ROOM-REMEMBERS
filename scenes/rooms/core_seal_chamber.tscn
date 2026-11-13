@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Texture2D" path="res://assets/backgrounds/core/far.png" id="1"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/core/mid.png" id="2"]
@@ -9,6 +9,7 @@
 
 [ext_resource type="Texture2D" path="res://assets/tiles/tile_00.png" id="walk_tile"]
 [ext_resource type="Script" path="res://scripts/world/memory_seal_point.gd" id="memory_seal_pt"]
+[ext_resource type="Script" path="res://scripts/world/soul_seal.gd" id="soul"]
 
 [sub_resource type="RectangleShape2D" id="Floor"]
 size = Vector2(1000, 48)
@@ -106,13 +107,13 @@ script = ExtResource("5")
 target_room_id = &"core_memory_vault"
 target_spawn_id = &"from_core_seal_chamber"
 required_puzzle = &"core_seal"
-locked_message = "Mühür odasındaki tanıklığı dinlemeliyim."
+locked_message = "Mührün üç bağını kesmeliyim."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ForwardVault"]
 shape = SubResource("Hit")
 
 [node name="SealBeat" type="Area2D" parent="Interactive"]
-position = Vector2(480, 268)
+position = Vector2(780, 268)
 collision_layer = 8
 collision_mask = 0
 monitoring = false
@@ -308,9 +309,32 @@ polygon = PackedVector2Array(0, 320, 960, 320, 960, 360, 0, 360)
 color = Color(0.08, 0.06, 0.1, 1)
 
 [node name="seal_core_seal_chamber" type="Marker2D" parent="Spawns"]
-position = Vector2(360, 288)
+position = Vector2(160, 288)
 
 [node name="MemorySeal" type="Area2D" parent="Interactive"]
-position = Vector2(360, 288)
+position = Vector2(160, 288)
 script = ExtResource("memory_seal_pt")
 room_id = &"core_seal_chamber"
+
+[node name="Bond1" type="StaticBody2D" parent="Interactive"]
+position = Vector2(300, 288)
+script = ExtResource("soul")
+puzzle_id = &"core_seal_bond_1"
+blocking = false
+wrong_line = "Bağ direniyor. Önce yakındakini kes."
+
+[node name="Bond2" type="StaticBody2D" parent="Interactive"]
+position = Vector2(470, 288)
+script = ExtResource("soul")
+puzzle_id = &"core_seal_bond_2"
+blocking = false
+requires = &"core_seal_bond_1"
+wrong_line = "Bağ direniyor. Önce yakındakini kes."
+
+[node name="Bond3" type="StaticBody2D" parent="Interactive"]
+position = Vector2(640, 288)
+script = ExtResource("soul")
+puzzle_id = &"core_seal_bond_3"
+blocking = false
+requires = &"core_seal_bond_2"
+wrong_line = "Bağ direniyor. Önce yakındakini kes."
