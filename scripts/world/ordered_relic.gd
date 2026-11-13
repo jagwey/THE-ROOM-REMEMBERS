@@ -8,6 +8,8 @@ const LorePointScript := preload("res://scripts/world/lore_point.gd")
 @export var dialogue_room: StringName = &""
 @export var dialogue_set: StringName = &""
 @export var solve_puzzle: StringName = &""
+## Doluysa: bu bulmaca çözülmeden iz tamamen sessizdir (diyalog yok, kayıt yok).
+@export var requires_puzzle: StringName = &""
 @export var locked_line: String = "Önce öteki iz."
 @export var count_line: bool = false
 @export var need_soul: bool = false
@@ -36,6 +38,8 @@ func _ready() -> void:
 
 func on_interact(_by: Node) -> void:
 	if _busy:
+		return
+	if requires_puzzle != &"" and not PuzzleManager.is_solved(requires_puzzle):
 		return
 	_busy = true
 	if need_soul and not bool(GameState.player_progress_knowledge.get("ability_soul_slash", false)):

@@ -9,6 +9,10 @@ extends Node2D
 @export var reveal_line: String = ""
 ## Doluysa: aynı code_group'taki TÜM semboller görülünce kod öğrenilir (rakamlar yayılmış semboller).
 @export var code_group: StringName = &""
+## Doluysa: bu bulmaca çözülene dek sembol görünmez ve okunmaz.
+@export var requires_puzzle: StringName = &""
+## false: Fener Cesedi gerekmez, oyuncunun kendi yakınlığı yeter (yalnız requires_puzzle ile anlamlı).
+@export var lantern_required: bool = true
 
 var _label: Label
 var _seen: bool = false
@@ -25,13 +29,24 @@ func _ready() -> void:
 	_label.add_theme_color_override("font_color", Color(0.95, 0.55, 0.6, 1))
 	_label.modulate.a = 0.0
 	add_child(_label)
+	if requires_puzzle != &"" and not PuzzleManager.is_solved(requires_puzzle):
+		visible = false
+		PuzzleManager.puzzle_solved.connect(_on_gate_solved)
+
+
+func _on_gate_solved(id: StringName) -> void:
+	if id == requires_puzzle:
+		visible = true
 
 
 func _physics_process(_delta: float) -> void:
 	if not is_visible_in_tree():
 		return
 	var best := 9999.0
-	for c in get_tree().get_nodes_in_group("lantern_corpse"):
+	var sources: Array = get_tree().get_nodes_in_group("lantern_corpse")
+	if not lantern_required:
+		sources = sources + get_tree().get_nodes_in_group("player")
+	for c in sources:
 		if c is Node2D and (c as Node2D).is_visible_in_tree():
 			## Semboller duvarda yüksekte, beden yerde: dikey fark ~110 px'e kadar sayılmaz
 			## (yoksa yerdeki fener asla yetişmezdi). Yatay mesafe belirleyici.

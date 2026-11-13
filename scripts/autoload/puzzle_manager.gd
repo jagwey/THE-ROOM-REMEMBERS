@@ -336,7 +336,12 @@ const HINTS: Dictionary = {
 	&"mirrors_labyrinth_crossed": {
 		"goal": "Uçurumun karşısı tavandaki aynada görünüyor.",
 		"orientation": "Mavi yansıma gerçek taş. Soluk kırmızı olan yalan.",
-		"explicit": "Kırmızı basamağa atlama. Mavi taşları izleyerek karşıya geç."
+		"explicit": "Kırmızı basamağa atlama. Mavi taşları izleyerek son boşlukta kırmızı kristale dokun; bedenin köprü olur."
+	},
+	&"mirrors_shrine_trial": {
+		"goal": "Tapınağın sonundaki geçit kırmızı perdelerle kapalı.",
+		"orientation": "Sunaktaki Gölge Atılması perdelerden geçirir.",
+		"explicit": "Sunağa dokun, üç perdeden ve boşluktan atılarak geç."
 	},
 	&"experiment_intake": {
 		"goal": "Terazinin iki kefesi de dolmalı.",
@@ -393,6 +398,7 @@ const ROOM_PUZZLES: Dictionary = {
 	"mirrors_gallery": [&"mirrors_gallery_plate_1", &"mirrors_gallery_plate_2", &"mirrors_gallery_plate_3"],
 	"mirrors_unbroken": [&"mirrors_unbroken_mimic"],
 	"mirrors_labyrinth": [&"mirrors_labyrinth_crossed"],
+	"mirrors_shrine": [&"mirrors_shrine_trial"],
 	"core_bloom_garden": [&"core_bloom_order"],
 	"core_memory_vault": [&"core_vault_order"],
 	"core_ascent": [&"core_ascent"],

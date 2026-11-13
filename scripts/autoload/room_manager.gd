@@ -503,7 +503,7 @@ func _setup_m3_mechanics(room_id: StringName, root: Node2D, spawns: Dictionary) 
 		"experiment_cells": [Vector2(790, 288)],
 		"experiment_circuit": [Vector2(480, 288)],
 		"mirrors_reverse": [Vector2(480, 288)],
-		"mirrors_labyrinth": [Vector2(1060, 288)],
+		"mirrors_labyrinth": [Vector2(1170, 288)],
 	}
 	if SHIELDED_SHADES.has(rid):
 		var shield_scene := load("res://scenes/world/memory_shade_shielded.tscn") as PackedScene

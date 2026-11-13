@@ -1,10 +1,11 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
 [ext_resource type="Script" path="res://scripts/world/ability_pickup.gd" id="ability"]
 [ext_resource type="Script" path="res://scripts/world/npc_actor.gd" id="npc"]
 [ext_resource type="Script" path="res://scripts/world/curse_barrier.gd" id="barrier"]
 [ext_resource type="Script" path="res://scripts/world/memory_seal_point.gd" id="memory_seal_pt"]
+[ext_resource type="Script" path="res://scripts/world/reach_marker.gd" id="reach"]
 
 [sub_resource type="RectangleShape2D" id="Interact"]
 size = Vector2(40, 48)
@@ -20,6 +21,7 @@ room_width = 960.0
 bg_region = "mirrors"
 checkpoint = Vector2(120, 288)
 doors = [{"x": 40.0, "to": "mirrors_labyrinth", "spawn": "from_mirrors_shrine"}, {"x": 920.0, "to": "mirrors_1927", "spawn": "from_mirrors_shrine", "req": "mirrors_shrine_trial", "msg": "Gölgeyle tapınağı geçmeliyim."}]
+floor_gaps = PackedVector2Array(660.0, 740.0)
 
 [node name="Spawns" type="Node2D" parent="."]
 
@@ -35,7 +37,7 @@ position = Vector2(170, 288)
 [node name="Interactive" type="Node2D" parent="."]
 
 [node name="ShadowDash" type="Area2D" parent="Interactive"]
-position = Vector2(300.0, 288.0)
+position = Vector2(220.0, 288.0)
 script = ExtResource("ability")
 grant_key = "ability_shadow_dash"
 title = "Gölge Atılması"
@@ -44,12 +46,23 @@ tint = Color(0.6, 0.45, 0.9, 1)
 lines = PackedStringArray("Noroi|Sunakta benim gölgem var, ama benden önce hareket ediyor.", "Noroi|Gölgeyi içime çekiyorum, bedenim hafifliyor.")
 tutorial = "%DASH%: Gölge Atılması. Atılırken lanetli bariyerlerden ve gelen darbelerden hasar almadan geçersin."
 
-[node name="Barrier" type="StaticBody2D" parent="Interactive"]
-position = Vector2(560.0, 288.0)
+[node name="Barrier1" type="StaticBody2D" parent="Interactive"]
+position = Vector2(420.0, 288.0)
 script = ExtResource("barrier")
+refusal_line = "Gölge Atılması bu tapınakta. Önce sunağa dokunmalıyım."
+
+[node name="Barrier2" type="StaticBody2D" parent="Interactive"]
+position = Vector2(520.0, 288.0)
+script = ExtResource("barrier")
+refusal_line = "Gölge Atılması bu tapınakta. Önce sunağa dokunmalıyım."
+
+[node name="Barrier3" type="StaticBody2D" parent="Interactive"]
+position = Vector2(620.0, 288.0)
+script = ExtResource("barrier")
+refusal_line = "Gölge Atılması bu tapınakta. Önce sunağa dokunmalıyım."
 
 [node name="Shard2" type="Area2D" parent="Interactive"]
-position = Vector2(760.0, 288.0)
+position = Vector2(800.0, 288.0)
 script = ExtResource("ability")
 grant_key = ""
 grant_world_flag = &"seal_shard_2"
@@ -59,7 +72,7 @@ tint = Color(1, 0.75, 0.8, 1)
 lines = PackedStringArray("Noroi|Mührün öteki yarısında benim adım yazıyor.", "Noroi|İki ad, bir mühür; Çekirdek'i ancak birlikte kapatırız.")
 
 [node name="ShrineEcho" type="Area2D" parent="Interactive"]
-position = Vector2(820.0, 288.0)
+position = Vector2(160.0, 288.0)
 script = ExtResource("npc")
 npc_id = &"echo_shrine"
 idle_anim = "echo_idle"
@@ -68,9 +81,14 @@ ghostly = true
 dialogue_sets = PackedStringArray("Yansıma|Her döngüde buraya kadar geldin. Her seferinde Shilda'ya kılıç kaldırdın.;;Yansıma|Bu sefer başka bir şey dene.", "Yansıma|Ona güvenirsen birlikte mühürlersiniz. Bağı koparırsan onu burada bırakırsın.")
 
 [node name="seal_mirrors_shrine" type="Marker2D" parent="Spawns"]
-position = Vector2(430, 288)
+position = Vector2(330, 288)
 
 [node name="MemorySeal" type="Area2D" parent="Interactive"]
-position = Vector2(430, 288)
+position = Vector2(330, 288)
 script = ExtResource("memory_seal_pt")
 room_id = &"mirrors_shrine"
+
+[node name="Trial" type="Area2D" parent="Interactive"]
+position = Vector2(780.0, 288.0)
+script = ExtResource("reach")
+puzzle_id = &"mirrors_shrine_trial"

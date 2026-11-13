@@ -41,6 +41,7 @@ const ROOM_PRESENCE := {
 	"library_clockroom": {"mode": "silhouette", "pos": Vector2(640, 280)},
 	"library_reading_cell": {"mode": "hidden", "pos": Vector2(720, 280)},
 	"experiment_intake": {"mode": "silhouette", "pos": Vector2(980, 280)},
+	"mirrors_labyrinth": {"mode": "present", "pos": Vector2(160, 280)},
 	"mirrors_gallery": {"mode": "present", "pos": Vector2(900, 280)},
 	"mirrors_1927": {"mode": "silhouette", "pos": Vector2(760, 280)},
 	"core_ascent": {"mode": "present", "pos": Vector2(980, 280)},

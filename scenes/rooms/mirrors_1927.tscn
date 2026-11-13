@@ -1,7 +1,9 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
 [ext_resource type="Script" path="res://scripts/world/ordered_relic.gd" id="relic"]
+[ext_resource type="Script" path="res://scripts/world/night_walk.gd" id="walk"]
+[ext_resource type="Script" path="res://scripts/world/hidden_symbol.gd" id="symbol"]
 [ext_resource type="Texture2D" path="res://assets/trr_refresh/mirrors/fractured_glass_cluster.png" id="shards"]
 
 [node name="Mirrors1927" type="Node2D"]
@@ -13,13 +15,15 @@ bg_region = "mirrors"
 checkpoint = Vector2(120, 288)
 default_spawn = Vector2(120, 288)
 doors = [{"x": 40.0, "to": "mirrors_shrine", "spawn": "from_mirrors_1927"}, {"x": 920.0, "to": "core_threshold", "spawn": "from_mirrors_1927", "req": "mirrors_1927", "msg": "Gecenin tanıklığını dinlemeliyim."}]
+platforms = PackedVector3Array(380.0, 250.0, 120.0)
 
 [node name="Interactive" type="Node2D" parent="."]
 
 [node name="NightEcho" type="Area2D" parent="Interactive"]
-position = Vector2(520, 288)
+position = Vector2(700, 288)
 script = ExtResource("relic")
 relic_id = "night_1927"
+requires_puzzle = &"mirrors_1927_walk"
 dialogue_room = &"mirrors_1927"
 dialogue_set = &"echo"
 solve_puzzle = &"mirrors_1927"
@@ -32,3 +36,17 @@ position = Vector2(0, -27)
 scale = Vector2(0.62, 0.62)
 modulate = Color(1, 1, 1, 0.8)
 texture = ExtResource("shards")
+
+[node name="NightWalk" type="Node2D" parent="Interactive"]
+script = ExtResource("walk")
+
+[node name="DateBrick" type="Node2D" parent="Interactive"]
+position = Vector2(820, 200)
+script = ExtResource("symbol")
+symbol_text = "1927"
+reveal_radius = 220.0
+memory_code_key = "vault_brick"
+memory_code_value = "1927"
+reveal_line = ""
+requires_puzzle = &"mirrors_1927_walk"
+lantern_required = false

@@ -32,6 +32,7 @@ func _run() -> void:
 	await _components()
 	await _graph()
 	await _rooms_28_31()
+	await _rooms_32_34()
 	quit(1 if failures > 0 else 0)
 
 
@@ -472,6 +473,234 @@ func _rooms_28_31() -> void:
 	rm.enter_room(&"mirrors_unbroken")
 	await process_frame
 	check(_fwd_door_open(&"mirrors_unbroken"), "r31_door_open_on_reentry")
+
+
+func _x_words(text: String) -> int:
+	var re := RegEx.new()
+	re.compile("(^|[^A-Za-zÇĞİÖŞÜçğıöşü])X([^A-Za-zÇĞİÖŞÜçğıöşü]|$)")
+	return re.search_all(text).size()
+
+
+func _rooms_32_34() -> void:
+	var pm := root.get_node("PuzzleManager")
+	var rm := root.get_node("RoomManager")
+	var gs := root.get_node("GameState")
+	var dm := root.get_node("DialogueManager")
+	var cm := root.get_node("CorpseManager")
+	var player: Node2D = current_scene.get_node("Player")
+	# --- 32 mirrors_labyrinth ---
+	_unsolve(["mirrors_labyrinth_crossed"])
+	_clear_corpses()
+	rm.enter_room(&"mirrors_labyrinth")
+	await process_frame
+	await process_frame
+	var lb := _room_root(&"mirrors_labyrinth")
+	var lb_fwd := _doors_of(lb).filter(func(d): return String(d.target_room_id) == "mirrors_shrine")
+	check(lb_fwd.size() == 1 and String(lb_fwd[0].required_puzzle) == "mirrors_labyrinth_crossed", "r32_fwd_door_needs_crossed")
+	var gaps: PackedVector2Array = lb.floor_gaps
+	check(gaps.has(Vector2(300, 1000)) and gaps.has(Vector2(1000, 1080)), "r32_floor_gaps", gaps)
+	check(lb.invisible_platforms.size() == 6 and lb.false_reflections.size() == 1, "r32_invisible_platforms_and_false_reflection_kept")
+	var th: Node = null
+	for n in lb.find_children("*", "Area2D", true, false):
+		if n.is_in_group("blood_thorn"):
+			th = n
+	check(th != null and absf(th.position.x - 960.0) < 2.0 and bool(th.hold_corpse) and String(th.hold_id) == "mirrors_labyrinth_bridge" and float(th.anchor_y) >= 0.0, "r32_bridge_thorn_config")
+	check(th != null and th.anchor_x > 1000.0 and th.anchor_x < 1080.0, "r32_thorn_anchor_over_gap", th.anchor_x if th != null else -1)
+	var crossed: Node = null
+	var reward: Node = null
+	var hint: Node = null
+	var regret: Node = null
+	for n in lb.find_children("*", "Area2D", true, false):
+		if "puzzle_id" in n and String(n.puzzle_id) == "mirrors_labyrinth_crossed" and "also_solve" in n:
+			crossed = n
+		elif "lore_id" in n and String(n.lore_id) == "labyrinth_mirror":
+			reward = n
+		elif "lore_id" in n and String(n.lore_id) == "labyrinth_hint":
+			hint = n
+		elif "npc_id" in n and String(n.npc_id) == "echo_regret":
+			regret = n
+	check(crossed != null and absf(crossed.position.x - 1100.0) < 1.0, "r32_crossed_marker_1100")
+	check(reward != null and absf(reward.position.x - 1130.0) < 1.0 and String(reward.requires_puzzle) == "mirrors_labyrinth_crossed", "r32_reward_lore_gated_1130")
+	check(regret != null and absf(regret.position.x - 700.0) < 1.0, "r32_regret_echo_700")
+	var rm_src := FileAccess.get_file_as_string("res://scripts/autoload/room_manager.gd")
+	check(rm_src.contains('"mirrors_labyrinth": [Vector2(1170, 288)]'), "r32_shielded_shade_on_solid_ground")
+	var kc: Dictionary = load("res://scripts/keeper/keeper_controller.gd").get_script_constant_map()["ROOM_PRESENCE"]
+	check(kc.has("mirrors_labyrinth") and kc["mirrors_labyrinth"]["mode"] == "present" and absf(kc["mirrors_labyrinth"]["pos"].x - 160.0) < 1.0, "r32_shilda_presence_160")
+	var hint_lines: PackedStringArray = hint.lines if hint != null else PackedStringArray()
+	var shilda_line := ""
+	for l in hint_lines:
+		if String(l).begins_with("Shilda|"):
+			shilda_line = String(l)
+	check(shilda_line.contains("Tapınağa uğra"), "r32_shilda_line_names_shrine", shilda_line)
+	var all_text := FileAccess.get_file_as_string("res://scenes/rooms/mirrors_labyrinth.tscn")
+	check(not all_text.contains("1927"), "r32_no_1927_code_in_labyrinth_text")
+	check(all_text.contains("gecenin odasında kapıya en yakın duvarda"), "r32_reward_names_brick_location")
+	# ödül kilitli: çözüm öncesi okunamaz, çözülünce okunur
+	player.global_position = Vector2(1130, 288)
+	var seen_before: Array = (gs.player_progress_knowledge.get("lore_seen", []) as Array).duplicate()
+	seen_before.erase("labyrinth_mirror")
+	gs.player_progress_knowledge["lore_seen"] = seen_before
+	await _beat_run(reward, player)
+	check(not (gs.player_progress_knowledge.get("lore_seen", []) as Array).has("labyrinth_mirror"), "r32_reward_locked_before_solve")
+	# ceset köprüsü (1 ceset) varken marker'a ulaşılır
+	_clear_corpses()
+	cm.record_corpse_at(Vector2(th.anchor_x, th.anchor_y), &"thorn")
+	var ids_h: Array = th._corpse_ids()
+	ids_h.pop_back()
+	th._hold_new_corpse(ids_h)
+	check(th._bridge_exists(), "r32_bridge_corpse_held")
+	check((gs.world_memory_state["corpses"] as Array).size() == 1, "r32_bridge_is_one_corpse")
+	player.global_position = Vector2(1100, 288)
+	for i in 6:
+		await physics_frame
+	check(pm.is_solved(&"mirrors_labyrinth_crossed"), "r32_marker_reachable_with_bridge")
+	check(_fwd_door_open(&"mirrors_labyrinth"), "r32_door_opens_after_crossed")
+	await _beat_run(reward, player)
+	check((gs.player_progress_knowledge.get("lore_seen", []) as Array).has("labyrinth_mirror"), "r32_reward_readable_after_solve")
+	_clear_corpses()
+	# --- 33 mirrors_shrine ---
+	_unsolve(["mirrors_shrine_trial"])
+	gs.player_progress_knowledge["ability_shadow_dash"] = false
+	rm.enter_room(&"mirrors_shrine")
+	await process_frame
+	await process_frame
+	var sh := _room_root(&"mirrors_shrine")
+	var sps: Dictionary = rm._rooms[&"mirrors_shrine"].spawns
+	check(sps.has(&"from_mirrors_labyrinth") and sps[&"from_mirrors_labyrinth"] == Vector2(88, 288), "r33_spawn_88")
+	check(sps.has(&"seal_mirrors_shrine") and sps[&"seal_mirrors_shrine"] == Vector2(330, 288), "r33_seal_marker_330")
+	var echo: Node = null
+	var dash: Node = null
+	var seal: Node = null
+	var shard2: Node = null
+	var trial: Node = null
+	var barriers: Array = []
+	for n in sh.find_children("*", "Node2D", true, false):
+		if n.is_in_group("curse_barrier"):
+			barriers.append(n)
+		elif "npc_id" in n and String(n.npc_id) == "echo_shrine":
+			echo = n
+		elif "grant_key" in n and String(n.grant_key) == "ability_shadow_dash":
+			dash = n
+		elif "grant_world_flag" in n and String(n.grant_world_flag) == "seal_shard_2":
+			shard2 = n
+		elif "puzzle_id" in n and String(n.puzzle_id) == "mirrors_shrine_trial":
+			trial = n
+		elif n.has_method("on_interact") and "room_id" in n and String(n.room_id) == "mirrors_shrine":
+			seal = n
+	check(echo != null and absf(echo.position.x - 160.0) < 1.0, "r33_echo_160")
+	check(dash != null and absf(dash.position.x - 220.0) < 1.0, "r33_dash_220")
+	check(seal != null and absf(seal.position.x - 330.0) < 1.0, "r33_seal_330")
+	barriers.sort_custom(func(a, b): return a.position.x < b.position.x)
+	var bxs: Array = barriers.map(func(b): return b.position.x)
+	check(bxs == [420.0, 520.0, 620.0], "r33_three_barriers", bxs)
+	var refusal_ok := not barriers.is_empty()
+	for b in barriers:
+		refusal_ok = refusal_ok and String(b.refusal_line) == "Gölge Atılması bu tapınakta. Önce sunağa dokunmalıyım."
+	check(refusal_ok, "r33_refusal_line_names_shrine")
+	check((sh.floor_gaps as PackedVector2Array).has(Vector2(660, 740)), "r33_floor_gap_660_740")
+	check(trial != null and absf(trial.position.x - 780.0) < 1.0, "r33_trial_marker_780")
+	check(shard2 != null and absf(shard2.position.x - 800.0) < 1.0, "r33_shard2_800")
+	var sh_fwd := _doors_of(sh).filter(func(d): return String(d.target_room_id) == "mirrors_1927")
+	check(sh_fwd.size() == 1 and String(sh_fwd[0].required_puzzle) == "mirrors_shrine_trial" and not _fwd_door_open(&"mirrors_shrine"), "r33_fwd_door_needs_trial")
+	check(shard2 != null and absf(920.0 - shard2.position.x) >= 96.0, "r33_shard2_clear_of_door")
+	# MemorySeal kuralları
+	check(seal != null and _min_dx([40.0, 920.0], [seal]) >= 56.0 and seal.position.y >= 270.0 and seal.position.x > 150.0, "r33_seal_rules_doors_floor")
+	var crowd: Array = []
+	var foes: Array = []
+	for n in sh.find_children("*", "Node2D", true, false):
+		if n == seal:
+			continue
+		var d := (n as Node2D).global_position.distance_to(seal.global_position)
+		if n.has_method("on_interact") and d < 80.0:
+			crowd.append("%s@%d" % [n.name, int(d)])
+		if n.is_in_group("enemy") and d < 160.0:
+			foes.append("%s@%d" % [n.name, int(d)])
+	check(crowd.is_empty() and foes.is_empty(), "r33_seal_no_crowd_no_foe", [crowd, foes])
+	# bariyer: yetenek yokken ret, varken geçiş
+	var b0: Node = barriers[0]
+	b0._hint_done = false
+	b0._touch(player)
+	check(bool(b0._hint_done), "r33_barrier_refuses_without_dash")
+	b0._hint_done = false
+	gs.player_progress_knowledge["ability_shadow_dash"] = true
+	b0._touch(player)
+	check(not bool(b0._hint_done), "r33_barrier_lets_dash_through")
+	dm.clear()
+	player.global_position = Vector2(780, 288)
+	for i in 6:
+		await physics_frame
+	check(pm.is_solved(&"mirrors_shrine_trial"), "r33_trial_solved_at_marker")
+	check(_fwd_door_open(&"mirrors_shrine"), "r33_fwd_door_open_after_trial")
+	gs.player_progress_knowledge["ability_shadow_dash"] = false
+	# --- 34 mirrors_1927 ---
+	_unsolve(["mirrors_1927_walk", "mirrors_1927"])
+	var rel: Dictionary = gs.player_progress_knowledge.get("relics", {})
+	rel.erase("night_1927")
+	gs.player_progress_knowledge["relics"] = rel
+	dm.clear()
+	rm.enter_room(&"mirrors_1927")
+	for i in 20:
+		await process_frame
+	var n7 := _room_root(&"mirrors_1927")
+	check(not dm.is_open and dm._queue.is_empty(), "r34_silent_on_entry")
+	var shade: Node = null
+	var brick: Node = null
+	var night: Node = null
+	for n in n7.find_children("*", "Node2D", true, false):
+		if "shade_id" in n and String(n.shade_id) == "mirrors_1927_night":
+			shade = n
+		elif "symbol_text" in n and String(n.symbol_text) == "1927":
+			brick = n
+		elif "relic_id" in n and String(n.relic_id) == "night_1927":
+			night = n
+	check(shade != null and not bool(shade.fake) and shade.waypoints == PackedVector2Array([Vector2(260, 288), Vector2(430, 250), Vector2(600, 288), Vector2(760, 288)]), "r34_night_shade_config")
+	check(shade != null and absf(shade.global_position.x - 120.0) < 60.0, "r34_night_shade_starts_near_120", shade.global_position if shade != null else null)
+	check((n7.platforms as PackedVector3Array).has(Vector3(380, 250, 120)), "r34_platform_380_250_120")
+	check(night != null and absf(night.position.x - 700.0) < 1.0 and String(night.requires_puzzle) == "mirrors_1927_walk", "r34_night_echo_700_gated")
+	check(brick != null and absf(brick.position.x - 820.0) < 1.0 and brick.position.y < 240.0 and String(brick.memory_code_key) == "vault_brick" and String(brick.memory_code_value) == "1927" and String(brick.reveal_line) == "", "r34_brick_config")
+	check(brick != null and not brick.is_visible_in_tree(), "r34_brick_hidden_before_walk")
+	player.global_position = Vector2(700, 288)
+	await _beat_run(night, player)
+	check(not (gs.player_progress_knowledge.get("relics", {}) as Dictionary).get("night_1927", false) and not pm.is_solved(&"mirrors_1927"), "r34_echo_inert_before_walk")
+	check(not pm.is_solved(&"mirrors_1927_walk"), "r34_walk_unsolved_on_entry")
+	shade.speed = 4000.0
+	for wp in shade.waypoints:
+		player.global_position = wp
+		for i in 8:
+			await physics_frame
+	check(pm.is_solved(&"mirrors_1927_walk"), "r34_walk_solves_by_following_shade")
+	check(brick != null and brick.is_visible_in_tree(), "r34_brick_visible_after_walk")
+	player.global_position = Vector2(820, 288)
+	for i in 30:
+		await physics_frame
+	check(String((gs.player_progress_knowledge.get("memory_codes", {}) as Dictionary).get("vault_brick", "")) == "1927", "r34_brick_teaches_code_silently")
+	check(not dm.is_open, "r34_brick_silent")
+	player.global_position = Vector2(700, 288)
+	await _beat_run(night, player)
+	check(pm.is_solved(&"mirrors_1927"), "r34_night_echo_solves_room")
+	check(_fwd_door_open(&"mirrors_1927"), "r34_fwd_door_open")
+	# --- kanon: X kelimesi ---
+	for rid in ["mirrors_reverse", "mirrors_dual", "mirrors_gallery", "mirrors_unbroken", "mirrors_labyrinth", "mirrors_shrine"]:
+		var txt := FileAccess.get_file_as_string("res://scenes/rooms/%s.tscn" % rid)
+		var jp := "res://data/dialogue/%s.json" % rid
+		if FileAccess.file_exists(jp):
+			txt += FileAccess.get_file_as_string(jp)
+		check(_x_words(txt) == 0, "canon_no_x_in_%s" % rid, _x_words(txt))
+	var t27 := FileAccess.get_file_as_string("res://scenes/rooms/mirrors_1927.tscn")
+	var cut := t27.find('[node name="NightEcho"')
+	var rest := t27.substr(0, cut) if cut >= 0 else t27
+	var after := t27.find("[node name=", cut + 10) if cut >= 0 else -1
+	if after >= 0:
+		rest += t27.substr(after)
+	check(_x_words(rest) == 0, "canon_x_1927_only_in_night_echo_scene", _x_words(rest))
+	var jd = JSON.parse_string(FileAccess.get_file_as_string("res://data/dialogue/mirrors_1927.json"))
+	var other_x := 0
+	for set_id in (jd["sets"] as Dictionary).keys():
+		if set_id == "echo":
+			continue
+		for ln in jd["sets"][set_id]:
+			other_x += _x_words(String(ln["t"])) + (1 if String(ln["s"]) == "X" else 0)
+	check(other_x == 0, "canon_x_1927_only_in_echo_set", other_x)
 
 
 func _migrations() -> void:

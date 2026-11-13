@@ -1,12 +1,16 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
 [ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore"]
 [ext_resource type="Script" path="res://scripts/world/npc_actor.gd" id="npc"]
 [ext_resource type="Script" path="res://scripts/world/reach_marker.gd" id="reach"]
+[ext_resource type="Script" path="res://scripts/world/blood_thorn.gd" id="thorn"]
 
 [sub_resource type="RectangleShape2D" id="Interact"]
 size = Vector2(40, 48)
+
+[sub_resource type="RectangleShape2D" id="PlateShape"]
+size = Vector2(44, 18)
 
 [sub_resource type="RectangleShape2D" id="Gate"]
 size = Vector2(24, 120)
@@ -21,7 +25,7 @@ checkpoint = Vector2(120, 288)
 doors = [{"x": 40.0, "to": "mirrors_unbroken", "spawn": "from_mirrors_labyrinth"}, {"x": 1240.0, "to": "mirrors_shrine", "spawn": "from_mirrors_labyrinth", "req": "mirrors_labyrinth_crossed", "msg": "Yanıltıcı yolu aşmadan ilerleyemem.", "title": "Ayna Tapınağı", "mark": true, "label_dy": -74.0}]
 invisible_platforms = PackedVector3Array(290.0, 250.0, 110.0, 430.0, 214.0, 100.0, 560.0, 250.0, 100.0, 700.0, 214.0, 110.0, 850.0, 250.0, 100.0, 980.0, 270.0, 80.0)
 false_reflections = PackedVector3Array(640.0, 188.0, 64.0)
-floor_gaps = PackedVector2Array(300.0, 1000.0)
+floor_gaps = PackedVector2Array(300.0, 1000.0, 1000.0, 1080.0)
 
 [node name="Interactive" type="Node2D" parent="."]
 
@@ -31,10 +35,10 @@ script = ExtResource("lore")
 lore_id = &"labyrinth_hint"
 texture_path = "res://assets/layers/mirror.png"
 sprite_scale = 0.3
-lines = PackedStringArray("Noroi|Önümde uçurum var, yol tavandaki aynada görünüyor.", "Noroi|Mavi taşlar gerçek, soluk kırmızı olan yalan söylüyor.")
+lines = PackedStringArray("Noroi|Önümde uçurum var, yol tavandaki aynada görünüyor.", "Noroi|Mavi taşlar gerçek, soluk kırmızı olan yalan söylüyor.", "Shilda|Tapınağa uğra. Gölgen orada bekliyor.")
 
 [node name="RegretEcho" type="Area2D" parent="Interactive"]
-position = Vector2(1100, 288.0)
+position = Vector2(700, 288.0)
 script = ExtResource("npc")
 npc_id = &"echo_regret"
 idle_anim = "echo_idle"
@@ -43,17 +47,33 @@ ghostly = true
 dialogue_sets = PackedStringArray("Yansıma|Ben otuzuncu sendim. Mühürlerin kapandığı günü hatırlıyorum.;;Yansıma|İçeride kalanların bağırışını sen hatırlamıyorsun. Şanslısın.", "Yansıma|Çıkabildik mi? Hayır, Çekirdek bizi de yuttu.;;Yansıma|Geriye yalnız Shilda kaldı. O hiç unutmadı.")
 
 [node name="Crossed" type="Area2D" parent="Interactive"]
-position = Vector2(1120.0, 288.0)
+position = Vector2(1100.0, 288.0)
 script = ExtResource("reach")
 puzzle_id = &"mirrors_labyrinth_crossed"
 
 [node name="Shard" type="Area2D" parent="Interactive"]
-position = Vector2(1140, 288.0)
+position = Vector2(1130, 288.0)
 script = ExtResource("lore")
 lore_id = &"labyrinth_mirror"
+requires_puzzle = &"mirrors_labyrinth_crossed"
+locked_lines = PackedStringArray("Noroi|Cam parçası öbür kıyıda duruyor. Önce karşıya geçmeliyim.")
 texture_path = "res://assets/layers/mirror_shards.png"
 sprite_scale = 0.35
-lines = PackedStringArray("Noroi|Kırık aynada yüzüm yaşlı; gerçek yaşım bu mu?")
+lines = PackedStringArray("Noroi|Kırık aynada yüzüm yaşlı; gerçek yaşım bu mu?", "Noroi|Cam kenarına bir not kazınmış: Tuğla, gecenin odasında kapıya en yakın duvarda.")
 evidence_title = "Gerçek Yüz"
 evidence_body = "Aynanın ardındaki yüzüm yaşlıydı. Bu yerde zaman benim bildiğim gibi akmıyor."
 evidence_section = "izler"
+
+[node name="BridgeThorn" type="Area2D" parent="Interactive"]
+position = Vector2(960.0, 270.0)
+script = ExtResource("thorn")
+anchor_x = 1040.0
+anchor_y = 288.0
+hold_corpse = true
+hold_id = &"mirrors_labyrinth_bridge"
+puzzle_hint = &"mirrors_labyrinth_crossed"
+body_line = "Boşluk geniş. Bedenim kristalde kalırsa köprü olur."
+solved_line = "Kristal sustu, köprü zaten kurulu."
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BridgeThorn"]
+shape = SubResource("PlateShape")
