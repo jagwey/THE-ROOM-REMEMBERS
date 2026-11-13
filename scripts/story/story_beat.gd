@@ -50,9 +50,9 @@ func on_interact(_by: Node) -> void:
 
 			await _library_page()
 
-		&"experiment_cells":
+		&"experiment_cell_a", &"experiment_cell_b", &"experiment_cell_c":
 
-			await _experiment_cells()
+			await _cell_record(String(beat_id).right(1))
 
 		&"experiment_circuit":
 
@@ -154,18 +154,31 @@ func _library_page() -> void:
 
 		push_warning("story_beat: library_page_puzzle eksik")
 
-func _experiment_cells() -> void:
+func _cell_record(cell: String) -> void:
 
-	DialogueManager.say("Kayıt", "Hafıza koruma deneyi. Amaç: kaybedilenlerin seslerini saklamak.")
-	DialogueManager.say("Kayıt", "Denek 14: Noroi. Kurucu imza: [kazınmış].")
+	match cell:
 
-	DialogueManager.say("Noroi", "Ben denektim, kurucu değilim.")
-	DialogueManager.say("Shilda", "Kurucu başlattı. Sen içeride kaldın.")
-	DialogueManager.say("Shilda", "Ben kapıda bekledim.")
-	DialogueManager.say("Shilda", "Sesler bedenlerinden koptu. Oda onları sakladı.")
-	DialogueManager.say("Shilda", "Kimseyi feda etmeyeceğiz.")
-	DialogueManager.say("Shilda", "Sağdaki devrede yankın bir anahtarı tutacak.")
-	DialogueManager.say("Shilda", "Sen de diğerini açacaksın. Bu sefer birlikte.")
+		"a":
+
+			DialogueManager.say("Kayıt", "Hücre A. Denek girişi, kapı kilidi.")
+			DialogueManager.say("Kayıt", "Mühür kodu üç haneli. İlk hane: dört.")
+			DialogueManager.say("Noroi", "İlk hane dört. Aklımda kalsın.")
+
+		"b":
+
+			DialogueManager.say("Kayıt", "Hücre B. Gözlem kapısı, sessiz oda.")
+			DialogueManager.say("Kayıt", "İkinci hane: bir.")
+			DialogueManager.say("Shilda", "Duydun mu? Bir.")
+
+		_:
+
+			DialogueManager.say("Kayıt", "Hafıza koruma deneyi. Amaç: kaybedilenlerin seslerini saklamak.")
+			DialogueManager.say("Kayıt", "Denek 14: Noroi. Kurucu imza: [kazınmış].")
+			DialogueManager.say("Noroi", "Ben denektim, kurucu değilim.")
+			DialogueManager.say("Shilda", "Kurucu başlattı. Sen içeride kaldın.")
+			DialogueManager.say("Shilda", "Ben kapıda bekledim.")
+			DialogueManager.say("Shilda", "Sesler bedenlerinden koptu. Oda onları sakladı.")
+			DialogueManager.say("Shilda", "İleride bir devre yankını bekliyor.")
 
 	var ok: bool = await DialogueManager.dialogue_finished
 
@@ -173,9 +186,25 @@ func _experiment_cells() -> void:
 
 		return
 
-	PuzzleManager.mark_solved(&"experiment_cells_seen")
+	match cell:
 
-	_evidence("ev_cells_demo", "Hafıza bağı", "İçimdeki lanet bir deneyden doğmuş. Bir patlamadan sonra bozulmuş ve gelen herkese tutunmuş.", "evidence", "notlar")
+		"a":
+
+			_evidence("ev_cell_a", "Hücre A kaydı", "Mühür kodu üç haneli. İlk hane: dört.", "evidence", "izler")
+
+		"b":
+
+			_evidence("ev_cell_b", "Hücre B kaydı", "İkinci hane: bir.", "evidence", "izler")
+
+		_:
+
+			_evidence("ev_cells_demo", "Hafıza bağı", "İçimdeki lanet bir deneyden doğmuş. Bir patlamadan sonra bozulmuş ve gelen herkese tutunmuş.", "evidence", "notlar")
+
+	var ev: Dictionary = GameState.player_progress_knowledge.get("evidence", {})
+
+	if ev.has("ev_cell_a") and ev.has("ev_cell_b"):
+
+		PuzzleManager.mark_solved(&"experiment_cells_seen")
 
 	SaveManager.save_game()
 
@@ -200,7 +229,7 @@ func _experiment_circuit() -> void:
 func _experiment_authority() -> void:
 
 	DialogueManager.say("Kayıt", "Protokol yetkilisi: [kazınmış]. Araştırma Yardımcısı S.")
-	DialogueManager.say("Kayıt", "Acil kapatma talebi reddedildi. Mühür kodu kenarda: 4-1-8.")
+	DialogueManager.say("Kayıt", "Acil kapatma talebi reddedildi. Mühür kodu üç hane. Haneler kayıtlara dağıtılmış.")
 	DialogueManager.say("Kayıt", "Kayıt şeridinde silik bir fısıltı izi kalmış. Sözler seçilmiyor.")
 
 	DialogueManager.say("Noroi", "Biri kimse çıkmasın diye kapıyı kilitlemiş, sesler içeride kalmış.")
@@ -220,13 +249,9 @@ func _experiment_authority() -> void:
 
 		return
 
-	GameState.learn_memory_code("experiment_authority", "418")
 	GameState.set_story_flag(&"shilda_past_discovered")
-	_evidence("ev_authority", "Yetki masası", "Yetki masasındaki imza kazınmış; kayıtta silik bir fısıltı izi ve 418 mührü kaldı. Düzeni kimin kurduğu okunmuyor.", "evidence", "gunluk")
 
-	PuzzleManager.mark_solved(&"experiment_authority")
-
-	GameState.set_world_flag(&"mirrors_unlocked", true)
+	_evidence("ev_authority_desk", "Yetki masası kaydı", "Yetki masasındaki imza kazınmış; kayıtta silik bir fısıltı izi kaldı. Düzeni kimin kurduğu okunmuyor.", "evidence", "gunluk")
 
 	SaveManager.save_game()
 

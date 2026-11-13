@@ -468,7 +468,7 @@ func _setup_m3_mechanics(room_id: StringName, root: Node2D, spawns: Dictionary) 
 		"awakening_balcony": Vector2(190, 288),
 		"decay_garden": Vector2(465, 288),
 		"library_hall": Vector2(190, 288),
-		"experiment_cells": Vector2(280, 288),
+		"experiment_cells": Vector2(820, 288),
 		"mirrors_reverse": Vector2(280, 288),
 	}
 	if MIRROR_POSITIONS.has(rid):
@@ -485,7 +485,7 @@ func _setup_m3_mechanics(room_id: StringName, root: Node2D, spawns: Dictionary) 
 	const WALKING_SHADES := {
 		"decay_garden": [Vector2(420, 288)],
 		"decay_catacombs": [Vector2(260, 288), Vector2(690, 288)],
-		"experiment_cells": [Vector2(350, 288)],
+		"experiment_cells": [Vector2(405, 288)],
 	}
 	if WALKING_SHADES.has(rid):
 		var walk_scene := load("res://scenes/world/memory_shade_walking.tscn") as PackedScene
@@ -497,7 +497,7 @@ func _setup_m3_mechanics(room_id: StringName, root: Node2D, spawns: Dictionary) 
 
 	# 3. Shielded Shades setup (F23)
 	const SHIELDED_SHADES := {
-		"experiment_cells": [Vector2(650, 288)],
+		"experiment_cells": [Vector2(600, 288)],
 		"experiment_circuit": [Vector2(480, 288)],
 		"mirrors_reverse": [Vector2(480, 288)],
 		"mirrors_labyrinth": [Vector2(1060, 288)],

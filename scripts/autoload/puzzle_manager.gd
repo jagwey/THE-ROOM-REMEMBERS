@@ -314,9 +314,9 @@ const HINTS: Dictionary = {
 		"explicit": "Kırmızı basamağa atlama. Mavi taşları izleyerek karşıya geç."
 	},
 	&"experiment_intake": {
-		"goal": "Kabul masası 1995'i tutuyor.",
-		"orientation": "Önce dosyayı, sonra askıdaki paltoyu oku.",
-		"explicit": "Paltodaki Denek 14 eşyası senin saatin. Okuyunca devre açılır."
+		"goal": "Terazinin iki kefesi de dolmalı.",
+		"orientation": "Sol kefe bedeni, sağ kefe taşı tartar.",
+		"explicit": "Sol kefede ölüp bedeni bırak, taşı sağ kefeye it."
 	},
 	&"experiment_quarantine_done": {
 		"goal": "Kırmızı sis canlıyı yer. Rapor sisin ötesinde, yüksek rafta.",

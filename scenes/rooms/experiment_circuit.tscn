@@ -113,7 +113,7 @@ monitorable = true
 script = ExtResource("6")
 puzzle_id = &"experiment_circuit"
 intro_text = "Sunağa dokun, sekiz saniye plakada dur. Sonra yankın kalsın, sen kristale koş."
-solved_text = "İki devre birleşti, sağdaki yetki odası açıldı."
+solved_text = "İki devre birleşti, yetki odası açıldı."
 switch_kinds = PackedStringArray("plate", "lever")
 switch_positions = PackedVector2Array(-180, 32, 320, 0)
 

@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=19 format=3]
 
 [ext_resource type="Texture2D" path="res://assets/backgrounds/experiment/far.png" id="1"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/experiment/mid.png" id="2"]
@@ -10,6 +10,11 @@
 
 [ext_resource type="Texture2D" path="res://assets/tiles/tile_00.png" id="walk_tile"]
 [ext_resource type="Script" path="res://scripts/world/memory_seal_point.gd" id="memory_seal_pt"]
+[ext_resource type="Script" path="res://scripts/world/pressure_plate.gd" id="plate"]
+[ext_resource type="Script" path="res://scripts/world/blood_thorn.gd" id="thorn"]
+[ext_resource type="Script" path="res://scripts/world/gate_blocker.gd" id="gate"]
+[ext_resource type="Texture2D" path="res://assets/props/pressure_plate.png" id="plate_art"]
+[ext_resource type="Texture2D" path="res://assets/props/door_closed.png" id="gate_art"]
 
 [sub_resource type="RectangleShape2D" id="Floor"]
 size = Vector2(1000, 48)
@@ -22,6 +27,12 @@ size = Vector2(44, 96)
 
 [sub_resource type="RectangleShape2D" id="Interact"]
 size = Vector2(40, 48)
+
+[sub_resource type="RectangleShape2D" id="PlateShape"]
+size = Vector2(40, 16)
+
+[sub_resource type="RectangleShape2D" id="GateShape"]
+size = Vector2(32, 88)
 
 [node name="ExperimentCells" type="Node2D"]
 script = ExtResource("4")
@@ -118,19 +129,189 @@ locked_message = "Hücrelerin kayıtlarını incelemeliyim."
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ForwardIntake"]
 shape = SubResource("Hit")
 
-[node name="CellsBeat" type="Area2D" parent="Interactive"]
-position = Vector2(480, 268)
+[node name="CellAPlate" type="Area2D" parent="Interactive"]
+position = Vector2(250, 300)
+script = ExtResource("plate")
+puzzle_id = &"experiment_cell_a"
+accept_stone = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/CellAPlate"]
+shape = SubResource("PlateShape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/CellAPlate"]
+texture_filter = 0
+position = Vector2(0, 4)
+texture = ExtResource("plate_art")
+centered = true
+modulate = Color(1, 0.62, 0.66, 1)
+
+[node name="CellAThorn" type="Area2D" parent="Interactive"]
+position = Vector2(250, 290)
+script = ExtResource("thorn")
+anchor_x = 250.0
+puzzle_hint = &"experiment_cell_a"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/CellAThorn"]
+shape = SubResource("PlateShape")
+
+[node name="CellAGate" type="StaticBody2D" parent="Interactive"]
+position = Vector2(310, 268)
+collision_layer = 1
+collision_mask = 0
+script = ExtResource("gate")
+open_flag = &""
+puzzle_listen = &"experiment_cell_a"
+puzzle_listen_all = PackedStringArray("experiment_cell_a")
+legacy_puzzle = &"experiment_cells_seen"
+ignore_world_flag = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/CellAGate"]
+shape = SubResource("GateShape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/CellAGate"]
+texture_filter = 0
+position = Vector2(0, -28)
+texture = ExtResource("gate_art")
+centered = true
+modulate = Color(0.48, 0.42, 0.46, 1)
+
+[node name="CellARecord" type="Area2D" parent="Interactive"]
+position = Vector2(360, 268)
 collision_layer = 8
 collision_mask = 0
 monitoring = false
 monitorable = true
 script = ExtResource("6")
-beat_id = &"experiment_cells"
+beat_id = &"experiment_cell_a"
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/CellsBeat"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/CellARecord"]
 shape = SubResource("Interact")
 
-[node name="Sprite2D" type="Sprite2D" parent="Interactive/CellsBeat"]
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/CellARecord"]
+texture_filter = 0
+centered = true
+
+[node name="CellBPlate" type="Area2D" parent="Interactive"]
+position = Vector2(445, 300)
+script = ExtResource("plate")
+puzzle_id = &"experiment_cell_b"
+accept_stone = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/CellBPlate"]
+shape = SubResource("PlateShape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/CellBPlate"]
+texture_filter = 0
+position = Vector2(0, 4)
+texture = ExtResource("plate_art")
+centered = true
+modulate = Color(1, 0.62, 0.66, 1)
+
+[node name="CellBThorn" type="Area2D" parent="Interactive"]
+position = Vector2(445, 290)
+script = ExtResource("thorn")
+anchor_x = 445.0
+puzzle_hint = &"experiment_cell_b"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/CellBThorn"]
+shape = SubResource("PlateShape")
+
+[node name="CellBGate" type="StaticBody2D" parent="Interactive"]
+position = Vector2(505, 268)
+collision_layer = 1
+collision_mask = 0
+script = ExtResource("gate")
+open_flag = &""
+puzzle_listen = &"experiment_cell_b"
+puzzle_listen_all = PackedStringArray("experiment_cell_b")
+legacy_puzzle = &"experiment_cells_seen"
+ignore_world_flag = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/CellBGate"]
+shape = SubResource("GateShape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/CellBGate"]
+texture_filter = 0
+position = Vector2(0, -28)
+texture = ExtResource("gate_art")
+centered = true
+modulate = Color(0.48, 0.42, 0.46, 1)
+
+[node name="CellBRecord" type="Area2D" parent="Interactive"]
+position = Vector2(555, 268)
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+monitorable = true
+script = ExtResource("6")
+beat_id = &"experiment_cell_b"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/CellBRecord"]
+shape = SubResource("Interact")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/CellBRecord"]
+texture_filter = 0
+centered = true
+
+[node name="CellCPlate" type="Area2D" parent="Interactive"]
+position = Vector2(640, 300)
+script = ExtResource("plate")
+puzzle_id = &"experiment_cell_c"
+accept_stone = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/CellCPlate"]
+shape = SubResource("PlateShape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/CellCPlate"]
+texture_filter = 0
+position = Vector2(0, 4)
+texture = ExtResource("plate_art")
+centered = true
+modulate = Color(1, 0.62, 0.66, 1)
+
+[node name="CellCThorn" type="Area2D" parent="Interactive"]
+position = Vector2(640, 290)
+script = ExtResource("thorn")
+anchor_x = 640.0
+puzzle_hint = &"experiment_cell_c"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/CellCThorn"]
+shape = SubResource("PlateShape")
+
+[node name="CellCGate" type="StaticBody2D" parent="Interactive"]
+position = Vector2(700, 268)
+collision_layer = 1
+collision_mask = 0
+script = ExtResource("gate")
+open_flag = &""
+puzzle_listen = &"experiment_cell_c"
+puzzle_listen_all = PackedStringArray("experiment_cell_c")
+legacy_puzzle = &"experiment_cells_seen"
+ignore_world_flag = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/CellCGate"]
+shape = SubResource("GateShape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/CellCGate"]
+texture_filter = 0
+position = Vector2(0, -28)
+texture = ExtResource("gate_art")
+centered = true
+modulate = Color(0.48, 0.42, 0.46, 1)
+
+[node name="CellCRecord" type="Area2D" parent="Interactive"]
+position = Vector2(750, 268)
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+monitorable = true
+script = ExtResource("6")
+beat_id = &"experiment_cell_c"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/CellCRecord"]
+shape = SubResource("Interact")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/CellCRecord"]
 texture_filter = 0
 centered = true
 

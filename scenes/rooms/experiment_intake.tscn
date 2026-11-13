@@ -1,7 +1,23 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
 [ext_resource type="Script" path="res://scripts/world/ordered_relic.gd" id="relic"]
+[ext_resource type="Script" path="res://scripts/world/pressure_plate.gd" id="plate"]
+[ext_resource type="Script" path="res://scripts/world/blood_thorn.gd" id="thorn"]
+[ext_resource type="Script" path="res://scripts/world/gate_blocker.gd" id="gate"]
+[ext_resource type="Script" path="res://scripts/world/weight_stone.gd" id="stone"]
+[ext_resource type="Texture2D" path="res://assets/props/pressure_plate.png" id="plate_art"]
+[ext_resource type="Texture2D" path="res://assets/props/door_closed.png" id="gate_art"]
+[ext_resource type="Texture2D" path="res://assets/props/weight_stone.png" id="stone_art"]
+
+[sub_resource type="RectangleShape2D" id="PlateShape"]
+size = Vector2(40, 16)
+
+[sub_resource type="RectangleShape2D" id="GateShape"]
+size = Vector2(32, 88)
+
+[sub_resource type="RectangleShape2D" id="StoneBox"]
+size = Vector2(22, 22)
 
 [node name="ExperimentIntake" type="Node2D"]
 script = ExtResource("room")
@@ -11,32 +27,114 @@ room_width = 1280.0
 bg_region = "experiment"
 checkpoint = Vector2(120, 288)
 default_spawn = Vector2(120, 288)
-doors = [{"x": 40.0, "to": "experiment_cells", "spawn": "from_circuit"}, {"x": 1240.0, "to": "experiment_circuit", "spawn": "from_cells", "req": "experiment_intake", "msg": "Önce kabul kaydını ve paltoyu oku."}]
+doors = [{"x": 40.0, "to": "experiment_cells", "spawn": "from_circuit"}, {"x": 1240.0, "to": "experiment_circuit", "spawn": "from_cells", "req": "experiment_intake", "msg": "Terazinin iki kefesini de doldurmalıyım."}]
 
 [node name="Spawns" type="Node2D" parent="."]
 
 [node name="keeper_observe" type="Marker2D" parent="Spawns"]
-position = Vector2(980, 288)
+position = Vector2(600, 288)
 
 [node name="Interactive" type="Node2D" parent="."]
 
 [node name="Admission" type="Area2D" parent="Interactive"]
-position = Vector2(400, 288)
+position = Vector2(280, 288)
 script = ExtResource("relic")
 relic_id = "intake_file"
 dialogue_room = &"experiment_intake"
 dialogue_set = &"file"
 evidence_title = "Kabul Kaydı 1995"
-evidence_body = "1995 kabulü. Denek 14. Eşyalar: cep saati, kurumuş çiçek, kazınmış bir ad."
+evidence_body = "1995 kabulü. Denek 14. Eşyalar: cep saati, kurumuş çiçek, kazınmış bir ad. Son hane: sekiz."
 
 [node name="Coat" type="Area2D" parent="Interactive"]
-position = Vector2(760, 288)
+position = Vector2(440, 288)
 script = ExtResource("relic")
 relic_id = "intake_coat"
 needs = "intake_file"
 dialogue_room = &"experiment_intake"
 dialogue_set = &"coat"
-solve_puzzle = &"experiment_intake"
 locked_line = "Önce masadaki kabul kaydını okumalıyım."
 evidence_title = "Denek 14'ün Paltosu"
 evidence_body = "Askıdaki paltonun cebinde benim saatimin kayışı var. Denek 14 benim."
+
+[node name="CorpsePlate" type="Area2D" parent="Interactive"]
+position = Vector2(760, 300)
+script = ExtResource("plate")
+puzzle_id = &"experiment_intake_corpse"
+accept_stone = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/CorpsePlate"]
+shape = SubResource("PlateShape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/CorpsePlate"]
+texture_filter = 0
+position = Vector2(0, 4)
+texture = ExtResource("plate_art")
+centered = true
+modulate = Color(1, 0.62, 0.66, 1)
+
+[node name="CorpseThorn" type="Area2D" parent="Interactive"]
+position = Vector2(760, 290)
+script = ExtResource("thorn")
+anchor_x = 760.0
+puzzle_hint = &"experiment_intake_corpse"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/CorpseThorn"]
+shape = SubResource("PlateShape")
+
+[node name="StonePlate" type="Area2D" parent="Interactive"]
+position = Vector2(900, 300)
+script = ExtResource("plate")
+puzzle_id = &"experiment_intake_stone"
+accept_stone = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/StonePlate"]
+shape = SubResource("PlateShape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/StonePlate"]
+texture_filter = 0
+position = Vector2(0, 4)
+texture = ExtResource("plate_art")
+centered = true
+
+[node name="ScaleGate" type="StaticBody2D" parent="Interactive"]
+position = Vector2(1040, 268)
+collision_layer = 1
+collision_mask = 0
+script = ExtResource("gate")
+open_flag = &""
+puzzle_listen = &"experiment_intake_corpse"
+puzzle_listen_all = PackedStringArray("experiment_intake_corpse", "experiment_intake_stone")
+legacy_puzzle = &"experiment_intake"
+ignore_world_flag = true
+also_solve = PackedStringArray("experiment_intake")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ScaleGate"]
+shape = SubResource("GateShape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/ScaleGate"]
+texture_filter = 0
+position = Vector2(0, -28)
+texture = ExtResource("gate_art")
+centered = true
+modulate = Color(0.48, 0.42, 0.46, 1)
+
+[node name="ScaleStone" type="CharacterBody2D" parent="."]
+position = Vector2(560, 288)
+collision_layer = 9
+collision_mask = 1
+floor_stop_on_slope = true
+script = ExtResource("stone")
+min_x = 480.0
+max_x = 1000.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ScaleStone"]
+position = Vector2(0, -18)
+shape = SubResource("StoneBox")
+
+[node name="Sprite2D" type="Sprite2D" parent="ScaleStone"]
+texture_filter = 0
+texture = ExtResource("stone_art")
+centered = true
+position = Vector2(0, -18)
+scale = Vector2(0.45, 0.45)
+modulate = Color(0.9, 0.86, 0.92, 1)

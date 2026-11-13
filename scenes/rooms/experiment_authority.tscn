@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Texture2D" path="res://assets/backgrounds/experiment/far.png" id="1"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/experiment/mid.png" id="2"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://scripts/world/room_root.gd" id="4"]
 [ext_resource type="Script" path="res://scripts/world/room_transition.gd" id="5"]
 [ext_resource type="Script" path="res://scripts/story/story_beat.gd" id="6"]
+[ext_resource type="Script" path="res://scripts/world/experiment_authority_seal.gd" id="seal"]
 
 [ext_resource type="Texture2D" path="res://assets/tiles/tile_00.png" id="walk_tile"]
 
@@ -105,7 +106,7 @@ script = ExtResource("5")
 target_room_id = &"experiment_quarantine"
 target_spawn_id = &"from_experiment_authority"
 required_puzzle = &"experiment_authority"
-locked_message = "Yetki masasındaki kaydı dinlemeliyim."
+locked_message = "Masadaki mührü açmalıyım."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ForwardQuarantine"]
 shape = SubResource("Hit")
@@ -123,6 +124,23 @@ beat_id = &"experiment_authority"
 shape = SubResource("Interact")
 
 [node name="Sprite2D" type="Sprite2D" parent="Interactive/AuthBeat"]
+texture_filter = 0
+centered = true
+
+[node name="AuthoritySeal" type="Area2D" parent="Interactive"]
+position = Vector2(660, 268)
+script = ExtResource("seal")
+code_key = "experiment_authority"
+puzzle_id = &"experiment_authority"
+story_code = "418"
+intro_line = "Mührün üç boşluğu var."
+solved_line = "Mühür gevşedi."
+wrong_line = "Yanlış, mühür kımıldamadı."
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/AuthoritySeal"]
+shape = SubResource("Interact")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/AuthoritySeal"]
 texture_filter = 0
 centered = true
 

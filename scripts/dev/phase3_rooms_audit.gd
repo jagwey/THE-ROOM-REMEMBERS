@@ -33,6 +33,7 @@ func _run() -> void:
 	await _graph()
 	await _rooms_14_17()
 	await _rooms_18_20()
+	await _rooms_21_24()
 	quit(1 if failures > 0 else 0)
 
 
@@ -532,6 +533,247 @@ func _rooms_18_20() -> void:
 	check(fwd3 != null and fwd3.required_puzzle == &"library_reading_cell", "r20_forward_door_gate")
 	dm.clear()
 	_migration_shelf_order()
+
+
+func _fn_body(src: String, fname: String) -> String:
+	var a := src.find("func " + fname)
+	if a == -1:
+		return ""
+	var b := src.find("\nfunc ", a + 10)
+	return src.substr(a, (b if b != -1 else src.length()) - a)
+
+
+func _drive_busy(n: Node, dm: Node) -> void:
+	var g := 0
+	await process_frame
+	while g < 600 and bool(n.get("_busy")):
+		g += 1
+		if dm.is_open:
+			dm.advance()
+		await process_frame
+
+
+func _min_dx(door_xs: Array, props: Array) -> float:
+	var m := 99999.0
+	for dx in door_xs:
+		for p in props:
+			m = minf(m, absf(float(dx) - float(p.position.x)))
+	return m
+
+
+func _plates_of(room: Node) -> Array:
+	var out: Array = []
+	for n in room.find_children("*", "Area2D", true, false):
+		if "accept_stone" in n and "puzzle_id" in n:
+			out.append(n)
+	out.sort_custom(func(a, b): return a.position.x < b.position.x)
+	return out
+
+
+func _thorns_of(room: Node) -> Array:
+	var out: Array = []
+	for n in room.find_children("*", "Area2D", true, false):
+		if "anchor_x" in n and "puzzle_hint" in n:
+			out.append(n)
+	return out
+
+
+func _rooms_21_24() -> void:
+	var rm := root.get_node("RoomManager")
+	var pm := root.get_node("PuzzleManager")
+	var dm := root.get_node("DialogueManager")
+	var gs := root.get_node("GameState")
+	var sb := FileAccess.get_file_as_string("res://scripts/story/story_beat.gd")
+	dm.clear()
+	_clear_corpses()
+	# ---- 21 cells ----
+	_unsolve(["experiment_cells_seen", "experiment_cell_a", "experiment_cell_b", "experiment_cell_c"])
+	var evd: Dictionary = gs.player_progress_knowledge.get("evidence", {})
+	evd.erase("ev_cell_a")
+	evd.erase("ev_cell_b")
+	rm.enter_room(&"experiment_cells", &"default")
+	await create_timer(0.4).timeout
+	var cells: Node = _room_root(&"experiment_cells")
+	var cgates: Array = _gates_of(cells)
+	cgates.sort_custom(func(a, b): return a.position.x < b.position.x)
+	check(cgates.size() == 3, "r21_three_cell_gates", cgates.size())
+	var cplates: Array = _plates_of(cells)
+	check(cplates.size() == 3, "r21_three_cell_plates", cplates.size())
+	var cthorns: Array = _thorns_of(cells)
+	var cids := ["experiment_cell_a", "experiment_cell_b", "experiment_cell_c"]
+	for i in mini(3, mini(cgates.size(), cplates.size())):
+		check(not bool(cplates[i].accept_stone) and String(cplates[i].puzzle_id) == cids[i], "r21_plate_%d_corpse_only" % i)
+		check(Array(cgates[i].puzzle_listen_all) == [cids[i]], "r21_gate_%d_listens_plate" % i)
+		check(cgates[i].legacy_puzzle == &"experiment_cells_seen", "r21_gate_%d_legacy_cells_seen" % i)
+		check(cplates[i].position.x < cgates[i].position.x and cgates[i].position.x - cplates[i].position.x <= 100.0, "r21_plate_%d_in_front_of_gate" % i)
+		var tok := false
+		for t in cthorns:
+			if t.puzzle_hint == StringName(cids[i]) and absf(float(t.anchor_x) - cplates[i].position.x) < 1.0:
+				tok = true
+		check(tok, "r21_thorn_above_plate_%d" % i)
+	var cdoors: Array = []
+	for d in _doors_of(cells):
+		cdoors.append(d.position.x)
+	check(_min_dx(cdoors, cgates + cplates + cthorns) >= 96.0, "r21_door_clearance_96")
+	for c in cplates:
+		check(absf(c.position.x - cells.checkpoint.x) >= 40.0, "r21_plate_clear_of_checkpoint")
+	# kayitlar: A+B okununca cells_seen
+	var recs: Dictionary = {}
+	for n in cells.find_children("*", "Area2D", true, false):
+		if "beat_id" in n:
+			recs[String(n.beat_id)] = n
+	check(recs.has("experiment_cell_a") and recs.has("experiment_cell_b") and recs.has("experiment_cell_c"), "r21_three_records")
+	var seen_lines: Array = []
+	var on_line := func(sp: String, t: String): seen_lines.append(t)
+	dm.line_shown.connect(on_line)
+	if recs.has("experiment_cell_a") and recs.has("experiment_cell_b"):
+		recs["experiment_cell_a"].on_interact(null)
+		await _drive_busy(recs["experiment_cell_a"], dm)
+		check(not pm.is_solved(&"experiment_cells_seen"), "r21_only_a_does_not_solve_seen")
+		check(" ".join(seen_lines).find("dört") != -1, "r21_a_says_dort")
+		seen_lines.clear()
+		recs["experiment_cell_a"].on_interact(null)
+		await _drive_busy(recs["experiment_cell_a"], dm)
+		check(" ".join(seen_lines).find("dört") != -1, "r21_a_reread_repeats_digit")
+		recs["experiment_cell_b"].on_interact(null)
+		await _drive_busy(recs["experiment_cell_b"], dm)
+		check(pm.is_solved(&"experiment_cells_seen"), "r21_a_and_b_solve_seen")
+		evd = gs.player_progress_knowledge.get("evidence", {})
+		check(evd.has("ev_cell_a") and String(evd["ev_cell_a"].get("body", "")).find("dört") != -1, "r21_evidence_a_keeps_digit")
+		check(evd.has("ev_cell_b") and String(evd["ev_cell_b"].get("body", "")).find("bir") != -1, "r21_evidence_b_keeps_digit")
+	dm.line_shown.disconnect(on_line)
+	dm.clear()
+	for g in cgates:
+		check(bool(g._is_open()), "r21_legacy_seen_opens_gate")
+	var cells_txt := FileAccess.get_file_as_string("res://scenes/rooms/experiment_cells.tscn")
+	for body in [_fn_body(sb, "_cell_record"), cells_txt]:
+		var lo := String(body).to_lower()
+		check(lo.find("sağdaki") == -1 and lo.find("hatıra") == -1 and lo.find("bellek") == -1, "r21_cells_text_clean")
+	check(sb.find("İleride bir devre yankını bekliyor.") != -1, "r21_cells_forward_hint_line")
+	# ---- 22 intake ----
+	_unsolve(["experiment_intake", "experiment_intake_corpse", "experiment_intake_stone"])
+	rm.enter_room(&"experiment_intake", &"default")
+	await create_timer(0.4).timeout
+	var intake: Node = _room_root(&"experiment_intake")
+	var igates: Array = _gates_of(intake)
+	check(igates.size() == 1, "r22_one_gate", igates.size())
+	var ig: Node = igates[0] if igates.size() > 0 else null
+	if ig != null:
+		check(Array(ig.puzzle_listen_all) == ["experiment_intake_corpse", "experiment_intake_stone"], "r22_gate_listens_two_ids")
+		check(ig.legacy_puzzle == &"experiment_intake" and "experiment_intake" in Array(ig.also_solve), "r22_gate_legacy_and_also_solve")
+		check(not bool(ig._is_open()), "r22_gate_closed_fresh")
+		pm.set_live(&"experiment_intake_corpse", true)
+		check(not bool(ig._is_open()), "r22_corpse_alone_keeps_closed")
+		pm.set_live(&"experiment_intake_stone", true)
+		check(bool(ig._is_open()), "r22_both_live_opens")
+		pm.set_live(&"experiment_intake_corpse", false)
+		pm.set_live(&"experiment_intake_stone", false)
+		pm.mark_solved(&"experiment_intake")
+		check(bool(ig._is_open()), "r22_legacy_solved_gate_open")
+		_unsolve(["experiment_intake"])
+	var iplates: Array = _plates_of(intake)
+	var cp: Node = null
+	var sp: Node = null
+	for p in iplates:
+		if p.puzzle_id == &"experiment_intake_corpse":
+			cp = p
+		if p.puzzle_id == &"experiment_intake_stone":
+			sp = p
+	check(cp != null and not bool(cp.accept_stone), "r22_left_pan_corpse_only")
+	check(sp != null and bool(sp.accept_stone), "r22_right_pan_takes_stone")
+	var fdoor: Node = null
+	for d in _doors_of(intake):
+		if d.target_room_id == &"experiment_circuit":
+			fdoor = d
+	var stone: Node = intake.find_child("ScaleStone", true, false)
+	check(stone != null and fdoor != null and float(stone.max_x) <= fdoor.position.x - 48.0, "r22_stone_max_x_below_door")
+	check(stone != null and sp != null and float(stone.max_x) >= sp.position.x, "r22_stone_can_reach_plate")
+	var ithorns: Array = _thorns_of(intake)
+	var tok2 := false
+	for t in ithorns:
+		if cp != null and t.puzzle_hint == &"experiment_intake_corpse" and absf(float(t.anchor_x) - cp.position.x) < 1.0:
+			tok2 = true
+	check(tok2, "r22_thorn_over_left_pan")
+	var iprops: Array = igates + iplates + ithorns
+	if stone != null:
+		iprops.append(stone)
+	var idoors: Array = []
+	for d in _doors_of(intake):
+		idoors.append(d.position.x)
+	check(_min_dx(idoors, iprops) >= 96.0, "r22_door_clearance_96")
+	var coat: Node = intake.find_child("Coat", true, false)
+	check(coat != null and coat.solve_puzzle == &"", "r22_coat_no_longer_solves")
+	var ijs := FileAccess.get_file_as_string("res://data/dialogue/experiment_intake.json")
+	check(ijs.find("sekiz") != -1 and ijs.to_lower().find("sağdaki") == -1 and ijs.find("O çiçek benimdi.") != -1, "r22_json_sekiz_no_sagdaki_flower_kept")
+	var adm: Node = intake.find_child("Admission", true, false)
+	check(adm != null and String(adm.evidence_body).find("sekiz") != -1, "r22_admission_evidence_keeps_digit")
+	var seen2: Array = []
+	var on2 := func(sp2: String, t: String): seen2.append(t)
+	dm.line_shown.connect(on2)
+	if adm != null:
+		adm.on_interact(null)
+		await _drive_busy(adm, dm)
+		check(" ".join(seen2).find("sekiz") != -1, "r22_admission_says_sekiz")
+		seen2.clear()
+		adm.on_interact(null)
+		await _drive_busy(adm, dm)
+		check(" ".join(seen2).find("sekiz") != -1, "r22_admission_reread_repeats_digit")
+	dm.line_shown.disconnect(on2)
+	dm.clear()
+	# ---- 23 circuit ----
+	rm.enter_room(&"experiment_circuit", &"default")
+	await create_timer(0.4).timeout
+	var circ: Node = _room_root(&"experiment_circuit")
+	var cb: Node = circ.find_child("CircuitBeat", true, false)
+	check(cb != null and absf(float(cb.record_seconds) - 8.0) < 0.01, "r23_record_seconds_8")
+	var ctxt := FileAccess.get_file_as_string("res://scenes/rooms/experiment_circuit.tscn") + _fn_body(sb, "_experiment_circuit")
+	check(ctxt.find("altı" + " saniye") == -1 and ctxt.find("6 sn") == -1 and ctxt.to_lower().find("sekiz saniye") != -1, "r23_text_eight_seconds")
+	check(cb != null and String(cb.solved_text).to_lower().find("sağdaki") == -1, "r23_solved_text_no_direction_word")
+	# ---- 24 authority ----
+	_unsolve(["experiment_authority"])
+	gs.story_flags.erase(&"shilda_past_discovered")
+	gs.set_world_flag(&"mirrors_unlocked", false)
+	rm.enter_room(&"experiment_authority", &"default")
+	await create_timer(0.4).timeout
+	var auth: Node = _room_root(&"experiment_authority")
+	var aseal: Node = auth.find_child("AuthoritySeal", true, false)
+	check(aseal != null and aseal.story_code == "418" and aseal.puzzle_id == &"experiment_authority", "r24_seal_code_418")
+	var abody := _fn_body(sb, "_experiment_authority")
+	check(abody != "" and abody.find("418") == -1 and abody.find("4-1-8") == -1, "r24_authbeat_hides_code")
+	check(sb.find("4-1-8") == -1, "r24_story_beat_no_4_1_8")
+	if aseal != null:
+		var hud_nodes: Array = get_nodes_in_group("hud")
+		for h in hud_nodes:
+			h.remove_from_group("hud")
+		var mock := Node.new()
+		var src := GDScript.new()
+		src.source_code = "extends Node\nvar code := \"000\"\nfunc prompt_seal_code():\n\treturn code\n"
+		src.reload()
+		mock.set_script(src)
+		mock.add_to_group("hud")
+		current_scene.add_child(mock)
+		aseal.on_interact(null)
+		await _drive_busy(aseal, dm)
+		check(not pm.is_solved(&"experiment_authority"), "r24_wrong_code_does_not_solve")
+		mock.code = "418"
+		aseal.on_interact(null)
+		await _drive_busy(aseal, dm)
+		check(pm.is_solved(&"experiment_authority"), "r24_code_418_solves_authority")
+		check(bool(gs.get_world_flag(&"mirrors_unlocked", false)), "r24_mirrors_unlocked")
+		check(gs.has_story_flag(&"shilda_past_discovered"), "r24_shilda_past_discovered")
+		mock.queue_free()
+		for h in hud_nodes:
+			if is_instance_valid(h):
+				h.add_to_group("hud")
+		dm.clear()
+	var afwd: Node = null
+	for d in _doors_of(auth):
+		if d.target_room_id == &"experiment_quarantine":
+			afwd = d
+	check(afwd != null and afwd.required_puzzle == &"experiment_authority", "r24_forward_door_needs_authority")
+	if afwd != null and aseal != null:
+		check(absf(afwd.position.x - aseal.position.x) >= 96.0, "r24_door_clear_of_seal")
+	dm.clear()
 
 
 func _migration_shelf_order() -> void:
