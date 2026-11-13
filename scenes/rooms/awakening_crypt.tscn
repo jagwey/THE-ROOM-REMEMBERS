@@ -113,7 +113,7 @@ texture_path = "res://assets/props/ledger.png"
 sprite_scale = 0.5
 
 [node name="PageMar" type="Area2D" parent="Interactive/PagesShrine"]
-position = Vector2(395, 288)
+position = Vector2(385, 288)
 script = ExtResource("step")
 step_id = "p_mar"
 label = "Sayfa: 9 Mart 1927"
@@ -121,7 +121,7 @@ texture_path = "res://assets/props/ledger.png"
 sprite_scale = 0.5
 
 [node name="PageJun" type="Area2D" parent="Interactive/PagesShrine"]
-position = Vector2(540, 288)
+position = Vector2(555, 288)
 script = ExtResource("step")
 step_id = "p_jun"
 label = "Sayfa: 17 Haziran 1927"
