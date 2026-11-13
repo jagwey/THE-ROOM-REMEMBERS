@@ -58,7 +58,8 @@ func play(tree: SceneTree, fast_mode: bool = false) -> void:
 	fast = fast_mode
 	_was_seen = final_seen()
 	last_run = {"flag_order": [], "stages": [], "end_label": false, "part_label": false, "credits": false,
-		"title_requested": false, "x_seen": false, "human": false, "domains": 0}
+		"title_requested": false, "x_seen": false, "human": false, "domains": 0,
+		"variant": String(EndingManager.final_variant())}
 	_scene = tree.current_scene
 	_player = tree.get_first_node_in_group("player") as Node2D
 	_keeper = tree.get_first_node_in_group("keeper") as Node2D
@@ -120,11 +121,20 @@ func play(tree: SceneTree, fast_mode: bool = false) -> void:
 		["X", "Bölüm iki sizsiz açılmaz."],
 	])
 	await _portal_leave()
-	await _say([
-		["Shilda", "Noroi… beni duyuyor musun?"],
-		["Noroi", "Duyuyorum; bu sefer adın aklımda kalacak."],
-		["Shilda", "O zaman yürü. Oda bizi bekleyemez."],
-	])
+	if last_run["variant"] == "together":
+		GameState.set_story_flag(&"final_together", true)
+		await _say([
+			["Shilda", "Noroi… beni duyuyor musun?"],
+			["Noroi", "Duyuyorum; bu sefer adın aklımda kalacak."],
+			["Shilda", "O zaman yürü. Oda bizi bekleyemez."],
+			["Shilda", "Bu kez yanında yürüyorum."],
+		])
+	else:
+		await _say([
+			["Shilda", "Noroi… duyuyor musun?"],
+			["Noroi", "Duyuyorum, ama sana hâlâ tam güvenemiyorum."],
+			["Shilda", "Anlıyorum. Yine de yürü."],
+		])
 	await _title_card()
 	await _credits()
 	_finish()

@@ -318,6 +318,11 @@ const HINTS: Dictionary = {
 		"orientation": "Her iki mühür parçası birleşmeden çekirdek savunması gevşemez.",
 		"explicit": "Gölgeyle çekirdeğin merkezine yaklaş, Ruh Kesimi ile mührü kır."
 	},
+	&"core_defense": {
+		"goal": "Çekirdek kristali dalga dalga gölge çekiyor.",
+		"orientation": "Gölgeler iki uçtan kristale yürür. Kristalin başında dur, onları kes.",
+		"explicit": "Kristale dokun, üç dalgayı kes. Kristal beş darbe taşır."
+	},
 	&"core_bloom_order": {
 		"goal": "Bahçedeki üç taş uyanmadan çiçek konuşmuyor.",
 		"orientation": "Taşlardaki noktaları say: önce en çok, sonra en az, sonra kalan.",
@@ -429,7 +434,7 @@ const ROOM_PUZZLES: Dictionary = {
 	"core_threshold": [&"core_threshold_crossed"],
 	"core_ascent": [&"core_ascent"],
 	"core_seal_chamber": [&"core_seal_bond_1", &"core_seal_bond_2", &"core_seal_bond_3"],
-	"core": [&"core_seal"],
+	"core": [&"core_seal", &"core_defense"],
 }
 
 

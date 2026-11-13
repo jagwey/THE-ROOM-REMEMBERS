@@ -65,6 +65,8 @@ func _physics_process(delta: float) -> void:
 	if _hurt_timer > 0.0:
 		_hurt_timer -= delta
 		velocity.x = move_toward(velocity.x, 0.0, 320.0 * delta)
+	elif has_meta("defense"):
+		_defense_walk(delta)
 	else:
 		var player := get_tree().get_first_node_in_group("player") as Node2D
 		if player and is_instance_valid(player):
@@ -91,6 +93,25 @@ func _physics_process(delta: float) -> void:
 			velocity.x = move_toward(velocity.x, 0.0, 200.0 * delta)
 
 	move_and_slide()
+
+
+## Çekirdek savunması: oyuncuya değil kristale yürür; kristale değince savunma can düşürür, gölge söner.
+## Oyuncuya hasar vermez (ölüm/ceset yolu tetiklenmez).
+func _defense_walk(_delta: float) -> void:
+	var d: Object = get_meta("defense") as Object
+	if d == null or not is_instance_valid(d) or not d.has_method("crystal_x"):
+		queue_free()
+		return
+	var dx: float = float(d.call("crystal_x")) - global_position.x
+	_facing = signf(dx) if absf(dx) > 0.5 else 1.0
+	if sprite:
+		sprite.flip_h = _facing < 0.0
+		if sprite.sprite_frames and sprite.sprite_frames.has_animation("run") and sprite.animation != "run":
+			sprite.play("run")
+	velocity.x = _facing * SPEED
+	if absf(dx) < 28.0:
+		_dead = true
+		d.call("shade_reached", self)
 
 
 func receive_sword_hit(attacker: Node, dir: float, combo: int) -> void:

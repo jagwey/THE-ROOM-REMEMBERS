@@ -425,8 +425,8 @@ oom_door\) <= 44.0 px mesafede -200 etkileÅŸim Ã¶ncelik bonusu eklendi.
 - [x] T3 odalar 28-31 (reverse ters kontrol, dual aynalı yankı+ceset, gallery 3 ceset plakası, unbroken yankı yol taklidi) (185575f, b791bf0)
 - [x] T4 odalar 32-34 (labirent ana yolda + ceset köprüsü, tapınak Gölge Atılması testi, 1927 sessiz dizi + X'in adı; lore_canon `x_name_late`) (738adb4, bb1ac17, 4318dd4)
 - [x] T5 odalar 35-37 (eşik lanet bulutu+ceset kalkanı, yükseliş 3 test, mühür odası 3 bağ; trusted_keeper burada YAZILMAZ) (bcb416c, fba38f8)
-- [ ] T6 odalar 38-39 (kasa önceki ipuçlarından kod; bahçe 4-1-2, trusted_keeper YALNIZ burada; `add_vigil_trust(1)`; lore_canon `vault_irony`/`garden_hint`) — UYGULANIYOR
-- [ ] T7 `core_defense.gd` final (3 dalga 2/3/4 gölge, kristal HP 5, kayıpta ölüm yok dalga sıfırlanır, `EndingManager.final_variant()` together/apart, "BÖLÜM I SONU")
+- [x] T6 odalar 38-39 (kasa önceki ipuçlarından kod; bahçe 4-1-2, trusted_keeper YALNIZ burada; `add_vigil_trust(1)`; lore_canon `vault_irony`/`garden_hint`) (3b4356a, 4e0003f)
+- [ ] T7 `core_defense.gd` final (3 dalga 2/3/4 gölge, kristal HP 5, kayıpta ölüm yok dalga sıfırlanır, `EndingManager.final_variant()` together/apart, "BÖLÜM I SONU") — UYGULANIYOR
 - [ ] T8 ölü kod (mirror_relay.gd, archive_door.gd — önce grep), `_softlock()` + `_main_path_walk()`, e2e 01→40, sürüm 1.18.0 / version/code 48, README + PROGRESS + CLAUDE.md "Güncel sürüm"; tam suite "38 dev denetimi, 0 basarisiz"
 - [ ] Faz 4 final review (tüm dal) + 1 düzeltme turu
 - [ ] APK `TheRoomRemembers-1.18.0-android-arm64.apk` derle → `gh release create v1.18.0 <apk> --repo jagwey/THE-ROOM-REMEMBERS-release --title v1.18.0 --notes "..."` → iki repoda en yeni 4 dışını sil (`gh release list` önce; latest asla silinmez). Kullanıcı bu release'i önceden onayladı.
@@ -435,3 +435,4 @@ oom_door\) <= 44.0 px mesafede -200 etkileÅŸim Ã¶ncelik bonusu eklendi.
 
 - Faz 4 T3: oda 28–31 (mirrors_reverse/dual/gallery/unbroken) yeniden yazıldı; gate also_solve düzeltmesi, plate_hold_seconds, unbroken_confrontation.gd; phase4/plate_rule/dialogue_lint/e2e(53/53)/phase3 audit yeşil.
 - Faz 4 T6: oda 38-39 yeniden yazıldı (kasa yıl sırası + `truth_seen` tek yazar; bahçe kan dikeni + `core_bloom_weight` ceset plakası, taçlar en çok/en az/kalan; `trusted_keeper` tek yazar = Uzlaşma + `trust_gate`; shilda_garden_trust/keeper_controller `add_vigil_trust`); phase4/lore_canon/story_flags/keeper_naming/plate_rule/dialogue_lint/dialogue_data/release/room_graph/e2e(53/53) yeşil.
+- Faz 4 T7: oda 40 çekirdek savunması (`core_defense.gd`, 2/3/4 gölge dalgası, kristal 5 can, kayıpta sıfırlama, oda değişiminde iptal) + `EndingManager.final_variant()` (together/apart, `final_together` bayrağı); phase4/final_sequence/story_flags/start_flow/death_loop/release/dialogue_lint/room_graph/memory_seal/door/e2e(53/53) yeşil.

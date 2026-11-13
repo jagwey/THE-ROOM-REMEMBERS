@@ -64,6 +64,7 @@ const PUZZLE_SOURCE := {
 	"mirrors_1927": ["mirrors_1927", ""],
 	"core_vault_order": ["core_memory_vault", ""],
 	"core_bloom_order": ["core_bloom_garden", ""],
+	"core_defense": ["core", "core_seal"],
 	"core_bloom_weight": ["core_bloom_garden", ""],
 }
 

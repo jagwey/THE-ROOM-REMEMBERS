@@ -35,6 +35,7 @@ func _run() -> void:
 	await _rooms_32_34()
 	await _rooms_35_37()
 	await _rooms_38_39()
+	await _room_40_final()
 	quit(1 if failures > 0 else 0)
 
 
@@ -1261,6 +1262,180 @@ func _veins_of(room: Node) -> Array:
 	out.sort_custom(func(a, b): return a.position.x < b.position.x)
 	return out
 
+
+
+func _shade_count_in(room: Node) -> int:
+	var n := 0
+	for s in room.find_children("*", "CharacterBody2D", true, false):
+		if s.is_in_group("memory_shade") and not s.is_queued_for_deletion():
+			n += 1
+	return n
+
+
+func _drive_final(em: Node, dm: Node) -> void:
+	em.trigger(em.Ending.PART_ONE, true)
+	var t0 := Time.get_ticks_msec()
+	while em.current != em.Ending.NONE and Time.get_ticks_msec() - t0 < 90000:
+		if dm.is_open:
+			dm.advance()
+		await process_frame
+
+
+func _room_40_final() -> void:
+	var pm := root.get_node("PuzzleManager")
+	var rm := root.get_node("RoomManager")
+	var gs := root.get_node("GameState")
+	var em := root.get_node("EndingManager")
+	var dm := root.get_node("DialogueManager")
+	var dth := root.get_node("DeathManager")
+	var player: Node2D = current_scene.get_node("Player")
+	_unsolve(["core_defense"])
+	_clear_corpses()
+	dm.clear()
+	gs.story_flags.erase(&"game_completed")
+	gs.story_flags.erase(&"final_together")
+	em.reset_for_smoke()
+	rm.enter_room(&"core")
+	await process_frame
+	await process_frame
+	var cr := _room_root(&"core")
+	var df: Node = null
+	var crystal: Node = null
+	for n in cr.find_children("*", "Node2D", true, false):
+		if n.is_in_group("core_defense"):
+			df = n
+		elif n.is_in_group("core_crystal"):
+			crystal = n
+	check(df != null and crystal != null, "r40_defense_and_crystal_present")
+	if df == null or crystal == null:
+		return
+	check(df.waves == PackedInt32Array([2, 3, 4]) and df.crystal_hp == 5 and df.puzzle_id == &"core_defense", "r40_defense_exports")
+	check(df.fail_line == "Kristal titriyor. Dalgalar yeniden geliyor.", "r40_fail_line")
+	var hints: Dictionary = pm.HINTS.get(&"core_defense", {})
+	check(hints.has("goal") and hints.has("orientation") and hints.has("explicit"), "r40_hints_present")
+	# --- savunma: dalga 0 = 2 golge, oyuncudan uzak ---
+	player.global_position = Vector2(480, 288)
+	var hearts0: int = int(gs.hearts)
+	var corpses0: int = (gs.world_memory_state["corpses"] as Array).size()
+	var done := [false]
+	df.defended.connect(func(): done[0] = true)
+	df.start()
+	await process_frame
+	check(df.wave_index() == 0 and df.shade_count() == 2 and _shade_count_in(cr) == 2, "r40_wave0_two_shades", df.shade_count())
+	var far_ok := true
+	for s in cr.find_children("*", "CharacterBody2D", true, false):
+		if s.is_in_group("memory_shade") and absf(s.global_position.x - player.global_position.x) < 80.0:
+			far_ok = false
+	check(far_ok, "r40_shades_not_on_player")
+	# golge kristale degince can duser, oyuncuya dokunmaz
+	var s0: Node2D = df._shades[0]
+	s0.global_position = Vector2(470, 288)
+	for i in 10:
+		await physics_frame
+	check(df.hp() == 4 and df.shade_count() == 1, "r40_shade_hits_crystal_only", [df.hp(), df.shade_count()])
+	check(int(gs.hearts) == hearts0 and not dth.is_dying, "r40_player_unharmed")
+	# 3 dalga
+	df.debug_clear_wave()
+	await process_frame
+	await process_frame
+	check(df.wave_index() == 1 and df.shade_count() == 3, "r40_wave1_three", [df.wave_index(), df.shade_count()])
+	df.debug_clear_wave()
+	await process_frame
+	await process_frame
+	check(df.wave_index() == 2 and df.shade_count() == 4, "r40_wave2_four", [df.wave_index(), df.shade_count()])
+	check(not pm.is_solved(&"core_defense"), "r40_not_solved_before_last")
+	df.debug_clear_wave()
+	await process_frame
+	check(pm.is_solved(&"core_defense") and done[0] and not df.is_active(), "r40_three_waves_solve")
+	check(_shade_count_in(cr) == 0, "r40_no_shades_after_defense")
+	# --- kayip: dalgalar sifirlanir, oyuncu canli, ceset yok ---
+	_unsolve(["core_defense"])
+	df.start()
+	await process_frame
+	for i in 5:
+		df.hit_crystal()
+	await process_frame
+	await process_frame
+	check(df.wave_index() == 0 and df.hp() == df.crystal_hp, "r40_loss_resets_waves", [df.wave_index(), df.hp()])
+	check(not dth.is_dying and int(gs.hearts) == hearts0 and (gs.world_memory_state["corpses"] as Array).size() == corpses0, "r40_loss_no_death_no_corpse")
+	check(df.is_active() and df.shade_count() == 2, "r40_loss_restarts_wave0", df.shade_count())
+	dm.clear()
+	# --- oda degisimi: dalga iptal, orphan yok, yeniden giris bastan ---
+	rm.enter_room(&"core_bloom_garden")
+	await process_frame
+	await process_frame
+	check(not df.is_active() and df.shade_count() == 0 and _shade_count_in(cr) == 0, "r40_leave_cancels_wave")
+	rm.enter_room(&"core")
+	await process_frame
+	await process_frame
+	check(not df.is_active() and df.wave_index() == 0 and _shade_count_in(cr) == 0, "r40_reenter_clean")
+	df.start()
+	await process_frame
+	check(df.is_active() and df.wave_index() == 0 and df.shade_count() == 2, "r40_restart_after_reenter", df.shade_count())
+	rm.enter_room(&"core_bloom_garden")
+	await process_frame
+	await process_frame
+	check(_shade_count_in(cr) == 0, "r40_second_leave_no_orphans")
+	rm.enter_room(&"core")
+	await process_frame
+	await process_frame
+	# --- kristal: hazir degil ---
+	gs.set_world_flag(&"seal_shard_1", false)
+	gs.set_world_flag(&"seal_shard_2", false)
+	gs.player_progress_knowledge["ability_soul_slash"] = false
+	_unsolve(["core_defense", "core_seal"])
+	em.reset_for_smoke()
+	await _beat_run(crystal, player)
+	await process_frame
+	check(em.last_ending == em.Ending.NONE and not df.is_active(), "r40_crystal_not_ready_no_final_no_defense")
+	# --- kristal: hazir, savunma yok -> savunma baslar ---
+	pm.mark_solved(&"core_seal")
+	gs.set_world_flag(&"seal_shard_1", true)
+	gs.set_world_flag(&"seal_shard_2", true)
+	gs.player_progress_knowledge["ability_soul_slash"] = true
+	check(em.can_begin_final(), "r40_ready_precondition")
+	await _beat_run(crystal, player)
+	await process_frame
+	check(df.is_active() and em.last_ending == em.Ending.NONE, "r40_ready_starts_defense_not_final")
+	dm.clear()
+	# --- varyantlar ---
+	var lines: Array = []
+	dm.line_shown.connect(func(_sp: String, tx: String) -> void: lines.append(tx))
+	var FSc: GDScript = load("res://scripts/story/final_sequence.gd")
+	for combo in [[false, false], [true, false], [false, true], [true, true]]:
+		gs.player_progress_knowledge["trusted_keeper"] = combo[0]
+		gs.player_progress_knowledge["truth_seen"] = combo[1]
+		var want: StringName = &"together" if (combo[0] and combo[1]) else &"apart"
+		var tag := "%s_%s" % [combo[0], combo[1]]
+		check(em.final_variant() == want, "r40_variant_fn_" + tag, em.final_variant())
+		gs.story_flags.erase(&"game_completed")
+		gs.story_flags.erase(&"final_together")
+		em.reset_for_smoke()
+		lines.clear()
+		await _drive_final(em, dm)
+		var lr: Dictionary = FSc.get("last_run")
+		check(String(lr.get("variant", "")) == String(want) and bool(lr.get("part_label", false)), "r40_run_variant_" + tag, lr.get("variant"))
+		check(gs.has_story_flag(&"final_together") == (want == &"together"), "r40_final_together_flag_" + tag)
+		check(lines.has("Bu kez yanında yürüyorum.") == (want == &"together"), "r40_together_line_" + tag)
+		check(lines.has("Anlıyorum. Yine de yürü.") == (want == &"apart"), "r40_apart_line_" + tag)
+		check(em.last_ending == em.Ending.PART_ONE, "r40_single_ending_" + tag)
+	# --- savunma sonrasi kristal finali tetikler (son sinama: dizi arka planda kalir) ---
+	gs.story_flags.erase(&"game_completed")
+	gs.story_flags.erase(&"final_together")
+	em.reset_for_smoke()
+	rm.enter_room(&"core")
+	await process_frame
+	_unsolve(["core_defense"])
+	df.start()
+	await process_frame
+	for i in 3:
+		df.debug_clear_wave()
+		await process_frame
+		await process_frame
+	check(pm.is_solved(&"core_defense"), "r40_defense_solved_for_final")
+	crystal.on_interact(player)
+	await create_timer(0.3).timeout
+	check(em.last_ending == em.Ending.PART_ONE, "r40_crystal_after_defense_triggers_final")
 
 
 func _room_root(rid: StringName) -> Node:

@@ -33,7 +33,7 @@ func _check_lines_in_order() -> void:
 		["X", "İlk boyuttan çıkmanız beklediğimden uzun sürdü."],
 		["Shilda", "Noroi!"], ["X", "İhtiyacım olan şeyi aldım."],
 		["X", "Çünkü henüz işiniz bitmemişti."],
-		["Shilda", "Noroi… beni duyuyor musun?"]]
+		["Shilda", "Noroi… beni duyuyor musun?"], ["Shilda", "Bu kez yanında yürüyorum."]]
 	var at := 0
 	var missing: Array = []
 	var shilda_tag := "Shilda" if root.get_node("GameState").is_shilda_named() else "???"
@@ -115,8 +115,12 @@ func _run() -> void:
 	await create_timer(0.3).timeout
 	check(not FS.call("final_seen"), "final_seen false before first run")
 	dm.line_shown.connect(func(sp: String, tx: String) -> void: shown.append([sp, tx]))
+	## Birlikte varyantı (güven + gerçek); ayrı varyant phase4_rooms_audit'te sınanır.
+	gs.player_progress_knowledge["trusted_keeper"] = true
+	gs.player_progress_knowledge["truth_seen"] = true
 	await em.trigger(em.Ending.PART_ONE, true)
 	var r: Dictionary = FS.get("last_run")
+	check(String(r.get("variant", "")) == "together" and gs.has_story_flag(&"final_together"), "together variant + flag")
 	check(r.get("flag_order", []) == ["final_seal_broken", "x_revealed", "game_completed"], "flag order", r.get("flag_order"))
 	_check_lines_in_order()
 	check(bool(r.get("human", false)), "Shilda human form shown")

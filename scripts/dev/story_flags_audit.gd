@@ -30,7 +30,7 @@ func _run() -> void:
 		return
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(path.get_base_dir()))
 	check(int(sm.SAVE_VERSION) == 6, "SAVE_VERSION == 6")
-	check(gs.STORY_FLAGS.size() == 13, "13 known story flags")
+	check(gs.STORY_FLAGS.size() == 14, "14 known story flags")
 
 	## API
 	gs.clear_story_flags()

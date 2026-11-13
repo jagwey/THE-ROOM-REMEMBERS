@@ -63,7 +63,7 @@ const STORY_FLAGS := [
 	&"intro_completed", &"first_shadow_seen", &"first_warning_heard", &"first_death_completed",
 	&"first_corpse_discovered", &"shilda_name_known", &"first_archive_record_read",
 	&"dimension_origin_discovered", &"shilda_past_discovered", &"core_access_granted",
-	&"final_seal_broken", &"x_revealed", &"game_completed",
+	&"final_seal_broken", &"x_revealed", &"game_completed", &"final_together",
 ]
 var story_flags: Dictionary = {}
 ## Etkinleştirilmiş Hafıza Mühürleri (oda id). Uyanış mührü her zaman açıktır.

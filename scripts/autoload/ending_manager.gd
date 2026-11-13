@@ -39,6 +39,12 @@ func prep_status() -> Dictionary:
 	}
 
 
+## Final kapanış varyantı: Shilda'ya güven ve gerçeği görme ikisi de varsa birlikte, yoksa ayrı.
+func final_variant() -> StringName:
+	var st: Dictionary = prep_status()
+	return &"together" if bool(st["trusted"]) and bool(st["truth"]) else &"apart"
+
+
 func reset_for_smoke() -> void:
 	_locked = false
 	current = Ending.NONE

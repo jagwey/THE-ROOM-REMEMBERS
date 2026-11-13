@@ -21,6 +21,14 @@ func on_interact(_by: Node) -> void:
 		await DialogueManager.dialogue_finished
 		return
 	if EndingManager.can_begin_final():
+		var defense := get_tree().get_first_node_in_group("core_defense")
+		if defense != null and not PuzzleManager.is_solved(defense.puzzle_id):
+			if defense.is_active():
+				return
+			DialogueManager.say("Shilda", "Dalgalar geliyor. Kristali sen koru.")
+			await DialogueManager.dialogue_finished
+			defense.start()
+			return
 		await EndingManager.trigger(EndingManager.Ending.PART_ONE)
 		return
 	CurseManager.add_curse(8.0, &"core_adjacent")
