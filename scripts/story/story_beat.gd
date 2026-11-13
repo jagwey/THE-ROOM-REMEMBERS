@@ -162,7 +162,7 @@ func _cell_record(cell: String) -> void:
 
 			DialogueManager.say("Kayıt", "Hücre A. Denek girişi, kapı kilidi.")
 			DialogueManager.say("Kayıt", "Mühür kodu üç haneli. İlk hane: dört.")
-			DialogueManager.say("Noroi", "İlk hane dört. Aklımda kalsın.")
+			DialogueManager.say("Noroi", "İlk hane dört, aklımda kalsın.")
 
 		"b":
 
@@ -178,7 +178,9 @@ func _cell_record(cell: String) -> void:
 			DialogueManager.say("Shilda", "Kurucu başlattı. Sen içeride kaldın.")
 			DialogueManager.say("Shilda", "Ben kapıda bekledim.")
 			DialogueManager.say("Shilda", "Sesler bedenlerinden koptu. Oda onları sakladı.")
+			DialogueManager.say("Shilda", "Kimseyi feda etmeyeceğiz.")
 			DialogueManager.say("Shilda", "İleride bir devre yankını bekliyor.")
+			DialogueManager.say("Shilda", "Sen de diğerini açacaksın. Bu sefer birlikte.")
 
 	var ok: bool = await DialogueManager.dialogue_finished
 
@@ -395,6 +397,8 @@ func _evidence(eid: String, title: String, body: String, kind: String, section: 
 	GameState.player_progress_knowledge["journal_unlocked"] = true
 
 	EchoManager.journal_updated.emit()
+
+	preload("res://scripts/world/lore_point.gd").learn_authority_code_if_ready()
 
 func _open_mirror_choice() -> void:
 	_choice_layer = CanvasLayer.new()

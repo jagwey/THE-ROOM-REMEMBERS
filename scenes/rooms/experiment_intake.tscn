@@ -32,7 +32,7 @@ doors = [{"x": 40.0, "to": "experiment_cells", "spawn": "from_circuit"}, {"x": 1
 [node name="Spawns" type="Node2D" parent="."]
 
 [node name="keeper_observe" type="Marker2D" parent="Spawns"]
-position = Vector2(600, 288)
+position = Vector2(680, 288)
 
 [node name="Interactive" type="Node2D" parent="."]
 

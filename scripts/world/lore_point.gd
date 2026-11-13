@@ -186,3 +186,13 @@ static func record_evidence(eid: String, title: String, body: String, section: S
 	GameState.player_progress_knowledge["journal_notes"] = notes
 	GameState.player_progress_knowledge["journal_unlocked"] = true
 	EchoManager.journal_updated.emit()
+	learn_authority_code_if_ready()
+
+
+## Hücre A, hücre B ve kabul kaydı okununca yetki mührü kodu (418) öğrenilir. İdempotent.
+static func learn_authority_code_if_ready() -> void:
+	var ev: Dictionary = GameState.player_progress_knowledge.get("evidence", {})
+	if ev.has("ev_cell_a") and ev.has("ev_cell_b") and ev.has("ev_intake_file"):
+		var codes: Dictionary = GameState.player_progress_knowledge.get("memory_codes", {})
+		if String(codes.get("experiment_authority", "")) != "418":
+			GameState.learn_memory_code("experiment_authority", "418")

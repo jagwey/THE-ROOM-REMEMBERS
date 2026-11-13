@@ -134,6 +134,7 @@ code_key = "experiment_authority"
 puzzle_id = &"experiment_authority"
 story_code = "418"
 intro_line = "Mührün üç boşluğu var."
+require_line = "Önce masadaki kaydı okumalıyım."
 solved_line = "Mühür gevşedi."
 wrong_line = "Yanlış, mühür kımıldamadı."
 

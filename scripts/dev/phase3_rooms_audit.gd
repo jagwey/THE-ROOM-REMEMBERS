@@ -648,7 +648,7 @@ func _rooms_21_24() -> void:
 	var cells_txt := FileAccess.get_file_as_string("res://scenes/rooms/experiment_cells.tscn")
 	for body in [_fn_body(sb, "_cell_record"), cells_txt]:
 		var lo := String(body).to_lower()
-		check(lo.find("sağdaki") == -1 and lo.find("hatıra") == -1 and lo.find("bellek") == -1, "r21_cells_text_clean")
+		check(String(body) != "" and lo.find("sağdaki") == -1 and lo.find("hatıra") == -1 and lo.find("bellek") == -1, "r21_cells_text_clean")
 	check(sb.find("İleride bir devre yankını bekliyor.") != -1, "r21_cells_forward_hint_line")
 	# ---- 22 intake ----
 	_unsolve(["experiment_intake", "experiment_intake_corpse", "experiment_intake_stone"])
@@ -752,6 +752,30 @@ func _rooms_21_24() -> void:
 		mock.set_script(src)
 		mock.add_to_group("hud")
 		current_scene.add_child(mock)
+		var lp: GDScript = load("res://scripts/world/lore_point.gd")
+		var pk: Dictionary = gs.player_progress_knowledge
+		if pk.has("evidence"):
+			for k in ["ev_cell_a", "ev_cell_b", "ev_intake_file", "ev_authority_desk"]:
+				pk["evidence"].erase(k)
+		if pk.has("memory_codes"):
+			pk["memory_codes"].erase("experiment_authority")
+		pk.erase("foreign_memory_used")
+		# AuthBeat okunmadan mühür kodu istemez
+		mock.code = "418"
+		aseal.on_interact(null)
+		await _drive_busy(aseal, dm)
+		check(not pm.is_solved(&"experiment_authority"), "r24_seal_needs_authbeat_first")
+		lp.record_evidence("ev_authority_desk", "Yetki masası kaydı", "test", "gunluk")
+		# iki rakam kaydı: kod öğrenilmez
+		lp.record_evidence("ev_cell_a", "Hücre A kaydı", "İlk hane: dört.", "izler")
+		lp.record_evidence("ev_cell_b", "Hücre B kaydı", "İkinci hane: bir.", "izler")
+		check(gs.memory_code_reaction("experiment_authority") == &"unknown", "r24_two_records_do_not_teach_code")
+		# üçüncü kayıt: kod öğrenilir
+		lp.record_evidence("ev_intake_file", "Kabul Kaydı 1995", "Son hane: sekiz.", "izler")
+		check(gs.memory_code_reaction("experiment_authority") != &"unknown", "r24_three_records_teach_code")
+		lp.learn_authority_code_if_ready()
+		check(String(pk["memory_codes"].get("experiment_authority", "")) == "418", "r24_learn_code_idempotent")
+		mock.code = "000"
 		aseal.on_interact(null)
 		await _drive_busy(aseal, dm)
 		check(not pm.is_solved(&"experiment_authority"), "r24_wrong_code_does_not_solve")
@@ -759,8 +783,9 @@ func _rooms_21_24() -> void:
 		aseal.on_interact(null)
 		await _drive_busy(aseal, dm)
 		check(pm.is_solved(&"experiment_authority"), "r24_code_418_solves_authority")
+		check(not bool(pk.get("foreign_memory_used", false)), "r24_known_code_no_foreign_memory")
 		check(bool(gs.get_world_flag(&"mirrors_unlocked", false)), "r24_mirrors_unlocked")
-		check(gs.has_story_flag(&"shilda_past_discovered"), "r24_shilda_past_discovered")
+		check(abody.find("shilda_past_discovered") != -1 and not gs.has_story_flag(&"shilda_past_discovered"), "r24_shilda_flag_only_in_authbeat")
 		mock.queue_free()
 		for h in hud_nodes:
 			if is_instance_valid(h):
