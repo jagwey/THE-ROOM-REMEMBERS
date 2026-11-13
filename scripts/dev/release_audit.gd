@@ -15,6 +15,7 @@ func check_it(label: String, value: bool, detail: Variant = "") -> void:
 
 ## Bulmacanın çözüldüğü oda + (varsa) önkoşul bulmacası/yeteneği. Kapı grafiği softlock analizi için.
 const PUZZLE_SOURCE := {
+	"awakening_passage_rings": ["awakening_passage", ""],
 	"awakening_memory_code": ["awakening_seal", ""],
 	"awakening_vigil": ["awakening_vigil", ""],
 	"decay_greenhouse": ["decay_greenhouse", ""],
@@ -37,6 +38,13 @@ const PUZZLE_SOURCE := {
 	"decay_shilda_wall_broken": ["decay_shilda_wall", ""],
 	"ability_soul_slash": ["library_forbidden_wing", ""],
 	"awakening_balcony_crossed": ["awakening_balcony", ""],
+	## Faz 3 (v1.17.0) dogrusal yol kilitleri
+	"library_shelf_order": ["library_upper_stacks", ""],
+	"soul_seal_forbidden_2": ["library_forbidden_wing", ""],
+	"library_reading_cell": ["library_reading_cell", ""],
+	"experiment_quarantine_done": ["experiment_quarantine", ""],
+	"experiment_conduit": ["experiment_core_conduit", ""],
+	"experiment_observation": ["experiment_observation", ""],
 	"seal_shard_1": ["library_forbidden_wing", ""],
 	"seal_shard_2": ["mirrors_shrine", ""],
 }
