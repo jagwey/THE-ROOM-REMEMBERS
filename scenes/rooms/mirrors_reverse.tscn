@@ -37,6 +37,9 @@ atmosphere_bg = "res://assets/backgrounds/mirrors"
 [node name="default" type="Marker2D" parent="Spawns"]
 position = Vector2(120, 288)
 
+[node name="from_observation" type="Marker2D" parent="Spawns"]
+position = Vector2(120, 288)
+
 [node name="from_auth" type="Marker2D" parent="Spawns"]
 position = Vector2(80, 288)
 
@@ -88,17 +91,17 @@ modulate = Color(0.85, 0.88, 0.95, 0.55)
 
 [node name="Interactive" type="Node2D" parent="."]
 
-[node name="BackAuth" type="Area2D" parent="Interactive"]
+[node name="BackObservation" type="Area2D" parent="Interactive"]
 position = Vector2(40, 268)
 collision_layer = 8
 collision_mask = 0
 monitoring = false
 monitorable = true
 script = ExtResource("5")
-target_room_id = &"experiment_authority"
-target_spawn_id = &"from_mirrors"
+target_room_id = &"experiment_observation"
+target_spawn_id = &"from_mirrors_reverse"
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BackAuth"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BackObservation"]
 shape = SubResource("Hit")
 
 [node name="ForwardDual" type="Area2D" parent="Interactive"]

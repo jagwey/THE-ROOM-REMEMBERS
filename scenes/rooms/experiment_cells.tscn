@@ -46,6 +46,9 @@ position = Vector2(880, 288)
 [node name="from_cells" type="Marker2D" parent="Spawns"]
 position = Vector2(120, 288)
 
+[node name="from_reading" type="Marker2D" parent="Spawns"]
+position = Vector2(120, 288)
+
 [node name="ParallaxFar" type="Parallax2D" parent="."]
 repeat_size = Vector2(640, 0)
 repeat_times = 3
@@ -87,17 +90,17 @@ centered = true
 
 [node name="Interactive" type="Node2D" parent="."]
 
-[node name="BackPage" type="Area2D" parent="Interactive"]
+[node name="BackReading" type="Area2D" parent="Interactive"]
 position = Vector2(40, 268)
 collision_layer = 8
 collision_mask = 0
 monitoring = false
 monitorable = true
 script = ExtResource("5")
-target_room_id = &"library_page"
-target_spawn_id = &"from_cells"
+target_room_id = &"library_reading_cell"
+target_spawn_id = &"from_experiment_cells"
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BackPage"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BackReading"]
 shape = SubResource("Hit")
 
 [node name="ForwardIntake" type="Area2D" parent="Interactive"]

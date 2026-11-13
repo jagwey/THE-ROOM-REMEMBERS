@@ -18,7 +18,7 @@ region_id = &"experiment"
 room_width = 960.0
 bg_region = "experiment"
 checkpoint = Vector2(120, 288)
-doors = [{"x": 40.0, "to": "experiment_authority", "spawn": "from_experiment_core_conduit"}]
+doors = [{"x": 40.0, "to": "experiment_quarantine", "spawn": "from_experiment_core_conduit"}, {"x": 920.0, "to": "experiment_observation", "spawn": "from_experiment_core_conduit", "req": "experiment_conduit", "msg": "Önce iletim devresini çalıştırmalıyım."}]
 
 [node name="Interactive" type="Node2D" parent="."]
 
@@ -40,7 +40,7 @@ texture_filter = 0
 centered = true
 
 [node name="ConduitLog" type="Area2D" parent="Interactive"]
-position = Vector2(920, 288.0)
+position = Vector2(800, 288.0)
 script = ExtResource("lore")
 lore_id = &"conduit_log"
 texture_path = "res://assets/props/memory_echo.png"

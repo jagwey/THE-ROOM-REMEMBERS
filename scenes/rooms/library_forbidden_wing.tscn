@@ -19,7 +19,7 @@ region_id = &"library"
 room_width = 960.0
 bg_region = "library"
 checkpoint = Vector2(120, 288)
-doors = [{"x": 40.0, "to": "library_upper_stacks", "spawn": "from_library_forbidden_wing"}]
+doors = [{"x": 40.0, "to": "library_upper_stacks", "spawn": "from_library_forbidden_wing"}, {"x": 912.0, "to": "library_reading_cell", "spawn": "from_library_forbidden_wing", "req": "soul_seal_forbidden", "msg": "Mühür açılmadan ilerleyemem."}]
 
 [node name="Spawns" type="Node2D" parent="."]
 
@@ -51,9 +51,10 @@ lines = PackedStringArray("Noroi|Kırık bir mührün yarısı, kenarında bekç
 position = Vector2(720.0, 288.0)
 script = ExtResource("soul")
 puzzle_id = &"soul_seal_forbidden"
+back_side = 1
 
 [node name="Protocol" type="Area2D" parent="Interactive"]
-position = Vector2(840.0, 288.0)
+position = Vector2(800.0, 288.0)
 script = ExtResource("lore")
 lore_id = &"forbidden_protocol"
 texture_path = "res://assets/layers/bookshelf.png"

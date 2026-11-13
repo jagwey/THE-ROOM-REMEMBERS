@@ -45,6 +45,9 @@ position = Vector2(880, 288)
 [node name="from_page" type="Marker2D" parent="Spawns"]
 position = Vector2(120, 288)
 
+[node name="from_stacks" type="Marker2D" parent="Spawns"]
+position = Vector2(880, 288)
+
 [node name="PagePuzzle" type="CanvasLayer" parent="." groups=["library_page_puzzle"]]
 script = ExtResource("7")
 
@@ -93,19 +96,19 @@ target_spawn_id = &"from_library_page"
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BackWitness"]
 shape = SubResource("Hit")
 
-[node name="ForwardCells" type="Area2D" parent="Interactive"]
+[node name="ForwardStacks" type="Area2D" parent="Interactive"]
 position = Vector2(920, 268)
 collision_layer = 8
 collision_mask = 0
 monitoring = false
 monitorable = true
 script = ExtResource("5")
-target_room_id = &"experiment_cells"
-target_spawn_id = &"from_page"
+target_room_id = &"library_upper_stacks"
+target_spawn_id = &"from_library_page"
 required_puzzle = &"library_page_order"
 locked_message = "Olayları doğru sıraya koymalıyım."
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ForwardCells"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ForwardStacks"]
 shape = SubResource("Hit")
 
 [node name="PageBeat" type="Area2D" parent="Interactive"]

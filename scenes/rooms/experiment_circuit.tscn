@@ -76,7 +76,7 @@ centered = false
 
 [node name="Interactive" type="Node2D" parent="."]
 
-[node name="BackCells" type="Area2D" parent="Interactive"]
+[node name="BackIntake" type="Area2D" parent="Interactive"]
 position = Vector2(40, 268)
 collision_layer = 8
 collision_mask = 0
@@ -86,7 +86,7 @@ script = ExtResource("5")
 target_room_id = &"experiment_intake"
 target_spawn_id = &"from_experiment_circuit"
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BackCells"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BackIntake"]
 shape = SubResource("Hit")
 
 [node name="ForwardAuth" type="Area2D" parent="Interactive"]

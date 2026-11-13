@@ -11,8 +11,8 @@ func _initialize() -> void:
 	call_deferred("_run")
 
 
-func check(ok: bool, label: String) -> void:
-	print("PHASE3 ", "PASS " if ok else "FAIL ", label)
+func check(ok: bool, label: String, detail: Variant = "") -> void:
+	print("PHASE3 ", "PASS " if ok else "FAIL ", label, " ", detail)
 	if not ok:
 		failures += 1
 
@@ -30,6 +30,7 @@ func _run() -> void:
 	root.get_node("DialogueManager").clear()
 	root.get_node("UiGate").set_story(false)
 	await _components()
+	await _graph()
 	quit(1 if failures > 0 else 0)
 
 
@@ -288,3 +289,63 @@ func _gates_of(room: Node) -> Array:
 		if "legacy_puzzle" in n and n.has_method("_is_open"):
 			out.append(n)
 	return out
+
+const MAIN_PATH_P3: PackedStringArray = [
+	"library_hall", "library_witness", "library_clockroom", "library_page", "library_upper_stacks",
+	"library_forbidden_wing", "library_reading_cell", "experiment_cells", "experiment_intake",
+	"experiment_circuit", "experiment_authority", "experiment_quarantine", "experiment_core_conduit",
+	"experiment_observation", "mirrors_reverse",
+]
+
+
+func _graph() -> void:
+	var rm: Node = root.get_node("RoomManager")
+	var main_scene: Node = current_scene
+	var side: Dictionary = main_scene.SIDE_DOORS
+	for rid in MAIN_PATH_P3:
+		if rid == "mirrors_reverse":
+			continue
+		check(not side.has(rid), "GRAPH SIDE_DOORS has no %s" % rid)
+	var fwd_ok := true
+	var visited: Array = []
+	var here := "library_hall"
+	var guard := 0
+	while guard < 30:
+		guard += 1
+		visited.append(here)
+		if here == "mirrors_reverse":
+			break
+		var idx := MAIN_PATH_P3.find(here)
+		var want: String = String(MAIN_PATH_P3[idx + 1]) if idx >= 0 and idx + 1 < MAIN_PATH_P3.size() else ""
+		var nxt := ""
+		for d in _doors_of(rm._rooms[StringName(here)].root):
+			if String(d.target_room_id) == want and float(d.global_position.x) > 400.0:
+				nxt = want
+		if nxt == "":
+			fwd_ok = false
+			break
+		here = nxt
+	check(fwd_ok and visited == Array(MAIN_PATH_P3), "GRAPH forward walk from hall equals linear path", visited)
+	var spawn_bad: Array = []
+	var back_bad: Array = []
+	var dash_bad: Array = []
+	for i in MAIN_PATH_P3.size():
+		var rid := StringName(MAIN_PATH_P3[i])
+		for d in _doors_of(rm._rooms[rid].root):
+			var tgt := StringName(d.target_room_id)
+			var sp := StringName(d.target_spawn_id)
+			if not rm.has_room(tgt) or not (rm._rooms[tgt].spawns as Dictionary).has(sp):
+				spawn_bad.append("%s->%s:%s" % [rid, tgt, sp])
+			if String(d.required_ability) == "ability_shadow_dash":
+				dash_bad.append(String(rid))
+		if i > 0 and rid != &"library_witness" and rid != &"library_hall":
+			var prev := String(MAIN_PATH_P3[i - 1])
+			var has_back := false
+			for d in _doors_of(rm._rooms[rid].root):
+				if String(d.target_room_id) == prev and float(d.global_position.x) < 400.0:
+					has_back = true
+			if not has_back:
+				back_bad.append(String(rid))
+	check(spawn_bad.is_empty(), "GRAPH every door target spawn exists", spawn_bad)
+	check(back_bad.is_empty(), "GRAPH every back door targets previous room", back_bad)
+	check(dash_bad.is_empty(), "GRAPH no shadow dash door in 14-27", dash_bad)

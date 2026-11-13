@@ -12,7 +12,7 @@ room_width = 960.0
 bg_region = "experiment"
 checkpoint = Vector2(120, 288)
 default_spawn = Vector2(120, 288)
-doors = [{"x": 40.0, "to": "experiment_circuit", "spawn": "from_experiment_observation"}]
+doors = [{"x": 40.0, "to": "experiment_core_conduit", "spawn": "from_experiment_observation"}, {"x": 912.0, "to": "mirrors_reverse", "spawn": "from_observation", "req": "experiment_observation", "msg": "Önce camın ardındaki notları okumalıyım."}]
 
 [node name="Interactive" type="Node2D" parent="."]
 

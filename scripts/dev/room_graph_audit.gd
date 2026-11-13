@@ -8,7 +8,9 @@ const MAIN_PATH: PackedStringArray = [
 	"awakening", "awakening_passage", "awakening_seal", "awakening_vigil",
 	"decay_vines", "decay_weight", "decay_greenhouse", "decay_shilda_wall", "decay_garden",
 	"library_hall", "library_witness", "library_clockroom", "library_page",
+	"library_upper_stacks", "library_forbidden_wing", "library_reading_cell",
 	"experiment_cells", "experiment_intake", "experiment_circuit", "experiment_authority",
+	"experiment_quarantine", "experiment_core_conduit", "experiment_observation",
 	"mirrors_reverse", "mirrors_dual", "mirrors_gallery", "mirrors_unbroken",
 	"core_threshold", "core_ascent", "core_seal_chamber", "core",
 ]
@@ -78,7 +80,7 @@ func _run() -> void:
 					close_pairs.append("%s %s↔%s %.0f" % [rid, points[i].name, points[j].name, dist])
 	check(bad_doors.is_empty(), "her kapının hedef odası ve spawn'ı var", bad_doors)
 	check(close_pairs.is_empty(), "kapı/etkileşim 96 px'ten yakın değil", close_pairs)
-	check(ability_doors.size() == 1, "tek Gölge Atılması kapısı (sarnıç şartsız)", ability_doors.size())
+	check(ability_doors.is_empty(), "ana yolda Gölge Atılması kapısı yok (oda 14-27)", ability_doors.size())
 	var player: Node2D = current_scene.get_node("Player")
 	for rid in rm._rooms.keys():
 		rm.enter_room(rid, &"default")
@@ -95,13 +97,13 @@ func _run() -> void:
 	for door in ability_doors:
 		if door.is_locked():
 			locked_count += 1
-	check(locked_count == 1, "yetenek yokken atılma kapısı kilitli", locked_count)
+	check(locked_count == ability_doors.size(), "yetenek yokken atılma kapıları kilitli", locked_count)
 	gs.player_progress_knowledge["ability_shadow_dash"] = true
 	var open_count := 0
 	for door in ability_doors:
 		if not door.is_locked():
 			open_count += 1
-	check(open_count == 1, "yetenek varken atılma kapısı açık", open_count)
+	check(open_count == ability_doors.size(), "yetenek varken atılma kapıları açık", open_count)
 	var walked := true
 	var walk_detail := ""
 	for i in MAIN_PATH.size() - 1:

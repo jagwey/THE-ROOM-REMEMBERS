@@ -11,7 +11,7 @@ room_width = 960.0
 bg_region = "library"
 checkpoint = Vector2(120, 288)
 default_spawn = Vector2(120, 288)
-doors = [{"x": 40.0, "to": "library_witness", "spawn": "from_library_reading_cell"}]
+doors = [{"x": 40.0, "to": "library_forbidden_wing", "spawn": "from_library_reading_cell"}, {"x": 912.0, "to": "experiment_cells", "spawn": "from_reading", "req": "library_reading_cell", "msg": "Önce kesiklerin sırasını okumalıyım."}]
 
 [node name="Interactive" type="Node2D" parent="."]
 
