@@ -34,6 +34,7 @@ func _run() -> void:
 	await _rooms_14_17()
 	await _rooms_18_20()
 	await _rooms_21_24()
+	await _rooms_25_27()
 	quit(1 if failures > 0 else 0)
 
 
@@ -798,6 +799,173 @@ func _rooms_21_24() -> void:
 	check(afwd != null and afwd.required_puzzle == &"experiment_authority", "r24_forward_door_needs_authority")
 	if afwd != null and aseal != null:
 		check(absf(afwd.position.x - aseal.position.x) >= 96.0, "r24_door_clear_of_seal")
+	dm.clear()
+
+
+func _veins_of(room: Node) -> Array:
+	var out: Array = []
+	for n in room.find_children("*", "StaticBody2D", true, false):
+		if n.is_in_group("soul_seal"):
+			out.append(n)
+	out.sort_custom(func(a, b): return a.position.x < b.position.x)
+	return out
+
+
+func _live_shades(room: Node) -> int:
+	var n := 0
+	for x in room.find_children("*", "Node2D", true, false):
+		if "shade_id" in x and not bool(x.fake) and not x.is_queued_for_deletion():
+			n += 1
+	return n
+
+
+func _rooms_25_27() -> void:
+	var rm := root.get_node("RoomManager")
+	var pm := root.get_node("PuzzleManager")
+	var dm := root.get_node("DialogueManager")
+	dm.clear()
+	_clear_corpses()
+	# ---- 25 quarantine ----
+	rm.enter_room(&"experiment_quarantine", &"default")
+	await create_timer(0.4).timeout
+	var qr: Node = _room_root(&"experiment_quarantine")
+	var qfwd: Node = null
+	for d in _doors_of(qr):
+		if d.target_room_id == &"experiment_core_conduit":
+			qfwd = d
+	check(qfwd != null and qfwd.required_puzzle == &"experiment_quarantine_done", "r25_forward_door_needs_quarantine_done")
+	var cloud := false
+	for n in qr.find_children("*", "Area2D", true, false):
+		if n.get_script() != null and String(n.get_script().resource_path).ends_with("curse_cloud.gd"):
+			cloud = true
+	check(cloud, "r25_curse_cloud_present")
+	check(String(rm.ROOM_TITLES_TR.get("experiment_quarantine", "")) == "Karantina Mahzeni", "r25_title")
+	var qtxt := FileAccess.get_file_as_string("res://scenes/rooms/experiment_quarantine.tscn")
+	check(qtxt.find("ölü beden onu emer") == -1 and qtxt.find("Ölünü sisin") == -1, "r25_sign_gives_no_answer")
+	# ---- 26 core_conduit ----
+	_unsolve(["experiment_conduit", "experiment_vein_1", "experiment_vein_2", "experiment_vein_3"])
+	rm.enter_room(&"experiment_core_conduit", &"default")
+	await create_timer(0.4).timeout
+	var cr: Node = _room_root(&"experiment_core_conduit")
+	var veins: Array = _veins_of(cr)
+	check(veins.size() == 3, "r26_three_soul_seals", veins.size())
+	var altar_left := false
+	for n in cr.find_children("*", "Area2D", true, false):
+		if n.is_in_group("echo_altar"):
+			altar_left = true
+	check(not altar_left, "r26_no_echo_altar")
+	if veins.size() == 3:
+		var by_id: Dictionary = {}
+		for v in veins:
+			by_id[String(v.puzzle_id)] = v
+		check(by_id.has("experiment_vein_1") and by_id.has("experiment_vein_2") and by_id.has("experiment_vein_3"), "r26_vein_ids")
+		var v1: Node = by_id.get("experiment_vein_1")
+		var v2: Node = by_id.get("experiment_vein_2")
+		var v3: Node = by_id.get("experiment_vein_3")
+		for v in veins:
+			check(not bool(v.blocking), "r26_vein_non_blocking_%s" % String(v.puzzle_id))
+		check(v1.requires == &"" and v2.requires == &"experiment_vein_1" and v3.requires == &"experiment_vein_2", "r26_requires_chain")
+		check(absf(v1.position.x - 640.0) <= 40.0 and absf(v2.position.x - 300.0) <= 40.0 and absf(v3.position.x - 980.0) <= 40.0, "r26_vein_positions")
+		check(v1.wrong_line == "Damar direniyor. Önce kalbe yakın olanı kes.", "r26_wrong_line")
+		v2.receive_soul_slash(null)
+		check(not pm.is_solved(&"experiment_vein_2"), "r26_vein2_refused_before_vein1")
+		v3.receive_soul_slash(null)
+		check(not pm.is_solved(&"experiment_vein_3") and not pm.is_solved(&"experiment_conduit"), "r26_vein3_refused_before_vein2")
+		dm.clear()
+		v1.receive_soul_slash(null)
+		check(pm.is_solved(&"experiment_vein_1") and not pm.is_solved(&"experiment_conduit"), "r26_vein1_solves_alone")
+		dm.clear()
+		v2.receive_soul_slash(null)
+		check(pm.is_solved(&"experiment_vein_2") and not pm.is_solved(&"experiment_conduit"), "r26_vein2_after_vein1")
+		dm.clear()
+		v3.receive_soul_slash(null)
+		check(pm.is_solved(&"experiment_vein_3") and pm.is_solved(&"experiment_conduit"), "r26_vein3_solves_conduit")
+		dm.clear()
+		var cfwd: Node = null
+		var log_n: Node = cr.find_child("ConduitLog", true, false)
+		var door_xs: Array = []
+		for d in _doors_of(cr):
+			door_xs.append(d.position.x)
+			if d.target_room_id == &"experiment_observation":
+				cfwd = d
+		check(cfwd != null and cfwd.required_puzzle == &"experiment_conduit", "r26_forward_door_needs_conduit")
+		check(_min_dx(door_xs, veins) >= 96.0, "r26_door_clearance_96")
+		var lt := " ".join(Array(log_n.lines)) if log_n != null else ""
+		check(lt.find("Kalpten başla, sola dön, en son uca.") != -1, "r26_log_states_order")
+	var csrc := FileAccess.get_file_as_string("res://scripts/world/experiment_core_conduit.gd")
+	check(csrc.find("LEVER_HOLD_SECONDS") == -1, "r26_no_lever_hold_constant")
+	_unsolve(["experiment_conduit", "experiment_vein_1", "experiment_vein_2", "experiment_vein_3"])
+	# ---- 27 observation ----
+	_unsolve(["experiment_observation"])
+	_clear_corpses()
+	rm.enter_room(&"experiment_observation", &"default")
+	await create_timer(0.4).timeout
+	var ob: Node = _room_root(&"experiment_observation")
+	var oplates: Array = _plates_of(ob)
+	check(oplates.size() == 1 and String(oplates[0].puzzle_id) == "experiment_observation_projector" and not bool(oplates[0].accept_stone), "r27_corpse_only_projector_plate")
+	var othorns: Array = _thorns_of(ob)
+	var thorn_ok := false
+	for t in othorns:
+		if oplates.size() == 1 and t.puzzle_hint == &"experiment_observation_projector" and absf(float(t.anchor_x) - oplates[0].position.x) < 1.0:
+			thorn_ok = true
+	check(thorn_ok, "r27_thorn_above_plate")
+	var ofwd: Node = null
+	var odoors: Array = []
+	for d in _doors_of(ob):
+		odoors.append(d.position.x)
+		if d.target_room_id == &"mirrors_reverse":
+			ofwd = d
+	check(ofwd != null and ofwd.required_puzzle == &"experiment_observation" and String(ofwd.required_ability) == "", "r27_forward_door_no_ability")
+	check(_min_dx(odoors, oplates + othorns) >= 96.0, "r27_door_clearance_96")
+	var opath := FileAccess.get_file_as_string("res://scenes/rooms/experiment_observation.tscn")
+	check(opath.find("ability_shadow_dash") == -1 and opath.find("need_dash") == -1, "r27_no_shadow_dash")
+	await create_timer(0.5).timeout
+	check(_live_shades(ob) == 0, "r27_no_echo_when_plate_empty")
+	var plate: Node = oplates[0] if oplates.size() == 1 else null
+	if plate != null:
+		_corpse_at(plate.position.x, plate.position.y - 8.0)
+		await create_timer(0.6).timeout
+		check(pm.is_live(&"experiment_observation_projector"), "r27_corpse_lights_plate")
+		check(_live_shades(ob) == 1, "r27_echo_walks_when_plate_full", _live_shades(ob))
+		_clear_corpses()
+		await create_timer(0.6).timeout
+		check(not pm.is_live(&"experiment_observation_projector") and _live_shades(ob) == 0, "r27_echo_stops_when_corpse_removed")
+		check(not pm.is_solved(&"experiment_observation"), "r27_not_solved_while_stopped")
+		_corpse_at(plate.position.x, plate.position.y - 8.0)
+		await create_timer(0.6).timeout
+		check(_live_shades(ob) == 1, "r27_echo_restarts_when_plate_refilled")
+		var player: Node2D = current_scene.get_node("Player")
+		var seen_lines: Array = []
+		var on_line := func(sp: String, t: String): seen_lines.append(t)
+		dm.line_shown.connect(on_line)
+		var g := 0
+		while g < 900 and not pm.is_solved(&"experiment_observation"):
+			g += 1
+			for x in ob.find_children("*", "Node2D", true, false):
+				if "shade_id" in x and not bool(x.fake) and not x.is_queued_for_deletion():
+					player.global_position = Vector2(x.global_position.x, 288.0)
+			if dm.is_open:
+				dm.advance()
+			await process_frame
+		check(pm.is_solved(&"experiment_observation"), "r27_echo_end_solves_observation")
+		check(" ".join(seen_lines).replace("
+", " ").find("Ben de insandım. Bu camın ardında çalışırdım.") != -1, "r27_notes_played_with_shilda_line")
+		dm.clear()
+	var holders: Array = []
+	for dir_path in ["res://data/dialogue/", "res://scenes/rooms/", "res://scripts/story/", "res://scripts/world/"]:
+		var da := DirAccess.open(dir_path)
+		if da == null:
+			continue
+		for f in da.get_files():
+			if f.ends_with(".json") or f.ends_with(".tscn") or f.ends_with(".gd"):
+				if FileAccess.get_file_as_string(dir_path + f).find("Ben de insandım") != -1:
+					holders.append(f)
+	check(holders == ["experiment_observation.json"], "r27_ben_de_insandim_only_in_observation_json", holders)
+	for hid in [&"experiment_conduit", &"experiment_observation", &"experiment_quarantine_done"]:
+		var hh: Dictionary = pm.HINTS.get(hid, {})
+		check(hh.size() == 3, "r25_27_hint_exists_" + String(hid))
+		for tier in hh.values():
+			check(String(tier).length() <= 70, "r25_27_hint_len_" + String(hid))
 	dm.clear()
 
 

@@ -322,6 +322,16 @@ const HINTS: Dictionary = {
 		"goal": "Kırmızı sis canlıyı yer. Rapor sisin ötesinde, yüksek rafta.",
 		"orientation": "Ölü beden laneti emer. Cesedini sisin ortasına bırak.",
 		"explicit": "Bedeni bulutun içine koy, güvenli koridordan geç, rafa zıpla."
+	},
+	&"experiment_conduit": {
+		"goal": "Üç damar kesilmeden enerji akmaz.",
+		"orientation": "Damarlar kalpten uca doğru sırayla kesilir.",
+		"explicit": "Önce ortadaki, sonra soldaki, en son sağdaki damarı kes."
+	},
+	&"experiment_observation": {
+		"goal": "Cam ardındaki yankı yürümeden not okunmaz.",
+		"orientation": "Projektör plakası yalnız beden ağırlığını tanır.",
+		"explicit": "Plakadaki dikende öl, bedenin plakada kalsın, yankıyı izle."
 	}
 }
 
@@ -351,6 +361,8 @@ const ROOM_PUZZLES: Dictionary = {
 	"experiment_intake": [&"experiment_intake"],
 	"experiment_circuit": [&"experiment_circuit"],
 	"experiment_quarantine": [&"experiment_quarantine_done"],
+	"experiment_core_conduit": [&"experiment_conduit"],
+	"experiment_observation": [&"experiment_observation"],
 	"mirrors_dual": [&"mirrors_dual"],
 	"mirrors_gallery": [&"mirrors_gallery"],
 	"mirrors_labyrinth": [&"mirrors_labyrinth_crossed"],

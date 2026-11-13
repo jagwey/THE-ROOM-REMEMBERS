@@ -28,7 +28,7 @@ const _BY_ROOM: Dictionary = {
 	"library_upper_stacks": "Ses, mühür, çiçek sırasıyla seç; tahta inince tırman.",
 	"library_forbidden_wing": "Havadaki kesiği al, iki mührü sırayla kes.",
 	"experiment_quarantine": "Cesedini sise bırak, güvenli koridordan rafa zıpla.",
-	"experiment_core_conduit": "Plakada dur, yankın bir kolu tutsun, ötekini sen çek.",
+	"experiment_core_conduit": "Kayıttaki sırayla üç damarı ruhla kes.",
 	"mirrors_labyrinth": "Yol tavandaki aynada. Mavi taş gerçektir; soluk kırmızı yalan söyler.",
 	"core_memory_vault": "Sütunlara sırayla dokun: 1927, 1995, sonra Son.",
 	"core_bloom_garden": "Taçları say: dört, bir, iki. Sonra Shilda konuşur.",
@@ -41,7 +41,7 @@ const _BY_ROOM: Dictionary = {
 	"mirrors_gallery": "Duvar, unuttuğun bedenleri sayıyor. Sonra kırılmayan aynaya geç.",
 	"mirrors_1927": "1927 gecesi kendi kendine oynuyor. Dokunma. Sonra geri dön.",
 	"decay_cistern": "Suyu vanalarla oynat, üç ıslak sayfayı topla.",
-	"experiment_observation": "Cam önündeki masadan sayım notunu al.",
+	"experiment_observation": "Cesedini projektör plakasına bırak, cam ardındaki yankıyı izle.",
 	"core_ascent": "Sunağa dokun, plakaya yürü ve bekle; yankın tutarken kapıdan geç.",
 }
 

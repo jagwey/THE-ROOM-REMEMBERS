@@ -52,6 +52,7 @@ const ROOM_PRESENCE := {
 	"library_forbidden_wing": {"mode": "silhouette", "pos": Vector2(140, 280)},
 	"experiment_authority": {"mode": "silhouette", "pos": Vector2(820, 280)},
 	"experiment_quarantine": {"mode": "silhouette", "pos": Vector2(860, 280)},
+	"experiment_observation": {"mode": "hidden", "pos": Vector2(860, 280)},
 	"mirrors_unbroken": {"mode": "present", "pos": Vector2(700, 280)},
 	"mirrors_shrine": {"mode": "silhouette", "pos": Vector2(820, 280)},
 	"core_threshold": {"mode": "present", "pos": Vector2(760, 280)},
