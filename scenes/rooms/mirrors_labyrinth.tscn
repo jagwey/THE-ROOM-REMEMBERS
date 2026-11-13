@@ -23,9 +23,9 @@ room_width = 1280.0
 bg_region = "mirrors"
 checkpoint = Vector2(120, 288)
 doors = [{"x": 40.0, "to": "mirrors_unbroken", "spawn": "from_mirrors_labyrinth"}, {"x": 1240.0, "to": "mirrors_shrine", "spawn": "from_mirrors_labyrinth", "req": "mirrors_labyrinth_crossed", "msg": "Yanıltıcı yolu aşmadan ilerleyemem.", "title": "Ayna Tapınağı", "mark": true, "label_dy": -74.0}]
-invisible_platforms = PackedVector3Array(290.0, 250.0, 110.0, 430.0, 214.0, 100.0, 560.0, 250.0, 100.0, 700.0, 214.0, 110.0, 850.0, 250.0, 100.0, 980.0, 270.0, 80.0)
+invisible_platforms = PackedVector3Array(290.0, 250.0, 110.0, 430.0, 214.0, 100.0, 560.0, 250.0, 100.0, 700.0, 214.0, 110.0, 810.0, 250.0, 90.0, 830.0, 270.0, 70.0)
 false_reflections = PackedVector3Array(640.0, 188.0, 64.0)
-floor_gaps = PackedVector2Array(300.0, 1000.0, 1000.0, 1080.0)
+floor_gaps = PackedVector2Array(300.0, 1080.0)
 
 [node name="Interactive" type="Node2D" parent="."]
 
@@ -59,15 +59,15 @@ requires_puzzle = &"mirrors_labyrinth_crossed"
 locked_lines = PackedStringArray("Noroi|Cam parçası öbür kıyıda duruyor. Önce karşıya geçmeliyim.")
 texture_path = "res://assets/layers/mirror_shards.png"
 sprite_scale = 0.35
-lines = PackedStringArray("Noroi|Kırık aynada yüzüm yaşlı; gerçek yaşım bu mu?", "Noroi|Cam kenarına bir not kazınmış: Tuğla, gecenin odasında kapıya en yakın duvarda.")
+lines = PackedStringArray("Noroi|Kırık aynada yüzüm yaşlı; gerçek yaşım bu mu?", "Noroi|Cam kenarında kazınmış bir not var; tuğla, gecenin odasında kapıya en yakın duvarda.")
 evidence_title = "Gerçek Yüz"
 evidence_body = "Aynanın ardındaki yüzüm yaşlıydı. Bu yerde zaman benim bildiğim gibi akmıyor."
 evidence_section = "izler"
 
 [node name="BridgeThorn" type="Area2D" parent="Interactive"]
-position = Vector2(960.0, 270.0)
+position = Vector2(940.0, 270.0)
 script = ExtResource("thorn")
-anchor_x = 1040.0
+anchor_x = 990.0
 anchor_y = 288.0
 hold_corpse = true
 hold_id = &"mirrors_labyrinth_bridge"

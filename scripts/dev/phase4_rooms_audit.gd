@@ -498,14 +498,14 @@ func _rooms_32_34() -> void:
 	var lb_fwd := _doors_of(lb).filter(func(d): return String(d.target_room_id) == "mirrors_shrine")
 	check(lb_fwd.size() == 1 and String(lb_fwd[0].required_puzzle) == "mirrors_labyrinth_crossed", "r32_fwd_door_needs_crossed")
 	var gaps: PackedVector2Array = lb.floor_gaps
-	check(gaps.has(Vector2(300, 1000)) and gaps.has(Vector2(1000, 1080)), "r32_floor_gaps", gaps)
+	check(gaps.has(Vector2(300, 1080)), "r32_floor_gaps", gaps)
 	check(lb.invisible_platforms.size() == 6 and lb.false_reflections.size() == 1, "r32_invisible_platforms_and_false_reflection_kept")
 	var th: Node = null
 	for n in lb.find_children("*", "Area2D", true, false):
 		if n.is_in_group("blood_thorn"):
 			th = n
-	check(th != null and absf(th.position.x - 960.0) < 2.0 and bool(th.hold_corpse) and String(th.hold_id) == "mirrors_labyrinth_bridge" and float(th.anchor_y) >= 0.0, "r32_bridge_thorn_config")
-	check(th != null and th.anchor_x > 1000.0 and th.anchor_x < 1080.0, "r32_thorn_anchor_over_gap", th.anchor_x if th != null else -1)
+	check(th != null and absf(th.position.x - 940.0) < 2.0 and bool(th.hold_corpse) and String(th.hold_id) == "mirrors_labyrinth_bridge" and float(th.anchor_y) >= 0.0, "r32_bridge_thorn_config")
+	check(th != null and absf(th.anchor_x - 990.0) < 2.0, "r32_thorn_anchor_over_gap", th.anchor_x if th != null else -1)
 	var crossed: Node = null
 	var reward: Node = null
 	var hint: Node = null
@@ -523,7 +523,15 @@ func _rooms_32_34() -> void:
 	check(reward != null and absf(reward.position.x - 1130.0) < 1.0 and String(reward.requires_puzzle) == "mirrors_labyrinth_crossed", "r32_reward_lore_gated_1130")
 	check(regret != null and absf(regret.position.x - 700.0) < 1.0, "r32_regret_echo_700")
 	var rm_src := FileAccess.get_file_as_string("res://scripts/autoload/room_manager.gd")
-	check(rm_src.contains('"mirrors_labyrinth": [Vector2(1170, 288)]'), "r32_shielded_shade_on_solid_ground")
+	var sh_re := RegEx.create_from_string(r'"mirrors_labyrinth":\s*\[Vector2\((\d+),\s*(\d+)\)\]')
+	var sh_m := sh_re.search(rm_src)
+	var sh_pos := Vector2(float(sh_m.get_string(1)), float(sh_m.get_string(2))) if sh_m != null else Vector2(-1, -1)
+	check(sh_pos.x < 300.0 and sh_pos.x > 160.0 and sh_pos.y == 288.0, "r32_shielded_shade_on_left_bank", sh_pos)
+	var plat_end := 0.0
+	for pv in lb.invisible_platforms:
+		plat_end = maxf(plat_end, pv.x + pv.z)
+	var far_bank: float = (gaps[0].y if gaps.size() > 0 else 0.0)
+	check(far_bank - plat_end >= 170.0 and plat_end <= 900.0, "r32_bridge_void_run_ge_170", far_bank - plat_end)
 	var kc: Dictionary = load("res://scripts/keeper/keeper_controller.gd").get_script_constant_map()["ROOM_PRESENCE"]
 	check(kc.has("mirrors_labyrinth") and kc["mirrors_labyrinth"]["mode"] == "present" and absf(kc["mirrors_labyrinth"]["pos"].x - 160.0) < 1.0, "r32_shilda_presence_160")
 	var hint_lines: PackedStringArray = hint.lines if hint != null else PackedStringArray()
