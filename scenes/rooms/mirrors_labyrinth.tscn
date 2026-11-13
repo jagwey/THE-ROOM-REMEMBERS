@@ -30,7 +30,7 @@ floor_gaps = PackedVector2Array(300.0, 1080.0)
 [node name="Interactive" type="Node2D" parent="."]
 
 [node name="Hint" type="Area2D" parent="Interactive"]
-position = Vector2(200.0, 288.0)
+position = Vector2(140.0, 288.0)
 script = ExtResource("lore")
 lore_id = &"labyrinth_hint"
 texture_path = "res://assets/layers/mirror.png"
@@ -38,7 +38,7 @@ sprite_scale = 0.3
 lines = PackedStringArray("Noroi|Önümde uçurum var, yol tavandaki aynada görünüyor.", "Noroi|Mavi taşlar gerçek, soluk kırmızı olan yalan söylüyor.", "Shilda|Tapınağa uğra. Gölgen orada bekliyor.")
 
 [node name="RegretEcho" type="Area2D" parent="Interactive"]
-position = Vector2(700, 288.0)
+position = Vector2(240, 288.0)
 script = ExtResource("npc")
 npc_id = &"echo_regret"
 idle_anim = "echo_idle"

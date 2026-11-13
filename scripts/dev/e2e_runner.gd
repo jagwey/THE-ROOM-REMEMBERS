@@ -718,15 +718,7 @@ func _run_tier_4_scenarios() -> void:
 		if s.is_in_group("memory_shade"):
 			shade = s
 			break
-	var shade_grounded := false
-	if shade:
-		shade_grounded = true
-		var gaps: PackedVector2Array = lab.get("floor_gaps")
-		for g in gaps:
-			if shade.position.x > g.x + 8.0 and shade.position.x < g.y - 8.0:
-				shade_grounded = false
-		shade_grounded = shade_grounded and shade.position.y >= 280.0 and shade.position.y <= 300.0
-	record_check(4, 30, "T4-07 Labyrinth shade stands on solid ground", shade_grounded, "shade=%s" % (shade.position if shade else "missing"))
+	record_check(4, 30, "T4-07 Labyrinth has no shielded shade at entry", shade == null, "shade=%s" % (shade.position if shade else "none"))
 
 	# T4-03: Complete 40-room topology and reachable path graph
 	var missing_rooms: Array = []

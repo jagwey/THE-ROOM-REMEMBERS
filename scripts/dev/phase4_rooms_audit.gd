@@ -521,17 +521,21 @@ func _rooms_32_34() -> void:
 			regret = n
 	check(crossed != null and absf(crossed.position.x - 1100.0) < 1.0, "r32_crossed_marker_1100")
 	check(reward != null and absf(reward.position.x - 1130.0) < 1.0 and String(reward.requires_puzzle) == "mirrors_labyrinth_crossed", "r32_reward_lore_gated_1130")
-	check(regret != null and absf(regret.position.x - 700.0) < 1.0, "r32_regret_echo_700")
+	check(regret != null and absf(regret.position.x - 240.0) < 1.0, "r32_regret_echo_240_left_bank")
 	var rm_src := FileAccess.get_file_as_string("res://scripts/autoload/room_manager.gd")
-	var sh_re := RegEx.create_from_string(r'"mirrors_labyrinth":\s*\[Vector2\((\d+),\s*(\d+)\)\]')
-	var sh_m := sh_re.search(rm_src)
-	var sh_pos := Vector2(float(sh_m.get_string(1)), float(sh_m.get_string(2))) if sh_m != null else Vector2(-1, -1)
-	check(sh_pos.x < 300.0 and sh_pos.x > 160.0 and sh_pos.y == 288.0, "r32_shielded_shade_on_left_bank", sh_pos)
+	check(not rm_src.contains('"mirrors_labyrinth": [Vector2('), "r32_no_shielded_shade")
 	var plat_end := 0.0
 	for pv in lb.invisible_platforms:
 		plat_end = maxf(plat_end, pv.x + pv.z)
 	var far_bank: float = (gaps[0].y if gaps.size() > 0 else 0.0)
 	check(far_bank - plat_end >= 170.0 and plat_end <= 900.0, "r32_bridge_void_run_ge_170", far_bank - plat_end)
+	var on_foot := true
+	for n in lb.find_children("*", "Area2D", true, false):
+		if n.get_parent() != null and n.get_parent().name == "Interactive" and n.position.y >= 270.0 and n != th:
+			for g in gaps:
+				if n.position.x > g.x and n.position.x < g.y:
+					on_foot = false
+	check(on_foot, "r32_interactives_on_solid_ground")
 	var kc: Dictionary = load("res://scripts/keeper/keeper_controller.gd").get_script_constant_map()["ROOM_PRESENCE"]
 	check(kc.has("mirrors_labyrinth") and kc["mirrors_labyrinth"]["mode"] == "present" and absf(kc["mirrors_labyrinth"]["pos"].x - 160.0) < 1.0, "r32_shilda_presence_160")
 	var hint_lines: PackedStringArray = hint.lines if hint != null else PackedStringArray()
