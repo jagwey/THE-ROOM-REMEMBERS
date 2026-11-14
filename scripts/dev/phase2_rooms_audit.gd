@@ -1359,6 +1359,12 @@ func _rooms_07_10() -> void:
 		_corpse_at(right.global_position.x, py)
 		await create_timer(0.6).timeout
 		check(ggate._is_open(), "greenhouse_right_pot_opens_gate")
+		check(pm.is_solved(&"decay_greenhouse") and pm.is_solved(&"decay_greenhouse_pot"), "greenhouse_right_pot_latches_without_crossing")
+		_clear_corpses()
+		await create_timer(0.4).timeout
+		check(ggate._is_open(), "greenhouse_gate_stays_open_after_corpse_removed")
+		_corpse_at(right.global_position.x, py)
+		await create_timer(0.4).timeout
 		await _cross(ggate)
 		check(pm.is_solved(&"decay_greenhouse") and pm.is_solved(&"decay_greenhouse_pot"), "greenhouse_pass_through_marks_legacy_and_pot")
 		_clear_corpses()
@@ -1369,6 +1375,42 @@ func _rooms_07_10() -> void:
 		pm.mark_solved(&"decay_greenhouse")
 		check(ggate._is_open(), "greenhouse_gate_open_via_legacy_solved")
 		_unsolve(["decay_greenhouse"])
+		# gercek yol: oyuncu orta dikene (ThornB) iki kez dokunur, beden orta saksiya duser
+		var gthorn: Node2D = gr.find_child("ThornB", true, false)
+		var gplayer: Node2D = current_scene.get_node("Player")
+		for start_dx in [-90.0, 40.0]:
+			_clear_corpses()
+			_unsolve(["decay_greenhouse", "decay_greenhouse_pot"])
+			await create_timer(0.2).timeout
+			gplayer.global_position = Vector2(gthorn.global_position.x + start_dx, 288.0)
+			await create_timer(0.4).timeout
+			gplayer.global_position.x = gthorn.global_position.x - 10.0
+			await create_timer(0.3).timeout
+			gthorn.on_interact(gplayer)
+			root.get_node("DialogueManager").clear()
+			gthorn.on_interact(gplayer)
+			var glive := false
+			for i in 40:
+				await create_timer(0.25).timeout
+				if pm.is_live(&"decay_greenhouse_pot"):
+					glive = true
+					break
+			var gcs: Array = root.get_node("GameState").world_memory_state["corpses"]
+			var gcx := -1.0
+			if gcs.size() > 0:
+				gcx = float(((gcs.back() as Dictionary).get("position", {}) as Dictionary).get("x", -1.0))
+			check(glive and ggate._is_open(), "greenhouse_real_thorn_death_opens_gate (dx=%d corpse_x=%.0f)" % [int(start_dx), gcx])
+			check(pm.is_solved(&"decay_greenhouse"), "greenhouse_real_thorn_death_unlocks_exit (dx=%d)" % int(start_dx))
+			var tl := 0.0
+			while tl < 6.0 and bool(root.get_node("DeathManager").is_dying):
+				await create_timer(0.1).timeout
+				tl += 0.1
+		_clear_corpses()
+		_unsolve(["decay_greenhouse", "decay_greenhouse_pot"])
+		# test olumleri lanet sayacini doldurmasin (sonraki oda testlerinde ele gecirme olumu engeller)
+		var gcm: Node = root.get_node("CurseManager")
+		if not bool(gcm.possessing):
+			gcm.set_curse(0.0)
 	var shade_n := 0
 	for n in gr.find_children("*", "Node2D", true, false):
 		if n.is_in_group("greenhouse_shade"):
@@ -1695,6 +1737,11 @@ func _rooms_11_13() -> void:
 		_clear_corpses()
 		pm.mark_solved(&"decay_catacomb_seal")
 		check(not pm.is_solved(th.puzzle_hint) and not pm.is_live(th.puzzle_hint) and not th._bridge_exists(), "cata_thorn_armed_on_legacy_seal_save")
+		var tw0 := 0.0
+		while tw0 < 6.0 and bool(root.get_node("DeathManager").is_dying):
+			await create_timer(0.1).timeout
+			tw0 += 0.1
+		var dyn0 := bool(root.get_node("DeathManager").is_dying)
 		th._armed = true
 		th.on_interact(player)
 		var tl := 0.0
@@ -1706,7 +1753,7 @@ func _rooms_11_13() -> void:
 		if lc.size() > 0:
 			var lcd: Dictionary = lc.back()
 			lheld = bool(lcd.get("anchored", false)) and absf(float((lcd.get("position", {}) as Dictionary).get("x", 0.0)) - th.anchor_x) < 1.0
-		check(lheld and th._bridge_exists(), "cata_legacy_seal_save_bridge_corpse_anchored_in_gap")
+		check(lheld and th._bridge_exists(), "cata_legacy_seal_save_bridge_corpse_anchored_in_gap (n=%d dying_before=%s possessing=%s)" % [lc.size(), str(dyn0), str(root.get_node("CurseManager").possessing)])
 		tl = 0.0
 		while tl < 6.0 and bool(root.get_node("DeathManager").is_dying):
 			await create_timer(0.1).timeout

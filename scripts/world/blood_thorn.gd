@@ -65,8 +65,12 @@ func on_interact(by: Node) -> void:
 	var cam := get_tree().get_first_node_in_group("follow_camera")
 	if cam and cam.has_method("add_trauma"):
 		cam.add_trauma(0.5)
-	if anchor_y >= 0.0 and player != null and player.has_method("note_safe_floor"):
-		player.note_safe_floor(Vector2(anchor_x, anchor_y))
+	if player != null and player.has_method("note_safe_floor"):
+		## Beden her zaman anchor_x'e düşsün (anchor_y yoksa son güvenli zemin yüksekliği).
+		var fy := anchor_y
+		if fy < 0.0:
+			fy = player.get_last_safe_floor_pos().y if player.has_method("get_last_safe_floor_pos") else player.global_position.y
+		player.note_safe_floor(Vector2(anchor_x, fy))
 	var before := _corpse_ids()
 	DeathManager.request_death(&"thorn")
 	if hold_corpse:

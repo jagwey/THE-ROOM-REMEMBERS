@@ -12,6 +12,9 @@ extends StaticBody2D
 @export var ignore_world_flag: bool = false
 ## Geçişte listedeki id'lerle birlikte kalıcı çözülecek ek (eski) bulmaca id'leri.
 @export var also_solve: PackedStringArray = []
+## true ise canlı şart sağlandığı anda (geçiş beklenmeden) bulmaca kalıcı çözülür.
+## Ceset sonradan alınsa da kapı ve oda çıkışı açık kalır.
+@export var latch_on_live: bool = false
 @onready var shape: CollisionShape2D = $CollisionShape2D
 @onready var sprite: Sprite2D = $Sprite2D
 ## Geçiş kilidi: gate canlı plaka yüzünden açıkken oyuncu karşı tarafa geçerse bulmaca kalıcı çözülür.
@@ -118,6 +121,14 @@ func _on_live(puzzle_id: StringName, live: bool) -> void:
 	_apply(_is_open())
 
 
+func _latch_solve(ids: PackedStringArray) -> void:
+	for id in ids:
+		PuzzleManager.mark_solved(StringName(id))
+	for id in also_solve:
+		PuzzleManager.mark_solved(StringName(id))
+	SaveManager.save_game()
+
+
 func _physics_process(_delta: float) -> void:
 	var ids := _listen_ids()
 	if ids.is_empty() or (_all_solved(ids) and _also_done()) or not PuzzleManager.gate_open(ids):
@@ -127,6 +138,10 @@ func _physics_process(_delta: float) -> void:
 	## Gate açıkken kendi görünürlüğü kapalıdır; oda görünürlüğüne bak.
 	var par := get_parent() as CanvasItem
 	if par != null and not par.is_visible_in_tree():
+		return
+	if latch_on_live:
+		_entry_side = 0
+		_latch_solve(ids)
 		return
 	var player := get_tree().get_first_node_in_group("player") as Node2D
 	if player == null:
@@ -140,11 +155,7 @@ func _physics_process(_delta: float) -> void:
 		_entry_side = side
 	elif side != _entry_side:
 		_entry_side = 0
-		for id in ids:
-			PuzzleManager.mark_solved(StringName(id))
-		for id in also_solve:
-			PuzzleManager.mark_solved(StringName(id))
-		SaveManager.save_game()
+		_latch_solve(ids)
 
 
 func _apply(open: bool) -> void:

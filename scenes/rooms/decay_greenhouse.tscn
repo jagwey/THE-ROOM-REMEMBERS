@@ -133,6 +133,7 @@ puzzle_listen_all = PackedStringArray("decay_greenhouse_pot")
 legacy_puzzle = &"decay_greenhouse"
 ignore_world_flag = true
 also_solve = PackedStringArray("decay_greenhouse")
+latch_on_live = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ExitGate"]
 position = Vector2(0, -40)
