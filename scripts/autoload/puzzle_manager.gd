@@ -326,7 +326,7 @@ const HINTS: Dictionary = {
 	&"core_bloom_order": {
 		"goal": "Bahçedeki üç taş uyanmadan çiçek konuşmuyor.",
 		"orientation": "Taşlardaki noktaları say: önce en çok, sonra en az, sonra kalan.",
-		"explicit": "Önce bedenini plakaya bırak. Sıra dört, bir, iki; yanlış taç zinciri başa sarar."
+		"explicit": "Önce bedenini plakaya bırak. Sıra dört, bir, iki; yanlış taç, zinciri başa sarar."
 	},
 	&"core_bloom_weight": {
 		"goal": "Taşlar uyanmadan önce plakada bir beden durmalı.",
@@ -335,7 +335,7 @@ const HINTS: Dictionary = {
 	},
 	&"core_vault_order": {
 		"goal": "Hafıza kasası karanlık. Üç sütun bir tarih sırası istiyor.",
-		"orientation": "Önce kuruluşun yılı, sonra senin girdiğin yıl, en son son kayıt.",
+		"orientation": "Önce kuruluşun yılı, sonra senin girdiğin yıl, en sonda son kayıt.",
 		"explicit": "1927, sonra 1995, sonra Son. Kasa ancak o zaman açılır."
 	},
 	&"library_shelf_order": {

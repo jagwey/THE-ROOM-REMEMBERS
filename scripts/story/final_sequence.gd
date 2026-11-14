@@ -130,9 +130,12 @@ func play(tree: SceneTree, fast_mode: bool = false) -> void:
 		])
 		GameState.set_story_flag(&"final_together", true)
 	else:
+		var apart_line := "Duyuyorum, ama sana hâlâ tam güvenemiyorum."
+		if bool(GameState.player_progress_knowledge.get("trusted_keeper", false)):
+			apart_line = "Duyuyorum. Sana güveniyorum, ama gerçeği hâlâ bilmiyorum."
 		await _say([
 			["Shilda", "Noroi… duyuyor musun?"],
-			["Noroi", "Duyuyorum, ama sana hâlâ tam güvenemiyorum."],
+			["Noroi", apart_line],
 			["Shilda", "Anlıyorum. Yine de yürü."],
 		])
 	await _title_card()

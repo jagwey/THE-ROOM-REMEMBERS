@@ -35,7 +35,7 @@ script = ExtResource("lore")
 lore_id = &"labyrinth_hint"
 texture_path = "res://assets/layers/mirror.png"
 sprite_scale = 0.3
-lines = PackedStringArray("Noroi|Önümde uçurum var, yol tavandaki aynada görünüyor.", "Noroi|Mavi taşlar gerçek, soluk kırmızı olan yalan söylüyor.", "Shilda|Tapınağa uğra. Gölgen orada bekliyor.")
+lines = PackedStringArray("Noroi|Önümde uçurum var, yol tavandaki aynada görünüyor.", "Noroi|Mavi taşlar gerçek, soluk kırmızı olan yalan söylüyor.", "Shilda|Tapınaktan geçmeden çekirdeğe inemezsin.")
 
 [node name="RegretEcho" type="Area2D" parent="Interactive"]
 position = Vector2(240, 288.0)

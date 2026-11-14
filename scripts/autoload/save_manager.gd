@@ -443,9 +443,9 @@ func _migrate_trust_flags_v118() -> void:
 	var life := GameState.character_current_life_knowledge
 	var room_id := str(life.get("room", life.get("checkpoint_room", "")))
 	var here := RoomManager.ROOM_ORDER.find(room_id)
+	prog["migrated_v118"] = true
 	if here < 0:
 		return
-	prog["migrated_v118"] = true
 	if here < RoomManager.ROOM_ORDER.find("core_bloom_garden") and bool(prog.get("trusted_keeper", false)):
 		prog["trusted_keeper"] = false
 		GameState.get_shilda_trust_state()["reconciled"] = true

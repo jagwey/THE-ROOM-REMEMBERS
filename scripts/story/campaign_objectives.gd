@@ -20,7 +20,7 @@ const _BY_ROOM: Dictionary = {
 	"mirrors_unbroken": "Yansıma bir yol yürür; yankınla izle, sonra Shilda ile yüzleş.",
 	"core_threshold": "Bulutun kırmızı kristallerinde öl, cesetlerin korumasıyla karşıya geç.",
 	"core_seal_chamber": "Üç bağı Ruh Kesimi ile soldan sağa kes, sonra kayda dokun.",
-	"core": "Aşağı in. Mührü Shilda ile birlikte kır.",
+	"core": "Kristale dokun ve üç dalgayı püskürt; sonra kristale yeniden dokun.",
 	"awakening_balcony": "Sütunlara bedenini basamak yap, karşıya geç.",
 	"awakening_crypt": "Sayfaları tarih sırasına diz; bedenini yatağa bırak.",
 	"decay_catacombs": "Çiçekli beden ışık ve köprü olur. Sembolleri oku, mührü aç.",

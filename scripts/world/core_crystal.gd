@@ -25,7 +25,7 @@ func on_interact(_by: Node) -> void:
 		if defense != null and not PuzzleManager.is_solved(defense.puzzle_id):
 			if defense.is_active():
 				return
-			DialogueManager.say("Shilda", "Dalgalar geliyor. Kristali sen koru.")
+			DialogueManager.say(GameState.keeper_speaker_name(), "Dalgalar geliyor. Kristali sen koru.")
 			await DialogueManager.dialogue_finished
 			defense.start()
 			return

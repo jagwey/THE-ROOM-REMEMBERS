@@ -11,6 +11,7 @@ const SHADE_SCENE := "res://scenes/world/memory_shade_walking.tscn"
 @export var waves: PackedInt32Array = PackedInt32Array([2, 3, 4])
 @export var spawn_points: PackedVector2Array = PackedVector2Array([Vector2(120, 288), Vector2(840, 288)])
 @export var crystal_hp: int = 5
+@export var finish_line: String = "Kristal sustu. Şimdi dokun, mührü birlikte kıralım."
 @export var fail_line: String = "Kristal titriyor. Dalgalar yeniden geliyor."
 
 var _active: bool = false
@@ -183,6 +184,10 @@ func _finish() -> void:
 	_label.visible = false
 	PuzzleManager.mark_solved(puzzle_id)
 	SaveManager.save_game()
+	var am := get_node_or_null("/root/AudioManager")
+	if am:
+		am.play_sfx(&"seal_open")
+	DialogueManager.say(GameState.keeper_speaker_name(), finish_line)
 	defended.emit()
 
 

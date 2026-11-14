@@ -107,7 +107,7 @@ script = ExtResource("5")
 target_room_id = &"core_memory_vault"
 target_spawn_id = &"from_core_seal_chamber"
 required_puzzle = &"core_seal"
-locked_message = "Mührün üç bağını kesmeliyim."
+locked_message = "Mühür henüz açılmadı: bağları kes, sonra kayda dokun."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ForwardVault"]
 shape = SubResource("Hit")

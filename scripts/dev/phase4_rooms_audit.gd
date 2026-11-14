@@ -548,7 +548,7 @@ func _rooms_32_34() -> void:
 	for l in hint_lines:
 		if String(l).begins_with("Shilda|"):
 			shilda_line = String(l)
-	check(shilda_line.contains("Tapınağa uğra"), "r32_shilda_line_names_shrine", shilda_line)
+	check(shilda_line.contains("Tapınak"), "r32_shilda_line_names_shrine", shilda_line)
 	var all_text := FileAccess.get_file_as_string("res://scenes/rooms/mirrors_labyrinth.tscn")
 	check(not all_text.contains("1927"), "r32_no_1927_code_in_labyrinth_text")
 	check(all_text.contains("gecenin odasında kapıya en yakın duvarda"), "r32_reward_names_brick_location")
@@ -1359,6 +1359,9 @@ func _room_40_final() -> void:
 	await process_frame
 	check(pm.is_solved(&"core_defense") and done[0] and not df.is_active(), "r40_three_waves_solve")
 	check(_shade_count_in(cr) == 0, "r40_no_shades_after_defense")
+	check(dm.is_open and dm._full_line == df.finish_line and dm._speaker == gs.keeper_speaker_name(), "r40_defended_feedback_line", [dm.is_open, dm._speaker])
+	check(df.finish_line.contains("dokun") and FileAccess.get_file_as_string("res://scripts/story/campaign_objectives.gd").contains("sonra kristale yeniden dokun"), "r40_objective_mentions_second_touch")
+	dm.clear()
 	# --- kayip: dalgalar sifirlanir, oyuncu canli, ceset yok ---
 	_unsolve(["core_defense"])
 	df.start()
