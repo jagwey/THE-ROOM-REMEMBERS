@@ -145,14 +145,14 @@ func _run() -> void:
 	check(player.collision_mask == 17, "Room transition during dash preserves mask 17 in new room", "mask=%d" % player.collision_mask)
 
 	# 1.9 Physical curse barrier walkback challenge
-	# In mirrors_shrine, curse barrier is at x ~ 560
-	player.global_position = Vector2(530, 288)
+	# In mirrors_shrine (v1.18) curse barriers sit at x 420/520/620; test the last one
+	player.global_position = Vector2(590, 288)
 	player._facing = 1.0
 	player._dash_cd = 0.0
 	player._on_dash()
 	await create_timer(0.4).timeout
 	dm.clear()
-	check(player.global_position.x > 572.0, "Shadow dash traversed curse barrier to right side", "x=%.1f" % player.global_position.x)
+	check(player.global_position.x > 632.0, "Shadow dash traversed curse barrier to right side", "x=%.1f" % player.global_position.x)
 	check(player.collision_mask == 17, "After passing barrier, collision_mask is 17", "mask=%d" % player.collision_mask)
 
 	# Now face left and attempt to walk back through the barrier without dashing
@@ -162,7 +162,7 @@ func _run() -> void:
 		player.velocity.x = -175.0
 		player.move_and_slide()
 		await process_frame
-	check(player.global_position.x > 560.0, "Curse barrier blocks normal walkback (mask 17 prevents barrier bypass)", "x=%.1f" % player.global_position.x)
+	check(player.global_position.x > 620.0, "Curse barrier blocks normal walkback (mask 17 prevents barrier bypass)", "x=%.1f" % player.global_position.x)
 
 
 	print("\n==================================================")

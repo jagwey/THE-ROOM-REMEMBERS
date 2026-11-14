@@ -36,6 +36,8 @@ func _run() -> void:
 	await _rooms_35_37()
 	await _rooms_38_39()
 	await _room_40_final()
+	await _softlock()
+	await _main_path_walk()
 	quit(1 if failures > 0 else 0)
 
 
@@ -1447,6 +1449,251 @@ func _room_40_final() -> void:
 	crystal.on_interact(player)
 	await create_timer(0.3).timeout
 	check(em.last_ending == em.Ending.PART_ONE, "r40_crystal_after_defense_triggers_final")
+
+
+## ---------------------------------------------------------------------------------------------
+## Softlock senaryoları (T8): v1.17 kayıtları, yeniden giriş, ceset kırpma, ana yol yürüyüşü.
+## ---------------------------------------------------------------------------------------------
+const _LEGACY_IDS := ["mirrors_reverse", "mirrors_dual", "mirrors_gallery", "mirrors_unbroken", "mirrors_1927"]
+const _NEW_LATE_IDS := ["mirrors_labyrinth_crossed", "mirrors_shrine_trial", "mirrors_1927_walk"]
+
+
+func _softlock() -> void:
+	var sm := root.get_node("SaveManager")
+	var gs := root.get_node("GameState")
+	var pm := root.get_node("PuzzleManager")
+	var rm := root.get_node("RoomManager")
+	var player: Node2D = current_scene.get_node("Player")
+	var order: Array = Array(rm.ROOM_ORDER)
+	var prog_bak: Dictionary = gs.player_progress_knowledge.duplicate(true)
+	var life_bak: Dictionary = gs.character_current_life_knowledge.duplicate(true)
+	var world_bak: Dictionary = gs.world_memory_state.duplicate(true)
+	var src: Dictionary = load("res://scripts/dev/release_audit.gd").get_script_constant_map()["PUZZLE_SOURCE"]
+	# --- (a) v1.17 kaydı core_threshold'da: diske yaz, belleği boz, yükle ---
+	gs.world_memory_state["puzzles"] = {}
+	for id in _LEGACY_IDS:
+		(gs.world_memory_state["puzzles"] as Dictionary)[id] = true
+	gs.player_progress_knowledge["trusted_keeper"] = true
+	gs.player_progress_knowledge["ability_shadow_dash"] = false
+	gs.character_current_life_knowledge["room"] = "core_threshold"
+	gs.character_current_life_knowledge["checkpoint_room"] = "core_threshold"
+	var data: Dictionary = sm._build_data()
+	(data["player_progress_knowledge"] as Dictionary).erase("migrated_v118") # v1.17 dosyasında işaret yok
+	check(sm._write_atomic(sm.SAVE_PATH, data), "sl_a_write_v117_save")
+	sm._delete_resume_files()
+	gs.world_memory_state["puzzles"] = {"junk": true}
+	gs.player_progress_knowledge = {}
+	check(sm.load_game(false), "sl_a_load_game")
+	var puz: Dictionary = gs.world_memory_state["puzzles"]
+	pm.sync_from_world()
+	check(_LEGACY_IDS.all(func(i): return bool(puz.get(i, false))), "sl_a_legacy_ids_kept")
+	check(_NEW_LATE_IDS.all(func(i): return bool(puz.get(i, false))), "sl_a_new_ids_migrated")
+	check(bool(gs.player_progress_knowledge.get("ability_shadow_dash", false)), "sl_a_shadow_dash_granted")
+	check(not bool(gs.player_progress_knowledge.get("trusted_keeper", true)), "sl_a_trusted_keeper_false")
+	var fwd_ok := true
+	for i in range(27, 34):
+		if not _fwd_door_open(StringName(order[i])):
+			fwd_ok = false
+			check(false, "sl_a_forward_open_%s" % order[i])
+	check(fwd_ok, "sl_a_forward_doors_reverse_to_1927_open")
+	var back_ok := true
+	var back_idx := 34
+	while back_idx > 32:
+		var prev := String(order[back_idx - 1])
+		var found := false
+		for d in _doors_of(_room_root(StringName(order[back_idx]))):
+			if String(d.target_room_id) == prev:
+				found = true
+				if d.is_locked():
+					back_ok = false
+		if not found:
+			back_ok = false
+		back_idx -= 1
+	check(back_ok, "sl_a_walk_back_threshold_to_shrine_open")
+	# --- (b) v1.17 kaydı orta yolda (yalnız mirrors_unbroken) ---
+	gs.world_memory_state["puzzles"] = {"mirrors_unbroken": true}
+	_apply_old("mirrors_unbroken", {"ability_shadow_dash": false, "migrated_v118": false})
+	pm.sync_from_world()
+	puz = gs.world_memory_state["puzzles"]
+	var lab_fwd := _doors_of(_room_root(&"mirrors_labyrinth")).filter(func(d): return String(d.target_room_id) == "mirrors_shrine")
+	check(lab_fwd.size() == 1 and lab_fwd[0].is_locked(), "sl_b_labyrinth_forward_locked")
+	var lab_req := String(lab_fwd[0].required_puzzle) if lab_fwd.size() == 1 else ""
+	var lsrc: Array = src.get(lab_req, ["", "x"])
+	check(lab_req != "" and String(lsrc[0]) == "mirrors_labyrinth" and (String(lsrc[1]) == "" or pm.is_solved(StringName(lsrc[1]))), "sl_b_labyrinth_solvable", [lab_req, lsrc])
+	check(not _NEW_LATE_IDS.any(func(i): return puz.has(i)) and not puz.has("core_vault_order") and not puz.has("core_bloom_order"), "sl_b_no_auto_solve")
+	# --- (c) v1.17 kaydı core'da ---
+	gs.world_memory_state["puzzles"] = {}
+	_apply_old("core", {"ability_shadow_dash": false, "migrated_v118": false})
+	pm.sync_from_world()
+	puz = gs.world_memory_state["puzzles"]
+	check(bool(puz.get("core_vault_order", false)) and bool(puz.get("core_bloom_order", false)), "sl_c_vault_bloom_solved")
+	_unsolve(["core_defense"])
+	_clear_corpses()
+	rm.enter_room(&"core")
+	await process_frame
+	await process_frame
+	var df: Node = null
+	for n in _room_root(&"core").find_children("*", "Node2D", true, false):
+		if n.is_in_group("core_defense"):
+			df = n
+	check(df != null, "sl_c_defense_present")
+	if df != null:
+		player.global_position = Vector2(480, 288)
+		df.start()
+		await process_frame
+		check(df.is_active() and df.shade_count() == 2, "sl_c_defense_playable_wave0", df.shade_count())
+		df.debug_clear_wave()
+		await process_frame
+		await process_frame
+		df.debug_clear_wave()
+		await process_frame
+		df.debug_clear_wave()
+		await process_frame
+		check(pm.is_solved(&"core_defense") and not df.is_active(), "sl_c_defense_completes")
+	_unsolve(["core_defense"])
+	# --- (d) 28-40: çözüm sonrası yeniden giriş ---
+	gs.player_progress_knowledge["ability_shadow_dash"] = true
+	var dm := root.get_node("DialogueManager")
+	for i in range(27, 40):
+		var rid := StringName(order[i])
+		for id in _ids_of_room(rid, _room_root(rid)):
+			pm.mark_solved(StringName(id))
+		for id in _legacy_for(rid):
+			pm.mark_solved(StringName(id))
+		dm.clear()
+		player.invert_x = false
+		player.global_position = Vector2(60, 288)
+		rm.enter_room(rid)
+		await process_frame
+		await process_frame
+		await physics_frame
+		await physics_frame
+		if i < 39:
+			check(_fwd_door_open(rid), "sl_d_reentry_forward_open_%s" % rid)
+		check(not bool(player.invert_x), "sl_d_reentry_invert_false_%s" % rid)
+		check(not dm.is_open, "sl_d_reentry_no_prompt_%s" % rid)
+	# --- (e) 3 ceset anchored + 4. ölüm ---
+	_clear_corpses()
+	var plates := ["mirrors_gallery_plate_1", "mirrors_dual_weight", "core_bloom_weight"]
+	for p in plates:
+		pm.mark_solved(StringName(p))
+	var cm := root.get_node("CorpseManager")
+	var ids: Array = []
+	for k in 3:
+		ids.append(cm.record_corpse_at(Vector2(200.0 + 60.0 * k, 288.0), &"audit"))
+		await create_timer(0.03).timeout # id zaman damgalı: aynı ms'de çakışmasın
+	var corpses: Array = gs.world_memory_state["corpses"]
+	for k in corpses.size():
+		var c: Dictionary = corpses[k]
+		c["anchored"] = true
+		c["anchor_plate"] = plates[k % 3]
+	check(corpses.size() == 3, "sl_e_three_corpses", corpses.size())
+	await create_timer(0.03).timeout
+	var fourth: String = cm.record_corpse_at(Vector2(420, 288), &"audit")
+	corpses = gs.world_memory_state["corpses"]
+	var cur_ids: Array = corpses.map(func(c): return String((c as Dictionary).get("id", "")))
+	check(corpses.size() == 3, "sl_e_fourth_death_keeps_max", corpses.size())
+	check(not cur_ids.has(String(ids[0])) and cur_ids.has(fourth), "sl_e_oldest_trimmed", cur_ids)
+	check(plates.all(func(p): return pm.is_solved(StringName(p))), "sl_e_solved_plates_stay_solved")
+	check(_fwd_door_open(&"mirrors_gallery") and _fwd_door_open(&"mirrors_dual"), "sl_e_gallery_dual_doors_open")
+	var gdoor_ok := false
+	for d in _doors_of(_room_root(&"core_bloom_garden")):
+		if String(d.target_room_id) == "core":
+			gdoor_ok = not d.is_locked()
+	check(gdoor_ok, "sl_e_garden_door_open")
+	pm.set_live(&"core_bloom_weight", true)
+	check(pm.is_live(&"core_bloom_weight"), "sl_e_garden_plate_refillable")
+	pm.set_live(&"core_bloom_weight", false)
+	_clear_corpses()
+	sm.delete_all_save_files() # (a) v1.17 kayıt dosyasını qa/ altında bırakma
+	gs.player_progress_knowledge = prog_bak
+	gs.character_current_life_knowledge = life_bak
+	gs.world_memory_state = world_bak
+	pm.sync_from_world()
+
+
+func _legacy_for(rid: StringName) -> Array:
+	var map := {
+		"mirrors_reverse": ["mirrors_reverse"], "mirrors_dual": ["mirrors_dual"], "mirrors_gallery": ["mirrors_gallery"],
+		"mirrors_unbroken": ["mirrors_unbroken"], "mirrors_1927": ["mirrors_1927"], "core_threshold": ["core_threshold"],
+		"core_seal_chamber": ["core_seal"], "core_memory_vault": ["core_vault_order"], "core_bloom_garden": ["core_bloom_order"],
+	}
+	return map.get(String(rid), [])
+
+
+func _main_path_walk() -> void:
+	var rm := root.get_node("RoomManager")
+	var pm := root.get_node("PuzzleManager")
+	var gs := root.get_node("GameState")
+	var order: Array = Array(rm.ROOM_ORDER)
+	check(order.size() == 40 and order[0] == "awakening" and order[39] == "core", "walk_order_01_to_40")
+	var prog_bak: Dictionary = gs.player_progress_knowledge.duplicate(true)
+	var world_bak: Dictionary = gs.world_memory_state.duplicate(true)
+	for k in ["ability_soul_slash", "ability_shadow_dash", "ability_dash", "ability_double_jump"]:
+		gs.player_progress_knowledge[k] = true
+	var broken: Array = []
+	for i in 39:
+		var rid := StringName(order[i])
+		for id in _ids_of_room(rid, _room_root(rid)):
+			pm.mark_solved(StringName(id))
+		for id in _legacy_for(rid):
+			pm.mark_solved(StringName(id))
+	# ROOM_ORDER 01-27 yan odalar içerir (crypt/catacombs/cistern ...): kapı grafiğinden, kilitsiz kapılarla BFS.
+	var seen := {"awakening": true}
+	var queue: Array = ["awakening"]
+	while not queue.is_empty():
+		var cur := String(queue.pop_front())
+		for d in _doors_of(_room_root(StringName(cur))):
+			var t := String(d.target_room_id)
+			if d.is_locked() or seen.has(t) or not rm._rooms.has(StringName(t)):
+				continue
+			if not (rm._rooms[StringName(t)].spawns as Dictionary).has(StringName(d.target_spawn_id)):
+				broken.append("%s->%s:nospawn(%s)" % [cur, t, d.target_spawn_id])
+				continue
+			seen[t] = true
+			queue.append(t)
+	for rid in order:
+		if not seen.has(String(rid)):
+			broken.append("unreached:%s" % rid)
+	check(broken.is_empty(), "walk_all_40_rooms_reachable_from_01", broken)
+	for i in range(27, 39):
+		var fw := false
+		for d in _doors_of(_room_root(StringName(order[i]))):
+			if String(d.target_room_id) == String(order[i + 1]) and not d.is_locked():
+				fw = true
+		check(fw, "walk_forward_door_%s" % order[i])
+	var door39: Node = null
+	for d in _doors_of(_room_root(&"core_bloom_garden")):
+		if String(d.target_room_id) == "core":
+			door39 = d
+	if door39 != null:
+		rm.enter_room(&"core", StringName(door39.target_spawn_id))
+		await process_frame
+		await process_frame
+		check(String(rm.get_active_room_id()) == "core", "walk_reaches_core")
+		var df: Node = null
+		for n in _room_root(&"core").find_children("*", "Node2D", true, false):
+			if n.is_in_group("core_defense"):
+				df = n
+		check(df != null, "walk_core_defense_present")
+		if df != null:
+			_unsolve(["core_defense"])
+			df.start()
+			await process_frame
+			df.debug_clear_wave()
+			await process_frame
+			await process_frame
+			df.debug_clear_wave()
+			await process_frame
+			df.debug_clear_wave()
+			await process_frame
+			check(pm.is_solved(&"core_defense"), "walk_final_triggerable")
+			_unsolve(["core_defense"])
+	else:
+		check(false, "walk_garden_to_core_door")
+	gs.player_progress_knowledge = prog_bak
+	gs.world_memory_state = world_bak
+	pm.sync_from_world()
 
 
 func _room_root(rid: StringName) -> Node:

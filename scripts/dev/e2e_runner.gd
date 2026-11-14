@@ -727,6 +727,38 @@ func _run_tier_4_scenarios() -> void:
 			missing_rooms.append(rid)
 	record_check(4, 30, "T4-03 40-room topology and scene instantiation", rm._rooms.size() == 40 and missing_rooms.is_empty(), "all 40 rooms registered and reachable (%d)" % rm._rooms.size())
 
+	# T4-08: Ana yol 01→40: tüm bulmacalar çözülünce kapı grafiği awakening'den core'a kadar 40 odayı bağlar.
+	var snap_puz: Dictionary = (gs.world_memory_state.get("puzzles", {}) as Dictionary).duplicate(true)
+	var snap_prog: Dictionary = gs.player_progress_knowledge.duplicate(true)
+	for ab in ["ability_soul_slash", "ability_shadow_dash", "ability_dash", "ability_double_jump"]:
+		gs.player_progress_knowledge[ab] = true
+	var walk_unreached: Array = []
+	var walk_seen := {"awakening": true}
+	var walk_queue: Array = ["awakening"]
+	for rid_w in rm.ROOM_ORDER:
+		var room_w: Node = (rm._rooms[StringName(rid_w)] as Dictionary)["root"]
+		for dw in room_w.find_children("*", "Area2D", true, false):
+			if "required_puzzle" in dw and "target_room_id" in dw and String(dw.required_puzzle) != "":
+				pm.mark_solved(StringName(dw.required_puzzle))
+	while not walk_queue.is_empty():
+		var cur_w := String(walk_queue.pop_front())
+		var room_c: Node = (rm._rooms[StringName(cur_w)] as Dictionary)["root"]
+		for dw in room_c.find_children("*", "Area2D", true, false):
+			if not ("target_room_id" in dw and dw.has_method("is_locked")):
+				continue
+			var tw := String(dw.target_room_id)
+			if dw.is_locked() or walk_seen.has(tw) or not rm._rooms.has(StringName(tw)):
+				continue
+			walk_seen[tw] = true
+			walk_queue.append(tw)
+	for rid_w in rm.ROOM_ORDER:
+		if not walk_seen.has(String(rid_w)):
+			walk_unreached.append(String(rid_w))
+	record_check(4, 30, "T4-08 Main path 01->40 reaches core via unlocked doors", walk_unreached.is_empty() and walk_seen.has("core"), "unreached=%s" % [walk_unreached])
+	gs.world_memory_state["puzzles"] = snap_puz
+	gs.player_progress_knowledge = snap_prog
+	pm.sync_from_world()
+
 	# T4-04: Android POCO X6 Pro full session profile
 	var exp_cfg: String = _read_file_text("res://export_presets.cfg")
 	var proj_cfg: String = _read_file_text("res://project.godot")

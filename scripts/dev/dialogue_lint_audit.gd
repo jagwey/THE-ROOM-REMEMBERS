@@ -255,8 +255,7 @@ func _is_text_prop(prop: String) -> bool:
 func _scan_tscn(path: String) -> void:
 	var rx := RegEx.new()
 	rx.compile("^([A-Za-z0-9_]+) = (.*)$")
-	var lines := FileAccess.get_file_as_string(path).split("
-")
+	var lines := FileAccess.get_file_as_string(path).replace("\r", "").split("\n")
 	for ln in lines.size():
 		var m := rx.search(String(lines[ln]))
 		if m == null:

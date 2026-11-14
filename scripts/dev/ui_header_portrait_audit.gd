@@ -233,8 +233,7 @@ const ALLOWED_SPEAKERS := ["", "???", "X?", "X", "Sistem", "Kayıt", "Shilda", "
 func _funcs_calling(src: String, needle: String) -> Array:
 	var out: Array = []
 	var cur := ""
-	for line in src.split("
-"):
+	for line in src.replace("\r", "").split("\n"):
 		if line.begins_with("func ") or line.begins_with("static func "):
 			cur = line.substr(line.find("func ") + 5).split("(")[0].strip_edges()
 		elif needle in line and not line.strip_edges().begins_with("#") and cur != "" and not out.has(cur):

@@ -146,3 +146,5 @@ func _check_phase0_text() -> void:
 	var order_ok := page_order == ["experiment_started", "door_closed", "seal_engaged"]
 	check(i1 >= 0 and i2 > i1 and i3 > i2 and not page.contains("Mühül") and order_ok, "page_hint_matches_order", [page, page_order])
 	check(not FileAccess.file_exists("res://scripts/world/core_portal.gd"), "core_portal_gone")
+	check(not FileAccess.file_exists("res://scripts/world/mirror_relay.gd"), "mirror_relay_gone")
+	check(not FileAccess.file_exists("res://scripts/world/archive_door.gd"), "archive_door_gone")

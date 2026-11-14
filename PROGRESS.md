@@ -416,7 +416,7 @@ oom_door\) <= 44.0 px mesafede -200 etkileÅŸim Ã¶ncelik bonusu eklendi.
 - Faz 4 T4: oda 32-34 yeniden yazıldı (labirent ceset köprüsü + x1170 kalkanlı gölge + Shilda 'Tapınağa uğra'; tapınak Gölge Atılması sınavı: sunak, 3 perde, boşluk, trial; 1927 sessiz gece: night_walk.gd gölge yürüyüşü -> tuğla + NightEcho, `ordered_relic/hidden_symbol.requires_puzzle`); phase4_rooms/room_graph/door/memory_seal/lore_canon/keeper_naming/story_flags/dialogue_lint/dialogue_data/release + e2e (53/53) temiz.
 - Faz 4 T5: oda 35-37 yeniden yazıldı (eşik `curse_cloud` + 2 ceset kalkanı, `core_threshold_crossed` marker; yükseliş doğrulandı; mühür odası 3 sıralı `soul_seal` bağı `core_seal_bond_1..3`, `trusted_keeper` yazımı kaldırıldı); phase4/ascent/curse_reload/room_graph/door/memory_seal/death_loop/lore_canon/dialogue_lint/release/e2e(53/53) yeşil.
 
-## DEVİR NOTU — Faz 4 durumu (başka YZ devralırsa BURADAN başla) — güncel: 2026-11-13
+## DEVİR NOTU — Faz 4 durumu (başka YZ devralırsa BURADAN başla) — güncel: 2026-11-14
 **Hedef:** Oda revizyonu (spec `docs/superpowers/specs/2026-11-12-room-overhaul-design.md`), Faz 4 = oda 28-40 + final, sürüm v1.18.0. Plan: `docs/superpowers/plans/2026-11-13-phase4-rooms-28-40.md` (T1-T8). Dal: `feat/phase4-rooms` (main'e merge/push YOK).
 **Ayrıntılı defter:** `.superpowers/sdd/2026-11-13-phase4-rooms-28-40/progress.md` (git'e eklenmez; her görevin brief/report/review dosyaları orada). `Task N: complete` satırı olan görev bitti, tekrar yapma.
 **Durum:**
@@ -426,8 +426,8 @@ oom_door\) <= 44.0 px mesafede -200 etkileÅŸim Ã¶ncelik bonusu eklendi.
 - [x] T4 odalar 32-34 (labirent ana yolda + ceset köprüsü, tapınak Gölge Atılması testi, 1927 sessiz dizi + X'in adı; lore_canon `x_name_late`) (738adb4, bb1ac17, 4318dd4)
 - [x] T5 odalar 35-37 (eşik lanet bulutu+ceset kalkanı, yükseliş 3 test, mühür odası 3 bağ; trusted_keeper burada YAZILMAZ) (bcb416c, fba38f8)
 - [x] T6 odalar 38-39 (kasa önceki ipuçlarından kod; bahçe 4-1-2, trusted_keeper YALNIZ burada; `add_vigil_trust(1)`; lore_canon `vault_irony`/`garden_hint`) (3b4356a, 4e0003f)
-- [ ] T7 `core_defense.gd` final (3 dalga 2/3/4 gölge, kristal HP 5, kayıpta ölüm yok dalga sıfırlanır, `EndingManager.final_variant()` together/apart, "BÖLÜM I SONU") — UYGULANIYOR
-- [ ] T8 ölü kod (mirror_relay.gd, archive_door.gd — önce grep), `_softlock()` + `_main_path_walk()`, e2e 01→40, sürüm 1.18.0 / version/code 48, README + PROGRESS + CLAUDE.md "Güncel sürüm"; tam suite "38 dev denetimi, 0 basarisiz"
+- [x] T7 `core_defense.gd` final (3 dalga 2/3/4 gölge, kristal HP 5, kayıpta ölüm yok dalga sıfırlanır, `EndingManager.final_variant()` together/apart, "BÖLÜM I SONU") (f0d9fe7, 69c751f)
+- [ ] T8 ölü kod (mirror_relay.gd, archive_door.gd — önce grep), `_softlock()` + `_main_path_walk()`, e2e 01→40, sürüm 1.18.0 / version/code 48, README + PROGRESS + CLAUDE.md "Güncel sürüm"; tam suite "38 dev denetimi, 0 basarisiz" — tam suite 38/0 YEŞİL (2026-11-14); eski 4 audit güncellendi (CRLF split, bahçe plakası, bariyer x=620) (T8_HASH)
 - [ ] Faz 4 final review (tüm dal) + 1 düzeltme turu
 - [ ] APK `TheRoomRemembers-1.18.0-android-arm64.apk` derle → `gh release create v1.18.0 <apk> --repo jagwey/THE-ROOM-REMEMBERS-release --title v1.18.0 --notes "..."` → iki repoda en yeni 4 dışını sil (`gh release list` önce; latest asla silinmez). Kullanıcı bu release'i önceden onayladı.
 **Nasıl çalışılıyor:** her görev: brief → uygulayıcı ajan → inceleme ajanı → düzeltme → defter + bu dosya. Audit tek tek: `TORIMON_TEST=1 "<Godot console exe>" --headless --path . -s res://scripts/dev/<x>.gd`; tam suite `docs/gelistirme/Run-Audit.ps1`. Commit sonu: `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`. `docs/gelistirme/results-v1140/` ve `.superpowers/` asla git add edilmez.

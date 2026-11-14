@@ -53,6 +53,7 @@ func _run() -> void:
 		bloom.press("4")
 		bloom.press("2")
 		check(bloom.get_progress() == 0 and not pm.is_solved(&"core_bloom_order"), "broken bloom chain resets")
+		pm.set_live(&"core_bloom_weight", true)  # v1.18: taşlar plakada beden ister
 		bloom.press("4")
 		bloom.press("1")
 		bloom.press("2")

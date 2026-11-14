@@ -15,7 +15,7 @@ const COLORS := {
 const KIND_BY_SCRIPT := {
 	"echo_altar.gd": &"memory", "echo_interactable.gd": &"memory", "echo_point.gd": &"memory",
 	"echo_switch.gd": &"memory", "trace_marker.gd": &"memory", "awakening_seal_echo_recall.gd": &"memory",
-	"mirror_relay.gd": &"memory", "lore_point.gd": &"memory", "evidence_card.gd": &"memory",
+	"lore_point.gd": &"memory", "evidence_card.gd": &"memory",
 	"story_beat.gd": &"memory", "pocket_watch_inspect.gd": &"memory",
 	"blood_thorn.gd": &"cursed", "code_seal_base.gd": &"cursed", "core_crystal.gd": &"cursed",
 "flower_inspect.gd": &"cursed", "decay_flower_evidence.gd": &"cursed",
@@ -26,8 +26,8 @@ const LABEL_BY_SCRIPT := {
 	"echo_point.gd": "Yankı", "echo_interactable.gd": "Yankı", "awakening_seal_echo_recall.gd": "Yankı Nişi",
 	"echo_altar.gd": "Yankı Sunağı", "echo_switch.gd": "Yankı Anahtarı", "code_seal_base.gd": "Mühür",
 	"blood_thorn.gd": "Kan Dikeni", "core_crystal.gd": "Çekirdek Kristali", 
-	"mirror_relay.gd": "Ayna", "reset_lever.gd": "Kol",
-	"vine_puzzle_lever.gd": "Kol", "vine_interact.gd": "Sarmaşık", "archive_door.gd": "Arşiv Kapısı",
+	"reset_lever.gd": "Kol",
+	"vine_puzzle_lever.gd": "Kol", "vine_interact.gd": "Sarmaşık",
 	"story_beat.gd": "Anı", "keeper_controller.gd": "Shilda", "cracked_mirror.gd": "Çatlak Ayna",
 	"shilda_garden_trust.gd": "Shilda", "evidence_card.gd": "Kayıt", "ability_pickup.gd": "Sunak",
 }
