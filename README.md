@@ -178,7 +178,7 @@ flowchart LR
 ### Katakomb çiçeği ve Sarnıç (Faz 0)
 Kemik Mahzeni girişinde (x≈150) tükenmez bir çiçek kaynağı durur. Çiçek elde ölürsen ceset çiçeği taşır ve fener gibi yanar; karanlık yol aydınlanır. Çiçek hayat başınadır, ölümde cesede geçer ve elden silinir. Sarnıç yan kapısı artık yetenek istemez.
 
-### v1.18.1 hazırlık (yayınlanmadı) — ipucu/mantık düzeltmeleri
+### v1.18.1 (yayınlandı 2026-11-14, versionCode 49) — ipucu/mantık düzeltmeleri
 - 40 oda denetlendi; şifre/sıra ipuçları oyuncu metninden türetilebilir hale getirildi (kütüphane 251, 3-9-6; katakomb 586; deney 418 vb.). Oda 16 eski kayıt kapı kilidi `dial_puzzle._heal_also_solve()` ile onarılır. Yeni denetim: `scripts/dev/clue_solvability_audit.gd`.
 
 ### Bölüm V–VI odaları (v1.18.0, yayınlandı 2026-11-14) — Faz 4 bulmaca yeniden tasarımı

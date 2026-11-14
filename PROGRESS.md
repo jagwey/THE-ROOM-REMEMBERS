@@ -416,7 +416,7 @@ oom_door\) <= 44.0 px mesafede -200 etkileÅŸim Ã¶ncelik bonusu eklendi.
 - Faz 4 T4: oda 32-34 yeniden yazıldı (labirent ceset köprüsü + x1170 kalkanlı gölge + Shilda 'Tapınağa uğra'; tapınak Gölge Atılması sınavı: sunak, 3 perde, boşluk, trial; 1927 sessiz gece: night_walk.gd gölge yürüyüşü -> tuğla + NightEcho, `ordered_relic/hidden_symbol.requires_puzzle`); phase4_rooms/room_graph/door/memory_seal/lore_canon/keeper_naming/story_flags/dialogue_lint/dialogue_data/release + e2e (53/53) temiz.
 - Faz 4 T5: oda 35-37 yeniden yazıldı (eşik `curse_cloud` + 2 ceset kalkanı, `core_threshold_crossed` marker; yükseliş doğrulandı; mühür odası 3 sıralı `soul_seal` bağı `core_seal_bond_1..3`, `trusted_keeper` yazımı kaldırıldı); phase4/ascent/curse_reload/room_graph/door/memory_seal/death_loop/lore_canon/dialogue_lint/release/e2e(53/53) yeşil.
 
-## DEVİR NOTU — Faz 4 durumu (başka YZ devralırsa BURADAN başla) — güncel: 2026-11-14
+## DEVİR NOTU — Faz 4 durumu (başka YZ devralırsa BURADAN başla) — güncel: 2026-11-14 (v1.18.1 yayında)
 **Hedef:** Oda revizyonu (spec `docs/superpowers/specs/2026-11-12-room-overhaul-design.md`), Faz 4 = oda 28-40 + final, sürüm v1.18.0. Plan: `docs/superpowers/plans/2026-11-13-phase4-rooms-28-40.md` (T1-T8). Dal: `feat/phase4-rooms` (main'e merge/push YOK).
 **Ayrıntılı defter:** `.superpowers/sdd/2026-11-13-phase4-rooms-28-40/progress.md` (git'e eklenmez; her görevin brief/report/review dosyaları orada). `Task N: complete` satırı olan görev bitti, tekrar yapma.
 **Durum:**
@@ -434,7 +434,8 @@ oom_door\) <= 44.0 px mesafede -200 etkileÅŸim Ã¶ncelik bonusu eklendi.
   - [x] Oda 16 kapı kilitli kaldı (kadranlar yeşil): kayıtta `library_clock_dials` çözülmüş, `library_clockroom` işaretsiz. `dial_puzzle.gd` `_heal_also_solve()` (_ready + RoomManager.room_changed) onarır; phase3 audit `r16_stale_save_door_heals` PASS. Denetim A–D bitti.
   - [x] İpucu düzeltmeleri: kütüphane 251/3-9-6 ipuçları + `learn_memory_code`, katakomb ipucu (çiçekli ceset uçurum kenarında sembol yakar; geometri değişmedi), sera/bahçe/Shilda duvarı/ağırlık hedefleri, deney HINTS (authority 418, circuit), story_beat yön satırı, mirrors_dual/core_ascent ipuçları, kapı/diyalog küçük metinleri. Atlandı: vana etiketleri (alan yok), VineLever (phase2 şartı), kasa/sayfa metni (audit bilerek korur).
   - [x] Yeni `scripts/dev/clue_solvability_audit.gd` (Run-Audit'te): her kod/sıra rakamı oyuncu metninde geçiyor mu, 92 PASS. Suite: 39 denetim, 0 başarısız (clue audit eklenmeden 38/0 doğrulandı).
-  - [ ] Sıradaki: v1.18.1 sürüm artışı + APK + release (kullanıcı onayıyla). Yetim `HINTS[decay_catacombs]` temizlenebilir.
+  - [x] v1.18.1 / versionCode 49 YAYINLANDI (2026-11-14): APK `TheRoomRemembers-1.18.1-android-arm64.apk` (119 MB, debug imzalı, ASCII kopya C:/tb/trr118). https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.18.1 (+ private repo). Her iki repoda v1.18.1, v1.18.0, v1.13.0 (silinecek yok). Derleme notu: `--import` sonrası `android/build/res/*.import` Gradle'ı bozar → silin, `android/build/.gdignore` ekleyin.
+  - [ ] Açık küçük iş: yetim `HINTS[decay_catacombs]` temizlenebilir.
 **Nasıl çalışılıyor:** her görev: brief → uygulayıcı ajan → inceleme ajanı → düzeltme → defter + bu dosya. Audit tek tek: `TORIMON_TEST=1 "<Godot console exe>" --headless --path . -s res://scripts/dev/<x>.gd`; tam suite `docs/gelistirme/Run-Audit.ps1`. Commit sonu: `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`. `docs/gelistirme/results-v1140/` ve `.superpowers/` asla git add edilmez.
 **Park edilen küçük bulgular:** invert_x bölge içinde yeniden doğunca girişe kadar normal kalır; phase4 audit ölüm kontrolü yalnız respawn_at; Faz 3'ten: cells gölgesi x790 from_circuit spawn'ına (880) yakın, P4 cilasında bak.
 
