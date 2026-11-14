@@ -42,7 +42,7 @@ texture_path = "res://assets/trr_refresh/decay/planter_bloom.png"
 sprite_scale = 0.5
 lines = PackedStringArray("Noroi|Cama kazınmış: yedi yaprak açmış bir çiçek, yanında iki kök.", "Noroi|Altında dokuz damla. Sayı değil, sıra: yedi, iki, dokuz.", "Shilda|Çiçeğin yaprağı, kökü, damlası. Kapı onları sırayla sever.")
 evidence_title = "Cam Yazıt"
-evidence_body = "Camda çiçek çizimi: yedi yaprak, iki kök, dokuz damla. Mührün sırası bu."
+evidence_body = "Camda çiçek çizimi: yedi yaprak, iki kök, dokuz damla. Bu sıra serada değil, bahçede lazım olacak."
 evidence_section = "izler"
 
 [node name="GlassNote" type="Area2D" parent="Interactive"]

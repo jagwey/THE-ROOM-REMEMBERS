@@ -229,7 +229,7 @@ func _experiment_authority() -> void:
 	DialogueManager.say("Shilda", "Seni unutturmak istediler. Ben hatırlamayı seçtim.")
 	DialogueManager.say("Shilda", "Altmış sekiz yıl oldu. Kapı 1927'den beri kilitli.")
 	DialogueManager.say("Shilda", "Sen 1995'te geldin.")
-	DialogueManager.say("Noroi", "Bu kez kaçmayacağım, aynalar salonuna gidelim.")
+	DialogueManager.say("Noroi", "Bu kez kaçmayacağım, devam edelim.")
 
 	var ok: bool = await DialogueManager.dialogue_finished
 
@@ -288,8 +288,8 @@ func _core_threshold() -> void:
 	DialogueManager.say("Shilda", "Bunu söyleyen ilk kişi değilsin.")
 	DialogueManager.say("Noroi", "Biliyorum.")
 	DialogueManager.say("Shilda", "Hayır. Henüz bilmiyorsun.")
-	DialogueManager.say("Shilda", "Yine de kapı artık senden bir can istemiyor.")
-	DialogueManager.say("Noroi", "Bulutun girişindeki kırmızı kristale dokunup bedenimi kalkan yapacağım.")
+	DialogueManager.say("Shilda", "Yine de bu eşik bedenini isteyecek; ölümün boşa gitmeyecek.")
+	DialogueManager.say("Noroi", "Bulutun girişindeki kırmızı kristale iki kez dokunup bedenimi kalkan yapacağım.")
 
 	var ok: bool = await DialogueManager.dialogue_finished
 

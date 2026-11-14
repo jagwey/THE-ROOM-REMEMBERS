@@ -29,7 +29,7 @@ script = ExtResource("soul")
 puzzle_id = &"experiment_vein_1"
 blocking = false
 height = 96.0
-wrong_line = "Damar direniyor. Önce kalbe yakın olanı kes."
+wrong_line = "Damar direniyor. Sıra bu değil: ortadan başla, sola dön, en son uca git."
 
 [node name="Vein2" type="StaticBody2D" parent="Interactive"]
 position = Vector2(300, 288)
@@ -38,7 +38,7 @@ puzzle_id = &"experiment_vein_2"
 requires = &"experiment_vein_1"
 blocking = false
 height = 96.0
-wrong_line = "Damar direniyor. Önce kalbe yakın olanı kes."
+wrong_line = "Damar direniyor. Sıra bu değil: ortadan başla, sola dön, en son uca git."
 
 [node name="Vein3" type="StaticBody2D" parent="Interactive"]
 position = Vector2(980, 288)
@@ -47,7 +47,7 @@ puzzle_id = &"experiment_vein_3"
 requires = &"experiment_vein_2"
 blocking = false
 height = 96.0
-wrong_line = "Damar direniyor. Önce kalbe yakın olanı kes."
+wrong_line = "Damar direniyor. Sıra bu değil: ortadan başla, sola dön, en son uca git."
 
 [node name="ConduitBeat" type="Node2D" parent="Interactive"]
 script = ExtResource("conduit_beat")

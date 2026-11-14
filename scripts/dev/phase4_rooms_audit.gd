@@ -324,7 +324,7 @@ func _rooms_28_31() -> void:
 		if n.is_in_group("echo_altar"):
 			altar = n
 	check(altar != null and String(altar.puzzle_id) == "mirrors_dual_echo" and bool(altar.live_only) and absf(altar.mirror_axis_x - 480.0) < 0.1, "r29_altar_config")
-	check(altar != null and String(altar.intro_text) == "Yankın ters yürür. Sen düz git.", "r29_intro_line")
+	check(altar != null and String(altar.intro_text) == "Yankın aynadaki gibi ters yürür: sen sağa, o sola. Plakayı ve kolu o tetiklesin.", "r29_intro_line")
 	var plates := _plates_of(du)
 	check(plates.size() == 1 and String(plates[0].puzzle_id) == "mirrors_dual_weight" and not plates[0].accept_player and not plates[0].accept_stone, "r29_weight_plate")
 	var dgate: Node2D = null
@@ -888,7 +888,7 @@ func _rooms_35_37() -> void:
 		check(absf(b1.position.x - 300.0) < 2.0 and absf(b2.position.x - 470.0) < 2.0 and absf(b3.position.x - 640.0) < 2.0, "r37_bond_positions")
 		check(not b1.blocking and not b2.blocking and not b3.blocking, "r37_bonds_not_blocking")
 		check(String(b1.requires) == "" and String(b2.requires) == "core_seal_bond_1" and String(b3.requires) == "core_seal_bond_2", "r37_bond_chain")
-		check(b2.wrong_line == "Bağ direniyor. Önce yakındakini kes." and b3.wrong_line == b2.wrong_line, "r37_wrong_line")
+		check(b2.wrong_line == "Bağ direniyor. Bağları soldan sağa sırayla kes." and b3.wrong_line == b2.wrong_line, "r37_wrong_line")
 		b2.receive_soul_slash(player)
 		b3.receive_soul_slash(player)
 		check(not pm.is_solved(&"core_seal_bond_2") and not pm.is_solved(&"core_seal_bond_3"), "r37_out_of_order_refused")

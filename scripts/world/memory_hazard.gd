@@ -180,7 +180,7 @@ func _ring_bodies() -> Array:
 func _warn(_body: Node) -> void:
 	_warned = true
 	_warning_open = true
-	DialogueManager.say("Shilda", "Geri çekil. O yarık anını yer. Dar olanın üstünden atıl (%s)." % MobileInputManager.control_name(&"dash"))
+	DialogueManager.say("Shilda", "Geri çekil. Bu şerit anını yer. Dar olanın üstünden atıl (%s)." % MobileInputManager.control_name(&"dash"))
 	await DialogueManager.dialogue_finished
 	# Time starts after the player can actually move, never during the warning dialogue.
 	_grace = 4.0

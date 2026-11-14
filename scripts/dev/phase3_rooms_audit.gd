@@ -381,9 +381,9 @@ func _rooms_14_17() -> void:
 	var clk := _echo_block(ws, "witness_clock")
 	var flo := _echo_block(ws, "witness_flower")
 	var sea := _echo_block(ws, "witness_seal")
-	check(clk.contains("üç") and clk.contains("dokuz") and clk.contains("altı"), "r15_clock_echo_hours")
+	check(clk.contains("iki"), "r15_clock_echo_hours")
 	check(flo.contains("beş") and sea.contains("bir"), "r15_flower_five_seal_one")
-	check(not ws.contains("251"), "r15_echo_texts_no_251")
+	check(not clk.contains("251") and not flo.contains("251") and not sea.contains("251"), "r15_echo_texts_no_251")
 	_unsolve(["library_witnesses", "library_witness_corpse", "library_witness_echo"])
 	# ---- 16 clockroom ----
 	_unsolve(["library_clock_dials", "library_clockroom"])
@@ -402,6 +402,12 @@ func _rooms_14_17() -> void:
 			dial.turn(2)
 		dm.clear()
 		check(pm.is_solved(&"library_clock_dials") and pm.is_solved(&"library_clockroom"), "r16_dials_solve_clockroom")
+		## Eski kayıt: kadranlar çözülmüş, kapı bulmacası işaretsiz -> oda değişiminde onarılır.
+		pm.solved.erase("library_clockroom")
+		(root.get_node("GameState").world_memory_state["puzzles"] as Dictionary).erase("library_clockroom")
+		rm.room_changed.emit(&"library_witness", &"library_clockroom")
+		var fwd: Node = ck.find_child("Door_library_page", true, false)
+		check(pm.is_solved(&"library_clockroom") and fwd != null and not fwd.is_locked(), "r16_stale_save_door_heals")
 	for n in ck.find_children("*", "Area2D", true, false):
 		if "relic_id" in n:
 			check(n.solve_puzzle == &"", "r16_relic_no_solve_" + String(n.relic_id))
@@ -868,7 +874,7 @@ func _rooms_25_27() -> void:
 			check(not bool(v.blocking), "r26_vein_non_blocking_%s" % String(v.puzzle_id))
 		check(v1.requires == &"" and v2.requires == &"experiment_vein_1" and v3.requires == &"experiment_vein_2", "r26_requires_chain")
 		check(absf(v1.position.x - 640.0) <= 40.0 and absf(v2.position.x - 300.0) <= 40.0 and absf(v3.position.x - 980.0) <= 40.0, "r26_vein_positions")
-		check(v1.wrong_line == "Damar direniyor. Önce kalbe yakın olanı kes.", "r26_wrong_line")
+		check(v1.wrong_line == "Damar direniyor. Sıra bu değil: ortadan başla, sola dön, en son uca git.", "r26_wrong_line")
 		v2.receive_soul_slash(null)
 		check(not pm.is_solved(&"experiment_vein_2"), "r26_vein2_refused_before_vein1")
 		v3.receive_soul_slash(null)

@@ -130,12 +130,12 @@ func gate_open(all_ids: PackedStringArray, legacy_id: StringName = &"") -> bool:
 const HINTS: Dictionary = {
 	&"decay_catacombs": {
 		"goal": "Karanlıkta yol, ölülerin ışığıdır.",
-		"orientation": "Çiçeği al, dikende öl. Uçurumda beden köprü olur.",
-		"explicit": "Çiçeği al, dikene dokun; beden köprü ve ışık olur, geç."
+		"orientation": "Her çiçekli ceset bir sembolü yakar: uçurum kenarları, köprü.",
+		"explicit": "Çiçekle uçuruma düş (iki kenar), köprüde öl; 5-8-6'yı mühre gir."
 	},
 	&"decay_garden_bloom": {
 		"goal": "Çiçeklerin açış sırası kapıyı açar.",
-		"orientation": "Çiçekli bedenle yaprak sayılarını oku, sırayla dokun.",
+		"orientation": "Yaprak sayılarını bedenin ışığında oku; sıra serada camdaydı.",
 		"explicit": "Çiçek al, dikende öl; yaprakları oku, tacı sırayla aç."
 	},
 	&"decay_cistern": {
@@ -145,8 +145,8 @@ const HINTS: Dictionary = {
 	},
 	&"decay_catacomb_seal": {
 		"goal": "Karanlıkta yol, ölülerin ışığıdır.",
-		"orientation": "Çiçeği al, sonra dikende öl. Çiçekli beden ışık olur.",
-		"explicit": "Girişteki çiçeği al, dikene dokun. Ceset fener olur; yola taşı."
+		"orientation": "Üç sembol, üç çiçekli ceset: iki uçurum kenarı, bir köprü.",
+		"explicit": "Çiçekle uçuruma düş (iki kenar), köprüde öl; 5-8-6'yı mühre gir."
 	},
 	&"awakening_weight": {
 		"goal": "Kapıyı açık tutmak için bir ağırlık gerekiyor.",
@@ -211,7 +211,7 @@ const HINTS: Dictionary = {
 	&"decay_weight_corpse": {
 		"goal": "Kapı hem taşı hem bedeni bekliyor.",
 		"orientation": "Taş sürgüyü tutar. Dikenli plaka ise bir beden ister.",
-		"explicit": "Taşı sürgüye it; dikene dokunup bedenini plakada bırak."
+		"explicit": "Taşı plakaya it; dikene dokunup bedenini diğer plakada bırak."
 	},
 	&"decay_greenhouse_pot": {
 		"goal": "Sera mührü yalnız doğru saksıyı tanır.",
@@ -220,12 +220,12 @@ const HINTS: Dictionary = {
 	},
 	&"decay_greenhouse": {
 		"goal": "Sera mührü tek bir saksıya bağlı.",
-		"orientation": "Duvardaki yazı çiçeği, gölge ise doğru saksıyı gösterir.",
+		"orientation": "Gölge bir saksıya yürüyor. Camdaki yazı bahçe sırasını gösterir.",
 		"explicit": "Gölgenin durduğu saksıda öl; cesedin mührü açar."
 	},
 	&"decay_shilda_wall_broken": {
-		"goal": "Çatlak duvar kılıçla inmez.",
-		"orientation": "Gözler kızarınca atılır. Son anda kenara çekil; duvara çarpsın.",
+		"goal": "Çatlak duvar kılıçla inmez. Bulutu cesedinle geç.",
+		"orientation": "Cesedini buluta bırak, geç. Gözler kızarınca kenara çekil.",
 		"explicit": "İki çarpma duvarı yıkar. Üç kez öldüysen tek çarpma yeter."
 	},
 	&"decay_archive_key": {
@@ -241,11 +241,11 @@ const HINTS: Dictionary = {
 	&"library_witnesses": {
 		"goal": "Üç tanık aynı anda mührün yanında olmalı.",
 		"orientation": "Beden plakada, yankı plakada, sen mühürde dur.",
-		"explicit": "Dikene değ, sunağa dokun, plakaya bas, sonra mühre koş."
+		"explicit": "Dikene değ, sunağa dokun, plakaya bas, mühre koş: saat, çiçek, mühür."
 	},
 	&"library_clockroom": {
 		"goal": "Üç kadran var; saatler yankıda söylenmişti.",
-		"orientation": "Kadranlar sırayla: 1927, 1995, bugün. Tanıkları hatırla.",
+		"orientation": "1927, 1995, bugün: akreplerin gösterdiği saate kadranı çevir.",
 		"explicit": "Kadranları sırayla üç, dokuz ve altıya getir."
 	},
 	&"library_page_order": {
@@ -256,12 +256,12 @@ const HINTS: Dictionary = {
 	&"mirrors_reverse_crossed": {
 		"goal": "Aynalı zeminde sağ sol yer değiştiriyor.",
 		"orientation": "Kırmızı şeritler zeminde. Yönün ters, atlayarak geç.",
-		"explicit": "Şeritlerin önünde dur, ters yöne bas ve sağ uca var."
+		"explicit": "Şeritlerde dur, ters bas, sağ uca var. Kalkanlı gölgeyi kesme."
 	},
 	&"mirrors_dual_echo": {
-		"goal": "Yankın aynalı yürür; kolu o çeker, plakada sen dur.",
-		"orientation": "Sunağa kaydet, yankı sağdan koşar. Sen plakada bekle.",
-		"explicit": "Sunağı kaydet, ortaya yürü, dokun; sonra plakaya dön."
+		"goal": "Yankı aynada gibi tersler: sen sağa gidersen o sola gider.",
+		"orientation": "Plaka ve kol solda; yankın ulaşsın diye sen sağa yürü.",
+		"explicit": "Dikende öl; sunağa kaydet, sağa yürü; yankı plaka ve kolu tutar."
 	},
 	&"mirrors_dual_weight": {
 		"goal": "Dikenli plakayı bir beden basık tutmalı.",
@@ -283,6 +283,11 @@ const HINTS: Dictionary = {
 		"orientation": "Üçüncü plaka en sağda. Bedeni orada bırak.",
 		"explicit": "Sağdaki dikene dokun; beden son plakada kalır."
 	},
+	&"mirrors_1927_walk": {
+		"goal": "Gece kendi kendine oynuyor; gölgeyi izle.",
+		"orientation": "Gölge yürüyor; her noktada yakınında bekle.",
+		"explicit": "Gölgenin peşinden sağ uca yürü, sonra yankıya dokun."
+	},
 	&"mirrors_unbroken_mimic": {
 		"goal": "Yansıma bir yol yürüyor; yankın aynı yolu izlemeli.",
 		"orientation": "Yol üç nokta: yer, yüksek taş, yer. Yankıyı oradan geçir.",
@@ -290,8 +295,8 @@ const HINTS: Dictionary = {
 	},
 	&"core_ascent": {
 		"goal": "Son merdiven iki yetenek ve bir yankı istiyor.",
-		"orientation": "Önce yankının durduğu basamak. Sonra Ruh Kesimi ve Gölge Atılması.",
-		"explicit": "İkisi de açıkken son basamağa dokun; gölge mührü tutar."
+		"orientation": "Mührü Ruh Kesimi, perdeyi Gölge Atılması ile geç.",
+		"explicit": "Mührü kes, perdeden atıl; yankın plakada, sen kapıda."
 	},
 	&"core_threshold_crossed": {
 		"goal": "Kırmızı bulut canlıyı yer; geçit bulutun ötesinde.",
@@ -378,9 +383,19 @@ const HINTS: Dictionary = {
 		"orientation": "Sol kefe bedeni, sağ kefe taşı tartar.",
 		"explicit": "Sol kefede ölüp bedeni bırak, taşı sağ kefeye it."
 	},
+	&"experiment_authority": {
+		"goal": "Mührün üç hanesi başka odalardaki kayıtlarda.",
+		"orientation": "Hücre A, Hücre B, Kabul Kaydı: sırayla birer hane.",
+		"explicit": "Kod 418: Hücre A dört, Hücre B bir, Kabul sekiz; mühre gir."
+	},
+	&"experiment_circuit": {
+		"goal": "Yankın plakada kalırken sen kristale koş.",
+		"orientation": "Sunağa dokun, plakaya yürü, kayıt bitene dek bekle.",
+		"explicit": "Plakada sekiz saniye dur, sonra kristale koş; yankı plakada kalır."
+	},
 	&"experiment_quarantine_done": {
 		"goal": "Kırmızı sis canlıyı yer. Rapor sisin ötesinde, yüksek rafta.",
-		"orientation": "Ölü beden laneti emer. Cesedini sisin ortasına bırak.",
+		"orientation": "Ölü beden laneti emer. Sisin içinde öl; ceset güvenli alan açar.",
 		"explicit": "Bedeni bulutun içine koy, güvenli koridordan geç, rafa zıpla."
 	},
 	&"experiment_conduit": {
@@ -418,6 +433,7 @@ const ROOM_PUZZLES: Dictionary = {
 	"library_upper_stacks": [&"library_shelf_order"],
 	"library_forbidden_wing": [&"soul_seal_forbidden", &"soul_seal_forbidden_2"],
 	"library_reading_cell": [&"library_reading_cabin", &"library_reading_cell"],
+	"experiment_authority": [&"experiment_authority"],
 	"experiment_intake": [&"experiment_intake"],
 	"experiment_circuit": [&"experiment_circuit"],
 	"experiment_quarantine": [&"experiment_quarantine_done"],
@@ -429,6 +445,7 @@ const ROOM_PUZZLES: Dictionary = {
 	"mirrors_unbroken": [&"mirrors_unbroken_mimic"],
 	"mirrors_labyrinth": [&"mirrors_labyrinth_crossed"],
 	"mirrors_shrine": [&"mirrors_shrine_trial"],
+	"mirrors_1927": [&"mirrors_1927_walk"],
 	"core_bloom_garden": [&"core_bloom_order"],
 	"core_memory_vault": [&"core_vault_order"],
 	"core_threshold": [&"core_threshold_crossed"],

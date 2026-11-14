@@ -321,7 +321,7 @@ position = Vector2(300, 288)
 script = ExtResource("soul")
 puzzle_id = &"core_seal_bond_1"
 blocking = false
-wrong_line = "Bağ direniyor. Önce yakındakini kes."
+wrong_line = "Bağ direniyor. Bağları soldan sağa sırayla kes."
 
 [node name="Bond2" type="StaticBody2D" parent="Interactive"]
 position = Vector2(470, 288)
@@ -329,7 +329,7 @@ script = ExtResource("soul")
 puzzle_id = &"core_seal_bond_2"
 blocking = false
 requires = &"core_seal_bond_1"
-wrong_line = "Bağ direniyor. Önce yakındakini kes."
+wrong_line = "Bağ direniyor. Bağları soldan sağa sırayla kes."
 
 [node name="Bond3" type="StaticBody2D" parent="Interactive"]
 position = Vector2(640, 288)
@@ -337,4 +337,4 @@ script = ExtResource("soul")
 puzzle_id = &"core_seal_bond_3"
 blocking = false
 requires = &"core_seal_bond_2"
-wrong_line = "Bağ direniyor. Önce yakındakini kes."
+wrong_line = "Bağ direniyor. Bağları soldan sağa sırayla kes."

@@ -25,6 +25,10 @@ class Dial extends Area2D:
 
 func _ready() -> void:
 	_solved = PuzzleManager.is_solved(puzzle_id)
+	_heal_also_solve()
+	var rm := get_node_or_null("/root/RoomManager")
+	if rm and rm.has_signal("room_changed"):
+		rm.room_changed.connect(func(_f: StringName, _t: StringName) -> void: _heal_also_solve())
 	_values.resize(targets.size())
 	for i in targets.size():
 		_values[i] = targets[i] if _solved else 12
@@ -59,6 +63,15 @@ func _ready() -> void:
 		_dials.append(d)
 		_value_labels.append(lbl)
 		_refresh(i)
+
+
+## Eski kayıt onarımı: kadranlar çözülmüş ama bağlı kapı bulmacası işaretsiz kalmışsa tamamla.
+func _heal_also_solve() -> void:
+	if not PuzzleManager.is_solved(puzzle_id):
+		return
+	for id in also_solve:
+		if not PuzzleManager.is_solved(StringName(id)):
+			PuzzleManager.mark_solved(StringName(id))
 
 
 func values() -> PackedInt32Array:

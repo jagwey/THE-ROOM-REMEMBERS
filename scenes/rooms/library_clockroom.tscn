@@ -30,7 +30,7 @@ relic_id = "clock_1927"
 dialogue_room = &"library_clockroom"
 dialogue_set = &"clock_1927"
 evidence_title = "1927 Saati"
-evidence_body = "Saatler Odası'ndaki ilk saat 1927 gecesinde durmuş, cep saatiyle aynı gece."
+evidence_body = "İlk saatin akrebi üçte durmuş (1927). Cep saatim altıyı gösteriyor (bugün). Kadran sırası: 1927, 1995, bugün."
 
 [node name="Clock1995" type="Area2D" parent="Interactive"]
 position = Vector2(400, 288)
@@ -41,7 +41,7 @@ dialogue_room = &"library_clockroom"
 dialogue_set = &"clock_1995"
 locked_line = "Önce 1927 saatini dinlemeliyim."
 evidence_title = "1995 Saati"
-evidence_body = "İkinci saat 1995'te durmuş. İki gece birleşince kadranlar anlam kazandı."
+evidence_body = "İkinci saatin akrebi dokuzda durmuş (1995). Kadranlar sırayla üç, dokuz, altı."
 
 [node name="ClockDials" type="Node2D" parent="Interactive"]
 position = Vector2(840, 280)

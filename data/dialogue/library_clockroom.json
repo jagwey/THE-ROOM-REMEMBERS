@@ -2,16 +2,16 @@
   "room": "library_clockroom",
   "sets": {
     "clock_1927": [
-      {"s": "Noroi", "t": "Bu saat 1927'de durmuş, akrep geceyi gösteriyor."},
-      {"s": "Noroi", "t": "Cebimdeki saat de aynı geceyi sayıyor."},
+      {"s": "Noroi", "t": "Bu saat 1927'de durmuş. Akrep üçte durmuş."},
+      {"s": "Noroi", "t": "Cebimdeki saat altıyı gösteriyor. Bugünün saati bu."},
       {"s": "@shilda", "t": "O gece bir ses kayboldu. Saatler onu bekliyor."},
       {"s": "Noroi", "t": "Yanındaki saat başka bir yılı gösteriyor."}
     ],
     "clock_1995": [
-      {"s": "Noroi", "t": "1995 yılında bu saat de durmuş."},
+      {"s": "Noroi", "t": "1995 yılında bu saat de durmuş. Bu saatin akrebi dokuzu gösteriyor."},
       {"s": "@shilda", "t": "İki gece. İkisini de saatler tutuyor."},
       {"s": "Noroi", "t": "İkisini aynı anda duyunca kapı titredi."},
-      {"s": "@shilda", "t": "Üç kadran var. Sırayı sen bil."}
+      {"s": "@shilda", "t": "Üç kadran: 1927, 1995, bugün. Sırayla, soldan sağa."}
     ]
   }
 }

@@ -25,7 +25,7 @@ npc_id = &"librarian"
 idle_anim = "librarian_idle"
 walk_anim = "librarian_walk"
 wander = 20.0
-dialogue_sets = PackedStringArray("Arşivci|Yine mi sen? Raflar adımlarını ezberlemiş.;;Noroi|Beni tanıyor musun?;;Arşivci|Ciltlediğim kitaplar senin elinden geçti, gezgin.", "Arşivci|Kitapların bir sırası var. Sırayı raf bilir, ben değil.;;Arşivci|Yere düşenlere bak. Birinde not kalmış.", "Arşivci|Kesik sende olunca yasak kanada geç.;;Arşivci|Kılıç bedenleri keser. Mühürleri ruh.")
+dialogue_sets = PackedStringArray("Arşivci|Yine mi sen? Raflar adımlarını ezberlemiş.;;Noroi|Beni tanıyor musun?;;Arşivci|Ciltlediğim kitaplar senin elinden geçti, gezgin.", "Arşivci|Kitapların bir sırası var. Sırayı raf bilir, ben değil.;;Arşivci|Yere düşenlere bak. Birinde not kalmış.", "Arşivci|Yasak kanatta mühürler var.;;Arşivci|Kılıç bedenleri keser; mühürleri ancak ruh keser.")
 
 [node name="FallenBooks" type="Area2D" parent="Interactive"]
 position = Vector2(280.0, 288.0)

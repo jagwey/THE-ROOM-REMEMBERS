@@ -37,7 +37,10 @@ func on_interact(_by: Node) -> void:
 	if not PuzzleManager.is_solved(&"core_seal"):
 		DialogueManager.say("", "Mühür odasındaki bağlar henüz çözülmedi.")
 	if not st["shards"]:
-		DialogueManager.say("", "İki mühür parçası da gerekiyor.")
+		if not bool(GameState.get_world_flag(&"seal_shard_1", false)):
+			DialogueManager.say("", "1. mühür parçası eksik: Yasak Kanat.")
+		if not bool(GameState.get_world_flag(&"seal_shard_2", false)):
+			DialogueManager.say("", "2. mühür parçası eksik: Ayna Tapınağı.")
 	if not st["slash"]:
 		DialogueManager.say("", "Bağları kesecek güç henüz uyanmadı: Ruh Kesimi.")
 	await DialogueManager.dialogue_finished
