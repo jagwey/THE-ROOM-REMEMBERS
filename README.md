@@ -178,7 +178,7 @@ flowchart LR
 ### Katakomb çiçeği ve Sarnıç (Faz 0)
 Kemik Mahzeni girişinde (x≈150) tükenmez bir çiçek kaynağı durur. Çiçek elde ölürsen ceset çiçeği taşır ve fener gibi yanar; karanlık yol aydınlanır. Çiçek hayat başınadır, ölümde cesede geçer ve elden silinir. Sarnıç yan kapısı artık yetenek istemez.
 
-### Sera (oda 09) kapı düzeltmesi (yayınlanmadı, sonraki sürüm)
+### v1.18.2 (yayınlandı 2026-11-15, versionCode 50) — Sera (oda 09) kapı düzeltmesi
 - Orta saksıya (PotB) ceset düşünce `ExitGate` artık geçiş beklemeden `decay_greenhouse_pot` + `decay_greenhouse`'u kalıcı çözer (`gate_blocker.latch_on_live`). Ceset sonradan alınsa da kapı ve sağ çıkış (x=1240) açık kalır; plakada ceset olan eski kayıtlar odaya girince onarılır.
 - `blood_thorn`: `anchor_y` verilmese de beden her zaman `anchor_x`'e düşer (son güvenli zemin yüksekliğinde).
 - Denetim: phase2 `greenhouse_right_pot_latches_without_crossing`, `greenhouse_gate_stays_open_after_corpse_removed`, `greenhouse_real_thorn_death_opens_gate`/`_unlocks_exit` (gerçek diken yolu, iki başlangıç konumu).
