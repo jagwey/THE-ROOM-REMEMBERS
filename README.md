@@ -178,6 +178,11 @@ flowchart LR
 ### Katakomb çiçeği ve Sarnıç (Faz 0)
 Kemik Mahzeni girişinde (x≈150) tükenmez bir çiçek kaynağı durur. Çiçek elde ölürsen ceset çiçeği taşır ve fener gibi yanar; karanlık yol aydınlanır. Çiçek hayat başınadır, ölümde cesede geçer ve elden silinir. Sarnıç yan kapısı artık yetenek istemez.
 
+### v1.18.3 (versionCode 51) — Defterden hızlı seyahat
+- Defter → Harita sekmesinde daha önce girilmiş bir odaya dokun: oda seçilir, üstte adı ve "Gitmek için tekrar dokun" çıkar. Aynı odaya tekrar dokununca defter kapanır, ekran kararır ve oda girişinde doğarsın.
+- Engeller (kırmızı uyarı): bulunduğun oda, hiç görmediğin oda, kapı geçişi sürerken, ölürken ve kristal savunması aktifken gidilmez. Defter zaten yalnız serbest oyunda açıldığı için diyalog/sinematik/final sırasında çalışmaz.
+- Kod: `RoomManager.fast_travel_block_reason()` / `fast_travel()`, `JournalMap.travel_requested`, `DoorScript.begin_transition_lock()`. Denetim: `scripts/dev/fast_travel_audit.gd` (14 kontrol).
+
 ### v1.18.2 (yayınlandı 2026-11-15, versionCode 50) — Sera (oda 09) kapı düzeltmesi
 - Orta saksıya (PotB) ceset düşünce `ExitGate` artık geçiş beklemeden `decay_greenhouse_pot` + `decay_greenhouse`'u kalıcı çözer (`gate_blocker.latch_on_live`). Ceset sonradan alınsa da kapı ve sağ çıkış (x=1240) açık kalır; plakada ceset olan eski kayıtlar odaya girince onarılır.
 - `blood_thorn`: `anchor_y` verilmese de beden her zaman `anchor_x`'e düşer (son güvenli zemin yüksekliğinde).

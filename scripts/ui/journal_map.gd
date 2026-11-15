@@ -29,10 +29,65 @@ const SHORTCUT_LINKS := {
 }
 
 var _rooms_by_region: Dictionary = {}
+## Hızlı seyahat: ziyaret edilmiş oda düğümlerinin dokunma noktaları (her çizimde yenilenir).
+signal travel_requested(room_id: StringName)
+const HIT_RADIUS := 18.0
+var _hits: Array = [] # [{"pos": Vector2, "room": String, "rect": Rect2}]
+var _pending: String = ""
+var _pending_rect: Rect2 = Rect2()
+var _notice: String = ""
 
 
 func _ready() -> void:
+	mouse_filter = Control.MOUSE_FILTER_STOP
 	_collect_rooms()
+	visibility_changed.connect(func(): _clear_pending())
+
+
+func _clear_pending() -> void:
+	_pending = ""
+	_notice = ""
+	queue_redraw()
+
+
+## Bir kez dokun: oda seçilir ve sorulur; aynı odaya tekrar dokun: git. Boşluğa dokunmak iptal eder.
+func _gui_input(event: InputEvent) -> void:
+	## Yalnız fare tıklaması: mobilde dokunuş zaten fareye çevrilir (emulate_mouse_from_touch);
+	## ScreenTouch'u da dinlemek tek dokunuşu iki kez sayıp seçimi anında onaylardı.
+	if not (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT):
+		return
+	var pos: Vector2 = event.position
+	accept_event()
+	var hit := _hit_at(pos)
+	if hit.is_empty():
+		_clear_pending()
+		return
+	var rid := String(hit["room"])
+	if rid == _pending:
+		var reason := RoomManager.fast_travel_block_reason(StringName(rid))
+		if reason != "":
+			_notice = reason
+			queue_redraw()
+			return
+		_pending = ""
+		_notice = ""
+		travel_requested.emit(StringName(rid))
+		return
+	_pending = rid
+	_pending_rect = hit["rect"]
+	_notice = RoomManager.fast_travel_block_reason(StringName(rid))
+	queue_redraw()
+
+
+func _hit_at(pos: Vector2) -> Dictionary:
+	var best: Dictionary = {}
+	var best_d := HIT_RADIUS
+	for h in _hits:
+		var d := pos.distance_to(h["pos"])
+		if d <= best_d:
+			best_d = d
+			best = h
+	return best
 
 
 func refresh() -> void:
@@ -102,6 +157,7 @@ func _diamond(c: Vector2, r: float, filled: bool, col: Color) -> void:
 func _draw() -> void:
 	if _rooms_by_region.is_empty():
 		_collect_rooms()
+	_hits.clear()
 	# Yeni ziyaret edilen odalar listeye eklensin.
 	var visited: Array = GameState.player_progress_knowledge.get("rooms_visited", [])
 	for v in visited:
@@ -143,6 +199,11 @@ func _draw() -> void:
 			shortcuts.append(sid)
 	_text(Vector2(0, 50), "Kanıt %d" % ev_count, UiTheme.HINT, INK)
 	_text(Vector2(0, 68), "Kısayol %d" % shortcuts.size(), UiTheme.HINT, GOLD if shortcuts.size() > 0 else Color(INK, 0.55))
+	var tip := "Odaya dokun: hızlı git"
+	var tip_size: int = UiTheme.HINT
+	while tip_size > 10 and _text_w(tip, tip_size) > page_w - 24.0 - 110.0:
+		tip_size -= 1
+	_text(Vector2(page_w - 24.0 - _text_w(tip, tip_size), 68), tip, tip_size, Color(INK, 0.6))
 	# Gösterge (sağ sayfa, kurdelenin solu)
 	var lx := right_x + 6.0
 	draw_circle(Vector2(lx + 7, 11), 7.0, INK)
@@ -180,6 +241,24 @@ func _draw() -> void:
 	for i in REGIONS.size():
 		var reg: Dictionary = REGIONS[i]
 		_draw_region(reg, cell_rect[String(reg["id"])], visited, corpses_by_room)
+	if _pending != "":
+		_draw_travel_prompt()
+
+
+## Seçili odanın bölge kutusunun üstüne parşömen şerit: oda adı + "tekrar dokun" ya da engel nedeni.
+func _draw_travel_prompt() -> void:
+	var r := _pending_rect
+	var band := Rect2(r.position + Vector2(2, 2), Vector2(r.size.x - 4.0, minf(r.size.y - 30.0, 44.0)))
+	draw_rect(band, Palette.IVORY, true)
+	draw_rect(band, INK, false, 2.0)
+	var line1 := RoomManager.get_room_number_and_title(StringName(_pending))
+	var line2 := _notice if _notice != "" else "Gitmek için tekrar dokun"
+	for pair in [[line1, 3.0, true, INK], [line2, 22.0, false, Palette.CRIMSON if _notice != "" else INK]]:
+		var t: String = pair[0]
+		var sz: int = UiTheme.HINT
+		while sz > 10 and _text_w(t, sz) > band.size.x - 12.0:
+			sz -= 1
+		_text(band.position + Vector2(6, pair[1]), t, sz, pair[3], pair[2])
 
 
 func _dashed(a: Vector2, b: Vector2, col: Color) -> void:
@@ -234,6 +313,11 @@ func _draw_region(reg: Dictionary, rect: Rect2, visited: Array, corpses_by_room:
 		var c := Vector2(x, cy)
 		var dead := int(corpses_by_room.get(rid, 0))
 		if visited.has(rid):
+			_hits.append({"pos": c, "room": rid, "rect": rect})
+			if rid == _pending:
+				draw_arc(c, 14.0, 0.0, TAU, 24, GOLD, 3.0)
+			if rid == String(RoomManager.get_active_room_id()):
+				draw_arc(c, 13.0, 0.0, TAU, 24, Color(GOLD, 0.7), 1.5)
 			draw_circle(c, 8.0, Palette.CRIMSON if dead > 0 else INK)
 			draw_arc(c, 10.0, 0.0, TAU, 20, Color(INK, 0.55), 1.5)
 			if dead > 0:

@@ -72,6 +72,7 @@ func _ready() -> void:
 	tab_izler.pressed.connect(func(): _show_section("izler"))
 	tab_harita.pressed.connect(func(): _show_section("harita"))
 	btn_close.pressed.connect(close_journal)
+	map_view.travel_requested.connect(_on_travel_requested)
 	EchoManager.journal_updated.connect(func(): if visible: _show_section(_section))
 	set_process_unhandled_input(true)
 
@@ -110,6 +111,14 @@ func close_journal() -> void:
 	UiGate.set_journal(false)
 	MobileInputManager.clear_held_inputs()
 	closed.emit()
+
+
+## Harita sekmesinden hızlı seyahat: günlüğü kapat, sonra kararma ile odaya geç.
+func _on_travel_requested(room_id: StringName) -> void:
+	if RoomManager.fast_travel_block_reason(room_id) != "":
+		return
+	close_journal()
+	RoomManager.fast_travel(room_id)
 
 
 func toggle_journal() -> void:

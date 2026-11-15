@@ -238,6 +238,66 @@ func _run_door_travel(door: Node, player: Node2D, fade: CanvasLayer, rect: Color
 	DoorScript.reset_transition_lock()
 
 
+## Hızlı seyahat (defter haritası): boş dönerse gidilebilir, değilse oyuncuya gösterilecek neden.
+func fast_travel_block_reason(room_id: StringName) -> String:
+	if room_id == _current:
+		return "Zaten buradasın."
+	if not _rooms.has(room_id):
+		return "Bu odaya yol yok."
+	var visited: Array = GameState.player_progress_knowledge.get("rooms_visited", [])
+	if not visited.has(String(room_id)):
+		return "Bu odayı henüz görmedin."
+	var DoorScript = load("res://scripts/world/room_transition.gd")
+	if DoorScript and DoorScript.is_transitioning():
+		return "Geçiş sürüyor."
+	if DeathManager.is_dying:
+		return "Şimdi olmaz."
+	for d in get_tree().get_nodes_in_group("core_defense"):
+		if d.has_method("is_active") and d.is_active():
+			return "Kristali korurken ayrılamam."
+	return ""
+
+
+## Ziyaret edilmiş bir odaya kararma ile ışınlanır (oda girişinde doğar). Engel varsa false.
+func fast_travel(room_id: StringName) -> bool:
+	if fast_travel_block_reason(room_id) != "":
+		return false
+	var DoorScript = load("res://scripts/world/room_transition.gd")
+	var tree := get_tree()
+	DoorScript.begin_transition_lock()
+	UiGate.set_cutscene(true)
+	MobileInputManager.clear_held_inputs()
+	AudioManager.play_sfx(&"door_open", -6.0)
+	var fade := CanvasLayer.new()
+	fade.name = "FastTravelFade"
+	fade.layer = 90
+	var rect := ColorRect.new()
+	rect.color = Color(0.03, 0.02, 0.04, 0.0)
+	rect.set_anchors_preset(Control.PRESET_FULL_RECT)
+	rect.mouse_filter = Control.MOUSE_FILTER_STOP
+	fade.add_child(rect)
+	tree.root.add_child(fade)
+	var tw := tree.create_tween()
+	tw.tween_property(rect, "color:a", 1.0, float(DoorScript.FADE_OUT) * 1.4)
+	await tw.finished
+	enter_room(room_id, &"default")
+	var player := tree.get_first_node_in_group("player") as Node2D
+	if is_instance_valid(player):
+		player.modulate = Color.WHITE
+		if player is CharacterBody2D:
+			(player as CharacterBody2D).velocity = Vector2.ZERO
+	await tree.process_frame
+	if is_instance_valid(rect):
+		var tw2 := tree.create_tween()
+		tw2.tween_property(rect, "color:a", 0.0, float(DoorScript.FADE_IN) * 1.4)
+		await tw2.finished
+	if is_instance_valid(fade):
+		fade.queue_free()
+	UiGate.set_cutscene(false)
+	DoorScript.reset_transition_lock()
+	return true
+
+
 func enter_room(room_id: StringName, spawn_id: StringName = &"default", apply_room_checkpoint: bool = true) -> void:
 	if not _rooms.has(room_id):
 		push_warning("RoomManager.enter_room: unknown room %s" % String(room_id))

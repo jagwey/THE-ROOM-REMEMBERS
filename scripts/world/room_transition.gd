@@ -379,6 +379,11 @@ static func is_transitioning() -> bool:
 	return _transitioning
 
 
+## Hızlı seyahat (defter haritası) kapı dışından aynı kilidi kurar.
+static func begin_transition_lock() -> void:
+	_transitioning = true
+
+
 static func reset_transition_lock() -> void:
 	_transitioning = false
 	UiGate.set_cutscene(false)
