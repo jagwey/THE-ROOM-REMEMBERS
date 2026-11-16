@@ -1,6 +1,7 @@
 [gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/core_ascent_room.gd" id="room"]
+[ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore_story"]
 [ext_resource type="Script" path="res://scripts/world/ordered_relic.gd" id="relic"]
 [ext_resource type="Script" path="res://scripts/world/soul_seal.gd" id="soul"]
 [ext_resource type="Script" path="res://scripts/world/curse_barrier.gd" id="barrier"]
@@ -53,7 +54,7 @@ relic_id = "ascent_echo"
 dialogue_room = &"core_ascent"
 dialogue_set = &"echo"
 evidence_title = "Son Basamak"
-evidence_body = "Son merdiven yankıyı, iki yeteneği ve gölgenin mührünü aynı yerde istiyor."
+evidence_body = "Son merdiven aynı anda yankıyı, iki yeteneği ve gölgenin tuttuğu mührü istiyor."
 
 [node name="EchoAltar" type="Area2D" parent="Interactive"]
 position = Vector2(810, 288)
@@ -112,7 +113,17 @@ dialogue_room = &"core_ascent"
 dialogue_set = &"go"
 solve_puzzle = &"core_ascent"
 locked_line = "Önce yankının durduğu basamağı dinlemeliyim."
-soul_refusal_line = "Son basamak Ruh Kesimi istiyor, onu Yasak Kanat'ta öğrenebilirim."
-dash_refusal_line = "Perde Gölge Atılması istiyor, onu Ayna Tapınağı'nda öğrenebilirim."
+soul_refusal_line = "Ruh Kesimi olmadan bu basamaktan geçemem. Yasak Kanat'ta öğrenmeliyim."
+dash_refusal_line = "Gölge Atılması olmadan perdeye varamam. Ayna Tapınağı'nda öğrenmeliyim."
 evidence_title = "Gidelim"
-evidence_body = "İki yetenek ve yankı birleşince gölge son mührü tuttu. Birlikte mühür odasına inilir."
+evidence_body = "İki yetenek ve yankı birleşince gölge son mührü tuttu. Birlikte mühür odasına geçeriz."
+
+[node name="AscentStairs" type="Area2D" parent="Interactive"]
+position = Vector2(440, 288)
+script = ExtResource("lore_story")
+lore_id = &"core_ascent_stairs"
+texture_path = "res://assets/props/candles.png"
+sprite_scale = 0.45
+dialogue_room = &"core_ascent"
+dialogue_set = &"ascent_stairs"
+repeat_line = "Noroi|Her basamakta bir ses değişiyor. Birlikte çıkıyoruz."

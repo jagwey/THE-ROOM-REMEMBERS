@@ -1,5 +1,7 @@
-[gd_scene load_steps=21 format=3 uid="uid://torimon_decay_vines"]
+[gd_scene load_steps=23 format=3 uid="uid://torimon_decay_vines"]
 
+[ext_resource type="Script" path="res://scripts/world/memory_shrine.gd" id="mem_shrine"]
+[ext_resource type="Script" path="res://scripts/world/sequence_step.gd" id="mem_step"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/decay/far.png" id="1"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/decay/mid.png" id="2"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/decay/front.png" id="3"]
@@ -11,6 +13,7 @@
 [ext_resource type="Texture2D" path="res://assets/layers/vines.png" id="10"]
 [ext_resource type="Texture2D" path="res://assets/layers/rubble.png" id="11"]
 [ext_resource type="Script" path="res://scripts/world/flower_source.gd" id="flower_src"]
+[ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore"]
 [ext_resource type="Texture2D" path="res://assets/props/red_flower.png" id="flower_tex"]
 
 [ext_resource type="Texture2D" path="res://assets/tiles/tile_00.png" id="walk_tile"]
@@ -142,6 +145,15 @@ target_spawn_id = &"default"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ExitToWeight"]
 shape = SubResource("TransitionHit")
+
+[node name="VineSign" type="Area2D" parent="Interactive"]
+position = Vector2(180, 288)
+script = ExtResource("lore")
+lore_id = &"decay_vines_sign"
+texture_path = "res://assets/props/curse.png"
+sprite_scale = 0.5
+lines = PackedStringArray("Noroi|Duvar boyu sarmaşık. Kılıç işlemez, dallar çiçek kokusundan çekilir.", "Noroi|Kökte yanık izi var. Bir bedeni çiçekle getirirsem yolu açar.")
+repeat_line = "Noroi|Çiçeği al, bedeni sarmaşığa taşı."
 
 [node name="FlowerSource" type="Area2D" parent="Interactive"]
 position = Vector2(300, 288)
@@ -437,3 +449,44 @@ centered = false
 [node name="Foundation" type="Polygon2D" parent="WalkableTerrain"]
 polygon = PackedVector2Array(0, 320, 1280, 320, 1280, 360, 0, 360)
 color = Color(0.08, 0.06, 0.1, 1)
+
+[node name="VineHold" type="Area2D" parent="Interactive"]
+position = Vector2(480, 288)
+script = ExtResource("lore")
+lore_id = &"vine_hold"
+texture_path = "res://assets/props/red_flower.png"
+sprite_scale = 0.45
+dialogue_room = &"decay_vines"
+dialogue_set = &"vine_hold"
+repeat_line = "Noroi|Sarmaşık çiçeği sarmış. Boğmuyor, tutuyor."
+
+[node name="MemoryFragments" type="Node2D" parent="Interactive"]
+script = ExtResource("mem_shrine")
+memory_id = "decay"
+
+[node name="Step_a" type="Area2D" parent="Interactive/MemoryFragments"]
+position = Vector2(1100, 288)
+script = ExtResource("mem_step")
+step_id = "a"
+label = "Kırık Anı Parçası"
+texture_path = "res://assets/props/ledger.png"
+sprite_scale = 0.4
+tint = Color(0.85, 0.7, 0.95, 1)
+
+[node name="Step_b" type="Area2D" parent="Interactive/MemoryFragments"]
+position = Vector2(1000, 288)
+script = ExtResource("mem_step")
+step_id = "b"
+label = "Kırık Anı Parçası"
+texture_path = "res://assets/props/ledger.png"
+sprite_scale = 0.4
+tint = Color(0.85, 0.7, 0.95, 1)
+
+[node name="Step_c" type="Area2D" parent="Interactive/MemoryFragments"]
+position = Vector2(1050, 288)
+script = ExtResource("mem_step")
+step_id = "c"
+label = "Kırık Anı Parçası"
+texture_path = "res://assets/props/ledger.png"
+sprite_scale = 0.4
+tint = Color(0.85, 0.7, 0.95, 1)

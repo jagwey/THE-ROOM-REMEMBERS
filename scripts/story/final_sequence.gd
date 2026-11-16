@@ -117,7 +117,7 @@ func play(tree: SceneTree, fast_mode: bool = false) -> void:
 		["X", "İhtiyacım olan şeyi aldım."],
 		["Shilda", "Bizi neden kurtarmadınız?"],
 		["X", "Çünkü henüz işiniz bitmemişti."],
-		["Noroi", "Biz insanız, ne işimiz olacak?"],
+		["Noroi", "Biz sadece insanız; ne işimiz kalır?"],
 		["X", "Bölüm iki sizsiz açılmaz."],
 	])
 	await _portal_leave()

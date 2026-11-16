@@ -1,5 +1,7 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=12 format=3]
 
+[ext_resource type="Script" path="res://scripts/world/memory_shrine.gd" id="mem_shrine"]
+[ext_resource type="Script" path="res://scripts/world/sequence_step.gd" id="mem_step"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/mirrors/far.png" id="1"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/mirrors/mid.png" id="2"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/mirrors/front.png" id="3"]
@@ -165,7 +167,7 @@ position = Vector2(675, 290)
 script = ExtResource("thorn")
 anchor_x = 620.0
 puzzle_hint = &"mirrors_dual_weight"
-body_line = "Dokunursam ölürüm, beden plakanın üstünde kalmalı."
+body_line = "Dokunursam ölürüm. Bedenim plakada kalmalı."
 solved_line = "Plaka sustu, beden onu tutuyor."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BloodThorn"]
@@ -371,3 +373,34 @@ centered = false
 [node name="Foundation" type="Polygon2D" parent="WalkableTerrain"]
 polygon = PackedVector2Array(0, 320, 960, 320, 960, 360, 0, 360)
 color = Color(0.08, 0.06, 0.1, 1)
+
+[node name="MemoryFragments" type="Node2D" parent="Interactive"]
+script = ExtResource("mem_shrine")
+memory_id = "aynalar"
+
+[node name="Step_a" type="Area2D" parent="Interactive/MemoryFragments"]
+position = Vector2(490, 288)
+script = ExtResource("mem_step")
+step_id = "a"
+label = "Kırık Anı Parçası"
+texture_path = "res://assets/props/ledger.png"
+sprite_scale = 0.4
+tint = Color(0.85, 0.7, 0.95, 1)
+
+[node name="Step_b" type="Area2D" parent="Interactive/MemoryFragments"]
+position = Vector2(540, 288)
+script = ExtResource("mem_step")
+step_id = "b"
+label = "Kırık Anı Parçası"
+texture_path = "res://assets/props/ledger.png"
+sprite_scale = 0.4
+tint = Color(0.85, 0.7, 0.95, 1)
+
+[node name="Step_c" type="Area2D" parent="Interactive/MemoryFragments"]
+position = Vector2(440, 288)
+script = ExtResource("mem_step")
+step_id = "c"
+label = "Kırık Anı Parçası"
+texture_path = "res://assets/props/ledger.png"
+sprite_scale = 0.4
+tint = Color(0.85, 0.7, 0.95, 1)

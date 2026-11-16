@@ -30,7 +30,7 @@ texture_path = "res://assets/layers/flowers.png"
 sprite_scale = 0.35
 lines = PackedStringArray("Noroi|Çekirdeğin içinde bir bahçe açmış.", "Shilda|Her ölümüne bir çiçek. Taçları say.", "Shilda|Önce en çok, sonra en az, sonra kalan.")
 evidence_title = "Çiçek Bahçesi"
-evidence_body = "Shilda her ölüm için bir çiçek saklamış. Taşlar taçlardaki çiçek sayısına göre uyanıyor."
+evidence_body = "Shilda her ölüm için bir çiçek saklamış. Taşlar taçlardaki çiçek sayısına göre uyanıyor: önce en çok, sonra en az, sonra kalan."
 evidence_section = "notlar"
 
 [node name="BloomShrine" type="Node2D" parent="Interactive"]
@@ -86,7 +86,7 @@ position = Vector2(320.0, 290.0)
 script = ExtResource("thorn")
 anchor_x = 260.0
 puzzle_hint = &"core_bloom_weight"
-body_line = "Dokunursam ölürüm, beden plakanın üstünde kalmalı."
+body_line = "Dikene dokunursam ölürüm. Beden plakada kalmalı ki taşlar ağırlığı duysun."
 solved_line = "Plaka sustu, beden ağırlığını verdi."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BloodThorn"]
@@ -99,12 +99,22 @@ lore_id = &"bloom_reconcile"
 texture_path = "res://assets/props/red_flower.png"
 sprite_scale = 0.8
 requires_puzzle = &"core_bloom_order"
-locked_lines = PackedStringArray("Shilda|Taşlar hâlâ uyuyor.", "Noroi|Önce taşları uyandırmalıyım.")
+locked_lines = PackedStringArray("Shilda|Acele etme. Taşlar sırayla uyanır.", "Noroi|Önce taşları uyandırmalıyım.")
 lines = PackedStringArray("Shilda|Sana güveniyorum. Sen de yanımda kal.", "Noroi|Hatırlamıyorum ama özür dilerim.", "Shilda|…Bu yeter. Yanındayım.")
 repeat_line = "Shilda|Yanındayım."
 untrusted_lines = PackedStringArray("Shilda|Sana henüz güvenemiyorum.")
 trust_gate = true
 set_progress_key = "trusted_keeper"
 evidence_title = "Bahçedeki Barışma"
-evidence_body = "Shilda her ölümüm için bir çiçeği Çekirdek'in içinde saklamış. Barıştık."
+evidence_body = "Hatırlamasam da özür diledim. Shilda bunun yettiğini söyledi; yanımda kalacak."
 evidence_section = "notlar"
+
+[node name="BloomFacing" type="Area2D" parent="Interactive"]
+position = Vector2(540, 288)
+script = ExtResource("lore")
+lore_id = &"bloom_facing"
+texture_path = "res://assets/props/red_flower.png"
+sprite_scale = 0.45
+dialogue_room = &"core_bloom_garden"
+dialogue_set = &"bloom_facing"
+repeat_line = "Noroi|Çiçekler aynı yöne dönük. Bana doğru."

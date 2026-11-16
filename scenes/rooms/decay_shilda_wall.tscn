@@ -21,7 +21,7 @@ region_id = &"decay"
 room_width = 1440.0
 bg_region = "decay"
 checkpoint = Vector2(120, 288)
-doors = [{"x": 40.0, "to": "decay_greenhouse", "spawn": "from_decay_shilda_wall"}, {"x": 1120.0, "to": "awakening_crypt", "spawn": "from_decay_shilda_wall", "req": "decay_shilda_wall_broken", "msg": "Duvar yolu kapatıyor."}, {"x": 1400.0, "to": "decay_garden", "spawn": "from_weight", "req": "decay_shilda_wall_broken", "msg": "Duvar yolu kapatıyor."}]
+doors = [{"x": 40.0, "to": "decay_greenhouse", "spawn": "from_decay_shilda_wall"}, {"x": 1120.0, "to": "awakening_crypt", "spawn": "from_decay_shilda_wall", "req": "decay_shilda_wall_broken", "msg": "Mahzen yolu taşla kapalı. Önce bulutu emdirmeliyim."}, {"x": 1400.0, "to": "decay_garden", "spawn": "from_weight", "req": "decay_shilda_wall_broken", "msg": "Koridor kapalı. Önce bulutu bedenimle emdirmeliyim."}]
 
 [node name="Interactive" type="Node2D" parent="."]
 
@@ -76,3 +76,13 @@ lines = PackedStringArray("Noroi|Duvarın ardında sıra sıra kurumuş kırmız
 evidence_title = "Ölüm Çiçekleri"
 evidence_body = "Her ölüm için bir çiçek saklanmış. Son sayı: {deaths}."
 evidence_section = "izler"
+
+[node name="WallMarks" type="Area2D" parent="Interactive"]
+position = Vector2(660, 288)
+script = ExtResource("lore")
+lore_id = &"wall_marks"
+texture_path = "res://assets/props/photograph.png"
+sprite_scale = 0.45
+dialogue_room = &"decay_shilda_wall"
+dialogue_set = &"wall_marks"
+repeat_line = "Noroi|Duvarda aynı boyda parmak izleri. Hepsi yukarı uzanıyor."

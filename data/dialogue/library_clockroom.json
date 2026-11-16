@@ -2,16 +2,39 @@
   "room": "library_clockroom",
   "sets": {
     "clock_1927": [
-      {"s": "Noroi", "t": "Bu saat 1927'de durmuş. Akrep üçte durmuş."},
-      {"s": "Noroi", "t": "Cebimdeki saat altıyı gösteriyor. Bugünün saati bu."},
+      {"s": "Noroi", "t": "Bu saat 1927'de durmuş. Akrep üçte kalmış."},
+      {"s": "Noroi", "t": "Cebimdeki saat altıyı gösteriyor, bugünün saati."},
       {"s": "@shilda", "t": "O gece bir ses kayboldu. Saatler onu bekliyor."},
+      {"s": "Noroi", "t": "Neden bu kadar eminsin?"},
+      {"s": "@shilda", "t": "O geceyi sessizce yaşayan biri bilir. Bu kadarını söylerim."},
       {"s": "Noroi", "t": "Yanındaki saat başka bir yılı gösteriyor."}
     ],
     "clock_1995": [
-      {"s": "Noroi", "t": "1995 yılında bu saat de durmuş. Bu saatin akrebi dokuzu gösteriyor."},
+      {"s": "Noroi", "t": "Bu saat 1995'te durmuş, akrebi dokuzda kalmış."},
+      {"s": "Noroi", "t": "1995. Girdiğim yıl."},
+      {"s": "@shilda", "t": "Saatler kendi kendine durmaz. O gün biri durdurdu."},
+      {"s": "Noroi", "t": "Kim?"},
+      {"s": "@shilda", "t": "Kayıtları tutan. Adını kimse bilmiyordu."},
       {"s": "@shilda", "t": "İki gece. İkisini de saatler tutuyor."},
-      {"s": "Noroi", "t": "İkisini aynı anda duyunca kapı titredi."},
+      {"s": "Noroi", "t": "İkisini birlikte dinleyince kapı titredi."},
       {"s": "@shilda", "t": "Üç kadran: 1927, 1995, bugün. Sırayla, soldan sağa."}
+    ],
+    "clock_pendulum": [
+      {"s": "Noroi", "t": "Sarkaç tek yöne sarkıp kalmış. Geri dönemeyen bir salınış."},
+      {"s": "Noroi", "t": "Saat durunca zaman gerçekten duruyor mu?"},
+      {"s": "@shilda", "t": "Dışarıda durmaz. Burada durur, içeridekiler de onunla."},
+      {"s": "Noroi", "t": "Peki sen hâlâ yürüyorsun. Ya da süzülüyorsun."},
+      {"s": "@shilda", "t": "Dışarıda sayılmam, içeride de. Arada bir yerdeyim."},
+      {"s": "Noroi", "t": "Fark ettim: bana kızmayı bıraktın."},
+      {"s": "@shilda", "t": "Sana hiç kızmadım. Kendime kızıyordum, sen yanlış yerdeydin."}
+    ],
+    "clock_photo": [
+      {"s": "Noroi", "t": "Camın altında tozlu bir fotoğraf. Sıradaki herkesin yüzü silinmiş."},
+      {"s": "Noroi", "t": "Altında bir yazı var: «Araştırma Yardımcısı S., ön sıra.»"},
+      {"s": "Noroi", "t": "En öndeki kadının elinde küçük bir defter."},
+      {"s": "@shilda", "t": "Silinmeyen tek şey o defter. Hep yazardı."},
+      {"s": "Noroi", "t": "Bu sensin."},
+      {"s": "@shilda", "t": "Bir zamanlar. Daha fazlasını sorma, yakında kendin göreceksin."}
     ]
   }
 }

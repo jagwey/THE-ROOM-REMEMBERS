@@ -1,0 +1,304 @@
+[gd_scene load_steps=19 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
+[ext_resource type="Script" path="res://scripts/world/gate_blocker.gd" id="gate"]
+[ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore"]
+[ext_resource type="Script" path="res://scripts/world/pressure_plate.gd" id="plate"]
+[ext_resource type="Script" path="res://scripts/world/sequence_shrine.gd" id="shrine"]
+[ext_resource type="Script" path="res://scripts/world/sequence_step.gd" id="step"]
+[ext_resource type="Script" path="res://scripts/world/weight_stone.gd" id="stone"]
+[ext_resource type="Script" path="res://scripts/world/blood_thorn.gd" id="thorn"]
+[ext_resource type="Script" path="res://scripts/world/valve.gd" id="valve"]
+[ext_resource type="Script" path="res://scripts/world/water_level.gd" id="water"]
+[ext_resource type="Texture2D" path="res://assets/props/memory_echo.png" id="valve_tex"]
+[ext_resource type="Texture2D" path="res://assets/props/weight_stone.png" id="stone_tex"]
+[ext_resource type="Script" path="res://scripts/world/echo_trial.gd" id="trial"]
+
+[sub_resource type="RectangleShape2D" id="GateShape"]
+size = Vector2(32, 88)
+
+[sub_resource type="RectangleShape2D" id="Interact"]
+size = Vector2(48, 96)
+
+[sub_resource type="RectangleShape2D" id="PlateShape"]
+size = Vector2(44, 18)
+
+[sub_resource type="RectangleShape2D" id="RaftShape"]
+size = Vector2(160, 12)
+
+[sub_resource type="RectangleShape2D" id="StoneBox"]
+size = Vector2(22, 22)
+
+[node name="DecayRootworks" type="Node2D"]
+script = ExtResource("room")
+room_id = &"decay_rootworks"
+region_id = &"decay"
+room_width = 1280.0
+bg_region = "decay"
+checkpoint = Vector2(120, 288)
+default_spawn = Vector2(120, 288)
+doors = [{"x": 40.0, "to": "decay_garden", "spawn": "from_decay_rootworks"}]
+platforms = PackedVector3Array(820, 210, 100)
+floor_gaps = PackedVector2Array(620, 780)
+
+[node name="Spawns" type="Node2D" parent="."]
+
+[node name="keeper_observe" type="Marker2D" parent="Spawns"]
+position = Vector2(640, 288)
+
+[node name="Interactive" type="Node2D" parent="."]
+
+[node name="RecordRoot1" type="Area2D" parent="Interactive"]
+position = Vector2(140, 288)
+script = ExtResource("lore")
+lore_id = &"rootworks_1"
+texture_path = "res://assets/props/photograph.png"
+sprite_scale = 0.5
+lines = PackedStringArray("Noroi|Bahçıvanın defteri: “Çiçek her zaman en son açar.”", "Noroi|Kenara not: “Kökü suyun önüne geçirme; toprak küser.”")
+evidence_title = "Bahçıvanın Defteri, Birinci Sayfa"
+evidence_body = "Çiçek en son açar. Kök, suyun önüne geçmemeli."
+evidence_section = "izler"
+
+[node name="RootThorn" type="Area2D" parent="Interactive"]
+position = Vector2(210, 290)
+script = ExtResource("thorn")
+anchor_x = 290
+puzzle_hint = &"decay_rootworks_corpse"
+body_line = "Dikende ölürsem bedenim ilk plakada kalır."
+solved_line = "Beden kökü bastırıyor."
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/RootThorn"]
+shape = SubResource("Interact")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/RootThorn"]
+texture_filter = 0
+centered = true
+
+[node name="RootCorpsePlate" type="Area2D" parent="Interactive"]
+position = Vector2(290, 278)
+script = ExtResource("plate")
+collision_layer = 0
+collision_mask = 1
+puzzle_id = &"decay_rootworks_corpse"
+accept_player = false
+accept_stone = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/RootCorpsePlate"]
+shape = SubResource("PlateShape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/RootCorpsePlate"]
+texture_filter = 0
+centered = true
+
+[node name="RootStone" type="CharacterBody2D" parent="."]
+position = Vector2(400, 288)
+collision_layer = 9
+collision_mask = 1
+floor_stop_on_slope = true
+script = ExtResource("stone")
+min_x = 340.0
+max_x = 580.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RootStone"]
+position = Vector2(0, -18)
+shape = SubResource("StoneBox")
+
+[node name="Sprite2D" type="Sprite2D" parent="RootStone"]
+texture_filter = 0
+texture = ExtResource("stone_tex")
+centered = true
+position = Vector2(0, -18)
+scale = Vector2(0.45, 0.45)
+
+[node name="RootStonePlate" type="Area2D" parent="Interactive"]
+position = Vector2(540, 278)
+script = ExtResource("plate")
+collision_layer = 0
+collision_mask = 1
+puzzle_id = &"decay_rootworks_stone"
+accept_player = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/RootStonePlate"]
+shape = SubResource("PlateShape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/RootStonePlate"]
+texture_filter = 0
+centered = true
+
+[node name="RecordRoot2" type="Area2D" parent="Interactive"]
+position = Vector2(580, 288)
+script = ExtResource("lore")
+lore_id = &"rootworks_2"
+texture_path = "res://assets/props/photograph.png"
+sprite_scale = 0.5
+lines = PackedStringArray("Noroi|İkinci sayfa: “Kapı üç ağırlık ister: beden, taş ve yukarıdaki levha.”", "Noroi|Altında: “Levhaya ancak su yükselince çıkılır.”")
+evidence_title = "Bahçıvanın Defteri, İkinci Sayfa"
+evidence_body = "Su, kök, çiçek. Taş, beden ve yukarıdaki levha kapıyı birlikte tutar."
+evidence_section = "izler"
+
+[node name="RootWater" type="Node2D" parent="Interactive"]
+position = Vector2(700, 0)
+script = ExtResource("water")
+level_y = PackedFloat32Array(332, 288, 210, 130)
+start_level = 1
+puzzle_key = &"rootworks"
+reset_until_solved = &"decay_rootworks_water"
+
+[node name="Raft" type="AnimatableBody2D" parent="Interactive/RootWater"]
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/RootWater/Raft"]
+position = Vector2(0, 6)
+shape = SubResource("RaftShape")
+one_way_collision = true
+
+[node name="Deck" type="Polygon2D" parent="Interactive/RootWater/Raft"]
+color = Color(0.25, 0.3, 0.38, 1)
+polygon = PackedVector2Array(-80, 0, 80, 0, 80, 12, -80, 12)
+
+[node name="Valve0" type="Area2D" parent="Interactive/RootWater/Raft"]
+position = Vector2(-56, 0)
+script = ExtResource("valve")
+water = NodePath("../..")
+delta = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/RootWater/Raft/Valve0"]
+position = Vector2(0, -16)
+shape = SubResource("Interact")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/RootWater/Raft/Valve0"]
+texture_filter = 1
+position = Vector2(0, -14)
+scale = Vector2(0.3, 0.3)
+modulate = Color(0.55, 0.8, 1, 1)
+texture = ExtResource("valve_tex")
+
+[node name="Valve1" type="Area2D" parent="Interactive/RootWater/Raft"]
+position = Vector2(0, 0)
+script = ExtResource("valve")
+water = NodePath("../..")
+delta = -1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/RootWater/Raft/Valve1"]
+position = Vector2(0, -16)
+shape = SubResource("Interact")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/RootWater/Raft/Valve1"]
+texture_filter = 1
+position = Vector2(0, -14)
+scale = Vector2(0.3, 0.3)
+modulate = Color(0.55, 0.8, 1, 1)
+texture = ExtResource("valve_tex")
+
+[node name="Valve2" type="Area2D" parent="Interactive/RootWater/Raft"]
+position = Vector2(56, 0)
+script = ExtResource("valve")
+water = NodePath("../..")
+delta = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/RootWater/Raft/Valve2"]
+position = Vector2(0, -16)
+shape = SubResource("Interact")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/RootWater/Raft/Valve2"]
+texture_filter = 1
+position = Vector2(0, -14)
+scale = Vector2(0.3, 0.3)
+modulate = Color(0.55, 0.8, 1, 1)
+texture = ExtResource("valve_tex")
+
+[node name="RootHighPlate" type="Area2D" parent="Interactive"]
+position = Vector2(870, 200)
+script = ExtResource("plate")
+collision_layer = 0
+collision_mask = 1
+puzzle_id = &"decay_rootworks_water"
+accept_player = true
+accept_stone = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/RootHighPlate"]
+shape = SubResource("PlateShape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/RootHighPlate"]
+texture_filter = 0
+centered = true
+
+[node name="RecordRoot3" type="Area2D" parent="Interactive"]
+position = Vector2(830, 288)
+script = ExtResource("lore")
+lore_id = &"rootworks_3"
+texture_path = "res://assets/props/photograph.png"
+sprite_scale = 0.5
+lines = PackedStringArray("Noroi|Üçüncü sayfa, ıslak: “Önce su verilir, sonra kök salınır, çiçek ardından açar.”")
+evidence_title = "Bahçıvanın Defteri, Üçüncü Sayfa"
+evidence_body = "Sıra: su, kök, çiçek."
+evidence_section = "izler"
+
+[node name="RootGate" type="StaticBody2D" parent="Interactive"]
+position = Vector2(960, 268)
+script = ExtResource("gate")
+collision_layer = 1
+collision_mask = 0
+open_flag = &"decay_rootworks_open"
+puzzle_listen = &""
+puzzle_listen_all = PackedStringArray("decay_rootworks_corpse", "decay_rootworks_stone", "decay_rootworks_water")
+ignore_world_flag = false
+latch_on_live = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/RootGate"]
+shape = SubResource("GateShape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/RootGate"]
+texture_filter = 0
+centered = true
+
+[node name="RootShrine" type="Node2D" parent="Interactive"]
+script = ExtResource("shrine")
+puzzle_id = &"decay_rootworks"
+order = PackedStringArray("su", "kok", "cicek")
+fail_line = "Toprak küstü. Sıra bozuldu."
+success_line = "Su, kök, çiçek. Defter sana açıldı."
+evidence_id = "ev_rootworks_gardener"
+evidence_title = "Bahçıvanın Defteri"
+evidence_body = "Önce su, sonra kök, en son çiçek. Kapıyı taş, beden ve sal üstündeki levha birlikte tutar."
+
+[node name="Step_su" type="Area2D" parent="Interactive/RootShrine"]
+position = Vector2(1040, 288)
+script = ExtResource("step")
+step_id = "su"
+label = "Su"
+texture_path = "res://assets/props/halo.png"
+sprite_scale = 0.5
+tint = Color(0.5, 0.75, 0.95, 1)
+
+[node name="Step_kok" type="Area2D" parent="Interactive/RootShrine"]
+position = Vector2(1110, 288)
+script = ExtResource("step")
+step_id = "kok"
+label = "Kök"
+texture_path = "res://assets/props/halo.png"
+sprite_scale = 0.5
+tint = Color(0.55, 0.42, 0.3, 1)
+
+[node name="Step_cicek" type="Area2D" parent="Interactive/RootShrine"]
+position = Vector2(1180, 288)
+script = ExtResource("step")
+step_id = "cicek"
+label = "Çiçek"
+texture_path = "res://assets/props/red_flower.png"
+sprite_scale = 0.4
+tint = Color(0.9, 0.4, 0.45, 1)
+
+[node name="EchoTrial" type="Area2D" parent="Interactive"]
+position = Vector2(905, 268)
+script = ExtResource("trial")
+trial_room = &"decay_rootworks"
+shrine_path = NodePath("../RootShrine")
+order = PackedStringArray("kok", "su", "cicek")
+time_limit = 90.0
+hold_live = PackedStringArray("decay_rootworks_stone")
+hold_line = "Taş plakadan kaymış; onu yerine itmeliyim."
+intro_line = "Kökler suyu beklemeden uyanmak istiyor; taş yerinde kalmalı."
+reward_title = "Yankı Sınavı: Kök Ağı"
+reward_body = "Kökler sırayı bozunca da uyandı. Taş yerinde durdukça bahçıvanın defteri sana güvendi."

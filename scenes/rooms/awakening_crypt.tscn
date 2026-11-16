@@ -1,5 +1,7 @@
 [gd_scene load_steps=12 format=3]
 
+[ext_resource type="Script" path="res://scripts/world/nook_record.gd" id="nook_rec"]
+[ext_resource type="Script" path="res://scripts/world/soul_seal.gd" id="nook_gate"]
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
 [ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore"]
 [ext_resource type="Script" path="res://scripts/world/echo_point.gd" id="echo"]
@@ -35,9 +37,9 @@ script = ExtResource("lore")
 lore_id = &"crypt_beds"
 texture_path = "res://assets/props/body_echo.png"
 sprite_scale = 0.9
-lines = PackedStringArray("Noroi|Sıra sıra yataklar, her birinde bir beden.", "Noroi|Hepsi yabancı yüzler, benden öncekiler.", "Noroi|Yatak beni doğurmuyor, her ölümde geri sarıyor.", "Noroi|Hepsi bu yatağa uzanmış, hiçbiri kalkmamış.")
+lines = PackedStringArray("Noroi|Sıra sıra yataklar, her birinde bir beden.", "Noroi|Hepsi yabancı yüzler, benden öncekiler.", "Noroi|Bu yataklar beni doğurmuyor; her ölümde başa sarıyor.", "Noroi|Hepsi bu yatağa uzanmış, hiçbiri kalkmamış.")
 evidence_title = "İlk Bedenler"
-evidence_body = "Yatakların her birinde yabancı bir beden var. Benden önce girenlerin bedenleri; yeniden doğuş yatağı beni onlardan biri yapmak istemiyor."
+evidence_body = "Yatakların her birinde yabancı bir beden var. Benden önce girenlerin bedenleri. Beni geri saran düzen, onları geri sarmamış."
 evidence_section = "izler"
 set_progress_key = "truth_fragment_crypt"
 focus_zoom = true
@@ -48,9 +50,9 @@ script = ExtResource("lore")
 lore_id = &"crypt_ledger"
 texture_path = "res://assets/props/ledger.png"
 sprite_scale = 0.9
-lines = PackedStringArray("Noroi|Defterdeki el yazısı: “{deaths}. ölüm. Yine unuttu. Yine çiçek bıraktım.”", "Noroi|Defterin kapağında 1927 yazıyor, gerisi yanmış.", "Noroi|Kenarda imzası silinmiş bir not: “Gözlem notu: hâlâ konuşuyor.”")
+lines = PackedStringArray("Noroi|Defterdeki el yazısı: “{deaths}. ölüm. Yine unuttu, yine çiçek bıraktım.”", "Noroi|Defterin kapağında 1927 yazıyor, gerisi yanmış.", "Noroi|Kenarda imzası silinmiş bir not: “Gözlem notu: hâlâ konuşuyor.”")
 evidence_title = "Bekçinin Defteri"
-evidence_body = "Defteri tutan her döngüyü saymış. Kapağında 1927 yazıyor; gerisi yanmış. Bir kenar notunun imzası silinmiş."
+evidence_body = "Defteri tutan kişi her döngüyü saymış. Kapağında 1927 yazıyor; gerisi yanmış. Bir kenar notunun imzası silinmiş."
 evidence_section = "notlar"
 story_flag_ids = PackedStringArray("dimension_origin_discovered")
 
@@ -134,7 +136,7 @@ script = ExtResource("lore")
 lore_id = &"crypt_ring_tablet"
 texture_path = "res://assets/props/memory_frame.png"
 sprite_scale = 0.6
-lines = PackedStringArray("Noroi|Taşın kenarında bir rakam belirdi: bir.", "Noroi|Üç, bir… halkanın ikinci hanesi bu.")
+lines = PackedStringArray("Noroi|Taşın kenarında bir rakam belirdi: bir.", "Noroi|Üç, bir… Halkanın ilk iki hanesi bu.")
 locked_lines = PackedStringArray("Noroi|Taşın üstünde tarihler karışık. Sayfaları sıraya dizmeliyim.")
 requires_puzzle = &"awakening_crypt_pages"
 evidence_title = "Halkanın İkinci Hanesi"
@@ -152,4 +154,42 @@ locked_lines = PackedStringArray("Noroi|Soğuk bir taş. Yatağa kimse uzanmadan
 requires_puzzle = &"awakening_crypt_bed"
 evidence_title = "Yatağın Anısı"
 evidence_body = "Yatağa bırakılan beden bir anıyı açtı: bir söz ve dört kalp atışı. Halkanın üçüncü hanesi 4."
+evidence_section = "izler"
+
+[node name="NookFrag" type="Area2D" parent="Interactive"]
+position = Vector2(215.0, 288.0)
+script = ExtResource("nook_rec")
+lore_id = &"nook_crypt_a"
+role = "fragment"
+ability = "soul"
+nook_id = "crypt"
+texture_path = "res://assets/props/photograph.png"
+sprite_scale = 0.55
+lines = PackedStringArray("Noroi|Yatağın altında yarım bir sayfa: “Araştırma Yardımcısı S., ikinci vardiya.”", "Noroi|Alt yarısı yırtık. Devamı duvardaki mor damarın ardında olmalı.")
+evidence_title = "Yırtık Sayfa"
+evidence_body = "Yatak altında yırtık bir vardiya sayfası. Araştırma Yardımcısı S. imzalı; devamı duvardaki damarın ardında."
+evidence_section = "izler"
+
+[node name="NookVein" type="StaticBody2D" parent="Interactive"]
+position = Vector2(740.0, 288.0)
+script = ExtResource("nook_gate")
+puzzle_id = &"nook_crypt_gate"
+blocking = false
+refusal_line = "Duvardaki mor damar kıpırdamıyor; Ruh Kesimi için Yasak Kanat'a gitmeliyim."
+
+[node name="NookRecord" type="Area2D" parent="Interactive"]
+position = Vector2(655.0, 288.0)
+script = ExtResource("nook_rec")
+lore_id = &"nook_crypt_b"
+role = "record"
+ability = "soul"
+nook_id = "crypt"
+gate_puzzle = &"nook_crypt_gate"
+frag_id = "nook_crypt_a"
+need_line = "Damar açık ama kâğıt yarım; önce yatağın altındaki sayfayı bulmalıyım."
+texture_path = "res://assets/props/ledger.png"
+sprite_scale = 0.7
+lines = PackedStringArray("Noroi|Damarın ardında kâğıdın öbür yarısı: “1927 kışı, sayım bitmedi.”", "Noroi|Altında kısa bir not: “S. hâlâ sayıyor. Ben de.”", "Shilda|Kış mı, hatırlamıyorum. Yine de sayfa bana soğuk geliyor.")
+evidence_title = "Vardiya Devamı"
+evidence_body = "1927 kışında vardiya sayımı bitmemiş. Not, Araştırma Yardımcısı S.'nin sayımı sürdürdüğünü söylüyor."
 evidence_section = "izler"

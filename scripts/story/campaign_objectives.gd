@@ -20,7 +20,7 @@ const _BY_ROOM: Dictionary = {
 	"mirrors_unbroken": "Yansıma bir yol yürür; yankınla izle, sonra Shilda ile yüzleş.",
 	"core_threshold": "Bulutun kırmızı kristallerinde öl, cesetlerin korumasıyla karşıya geç.",
 	"core_seal_chamber": "Üç bağı Ruh Kesimi ile soldan sağa kes, sonra kayda dokun.",
-	"core": "Kristale dokun ve üç dalgayı püskürt; sonra kristale yeniden dokun.",
+	"core": "Yankını plakaya bırak; dalgaları yen, sonra kristale yeniden dokun.",
 	"awakening_balcony": "Sütunlara bedenini basamak yap, karşıya geç.",
 	"awakening_crypt": "Sayfaları tarih sırasına diz; bedenini yatağa bırak.",
 	"decay_catacombs": "Çiçekli beden ışık ve köprü olur. Sembolleri oku, mührü aç.",
@@ -42,6 +42,13 @@ const _BY_ROOM: Dictionary = {
 	"mirrors_1927": "Gece kendi kendine oynuyor. Gölgenin peşinden git, yankıyı dinle.",
 	"decay_cistern": "Suyu vanalarla oynat, üç ıslak sayfayı topla.",
 	"experiment_observation": "Cesedini projektör plakasına bırak, cam ardındaki yankıyı izle.",
+	"awakening_bellroom": "Üç plakayı beden, yankı ve kendinle tut; çanları sırayla çal.",
+	"decay_rootworks": "Beden, taş ve salla üç plakayı tut; defterdeki sırayı izle.",
+	"library_archive_vault": "Kasayı beden, yankı ve kadranla aç; rafları tarih sırasıyla aç.",
+	"experiment_twin_lab": "Tartıyı yükle, mührü Ruh Kesimi'yle kır; föydeki sırayı izle.",
+	"mirrors_inverse_hall": "Yolu yankına yürüt, çizgiyi geç; aynaları notlardaki sırayla yak.",
+	"core_last_record": "Kasayı beden, yankı, kesim ve atılışla aç; sayfaları sırayla çevir.",
+	"awakening_s_room": "Dört kilidi aç; duvardaki yıllara bakıp beş sayfayı sırayla çevir.",
 	"core_ascent": "Mührü kes, perdeyi at; yankını plakaya koy, kapıdan geç.",
 }
 

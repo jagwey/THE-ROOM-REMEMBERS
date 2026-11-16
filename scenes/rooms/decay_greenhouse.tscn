@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
 [ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore"]
@@ -7,6 +7,8 @@
 [ext_resource type="Script" path="res://scripts/world/blood_thorn.gd" id="thorn"]
 [ext_resource type="Script" path="res://scripts/world/greenhouse_pots.gd" id="pots"]
 [ext_resource type="Texture2D" path="res://assets/props/door_closed.png" id="door_tex"]
+[ext_resource type="Script" path="res://scripts/world/room_touch.gd" id="touch"]
+[ext_resource type="Script" path="res://scripts/world/room_polish.gd" id="polish"]
 
 [sub_resource type="RectangleShape2D" id="PlateShape"]
 size = Vector2(56, 24)
@@ -22,7 +24,7 @@ room_width = 1280.0
 bg_region = "decay"
 checkpoint = Vector2(120, 288)
 default_spawn = Vector2(120, 288)
-doors = [{"x": 40.0, "to": "decay_weight", "spawn": "from_garden"}, {"x": 1240.0, "to": "decay_shilda_wall", "spawn": "from_decay_greenhouse", "req": "decay_greenhouse", "msg": "Uzak mühür kapalı. Doğru saksıda bir beden bırak."}]
+doors = [{"x": 40.0, "to": "decay_weight", "spawn": "from_garden"}, {"x": 1240.0, "to": "decay_shilda_wall", "spawn": "from_decay_greenhouse", "req": "decay_greenhouse", "msg": "Uzak mühür kapalı. Doğru saksıya bir beden bırakmalıyım."}]
 
 [node name="Spawns" type="Node2D" parent="."]
 
@@ -40,9 +42,9 @@ script = ExtResource("lore")
 lore_id = &"greenhouse_inscription"
 texture_path = "res://assets/trr_refresh/decay/planter_bloom.png"
 sprite_scale = 0.5
-lines = PackedStringArray("Noroi|Cama kazınmış: yedi yaprak açmış bir çiçek, yanında iki kök.", "Noroi|Altında dokuz damla. Sayı değil, sıra: yedi, iki, dokuz.", "Shilda|Çiçeğin yaprağı, kökü, damlası. Kapı onları sırayla sever.")
+lines = PackedStringArray("Noroi|Cama kazınmış: yedi yaprak açmış bir çiçek, yanında iki kök.", "Noroi|Altında dokuz damla. Sayı değil, sıra: yedi, iki, dokuz.", "Shilda|Çiçeğin yaprağı, kökü, damlası. Bahçedeki kapı bu sırayı ister.")
 evidence_title = "Cam Yazıt"
-evidence_body = "Camda çiçek çizimi: yedi yaprak, iki kök, dokuz damla. Bu sıra serada değil, bahçede lazım olacak."
+evidence_body = "Camda çiçek çizimi: yedi yaprak, iki kök, dokuz damla. Bu sıra serada değil, bahçede gerekecek."
 evidence_section = "izler"
 
 [node name="GlassNote" type="Area2D" parent="Interactive"]
@@ -54,7 +56,7 @@ sprite_scale = 0.58
 dialogue_room = &"decay_greenhouse"
 dialogue_set = &"shared_seal"
 evidence_title = "Ortak Mühür"
-evidence_body = "Serada uzaktaki bir gölge mührün öbür yanını tutuyor. Gölgenin gittiği saksıda bir beden bırakınca yol açılır."
+evidence_body = "Serada uzaktaki bir gölge mührün öbür yanını tutuyor. Gölgenin uğradığı saksıda ölünce yol açılır."
 evidence_section = "izler"
 
 [node name="PotA" type="Area2D" parent="Interactive"]
@@ -98,7 +100,7 @@ position = Vector2(520, 290)
 script = ExtResource("thorn")
 anchor_x = 460.0
 puzzle_hint = &"greenhouse_pot_a_thorn"
-body_line = "Bu saksı boş kalmak istiyor. Burada ölmem bir şey açmaz."
+body_line = "Bu saksıda bir şey yok. Burada ölmem hiçbir şeyi açmaz."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ThornA"]
 shape = SubResource("PlateShape")
@@ -119,7 +121,7 @@ position = Vector2(840, 290)
 script = ExtResource("thorn")
 anchor_x = 780.0
 puzzle_hint = &"greenhouse_pot_c_thorn"
-body_line = "Bu saksı da boş. Gölge buraya uğramadı."
+body_line = "Bu saksı da boş. Gölge buradan geçmedi."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ThornC"]
 shape = SubResource("PlateShape")
@@ -143,3 +145,39 @@ shape = SubResource("Gate")
 texture_filter = 0
 position = Vector2(0, -48)
 texture = ExtResource("door_tex")
+
+[node name="GreenhouseRoots" type="Area2D" parent="Interactive"]
+position = Vector2(160, 288)
+script = ExtResource("lore")
+lore_id = &"greenhouse_roots"
+texture_path = "res://assets/props/red_flower.png"
+sprite_scale = 0.45
+dialogue_room = &"decay_greenhouse"
+dialogue_set = &"greenhouse_roots"
+repeat_line = "Noroi|Köklerin camı çatlatmış. Burası bir bekleyişin içinde büyümüş."
+
+[node name="GreenhouseGlass" type="Area2D" parent="Interactive"]
+position = Vector2(940, 288)
+script = ExtResource("lore")
+lore_id = &"greenhouse_glass"
+texture_path = "res://assets/props/mirror_cracked.png"
+sprite_scale = 0.45
+dialogue_room = &"decay_greenhouse"
+dialogue_set = &"greenhouse_glass"
+repeat_line = "Noroi|Camın öte yanı daha canlı görünüyor. Hep öyle olur."
+
+[node name="RoomTouch" type="Node2D" parent="."]
+position = Vector2(400,180)
+script = ExtResource("touch")
+ambient_sfx = &"ui_click"
+ambient_db = -26.0
+ambient_pitch = 2.0
+ambient_min = 5.0
+ambient_max = 10.0
+motes_color = Color(0.65, 0.9, 0.55, 0.55)
+motes_area = Vector2(400, 80)
+
+[node name="RoomPolish" type="Node2D" parent="."]
+script = ExtResource("polish")
+kind = &"greenhouse_trail"
+pot_paths = PackedStringArray("../Interactive/PotA", "../Interactive/PotB", "../Interactive/PotC")

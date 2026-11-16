@@ -1,0 +1,12 @@
+{
+  "room": "decay_vines",
+  "sets": {
+    "vine_hold": [
+      {"s": "Noroi", "t": "Sarmaşıklar çiçekleri sarmış. Boğmuyor, tutuyor."},
+      {"s": "@shilda", "t": "Tutmakla boğmak arasındaki fark ince."},
+      {"s": "Noroi", "t": "Bunu bilen birinin sesi."},
+      {"s": "@shilda", "t": "Bildiğimden değil, gördüğümden."},
+      {"s": "Noroi", "t": "Görmek de bir şeydir."}
+    ]
+  }
+}

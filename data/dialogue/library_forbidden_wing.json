@@ -1,0 +1,13 @@
+{
+  "room": "library_forbidden_wing",
+  "sets": {
+    "forbidden_shelf": [
+      {"s": "Noroi", "t": "Raflardaki ciltlerin sırtı boş. Başlık yok, tarih yok."},
+      {"s": "@shilda", "t": "Yasak olan kitap değil, kimin okuduğuydu."},
+      {"s": "Noroi", "t": "Yani kayıtlar kişi kişi tutulmuş."},
+      {"s": "@shilda", "t": "Her okuyan not edilirdi. Ben de bir zamanlar bir satırdım."},
+      {"s": "Noroi", "t": "Şimdi buradasın. Satırdan fazlasısın."},
+      {"s": "@shilda", "t": "Bunu söyleyen ilk kişi sensin."}
+    ]
+  }
+}

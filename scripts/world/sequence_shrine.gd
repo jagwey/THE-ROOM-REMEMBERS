@@ -43,6 +43,10 @@ func get_progress() -> int:
 func press(step_id: String, source: Node = null) -> void:
 	if order.is_empty():
 		return
+	## Yankı Sınavı sürerken adım sınavın kendi sırasına gider; odanın çözülü durumu değişmez.
+	for t in get_tree().get_nodes_in_group("echo_trial"):
+		if t.has_method("handle_step") and t.handle_step(self, step_id, source):
+			return
 	if PuzzleManager.is_solved(puzzle_id):
 		_repeat_clue()
 		return

@@ -19,5 +19,5 @@ func _ready() -> void:
 func _on_solved(id: StringName) -> void:
 	if id == VEIN_IDS[2] and not PuzzleManager.is_solved(SOLVE_ID):
 		PuzzleManager.mark_solved(SOLVE_ID)
-		DialogueManager.whisper("Noroi", "Enerji Çekirdek'e yönlendi, ışıklar yandı.")
+		DialogueManager.whisper("Noroi", "Enerji Çekirdek'e aktı, ışıklar yandı.")
 		SaveManager.save_game()

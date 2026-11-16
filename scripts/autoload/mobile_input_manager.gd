@@ -218,7 +218,7 @@ func _show_back_hint() -> void:
 		layer.layer = 90
 		add_child(layer)
 		_back_hint = Label.new()
-		_back_hint.text = "Menü için tekrar geri"
+		_back_hint.text = "Menü için bir kez daha geri"
 		_back_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		_back_hint.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM)
 		_back_hint.position.y -= 48

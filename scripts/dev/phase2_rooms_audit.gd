@@ -1997,7 +1997,7 @@ func _softlock() -> void:
 					ndoors += 1
 					if String(d.name).begins_with("Side_"):
 						nside += 1
-				if d.is_locked():
+				if d.is_locked() and int(d.get("required_nooks")) == 0: ## S.'nin Odası kapısı opsiyonel (8/8 kayıt)
 					locked.append("%s/%s/flags=%s" % [r, String(d.name), with_flags])
 			for g in _gates_of(rr):
 				if with_flags:
@@ -2206,7 +2206,7 @@ func _softlock() -> void:
 		rm.enter_room(StringName(r), &"default")
 		await create_timer(0.25).timeout
 		for d in _doors_of(_room_root(StringName(r))):
-			if d.is_locked():
+			if d.is_locked() and int(d.get("required_nooks")) == 0:
 				locked2.append("%s/%s" % [r, String(d.name)])
 	check(locked2.is_empty(), "softlock_d_reentry_after_solve_doors_open %s" % str(locked2))
 	## Her guard tek basina yetmeli: bayraklardan YALNIZ biri kurulu iken soru sorulmamali.

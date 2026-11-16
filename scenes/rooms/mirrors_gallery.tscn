@@ -1,12 +1,15 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
+[ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore_story"]
 [ext_resource type="Script" path="res://scripts/world/ordered_relic.gd" id="relic"]
 
 [ext_resource type="Script" path="res://scripts/world/pressure_plate.gd" id="plate"]
 [ext_resource type="Script" path="res://scripts/world/gate_blocker.gd" id="gate"]
 [ext_resource type="Script" path="res://scripts/world/blood_thorn.gd" id="thorn"]
 [ext_resource type="Texture2D" path="res://assets/props/door_closed.png" id="gate_tex"]
+[ext_resource type="Script" path="res://scripts/world/room_touch.gd" id="touch"]
+[ext_resource type="Script" path="res://scripts/world/room_polish.gd" id="polish"]
 
 [sub_resource type="RectangleShape2D" id="PlateShape"]
 size = Vector2(44, 18)
@@ -92,8 +95,8 @@ position = Vector2(695, 290)
 script = ExtResource("thorn")
 anchor_x = 640.0
 puzzle_hint = &"mirrors_gallery_plate_2"
-body_line = "Dokunursam ölürüm, beden plakanın üstünde kalmalı."
-solved_line = "Plaka sustu, beden onu tutuyor."
+body_line = "Dokunursam ölürüm. Plakaya bir beden gerek."
+solved_line = "Bir plaka daha sustu, beden onu tutuyor."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/Thorn2"]
 shape = SubResource("PlateShape")
@@ -120,8 +123,8 @@ position = Vector2(975, 290)
 script = ExtResource("thorn")
 anchor_x = 920.0
 puzzle_hint = &"mirrors_gallery_plate_3"
-body_line = "Dokunursam ölürüm, beden plakanın üstünde kalmalı."
-solved_line = "Plaka sustu, beden onu tutuyor."
+body_line = "Dokunursam ölürüm. Bu yükü bedenim taşımalı."
+solved_line = "Plaka sustu; beden yükünü aldı."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/Thorn3"]
 shape = SubResource("PlateShape")
@@ -147,3 +150,37 @@ texture = ExtResource("gate_tex")
 centered = true
 modulate = Color(0.48, 0.42, 0.46, 1)
 
+
+[node name="GalleryCracks" type="Area2D" parent="Interactive"]
+position = Vector2(200, 288)
+script = ExtResource("lore_story")
+lore_id = &"gallery_cracks"
+texture_path = "res://assets/props/mirror_cracked.png"
+sprite_scale = 0.45
+dialogue_room = &"mirrors_gallery"
+dialogue_set = &"gallery_cracks"
+repeat_line = "Noroi|Çatlaklar bir yüz oluşturuyor. Üzgün, ama güzel."
+
+[node name="GalleryCount" type="Area2D" parent="Interactive"]
+position = Vector2(760, 288)
+script = ExtResource("lore_story")
+lore_id = &"gallery_count"
+texture_path = "res://assets/props/ledger.png"
+sprite_scale = 0.45
+dialogue_room = &"mirrors_gallery"
+dialogue_set = &"gallery_count"
+repeat_line = "Noroi|On iki ölüm, her cama bir tane. Hepsini o sayıyormuş."
+
+[node name="RoomTouch" type="Node2D" parent="."]
+position = Vector2(400,170)
+script = ExtResource("touch")
+ambient_sfx = &"curse_whisper"
+ambient_db = -28.0
+ambient_pitch = 0.7
+ambient_min = 10.0
+ambient_max = 18.0
+
+[node name="RoomPolish" type="Node2D" parent="."]
+script = ExtResource("polish")
+kind = &"gallery_glass"
+anchor = Vector2(560, 214)

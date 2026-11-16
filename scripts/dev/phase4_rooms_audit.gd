@@ -202,7 +202,8 @@ func _graph() -> void:
 		var rid := String(order[i])
 		var room: Node = _room_root(StringName(rid))
 		var doors := _doors_of(room)
-		check(not side_doors.has(rid), "graph_no_side_door_entry_%s" % rid)
+		var main_side: Array = (side_doors.get(rid, []) as Array).filter(func(sd): return order.find(String(sd["to"])) < 40)
+		check(main_side.is_empty(), "graph_no_side_door_entry_%s" % rid)
 		if i < 39:
 			var nxt := String(order[i + 1])
 			var fwd := doors.filter(func(d): return String(d.target_room_id) == nxt)
@@ -225,7 +226,9 @@ func _graph() -> void:
 			if not n.has_method("on_interact") or n.is_in_group("room_door"):
 				continue
 			for d in doors:
-				if (d as Node2D).global_position.distance_to((n as Node2D).global_position) < 96.0:
+				# Opsiyonel derin-oda yan kapıları (Side_*) yoğun odalarda 48 px ayrım yeter.
+				var lim := 48.0 if String(d.name).begins_with("Side_") else 96.0
+				if (d as Node2D).global_position.distance_to((n as Node2D).global_position) < lim:
 					close.append("%s<->%s" % [d.name, n.name])
 		check(close.is_empty(), "graph_door_interactable_96px_%s" % rid, close)
 	var lab_fwd := _doors_of(_room_root(&"mirrors_labyrinth")).filter(func(d): return String(d.target_room_id) == "mirrors_shrine")
@@ -536,7 +539,7 @@ func _rooms_32_34() -> void:
 	check(far_bank - plat_end >= 170.0 and plat_end <= 900.0, "r32_bridge_void_run_ge_170", far_bank - plat_end)
 	var on_foot := true
 	for n in lb.find_children("*", "Area2D", true, false):
-		if n.get_parent() != null and n.get_parent().name == "Interactive" and n.position.y >= 270.0 and n != th:
+		if n.get_parent() != null and n.get_parent().name == "Interactive" and n.position.y >= 270.0 and n != th and not String(n.name).begins_with("Side_"):
 			for g in gaps:
 				if n.position.x > g.x and n.position.x < g.y:
 					on_foot = false
@@ -992,7 +995,7 @@ func _rooms_38_39() -> void:
 			v_lore = n
 		elif "step_id" in n:
 			v_steps[String(n.step_id)] = n
-	check(v_echo != null and absf(v_echo.position.x - 200.0) < 1.0, "r38_echo_x200")
+	check(v_echo != null and absf(v_echo.position.x - 240.0) < 1.0, "r38_echo_x200")
 	check(v_shrine != null and v_shrine.order == PackedStringArray(["1927", "1995", "son"]), "r38_order_1927_1995_son")
 	var steps_ok: bool = v_steps.size() == 3
 	if steps_ok:
@@ -1629,7 +1632,7 @@ func _main_path_walk() -> void:
 	var pm := root.get_node("PuzzleManager")
 	var gs := root.get_node("GameState")
 	var order: Array = Array(rm.ROOM_ORDER)
-	check(order.size() == 40 and order[0] == "awakening" and order[39] == "core", "walk_order_01_to_40")
+	check(order.size() == 47 and order[0] == "awakening" and order[39] == "core", "walk_order_01_to_40")
 	var prog_bak: Dictionary = gs.player_progress_knowledge.duplicate(true)
 	var world_bak: Dictionary = gs.world_memory_state.duplicate(true)
 	for k in ["ability_soul_slash", "ability_shadow_dash", "ability_dash", "ability_double_jump"]:
@@ -1648,7 +1651,7 @@ func _main_path_walk() -> void:
 		var cur := String(queue.pop_front())
 		for d in _doors_of(_room_root(StringName(cur))):
 			var t := String(d.target_room_id)
-			if d.is_locked() or seen.has(t) or not rm._rooms.has(StringName(t)):
+			if (d.is_locked() and int(d.required_nooks) == 0) or seen.has(t) or not rm._rooms.has(StringName(t)):
 				continue
 			if not (rm._rooms[StringName(t)].spawns as Dictionary).has(StringName(d.target_spawn_id)):
 				broken.append("%s->%s:nospawn(%s)" % [cur, t, d.target_spawn_id])

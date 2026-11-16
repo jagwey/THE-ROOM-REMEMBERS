@@ -1,0 +1,13 @@
+{
+  "room": "mirrors_shrine",
+  "sets": {
+    "shrine_bowl": [
+      {"s": "Noroi", "t": "Kandil kuru. İçinde yanmış fitil, bir de çiçek yaprağı."},
+      {"s": "@shilda", "t": "Gelenler önce kandil yakardı, sonra gölge bırakırdı."},
+      {"s": "Noroi", "t": "Ben de gölge bırakacağım. Ama geri alacağım."},
+      {"s": "@shilda", "t": "Almak istemezsin. Yine de niyetini biliyorum."},
+      {"s": "Noroi", "t": "Bilmediğimi bilmek istiyorum. Yardım eder misin?"},
+      {"s": "@shilda", "t": "Ederim. Bu kez sen sormadan anlatırım."}
+    ]
+  }
+}

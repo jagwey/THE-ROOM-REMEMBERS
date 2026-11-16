@@ -1,5 +1,5 @@
 extends SceneTree
-## 40 oda grafiği: hedef/spawn, güvenli doğuş, 96 px, ana yol, yan dönüş, Gölge Atılması kilidi, eski kayıt.
+## 47 oda grafiği: hedef/spawn, güvenli doğuş, 96 px, ana yol, yan dönüş, Gölge Atılması kilidi, eski kayıt.
 ## Çalıştır: TORIMON_TEST=1 godot --headless --path . -s res://scripts/dev/room_graph_audit.gd
 
 var failures := 0
@@ -47,8 +47,8 @@ func _run() -> void:
 	var gate: Node = root.get_node("UiGate")
 	dm.clear()
 	gate.set_story(false)
-	check(rm._rooms.size() == 40, "40 oda kayıtlı", rm._rooms.size())
-	check(rm.ROOM_ORDER.size() == 40 and rm.ROOM_TITLES_TR.size() == 40, "ROOM_ORDER ve başlıklar 40")
+	check(rm._rooms.size() == 47, "47 oda kayıtlı", rm._rooms.size())
+	check(rm.ROOM_ORDER.size() == 47 and rm.ROOM_TITLES_TR.size() == 47, "ROOM_ORDER ve başlıklar 47")
 	var bad_doors: Array = []
 	var close_pairs: Array = []
 	var ability_doors: Array = []

@@ -81,6 +81,13 @@ func _check_burn() -> void:
 func _apply(open: bool) -> void:
 	if shape:
 		shape.set_deferred("disabled", open)
+	if open and visible and is_inside_tree() and sprite:
+		# Canlı açılış: sarmaşık yukarı çekilip solar.
+		var tw := create_tween().set_parallel(true)
+		tw.tween_property(sprite, "scale:y", 0.1, 0.7)
+		tw.tween_property(sprite, "modulate:a", 0.0, 0.7)
+		tw.chain().tween_callback(func() -> void: visible = false)
+		return
 	visible = not open
 	if sprite:
 		sprite.modulate = Color(1, 1, 1, 0.0) if open else Color(0.55, 0.7, 0.45, 1.0)

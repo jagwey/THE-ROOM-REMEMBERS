@@ -1,6 +1,7 @@
 [gd_scene load_steps=14 format=3]
 
 [ext_resource type="Texture2D" path="res://assets/backgrounds/core/far.png" id="1"]
+[ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore_story"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/core/mid.png" id="2"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/core/front.png" id="3"]
 [ext_resource type="Script" path="res://scripts/world/room_root.gd" id="4"]
@@ -141,7 +142,7 @@ anchor_y = 288.0
 hold_corpse = true
 hold_id = &"core_threshold_cloud_a"
 puzzle_hint = &"core_threshold_crossed"
-solved_line = "Kristal sustu, beden bulutu tutuyor."
+solved_line = "Kristal sustu. Beden bulutun ilk yarısını tutuyor."
 body_line = "Bulutun girişinde ölürsem cesedim koridorun ilk yarısını korur."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/CloudThornA"]
@@ -155,7 +156,7 @@ anchor_y = 288.0
 hold_corpse = true
 hold_id = &"core_threshold_cloud_b"
 puzzle_hint = &"core_threshold_crossed"
-solved_line = "Kristal sustu, beden bulutu tutuyor."
+solved_line = "İkinci kristal de sustu. Bulutun öte yarısı açık."
 body_line = "Cesedimin gölgesinde ikinci kristale varırsam bulutun öte yarısı da açılır."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/CloudThornB"]
@@ -360,3 +361,13 @@ position = Vector2(840, 288)
 script = ExtResource("reach")
 puzzle_id = &"core_threshold_crossed"
 also_solve = PackedStringArray("core_threshold")
+
+[node name="ThresholdStone" type="Area2D" parent="Interactive"]
+position = Vector2(740, 288)
+script = ExtResource("lore_story")
+lore_id = &"core_threshold_stone"
+texture_path = "res://assets/props/weight_stone.png"
+sprite_scale = 0.45
+dialogue_room = &"core_threshold"
+dialogue_set = &"threshold_stone"
+repeat_line = "Noroi|İkiye bölünmüş taş. Biri sıcak, biri soğuk."

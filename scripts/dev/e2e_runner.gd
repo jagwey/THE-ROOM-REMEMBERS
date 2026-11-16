@@ -586,7 +586,7 @@ func _run_tier_3_combinations() -> void:
 	else:
 		record_check(3, 14, "T3-03 Save/Load full state fidelity roundtrip", false, "SaveManager null or missing methods")
 
-	# T3-04: Room collision isolation across all 40 rooms
+	# T3-04: Room collision isolation across all 47 rooms
 	var leaked_colliders: Array = []
 	rm.enter_room(&"awakening", &"default")
 	await create_timer(0.1).timeout
@@ -597,7 +597,7 @@ func _run_tier_3_combinations() -> void:
 		for c in other_room.find_children("*", "CollisionObject2D", true, false):
 			if c.collision_layer != 0:
 				leaked_colliders.append("%s:%s" % [rid, c.name])
-	record_check(3, 7, "T3-04 Inactive room collision isolation (40 rooms)", leaked_colliders.is_empty(), "leaked colliders count: %d" % leaked_colliders.size())
+	record_check(3, 7, "T3-04 Inactive room collision isolation (46 rooms)", leaked_colliders.is_empty(), "leaked colliders count: %d" % leaked_colliders.size())
 
 	# T3-05: Fast travel & Region Title Card synchronization
 	var region_rooms: Array = ["awakening", "decay_garden", "library_hall", "experiment_cells", "mirrors_reverse", "core"]
@@ -725,7 +725,7 @@ func _run_tier_4_scenarios() -> void:
 	for rid in rm._rooms.keys():
 		if not rm.has_room(rid):
 			missing_rooms.append(rid)
-	record_check(4, 30, "T4-03 40-room topology and scene instantiation", rm._rooms.size() == 40 and missing_rooms.is_empty(), "all 40 rooms registered and reachable (%d)" % rm._rooms.size())
+	record_check(4, 30, "T4-03 47-room topology and scene instantiation", rm._rooms.size() == 47 and missing_rooms.is_empty(), "all 47 rooms registered and reachable (%d)" % rm._rooms.size())
 
 	# T4-08: Ana yol 01→40: tüm bulmacalar çözülünce kapı grafiği awakening'den core'a kadar 40 odayı bağlar.
 	var snap_puz: Dictionary = (gs.world_memory_state.get("puzzles", {}) as Dictionary).duplicate(true)

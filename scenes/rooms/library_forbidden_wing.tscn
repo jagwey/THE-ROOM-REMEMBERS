@@ -1,5 +1,7 @@
 [gd_scene load_steps=7 format=3]
 
+[ext_resource type="Script" path="res://scripts/world/nook_record.gd" id="nook_rec"]
+[ext_resource type="Script" path="res://scripts/world/dash_line.gd" id="nook_gate"]
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
 [ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore"]
 [ext_resource type="Script" path="res://scripts/world/ability_pickup.gd" id="ability"]
@@ -81,3 +83,50 @@ position = Vector2(370, 288)
 position = Vector2(370, 288)
 script = ExtResource("memory_seal_pt")
 room_id = &"library_forbidden_wing"
+
+[node name="ForbiddenShelf" type="Area2D" parent="Interactive"]
+position = Vector2(140, 288)
+script = ExtResource("lore")
+lore_id = &"forbidden_shelf"
+texture_path = "res://assets/props/ledger.png"
+sprite_scale = 0.45
+dialogue_room = &"library_forbidden_wing"
+dialogue_set = &"forbidden_shelf"
+repeat_line = "Noroi|Boş sırtlı ciltler. Kimin okuduğu yazılı, ne okuduğu değil."
+
+[node name="NookFrag" type="Area2D" parent="Interactive"]
+position = Vector2(770.0, 288.0)
+script = ExtResource("nook_rec")
+lore_id = &"nook_forbidden_a"
+role = "fragment"
+ability = "dash"
+nook_id = "forbidden"
+texture_path = "res://assets/props/photograph.png"
+sprite_scale = 0.55
+lines = PackedStringArray("Noroi|Yasak rafta bir kitap ayracı: “S., bunu kimse görmesin.”", "Noroi|Ucunda kırmızı bir çizgi çizili; ötesinde başka bir iz var.")
+evidence_title = "Kitap Ayracı"
+evidence_body = "Yasak raftaki ayraçta “S., bunu kimse görmesin” yazıyor; ucunda kırmızı çizgi çizili."
+evidence_section = "izler"
+
+[node name="NookLine" type="Area2D" parent="Interactive"]
+position = Vector2(570.0, 288.0)
+script = ExtResource("nook_gate")
+puzzle_id = &"nook_forbidden_gate"
+refusal_line = "Rafın önündeki kırmızı çizgi geri itiyor; Gölge Atılması için Ayna Tapınağı'na gitmeliyim."
+
+[node name="NookRecord" type="Area2D" parent="Interactive"]
+position = Vector2(810.0, 288.0)
+script = ExtResource("nook_rec")
+lore_id = &"nook_forbidden_b"
+role = "record"
+ability = "dash"
+nook_id = "forbidden"
+gate_puzzle = &"nook_forbidden_gate"
+frag_id = "nook_forbidden_a"
+need_line = "Çizginin ardındaki iz ayraca bağlı; önce yasak raftaki ayracı bulmalıyım."
+texture_path = "res://assets/props/ledger.png"
+sprite_scale = 0.7
+lines = PackedStringArray("Noroi|Çizginin ardında gizli bir defter: “Yasak kitapları okudum, hepsini.”", "Noroi|Not: “Bir gün biri okuyacak. O gün yalnız kalmam. S., 1927.”", "Shilda|Biri okuyacak diye yazmış. Ben okudum; yeter mi bilmem.")
+evidence_title = "Gizli Defter"
+evidence_body = "Gizli defterde S., yasak kitapların hepsini okuduğunu yazmış; birinin okuyacağı günü bekliyor, 1927."
+evidence_section = "izler"

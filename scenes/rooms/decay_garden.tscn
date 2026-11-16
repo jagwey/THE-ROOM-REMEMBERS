@@ -1,6 +1,7 @@
-[gd_scene load_steps=16 format=3 uid="uid://torimon_decay_garden"]
+[gd_scene load_steps=17 format=3 uid="uid://torimon_decay_garden"]
 
 [ext_resource type="Texture2D" path="res://assets/backgrounds/decay/far.png" id="1"]
+[ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore_story"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/decay/mid.png" id="2"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/decay/front.png" id="3"]
 [ext_resource type="Texture2D" path="res://assets/props/door_closed.png" id="4"]
@@ -19,6 +20,8 @@
 
 [ext_resource type="Texture2D" path="res://assets/tiles/tile_00.png" id="walk_tile"]
 [ext_resource type="Script" path="res://scripts/world/memory_seal_point.gd" id="memory_seal_pt"]
+[ext_resource type="Script" path="res://scripts/world/room_touch.gd" id="touch"]
+[ext_resource type="Script" path="res://scripts/world/room_polish.gd" id="polish"]
 
 [sub_resource type="RectangleShape2D" id="Floor"]
 size = Vector2(1000, 48)
@@ -151,7 +154,7 @@ script = ExtResource("8")
 shape = SubResource("FlowerHit")
 
 [node name="ShildaGarden" type="Area2D" parent="Interactive"]
-position = Vector2(580, 268)
+position = Vector2(600, 268)
 collision_layer = 8
 collision_mask = 0
 monitoring = false
@@ -176,12 +179,12 @@ scale = Vector2(0.32, 0.32)
 texture = ExtResource("flower_tex")
 
 [node name="BloomThorn" type="Area2D" parent="Interactive"]
-position = Vector2(410, 290)
+position = Vector2(400, 290)
 script = ExtResource("thorn")
 anchor_x = 625.0
 puzzle_hint = &"decay_garden_bloom"
 body_line = "Dokunursam ölürüm; çiçek taşırsam bedenim yapraklara ışık tutar."
-solved_line = "Diken sustu, çiçekler zaten açtı."
+solved_line = "Diken sustu. Çiçekler açık kalıyor."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BloomThorn"]
 shape = SubResource("SealShape")
@@ -196,7 +199,7 @@ puzzle_id = &"decay_garden_bloom"
 order = PackedStringArray("7", "2", "9")
 penalize_wrong = true
 fail_line = "Çiçekler kapandı. Yaprak sırasını baştan denemeliyim."
-success_line = "Çiçekler sırayla açtı. Arşiv kapısı gevşedi."
+success_line = "Çiçekler sırayla açıldı. Arşiv kapısının kilidi çözüldü."
 
 [node name="Bloom2" type="Area2D" parent="Interactive/BloomShrine"]
 position = Vector2(676, 288)
@@ -458,3 +461,28 @@ position = Vector2(158, 288)
 position = Vector2(158, 288)
 script = ExtResource("memory_seal_pt")
 room_id = &"decay_garden"
+
+[node name="GardenBench" type="Area2D" parent="Interactive"]
+position = Vector2(290, 288)
+script = ExtResource("lore_story")
+lore_id = &"garden_bench"
+texture_path = "res://assets/props/photograph.png"
+sprite_scale = 0.45
+dialogue_room = &"decay_garden"
+dialogue_set = &"garden_bench"
+repeat_line = "Noroi|Tek kişilik bir taş bank. Biri burada otururdu."
+
+[node name="RoomTouch" type="Node2D" parent="."]
+position = Vector2(500,200)
+script = ExtResource("touch")
+motes_color = Color(0.7, 0.95, 0.5, 0.6)
+motes_area = Vector2(500, 80)
+solve_puzzle = &"decay_garden_bloom"
+solve_sfx = &"discovery"
+solve_pitch = 1.4
+
+[node name="RoomPolish" type="Node2D" parent="."]
+script = ExtResource("polish")
+kind = &"garden_dots"
+source_path = NodePath("../Interactive/BloomShrine")
+anchor = Vector2(720, 196)

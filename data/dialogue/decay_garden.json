@@ -1,0 +1,13 @@
+{
+  "room": "decay_garden",
+  "sets": {
+    "garden_bench": [
+      {"s": "Noroi", "t": "Bahçede bir taş bank. Yalnız bir kişi için yontulmuş."},
+      {"s": "@shilda", "t": "Burada otururdum. Nöbet bitince, kimse görmezken."},
+      {"s": "Noroi", "t": "Yalnızlık için mi?"},
+      {"s": "@shilda", "t": "Çiçekler için. Yalnızlık sonradan geldi."},
+      {"s": "Noroi", "t": "Bu bahçe sana benziyor. Sessiz ama dikenli."},
+      {"s": "@shilda", "t": "Yeter. Bu kadar iltifat dikenleri çiçeklendirir."}
+    ]
+  }
+}

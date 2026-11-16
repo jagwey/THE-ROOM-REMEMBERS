@@ -3,6 +3,9 @@ extends CanvasLayer
 
 signal closed
 
+const NookRecordScript := preload("res://scripts/world/nook_record.gd")
+const EchoTrialScript := preload("res://scripts/world/echo_trial.gd")
+const MemoryShrineScript := preload("res://scripts/world/memory_shrine.gd")
 @onready var book_art: TextureRect = $BookRoot/BookArt
 @onready var tab_gunluk: Button = $BookRoot/Tabs/Gunluk
 @onready var tab_notlar: Button = $BookRoot/Tabs/Notlar
@@ -143,10 +146,17 @@ func _show_section(section: String) -> void:
 		"notlar":
 			label = "Notlar"
 		"izler":
-			label = "İzler"
+			label = "İzler  Kayıtlar %d/%d  Sınavlar %d/%d  Anılar %d/%d" % [NookRecordScript.count(), NookRecordScript.TOTAL, EchoTrialScript.count(), EchoTrialScript.TOTAL, MemoryShrineScript.count(), MemoryShrineScript.TOTAL]
 		_:
 			label = "Günlük"
 	list_title.text = label
+	var title_size: int = 15 if section == "izler" else UiTheme.SPEAKER
+	if section == "izler":
+		var tf: Font = list_title.get_theme_font("font")
+		var tw: float = list_title.size.x if list_title.size.x > 40.0 else 300.0
+		while title_size > 10 and tf != null and tf.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, title_size).x > tw - 4.0:
+			title_size -= 1
+	list_title.add_theme_font_size_override("font_size", title_size)
 	_entries = EchoManager.get_notes_for_section(section)
 	if section == "gunluk":
 		var hint: Dictionary = PuzzleManager.journal_hint_for_active_room()

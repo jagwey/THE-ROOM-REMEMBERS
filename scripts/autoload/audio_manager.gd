@@ -34,6 +34,8 @@ var _curse_target_db: float = -80.0
 var _curse_value: float = 0.0
 var _master_linear: float = 1.0
 var _music_on: bool = true
+var _music_linear: float = 1.0 ## Müzik ses seviyesi (Music bus)
+var _sfx_linear: float = 1.0 ## Efekt ses seviyesi (SFX bus)
 var _boot_delay: int = 3
 var _player_node: CharacterBody2D
 var _player_poll: float = 0.0
@@ -158,6 +160,33 @@ func set_master_volume(linear: float) -> void:
 		return
 	AudioServer.set_bus_volume_db(0, linear_to_db(maxf(_master_linear, 0.0001)))
 	AudioServer.set_bus_mute(0, _master_linear <= 0.0001)
+
+
+func set_music_volume(linear: float) -> void:
+	_music_linear = clampf(linear, 0.0, 1.0)
+	_apply_bus_volume("Music", _music_linear)
+
+
+func set_sfx_volume(linear: float) -> void:
+	_sfx_linear = clampf(linear, 0.0, 1.0)
+	_apply_bus_volume("SFX", _sfx_linear)
+
+
+func get_music_volume() -> float:
+	return _music_linear
+
+
+func get_sfx_volume() -> float:
+	return _sfx_linear
+
+
+func _apply_bus_volume(bus_name: String, linear: float) -> void:
+	if not _enabled:
+		return
+	var i := AudioServer.get_bus_index(bus_name)
+	if i >= 0:
+		AudioServer.set_bus_volume_db(i, linear_to_db(maxf(linear, 0.0001)))
+		AudioServer.set_bus_mute(i, linear <= 0.0001 or (bus_name == "Music" and not _music_on))
 
 
 func set_music_enabled(enabled: bool) -> void:

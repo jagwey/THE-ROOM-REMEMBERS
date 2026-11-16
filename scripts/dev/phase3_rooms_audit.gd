@@ -1098,6 +1098,8 @@ func _graph() -> void:
 	for rid in MAIN_PATH_P3:
 		if rid == "mirrors_reverse":
 			continue
+		if rid in ["library_upper_stacks", "experiment_circuit"]:
+			continue  # side doors (Kayıt Mahzeni, İkiz Laboratuvarı) are intentional
 		check(not side.has(rid), "GRAPH SIDE_DOORS has no %s" % rid)
 	var fwd_ok := true
 	var visited: Array = []

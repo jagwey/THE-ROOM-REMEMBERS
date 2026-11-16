@@ -81,15 +81,49 @@ func mark_solved(puzzle_id: StringName) -> void:
 		_:
 			pass
 	puzzle_solved.emit(puzzle_id)
-	_celebrate_solve()
+	_celebrate_solve(puzzle_id)
+
+
+## Bulmaca türüne göre mevcut SFX (bağ/kilit/plaka/yankı... her çözülüş farklı duyulur).
+const SOLVE_SFX := [
+	["bond", &"echo_playback", -7.0],
+	["seal", &"seal_key", -6.0],
+	["lock", &"seal_key", -6.0],
+	["latch", &"seal_key", -6.0],
+	["key", &"seal_key", -6.0],
+	["weight", &"plate_press", -4.0],
+	["plate", &"plate_press", -4.0],
+	["stand", &"plate_press", -4.0],
+	["echo", &"echo_record", -6.0],
+	["corpse", &"corpse_drag", -8.0],
+	["dials", &"clock_tick", -4.0],
+	["code", &"clock_tick", -4.0],
+	["circuit", &"clock_tick", -4.0],
+	["cross", &"door_open", -8.0],
+	["walk", &"door_open", -8.0],
+	["order", &"discovery", -8.0],
+	["shelves", &"discovery", -8.0],
+	["bloom", &"discovery", -8.0],
+	["bellroom", &"discovery", -8.0],
+	["shrine", &"discovery", -8.0],
+]
+
+
+static func solve_sfx_for(puzzle_id: StringName) -> Array:
+	var id := String(puzzle_id)
+	for e in SOLVE_SFX:
+		if id.contains(String(e[0])):
+			return [e[1], e[2]]
+	return [&"seal_open", -8.0]
 
 
 ## İlk çözümde kısa bir ödül: ses + afiş. Testler afişi beklemesin diye başlıksız kalır.
-func _celebrate_solve() -> void:
+func _celebrate_solve(puzzle_id: StringName = &"") -> void:
 	if is_inside_tree():
 		var am := get_node_or_null("/root/AudioManager")
 		if am and am.has_method("play_sfx"):
-			am.play_sfx(&"seal_open", -8.0)
+			var pick := solve_sfx_for(puzzle_id)
+			am.play_sfx(pick[0], pick[1])
 	if OS.get_environment("TORIMON_TEST") == "1":
 		return
 	SealBanner.show_banner("HATIRLANDI", "Bir kilit daha açıldı.")
@@ -131,7 +165,7 @@ const HINTS: Dictionary = {
 	&"decay_catacombs": {
 		"goal": "Karanlıkta yol, ölülerin ışığıdır.",
 		"orientation": "Her çiçekli ceset bir sembolü yakar: uçurum kenarları, köprü.",
-		"explicit": "Çiçekle uçuruma düş (iki kenar), köprüde öl; 5-8-6'yı mühre gir."
+		"explicit": "Çiçekle uçurumun iki kenarında öl, sonra köprüde öl; 5-8-6'yı mühre gir."
 	},
 	&"decay_garden_bloom": {
 		"goal": "Çiçeklerin açış sırası kapıyı açar.",
@@ -146,7 +180,7 @@ const HINTS: Dictionary = {
 	&"decay_catacomb_seal": {
 		"goal": "Karanlıkta yol, ölülerin ışığıdır.",
 		"orientation": "Üç sembol, üç çiçekli ceset: iki uçurum kenarı, bir köprü.",
-		"explicit": "Çiçekle uçuruma düş (iki kenar), köprüde öl; 5-8-6'yı mühre gir."
+		"explicit": "Çiçekle uçurumun iki kenarında öl, sonra köprüde öl; 5-8-6'yı mühre gir."
 	},
 	&"awakening_weight": {
 		"goal": "Kapıyı açık tutmak için bir ağırlık gerekiyor.",
@@ -185,7 +219,7 @@ const HINTS: Dictionary = {
 	},
 	&"awakening_seal_second": {
 		"goal": "İkinci plaka da boş kalmamalı.",
-		"orientation": "Her plaka ayrı bir beden ister. Bedenler birbirini atmaz.",
+		"orientation": "Her plaka ayrı bir beden ister. Bir beden iki plakaya yetmez.",
 		"explicit": "İkinci kristale iki kez dokun, bedenin ikinci plakada kalsın."
 	},
 	&"awakening_vigil_trace": {
@@ -256,7 +290,7 @@ const HINTS: Dictionary = {
 	&"mirrors_reverse_crossed": {
 		"goal": "Aynalı zeminde sağ sol yer değiştiriyor.",
 		"orientation": "Kırmızı şeritler zeminde. Yönün ters, atlayarak geç.",
-		"explicit": "Şeritlerde dur, ters bas, sağ uca var. Kalkanlı gölgeyi kesme."
+		"explicit": "Kırmızı şeritlere basma; tuşlar ters, atlayarak sağ uca var. Kalkanlı gölgeyi kesme."
 	},
 	&"mirrors_dual_echo": {
 		"goal": "Yankı aynada gibi tersler: sen sağa gidersen o sola gider.",
@@ -274,12 +308,12 @@ const HINTS: Dictionary = {
 		"explicit": "İlk dikene dokun; beden ilk plakada kalır."
 	},
 	&"mirrors_gallery_plate_2": {
-		"goal": "Galerinin üç plakası bedenle basılmalı.",
+		"goal": "Galerinin ikinci plakası hâlâ boş.",
 		"orientation": "Plakalar bedeni tutar. İkincisi ortadaki.",
 		"explicit": "Ortadaki dikene dokun; beden plakada kalır."
 	},
 	&"mirrors_gallery_plate_3": {
-		"goal": "Galerinin üç plakası bedenle basılmalı.",
+		"goal": "Son plaka da bir beden bekliyor.",
 		"orientation": "Üçüncü plaka en sağda. Bedeni orada bırak.",
 		"explicit": "Sağdaki dikene dokun; beden son plakada kalır."
 	},
@@ -292,6 +326,11 @@ const HINTS: Dictionary = {
 		"goal": "Yansıma bir yol yürüyor; yankın aynı yolu izlemeli.",
 		"orientation": "Yol üç nokta: yer, yüksek taş, yer. Yankıyı oradan geçir.",
 		"explicit": "Sunağı kaydet; yankı alçak, yüksek, alçak noktaya sırayla uğrasın."
+	},
+	&"core_entry_echo": {
+		"goal": "Kristale giden yolu bir kapı kesiyor.",
+		"orientation": "Sunak yankını kaydeder; kapı bir plakanın ağırlığına bağlı.",
+		"explicit": "Sunağa dokun, plakaya yürü, yankın plakadayken kapıdan geç."
 	},
 	&"core_ascent": {
 		"goal": "Son merdiven iki yetenek ve bir yankı istiyor.",
@@ -403,6 +442,206 @@ const HINTS: Dictionary = {
 		"orientation": "Damarlar kalpten uca doğru sırayla kesilir.",
 		"explicit": "Önce ortadaki, sonra soldaki, en son sağdaki damarı kes."
 	},
+	&"awakening_bellroom_corpse": {
+		"goal": "Üç plaka aynı anda tutulmalı; ilki beden ister.",
+		"orientation": "Dikene dokun, bedenin plakada kalsın.",
+		"explicit": "Soldaki dikende öl; bedenin ilk plakayı tutsun."
+	},
+	&"awakening_bellroom_echo": {
+		"goal": "Yankı ikinci plakayı tutmalı.",
+		"orientation": "Sunağa dokun, plakaya yürü ve orada bekle.",
+		"explicit": "Sunakta kaydı başlat, orta plakada sekiz saniye dur; yankı orada kalır."
+	},
+	&"awakening_bellroom_stand": {
+		"goal": "Üçüncü plakaya sen bas.",
+		"orientation": "Yankı yürürken öteki plakada dur.",
+		"explicit": "Yankıyı başlat, sonra sağdaki plakada dur; üçü birlikte kapıyı açar."
+	},
+	&"awakening_bellroom": {
+		"goal": "Çanlar defterdeki sırayla çalar.",
+		"orientation": "Bir sayfa ilk ve son çanı, öteki ortadakini söyler.",
+		"explicit": "Gün çanı, sonra Yas çanı, en son Gece çanı."
+	},
+	&"decay_rootworks_corpse": {
+		"goal": "Üç ağırlık gerekir; ilki beden.",
+		"orientation": "Dikene dokun; bedenin soldaki plakada kalsın.",
+		"explicit": "Soldaki dikende öl; bedenin ilk plakayı tutsun."
+	},
+	&"decay_rootworks_stone": {
+		"goal": "İkinci ağırlık taş.",
+		"orientation": "Taşı yürüyerek ya da etkileşimle plakaya doğru it.",
+		"explicit": "Taşı sağdaki plakaya it; orada kalsın."
+	},
+	&"decay_rootworks_water": {
+		"goal": "Üçüncü ağırlığı yukarıdaki levha verir.",
+		"orientation": "Salın vanası suyu yükseltir; ikinci seviyede yan çıkıntıya atla.",
+		"explicit": "Vanaya bir kez dokun, sal yükselince sağdaki çıkıntıdaki levhaya çık ve orada dur."
+	},
+	&"decay_rootworks": {
+		"goal": "Defter üç adımın sırasını söyler.",
+		"orientation": "Su verilir, sonra kök salınır, çiçek en sonda gelir.",
+		"explicit": "Su, Kök, Çiçek sırasıyla dokun."
+	},
+	&"library_archive_vault_corpse": {
+		"goal": "Kasa üç şey ister; ilki beden.",
+		"orientation": "Dikene dokun; bedenin soldaki plakada kalsın.",
+		"explicit": "Soldaki dikende öl; bedenin ilk plakayı tutsun."
+	},
+	&"library_archive_vault_echo": {
+		"goal": "İkinci ağırlık yankıdan gelir.",
+		"orientation": "Sunağa dokun, plakaya yürü ve orada bekle.",
+		"explicit": "Sunakta kaydı başlat, sağdaki plakada sekiz saniye dur; yankı orada kalır."
+	},
+	&"library_archive_vault_dials": {
+		"goal": "Kadranlar ay numarası ister.",
+		"orientation": "Defterin sayfaları Mühür, Kayıt ve Son için birer ay söyler.",
+		"explicit": "Mühür 4, Kayıt 11, Son 7."
+	},
+	&"library_archive_vault": {
+		"goal": "Raflar tarih sırasıyla açılır.",
+		"orientation": "Üç ayı küçükten büyüğe diz; her ay bir raftır.",
+		"explicit": "Mühür Rafı, Son Raf, Kayıt Rafı."
+	},
+	&"experiment_twin_lab_corpse": {
+		"goal": "Tartı iki ağırlık ister; ilki beden.",
+		"orientation": "Dikene dokun; bedenin soldaki kefede kalsın.",
+		"explicit": "Soldaki dikende öl; bedenin ilk kefeyi tutsun."
+	},
+	&"experiment_twin_lab_echo": {
+		"goal": "İkinci ağırlık yankıdan gelir.",
+		"orientation": "Sunağa dokun, kefeye yürü ve orada bekle.",
+		"explicit": "Sunakta kaydı başlat, sağdaki kefede sekiz saniye dur; yankı orada kalır."
+	},
+	&"experiment_twin_lab_seal": {
+		"goal": "Mühür yalnız bir kesimle çözülür.",
+		"orientation": "Tartı açıkken mührü Ruh Kesimi'yle kır.",
+		"explicit": "Beden ve yankı kefedeyken mührün önünde Ruh Kesimi'ni kullan."
+	},
+	&"experiment_twin_lab": {
+		"goal": "İşlem föydeki sırayla yürür.",
+		"orientation": "Tartı, kesim, dosya; dosya en son gelir.",
+		"explicit": "Tartı, Kesim Masası, Dosya Masası."
+	},
+	&"mirrors_inverse_hall_mimic": {
+		"goal": "Yansımanın yolu yankıyla yürünür.",
+		"orientation": "Sunağa dokun; yankın sırasıyla alçak, yüksek, alçak noktalardan geçmeli.",
+		"explicit": "Sunakta kaydı başlat; ters yönde sağa yürü, ortadaki platforma çık, sonra in."
+	},
+	&"mirrors_inverse_hall_cross": {
+		"goal": "Kırmızı çizginin ötesinde bir plaka var.",
+		"orientation": "Gölge Atılması kırmızı çizgiden geçer; Ayna Tapınağı'nda öğrenilir.",
+		"explicit": "Çizgiye Gölge Atılması ile dal ve ötedeki plakaya bas."
+	},
+	&"mirrors_inverse_hall": {
+		"goal": "Aynalar notlardaki sırayla yanar.",
+		"orientation": "Ana Ayna, Yansıma Aynası, Gölge Aynası.",
+		"explicit": "Önce Ana Ayna, sonra Yansıma, en son Gölge Aynası."
+	},
+	&"core_last_record_corpse": {
+		"goal": "Kasa dört şey ister; ilki beden.",
+		"orientation": "Dikene dokun; bedenin soldaki plakada kalsın.",
+		"explicit": "Soldaki dikende öl; bedenin ilk plakayı tutsun."
+	},
+	&"core_last_record_echo": {
+		"goal": "İkinci ağırlık yankıdan gelir.",
+		"orientation": "Sunağa dokun, plakaya yürü ve orada bekle.",
+		"explicit": "Sunakta kaydı başlat, sağdaki plakada sekiz saniye dur."
+	},
+	&"core_last_record_seal": {
+		"goal": "Mühür yalnız bir kesimle çözülür.",
+		"orientation": "Beden ve yankı plakadayken mührü Ruh Kesimi'yle kır.",
+		"explicit": "Mührün önünde Ruh Kesimi'ni kullan."
+	},
+	&"core_last_record_cross": {
+		"goal": "Kırmızı çizginin ötesinde bir plaka var.",
+		"orientation": "Gölge Atılması çizgiden geçer; Ayna Tapınağı'nda öğrenilir.",
+		"explicit": "Çizgiye Gölge Atılması ile dal ve ötedeki plakaya bas."
+	},
+	&"core_last_record": {
+		"goal": "Sayfalar kayıtların sırasıyla çevrilir.",
+		"orientation": "Gözlem, kayıt, veda; veda en son gelir.",
+		"explicit": "Gözlem Sayfası, Kayıt Sayfası, Veda Sayfası."
+	},
+	&"memory_uyanis": {
+		"goal": "Nöbet odasında kırık bir anı parçalanmış.",
+		"orientation": "Parçaları oku; tarihler ve neden-sonuç sırayı verir.",
+		"explicit": "Önce kayıt defteri, sonra anahtar akşamı, sonra ertesi sabah."
+	},
+	&"memory_decay": {
+		"goal": "Sarmaşığın yanında kırık bir anı dağınık duruyor.",
+		"orientation": "Parçaları oku; tarihler ve neden-sonuç sırayı verir.",
+		"explicit": "Mart, Nisan, Mayıs 1923 sırasıyla dokun."
+	},
+	&"memory_kutuphane": {
+		"goal": "Saat odasında kırık bir anı dağınık duruyor.",
+		"orientation": "Parçaları oku; tarihler ve neden-sonuç sırayı verir.",
+		"explicit": "Eylül 1924, Şubat 1925, Haziran 1925 sırasıyla dokun."
+	},
+	&"memory_deney": {
+		"goal": "Devre odasında kırık bir anı dağınık duruyor.",
+		"orientation": "Parçaları oku; tarihler ve neden-sonuç sırayı verir.",
+		"explicit": "Ocak, Ağustos, Aralık 1926 sırasıyla dokun."
+	},
+	&"memory_aynalar": {
+		"goal": "Aynalı odada kırık bir anı dağınık duruyor.",
+		"orientation": "Parçaları oku; tarihler ve neden-sonuç sırayı verir.",
+		"explicit": "Mart, Mayıs, Haziran 1927 sırasıyla dokun."
+	},
+	&"awakening_s_room_corpse": {
+		"goal": "Raf dört şey ister; ilki beden.",
+		"orientation": "Dikene dokun; bedenin soldaki plakada kalsın.",
+		"explicit": "Soldaki dikende öl; bedenin ilk plakayı tutsun."
+	},
+	&"awakening_s_room_echo": {
+		"goal": "İkinci ağırlık yankıdan gelir.",
+		"orientation": "Sunağa dokun, plakaya yürü ve orada bekle.",
+		"explicit": "Sunakta kaydı başlat, plakada sekiz saniye dur."
+	},
+	&"awakening_s_room_seal": {
+		"goal": "Mühür yalnız bir kesimle çözülür.",
+		"orientation": "Beden ve yankı plakadayken mührü Ruh Kesimi'yle kır.",
+		"explicit": "Mührün önünde Ruh Kesimi'ni kullan."
+	},
+	&"awakening_s_room_cross": {
+		"goal": "Kırmızı çizginin ötesinde bir plaka var.",
+		"orientation": "Gölge Atılması çizgiden geçer; Ayna Tapınağı'nda öğrenilir.",
+		"explicit": "Çizgiye Gölge Atılması ile dal, ötedeki plakada dur."
+	},
+	&"awakening_s_room": {
+		"goal": "Beş sayfa yıl sırasıyla çevrilir.",
+		"orientation": "Duvardaki başlıklar yıllarıyla yazılı; eskiden yeniye.",
+		"explicit": "İlk Gün, Sera, Yasak Raf, Yanlış Sayı, Geç Yansıma."
+	},
+	&"trial_awakening_bellroom": {
+		"goal": "Çanlar ters çalar; çan plakası bedenle tutulu kalmalı.",
+		"orientation": "Dikende ölüp bedenini plakada bırak; sonra Gece, Gün, Yas.",
+		"explicit": "Dikene dokun, bedenin plakada dursun; sunağa dokun, sonra Gece, Gün, Yas çanlarına bas."
+	},
+	&"trial_decay_rootworks": {
+		"goal": "Taş plakada kalmalı; sıra kökle başlar.",
+		"orientation": "Önce taşı plakaya it, sonra Kök, Su, Çiçek diye dokun.",
+		"explicit": "Taşı plakaya oturt, sunağa dokun, Kök, Su, Çiçek sırasıyla bas."
+	},
+	&"trial_library_archive_vault": {
+		"goal": "Önce Mühür kadranı kayıtta yazan aya çevrilir; sonra raflar.",
+		"orientation": "Sunak kaydı okur: Mühür kadranı Mart; sonra Kayıt, Mühür, Kayıt, Son.",
+		"explicit": "Mühür kadranını Mart'a (3) çevir, sunağa dokun, Kayıt, Mühür, Kayıt, Son raflarına bas."
+	},
+	&"trial_experiment_twin_lab": {
+		"goal": "Terazi hatayı sayar; her yanlış dokunuş süre yer.",
+		"orientation": "Kesim, Tartı, Dosya; acele edersen süre erir.",
+		"explicit": "Sunağa dokun, sonra Kesim, Tartı, Dosya masalarına sırayla dokun."
+	},
+	&"trial_mirrors_inverse_hall": {
+		"goal": "İkinci adımdan sonra ayna seni sunağa geri çağırır.",
+		"orientation": "Gölge, Yansıma; sonra çizgiden atılıp sunağa dön, en son Ana Ayna.",
+		"explicit": "Gölge, Yansıma aynalarına bas; Gölge Atılması ile geri dön, sunağa dokun, sonra Ana Ayna."
+	},
+	&"trial_core_last_record": {
+		"goal": "Veda sayfasından önce mühür bir kez daha kesilmeli.",
+		"orientation": "Gözlem, Kayıt, Gözlem; sonra mühürde Ruh Kesimi, en son Veda.",
+		"explicit": "Üç sayfadan sonra mühürde Ruh Kesimi yap, sonra Veda sayfasına dokun."
+	},
 	&"experiment_observation": {
 		"goal": "Cam ardındaki yankı yürümeden not okunmaz.",
 		"orientation": "Projektör plakası yalnız beden ağırlığını tanır.",
@@ -418,8 +657,8 @@ const ROOM_PUZZLES: Dictionary = {
 	"awakening_crypt": [&"awakening_crypt_pages", &"awakening_crypt_bed"],
 	"awakening_passage": [&"awakening_passage_rings", &"awakening_memory_code"],
 	"awakening_seal": [&"awakening_seal_weight", &"awakening_seal_second", &"awakening_memory_code"],
-	"awakening_vigil": [&"awakening_vigil_trace"],
-	"decay_vines": [&"decay_vines"],
+	"awakening_vigil": [&"awakening_vigil_trace", &"memory_uyanis"],
+	"decay_vines": [&"decay_vines", &"memory_decay"],
 	"decay_weight": [&"decay_weight_latch", &"decay_weight_corpse"],
 	"decay_greenhouse": [&"decay_greenhouse"],
 	"decay_shilda_wall": [&"decay_shilda_wall_broken"],
@@ -428,19 +667,19 @@ const ROOM_PUZZLES: Dictionary = {
 	"decay_cistern": [&"decay_cistern"],
 	"library_hall": [&"library_hall_shelves"],
 	"library_witness": [&"library_witnesses"],
-	"library_clockroom": [&"library_clockroom"],
+	"library_clockroom": [&"library_clockroom", &"memory_kutuphane"],
 	"library_page": [&"library_page_order"],
 	"library_upper_stacks": [&"library_shelf_order"],
 	"library_forbidden_wing": [&"soul_seal_forbidden", &"soul_seal_forbidden_2"],
 	"library_reading_cell": [&"library_reading_cabin", &"library_reading_cell"],
 	"experiment_authority": [&"experiment_authority"],
 	"experiment_intake": [&"experiment_intake"],
-	"experiment_circuit": [&"experiment_circuit"],
+	"experiment_circuit": [&"experiment_circuit", &"memory_deney"],
 	"experiment_quarantine": [&"experiment_quarantine_done"],
 	"experiment_core_conduit": [&"experiment_conduit"],
 	"experiment_observation": [&"experiment_observation"],
 	"mirrors_reverse": [&"mirrors_reverse_crossed"],
-	"mirrors_dual": [&"mirrors_dual_echo", &"mirrors_dual_weight"],
+	"mirrors_dual": [&"mirrors_dual_echo", &"mirrors_dual_weight", &"memory_aynalar"],
 	"mirrors_gallery": [&"mirrors_gallery_plate_1", &"mirrors_gallery_plate_2", &"mirrors_gallery_plate_3"],
 	"mirrors_unbroken": [&"mirrors_unbroken_mimic"],
 	"mirrors_labyrinth": [&"mirrors_labyrinth_crossed"],
@@ -451,7 +690,14 @@ const ROOM_PUZZLES: Dictionary = {
 	"core_threshold": [&"core_threshold_crossed"],
 	"core_ascent": [&"core_ascent"],
 	"core_seal_chamber": [&"core_seal_bond_1", &"core_seal_bond_2", &"core_seal_bond_3"],
-	"core": [&"core_seal", &"core_defense"],
+	"awakening_bellroom": [&"awakening_bellroom_corpse", &"awakening_bellroom_echo", &"awakening_bellroom_stand", &"awakening_bellroom"],
+	"decay_rootworks": [&"decay_rootworks_corpse", &"decay_rootworks_stone", &"decay_rootworks_water", &"decay_rootworks"],
+	"library_archive_vault": [&"library_archive_vault_corpse", &"library_archive_vault_echo", &"library_archive_vault_dials", &"library_archive_vault"],
+	"experiment_twin_lab": [&"experiment_twin_lab_corpse", &"experiment_twin_lab_echo", &"experiment_twin_lab_seal", &"experiment_twin_lab"],
+	"mirrors_inverse_hall": [&"mirrors_inverse_hall_mimic", &"mirrors_inverse_hall_cross", &"mirrors_inverse_hall"],
+	"core_last_record": [&"core_last_record_corpse", &"core_last_record_echo", &"core_last_record_seal", &"core_last_record_cross", &"core_last_record"],
+	"awakening_s_room": [&"awakening_s_room_corpse", &"awakening_s_room_echo", &"awakening_s_room_seal", &"awakening_s_room_cross", &"awakening_s_room"],
+	"core": [&"core_entry_echo", &"core_seal", &"core_defense"],
 }
 
 
@@ -500,6 +746,7 @@ func get_hints(puzzle_id: StringName) -> Dictionary:
 
 func get_current_hint(puzzle_id: StringName, tier: int = 1) -> String:
 	var h := get_hints(puzzle_id)
+	tier = mini(tier, GameSettings.max_hint_tier()) ## İpucu seviyesi ayarı
 	match tier:
 		1:
 			return String(h.get("goal", ""))

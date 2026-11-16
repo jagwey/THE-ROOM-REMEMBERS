@@ -1,0 +1,205 @@
+[gd_scene load_steps=14 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
+[ext_resource type="Script" path="res://scripts/world/echo_altar.gd" id="altar"]
+[ext_resource type="Script" path="res://scripts/world/dial_puzzle.gd" id="dial"]
+[ext_resource type="Script" path="res://scripts/world/gate_blocker.gd" id="gate"]
+[ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore"]
+[ext_resource type="Script" path="res://scripts/world/pressure_plate.gd" id="plate"]
+[ext_resource type="Script" path="res://scripts/world/sequence_shrine.gd" id="shrine"]
+[ext_resource type="Script" path="res://scripts/world/sequence_step.gd" id="step"]
+[ext_resource type="Script" path="res://scripts/world/blood_thorn.gd" id="thorn"]
+[ext_resource type="Script" path="res://scripts/world/echo_trial.gd" id="trial"]
+
+[sub_resource type="RectangleShape2D" id="GateShape"]
+size = Vector2(32, 88)
+
+[sub_resource type="RectangleShape2D" id="Interact"]
+size = Vector2(48, 96)
+
+[sub_resource type="RectangleShape2D" id="PlateShape"]
+size = Vector2(44, 18)
+
+[node name="LibraryArchiveVault" type="Node2D"]
+script = ExtResource("room")
+room_id = &"library_archive_vault"
+region_id = &"library"
+room_width = 1280.0
+bg_region = "library"
+checkpoint = Vector2(120, 288)
+default_spawn = Vector2(120, 288)
+doors = [{"x": 40.0, "to": "library_upper_stacks", "spawn": "from_library_archive_vault"}]
+
+[node name="Spawns" type="Node2D" parent="."]
+
+[node name="keeper_observe" type="Marker2D" parent="Spawns"]
+position = Vector2(640, 288)
+
+[node name="Interactive" type="Node2D" parent="."]
+
+[node name="RecordV1" type="Area2D" parent="Interactive"]
+position = Vector2(140, 288)
+script = ExtResource("lore")
+lore_id = &"vault_1"
+texture_path = "res://assets/props/photograph.png"
+sprite_scale = 0.5
+lines = PackedStringArray("Noroi|Kayıt defteri, ilk sayfa: “Mühür 1927 Nisan'ında vuruldu.”", "Noroi|Kenarda: “Kadranlar ay sayar. Ocak bir, Aralık on iki.”")
+evidence_title = "Kayıt Defteri, Birinci Sayfa"
+evidence_body = "Mühür Nisan'da vuruldu. Kadranlar ay numarası ister: Ocak bir, Aralık on iki."
+evidence_section = "izler"
+
+[node name="VaultThorn" type="Area2D" parent="Interactive"]
+position = Vector2(200, 290)
+script = ExtResource("thorn")
+anchor_x = 280
+puzzle_hint = &"library_archive_vault_corpse"
+body_line = "Dikende ölürsem bedenim kasanın ilk plakasında kalır."
+solved_line = "Beden plakada; kasa bir ağırlık aldı."
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/VaultThorn"]
+shape = SubResource("Interact")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/VaultThorn"]
+texture_filter = 0
+centered = true
+
+[node name="VaultCorpsePlate" type="Area2D" parent="Interactive"]
+position = Vector2(280, 278)
+script = ExtResource("plate")
+collision_layer = 0
+collision_mask = 1
+puzzle_id = &"library_archive_vault_corpse"
+accept_player = false
+accept_stone = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/VaultCorpsePlate"]
+shape = SubResource("PlateShape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/VaultCorpsePlate"]
+texture_filter = 0
+centered = true
+
+[node name="RecordV2" type="Area2D" parent="Interactive"]
+position = Vector2(360, 288)
+script = ExtResource("lore")
+lore_id = &"vault_2"
+texture_path = "res://assets/props/photograph.png"
+sprite_scale = 0.5
+lines = PackedStringArray("Noroi|İkinci sayfa: “Kayıt Kasım'da kapatıldı. Son iş Temmuz'da düzeltildi.”", "Noroi|Altı çizili: “Sıra, ayların akışıdır; defterin sırası değil.”")
+evidence_title = "Kayıt Defteri, İkinci Sayfa"
+evidence_body = "Kayıt Kasım'da kapatıldı, Son iş Temmuz'da düzeltildi. Sıra ayların akışıdır."
+evidence_section = "izler"
+
+[node name="VaultEcho" type="Area2D" parent="Interactive"]
+position = Vector2(460, 268)
+script = ExtResource("altar")
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+monitorable = true
+puzzle_id = &"library_archive_vault_echo"
+intro_text = "Sunağa dokun, plakada bekle. Yankın tartıyı tutsun."
+solved_text = "Yankı plakayı tutuyor."
+switch_kinds = PackedStringArray("plate")
+switch_positions = PackedVector2Array(150, 32)
+live_only = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/VaultEcho"]
+shape = SubResource("Interact")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/VaultEcho"]
+texture_filter = 0
+centered = true
+
+[node name="RecordV3" type="Area2D" parent="Interactive"]
+position = Vector2(700, 288)
+script = ExtResource("lore")
+lore_id = &"vault_3"
+texture_path = "res://assets/props/photograph.png"
+sprite_scale = 0.5
+lines = PackedStringArray("Noroi|Üçüncü sayfa: “Her kadran bir işin ayını tutar: Mühür, Kayıt, Son.”", "Noroi|Raflar da aynı adları taşıyor. En eski ay ilk açılır herhalde.")
+evidence_title = "Kayıt Defteri, Üçüncü Sayfa"
+evidence_body = "Üç ad: Mühür, Kayıt, Son. Kadranlar bu sırayla ay ister; raflar tarih sırasıyla çalınır."
+evidence_section = "izler"
+
+[node name="VaultDials" type="Node2D" parent="Interactive"]
+position = Vector2(880, 280)
+script = ExtResource("dial")
+puzzle_id = &"library_archive_vault_dials"
+targets = PackedInt32Array(4, 11, 7)
+labels = PackedStringArray("Mühür", "Kayıt", "Son")
+spacing = 90.0
+solved_line = "Kadranlar yerine oturdu. Kasa gevşedi."
+
+[node name="VaultGate" type="StaticBody2D" parent="Interactive"]
+position = Vector2(1030, 268)
+script = ExtResource("gate")
+collision_layer = 1
+collision_mask = 0
+open_flag = &"library_archive_vault_open"
+puzzle_listen = &""
+puzzle_listen_all = PackedStringArray("library_archive_vault_corpse", "library_archive_vault_echo", "library_archive_vault_dials")
+ignore_world_flag = false
+latch_on_live = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/VaultGate"]
+shape = SubResource("GateShape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/VaultGate"]
+texture_filter = 0
+centered = true
+
+[node name="VaultShrine" type="Node2D" parent="Interactive"]
+script = ExtResource("shrine")
+puzzle_id = &"library_archive_vault"
+order = PackedStringArray("muhur", "son", "kayit")
+fail_line = "Yanlış raf. Kasa kilitlendi."
+success_line = "Raflar tarihe göre sıralandı. Kasa açıldı."
+evidence_id = "ev_vault_shilda_1927"
+evidence_title = "Shilda'nın 1927 Kaydı"
+evidence_body = "1927: Araştırma Yardımcısı S. son satırı kendi eliyle ekledi: kütüphane unutmaz, ben de unutmayacağım."
+require_live = PackedStringArray("library_archive_vault_corpse", "library_archive_vault_echo", "library_archive_vault_dials")
+require_line = "Kasa hâlâ ağırlık ve kadran bekliyor."
+
+[node name="Step_muhur" type="Area2D" parent="Interactive/VaultShrine"]
+position = Vector2(1090, 288)
+script = ExtResource("step")
+step_id = "muhur"
+label = "Mühür Rafı"
+texture_path = "res://assets/props/ledger.png"
+sprite_scale = 0.5
+tint = Color(0.9, 0.8, 0.5, 1)
+
+[node name="Step_kayit" type="Area2D" parent="Interactive/VaultShrine"]
+position = Vector2(1150, 288)
+script = ExtResource("step")
+step_id = "kayit"
+label = "Kayıt Rafı"
+texture_path = "res://assets/props/ledger.png"
+sprite_scale = 0.5
+tint = Color(0.6, 0.7, 0.9, 1)
+
+[node name="Step_son" type="Area2D" parent="Interactive/VaultShrine"]
+position = Vector2(1210, 288)
+script = ExtResource("step")
+step_id = "son"
+label = "Son Raf"
+texture_path = "res://assets/props/ledger.png"
+sprite_scale = 0.5
+tint = Color(0.75, 0.55, 0.8, 1)
+
+[node name="EchoTrial" type="Area2D" parent="Interactive"]
+position = Vector2(965, 268)
+script = ExtResource("trial")
+trial_room = &"library_archive_vault"
+shrine_path = NodePath("../VaultShrine")
+order = PackedStringArray("kayit", "muhur", "kayit", "son")
+time_limit = 75.0
+dial_path = NodePath("../VaultDials")
+dial_index = 0
+dial_value = 3
+dial_line = "Mühür kadranı Mart'ta değil."
+twist_label = "Mühür kadranı Mart"
+intro_line = "Kasa bu kez Mühür kadranını Mart'a çevirtiyor. Raflar ondan sonra açılır."
+reward_title = "Yankı Sınavı: Arşiv Kasası"
+reward_body = "Kasa, Araştırma Yardımcısı S.'nin alışkanlığını hatırladı: önemli kayıt iki kez mühürlenirdi."

@@ -1,0 +1,216 @@
+[gd_scene load_steps=14 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
+[ext_resource type="Script" path="res://scripts/world/echo_altar.gd" id="altar"]
+[ext_resource type="Script" path="res://scripts/world/curse_barrier.gd" id="curse"]
+[ext_resource type="Script" path="res://scripts/world/gate_blocker.gd" id="gate"]
+[ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore"]
+[ext_resource type="Script" path="res://scripts/world/pressure_plate.gd" id="plate"]
+[ext_resource type="Script" path="res://scripts/world/s_room_shrine.gd" id="shrine"]
+[ext_resource type="Script" path="res://scripts/world/soul_seal.gd" id="soul"]
+[ext_resource type="Script" path="res://scripts/world/sequence_step.gd" id="step"]
+[ext_resource type="Script" path="res://scripts/world/blood_thorn.gd" id="thorn"]
+
+[sub_resource type="RectangleShape2D" id="GateShape"]
+size = Vector2(32, 88)
+
+[sub_resource type="RectangleShape2D" id="Interact"]
+size = Vector2(48, 96)
+
+[sub_resource type="RectangleShape2D" id="PlateShape"]
+size = Vector2(44, 18)
+
+[node name="AwakeningSRoom" type="Node2D"]
+script = ExtResource("room")
+room_id = &"awakening_s_room"
+region_id = &"awakening"
+room_width = 1280.0
+bg_region = "awakening"
+checkpoint = Vector2(120, 288)
+default_spawn = Vector2(120, 288)
+doors = [{"x": 40.0, "to": "awakening", "spawn": "from_awakening_s_room"}]
+
+[node name="Spawns" type="Node2D" parent="."]
+
+[node name="keeper_observe" type="Marker2D" parent="Spawns"]
+position = Vector2(640, 288)
+
+[node name="Interactive" type="Node2D" parent="."]
+
+[node name="WallNooks1" type="Area2D" parent="Interactive"]
+position = Vector2(140, 288)
+script = ExtResource("lore")
+lore_id = &"s_wall_nooks_1"
+texture_path = "res://assets/props/photograph.png"
+sprite_scale = 0.5
+lines = PackedStringArray("Noroi|Duvara geri dönüş köşelerinden topladığım kayıtlar yazılmış.", "Kayıt|Balkon: “Anne, buradan gökyüzü görünüyor.” İmza: S.", "Kayıt|Kripta: “1927 kışı, sayım bitmedi. S. hâlâ sayıyor.”", "Kayıt|Yeraltı mezarı: “Pazartesi, 1927. S. ilk çiçeği buldu.”", "Kayıt|Sarnıç: “Pompa kapatıldı, 1927. S. uyanınca su çekilsin.”")
+
+[node name="SThorn" type="Area2D" parent="Interactive"]
+position = Vector2(180, 290)
+script = ExtResource("thorn")
+anchor_x = 260
+puzzle_hint = &"awakening_s_room_corpse"
+body_line = "Dikende ölürsem bedenim ilk plakada kalır."
+solved_line = "Beden plakada; raf bir ağırlık aldı."
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/SThorn"]
+shape = SubResource("Interact")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/SThorn"]
+texture_filter = 0
+centered = true
+
+[node name="SCorpsePlate" type="Area2D" parent="Interactive"]
+position = Vector2(260, 278)
+script = ExtResource("plate")
+collision_layer = 0
+collision_mask = 1
+puzzle_id = &"awakening_s_room_corpse"
+accept_player = false
+accept_stone = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/SCorpsePlate"]
+shape = SubResource("PlateShape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/SCorpsePlate"]
+texture_filter = 0
+centered = true
+
+[node name="WallNooks2" type="Area2D" parent="Interactive"]
+position = Vector2(340, 288)
+script = ExtResource("lore")
+lore_id = &"s_wall_nooks_2"
+texture_path = "res://assets/props/photograph.png"
+sprite_scale = 0.5
+lines = PackedStringArray("Kayıt|Hücreler: “Tez yarım kaldı, ekip dağıldı.” S., 1927.", "Kayıt|Gözlem: “Bugün biri cama el koydu. Ben değildim.” S.", "Kayıt|Yasak kanat: “Yasak kitapları okudum. Biri okuyacak.” S.", "Kayıt|Salon: “Okuma izni: yalnız S. Kimse ona sormadı.”", "Noroi|Sekiz köşe, sekiz kayıt. S.'nin hepsi bu odaya çıkıyor.")
+
+[node name="SEcho" type="Area2D" parent="Interactive"]
+position = Vector2(430, 268)
+script = ExtResource("altar")
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+monitorable = true
+puzzle_id = &"awakening_s_room_echo"
+intro_text = "Sunağa dokun, plakada bekle. Yankın ağırlığı tutsun."
+solved_text = "Yankı plakayı tutuyor."
+switch_kinds = PackedStringArray("plate")
+switch_positions = PackedVector2Array(150, 32)
+live_only = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/SEcho"]
+shape = SubResource("Interact")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/SEcho"]
+texture_filter = 0
+centered = true
+
+[node name="SSeal" type="StaticBody2D" parent="Interactive"]
+position = Vector2(700, 288)
+script = ExtResource("soul")
+puzzle_id = &"awakening_s_room_seal"
+refusal_line = "Mühür ruh istiyor; Ruh Kesimi için Yasak Kanat'a gitmeliyim."
+
+[node name="WallMemories" type="Area2D" parent="Interactive"]
+position = Vector2(760, 288)
+script = ExtResource("lore")
+lore_id = &"s_wall_memories"
+texture_path = "res://assets/props/photograph.png"
+sprite_scale = 0.5
+lines = PackedStringArray("Noroi|Duvarda beş kırık anı başlığı yazılı; yılları karışık sırada.", "Kayıt|Geç Yansıma: Mart 1927.", "Kayıt|İlk Gün: Ekim 1921.", "Kayıt|Yanlış Sayı: Ocak 1926.", "Kayıt|Sera: Mart 1923.", "Kayıt|Yasak Raf: Eylül 1924.", "Noroi|Her başlığın bir yılı var. Sayfalar zamanın akışına göre çevrilir.")
+
+[node name="SStripe" type="StaticBody2D" parent="Interactive"]
+position = Vector2(840, 288)
+script = ExtResource("curse")
+refusal_line = "Kırmızı çizgi beni itiyor; Gölge Atılması için Ayna Tapınağı'na gitmeliyim."
+
+[node name="SStand" type="Area2D" parent="Interactive"]
+position = Vector2(910, 278)
+script = ExtResource("plate")
+collision_layer = 0
+collision_mask = 1
+puzzle_id = &"awakening_s_room_cross"
+accept_player = true
+accept_stone = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/SStand"]
+shape = SubResource("PlateShape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/SStand"]
+texture_filter = 0
+centered = true
+
+[node name="SGate" type="StaticBody2D" parent="Interactive"]
+position = Vector2(980, 268)
+script = ExtResource("gate")
+collision_layer = 1
+collision_mask = 0
+open_flag = &"awakening_s_room_open"
+puzzle_listen = &""
+puzzle_listen_all = PackedStringArray("awakening_s_room_corpse", "awakening_s_room_echo", "awakening_s_room_seal", "awakening_s_room_cross")
+ignore_world_flag = false
+latch_on_live = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/SGate"]
+shape = SubResource("GateShape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/SGate"]
+texture_filter = 0
+centered = true
+
+[node name="SShrine" type="Node2D" parent="Interactive"]
+script = ExtResource("shrine")
+puzzle_id = &"awakening_s_room"
+order = PackedStringArray("uyanis", "decay", "kutuphane", "deney", "aynalar")
+fail_line = "Yanlış sayfa. Raf sıfırlandı."
+success_line = "Beş sayfa yıl sırasıyla çevrildi. Oda açıldı."
+evidence_id = "ev_s_room_epilogue"
+evidence_title = "Epilog: S.'nin Defteri"
+evidence_body = "S.'nin insan yılları 1921'den 1927'ye uzanır. Lanet, defterin yarım kaldığı yerde başladı; kayıt hâlâ açık."
+require_live = PackedStringArray("awakening_s_room_corpse", "awakening_s_room_echo", "awakening_s_room_seal", "awakening_s_room_cross")
+require_line = "Raf hâlâ beden, yankı, kesim ve atılış bekliyor."
+
+[node name="Step_deney" type="Area2D" parent="Interactive/SShrine"]
+position = Vector2(1050, 288)
+script = ExtResource("step")
+step_id = "deney"
+label = "Yanlış Sayı Sayfası"
+texture_path = "res://assets/props/ledger.png"
+sprite_scale = 0.45
+tint = Color(0.6, 0.8, 0.9, 1)
+
+[node name="Step_uyanis" type="Area2D" parent="Interactive/SShrine"]
+position = Vector2(1095, 288)
+script = ExtResource("step")
+step_id = "uyanis"
+label = "İlk Gün Sayfası"
+texture_path = "res://assets/props/ledger.png"
+sprite_scale = 0.45
+tint = Color(0.9, 0.8, 0.55, 1)
+
+[node name="Step_aynalar" type="Area2D" parent="Interactive/SShrine"]
+position = Vector2(1140, 288)
+script = ExtResource("step")
+step_id = "aynalar"
+label = "Geç Yansıma Sayfası"
+texture_path = "res://assets/props/ledger.png"
+sprite_scale = 0.45
+tint = Color(0.75, 0.55, 0.8, 1)
+
+[node name="Step_kutuphane" type="Area2D" parent="Interactive/SShrine"]
+position = Vector2(1185, 288)
+script = ExtResource("step")
+step_id = "kutuphane"
+label = "Yasak Raf Sayfası"
+texture_path = "res://assets/props/ledger.png"
+sprite_scale = 0.45
+tint = Color(0.6, 0.85, 0.7, 1)
+
+[node name="Step_decay" type="Area2D" parent="Interactive/SShrine"]
+position = Vector2(1230, 288)
+script = ExtResource("step")
+step_id = "decay"
+label = "Sera Sayfası"
+texture_path = "res://assets/props/ledger.png"
+sprite_scale = 0.45
+tint = Color(0.7, 0.9, 0.55, 1)

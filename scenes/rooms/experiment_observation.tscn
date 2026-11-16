@@ -1,6 +1,9 @@
 [gd_scene load_steps=4 format=3]
 
+[ext_resource type="Script" path="res://scripts/world/nook_record.gd" id="nook_rec"]
+[ext_resource type="Script" path="res://scripts/world/dash_line.gd" id="nook_gate"]
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
+[ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore_story"]
 [ext_resource type="Script" path="res://scripts/world/pressure_plate.gd" id="plate"]
 [ext_resource type="Script" path="res://scripts/world/blood_thorn.gd" id="thorn"]
 [ext_resource type="Script" path="res://scripts/world/observation_echo.gd" id="echo"]
@@ -48,10 +51,67 @@ script = ExtResource("thorn")
 anchor_x = 260.0
 puzzle_hint = &"experiment_observation_projector"
 body_line = "Dokunursam ölürüm. Bedenim projektörü yakar."
-solved_line = "Projektör yandı. Cam ardında biri yürüyor."
+solved_line = "Projektör yandı. Camın ardında biri yürüyor."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ProjectorThorn"]
 shape = SubResource("PlateShape")
 
 [node name="Echo" type="Node2D" parent="Interactive"]
 script = ExtResource("echo")
+
+[node name="ObsStand" type="Area2D" parent="Interactive"]
+position = Vector2(520, 288)
+script = ExtResource("lore_story")
+lore_id = &"obs_stand"
+texture_path = "res://assets/props/ledger.png"
+sprite_scale = 0.45
+dialogue_room = &"experiment_observation"
+dialogue_set = &"obs_stand"
+repeat_line = "Noroi|Ayakta bekleme izi. Notlar camın önünde, ayakta alınmış."
+
+[node name="ObsFile" type="Area2D" parent="Interactive"]
+position = Vector2(780, 288)
+script = ExtResource("lore_story")
+lore_id = &"obs_file"
+texture_path = "res://assets/props/photograph.png"
+sprite_scale = 0.45
+dialogue_room = &"experiment_observation"
+dialogue_set = &"obs_file"
+repeat_line = "Noroi|«Denek 14 gönüllüdür.» Son sayfadaki tek satır."
+
+[node name="NookFrag" type="Area2D" parent="Interactive"]
+position = Vector2(390.0, 288.0)
+script = ExtResource("nook_rec")
+lore_id = &"nook_observation_a"
+role = "fragment"
+ability = "dash"
+nook_id = "observation"
+texture_path = "res://assets/props/photograph.png"
+sprite_scale = 0.55
+lines = PackedStringArray("Noroi|Cam kenarında bir gözlem fişi: “Not tutan: Araştırma Yardımcısı S.”", "Noroi|Fişin yarısı kopmuş. Kırmızı çizgi yolu kesiyor.")
+evidence_title = "Gözlem Fişi"
+evidence_body = "Gözlem fişini Araştırma Yardımcısı S. tutmuş; yarısı kopuk, kalanı kırmızı çizginin ardında."
+evidence_section = "izler"
+
+[node name="NookLine" type="Area2D" parent="Interactive"]
+position = Vector2(620.0, 288.0)
+script = ExtResource("nook_gate")
+puzzle_id = &"nook_observation_gate"
+refusal_line = "Camın önünde kırmızı bir çizgi var; Gölge Atılması için Ayna Tapınağı'na gitmeliyim."
+
+[node name="NookRecord" type="Area2D" parent="Interactive"]
+position = Vector2(680.0, 288.0)
+script = ExtResource("nook_rec")
+lore_id = &"nook_observation_b"
+role = "record"
+ability = "dash"
+nook_id = "observation"
+gate_puzzle = &"nook_observation_gate"
+frag_id = "nook_observation_a"
+need_line = "Fişin öbür yarısı burada; ama önce cam kenarındaki gözlem fişini bulmalıyım."
+texture_path = "res://assets/props/ledger.png"
+sprite_scale = 0.7
+lines = PackedStringArray("Noroi|Çizginin ardında bir not: “Bugün biri cama el koydu. Ben değildim.”", "Noroi|Altında: “Ama izledim. Hâlâ izliyorum. S.”", "Shilda|İzlemek de bir ortaklık. Bunu iyi bilirim.")
+evidence_title = "Cam Notu"
+evidence_body = "Cam notunda S., kimsenin camı bırakmadığını yazmış: izlemiş ve hâlâ izliyor."
+evidence_section = "izler"

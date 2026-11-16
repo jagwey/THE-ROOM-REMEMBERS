@@ -83,6 +83,8 @@ func reset_zoom() -> void:
 
 
 func add_trauma(amount: float) -> void:
+	if not GameSettings.shake_enabled():
+		return
 	_trauma = clampf(_trauma + amount, 0.0, 1.0)
 
 

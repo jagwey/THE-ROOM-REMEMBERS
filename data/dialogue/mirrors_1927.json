@@ -2,11 +2,13 @@
   "room": "mirrors_1927",
   "sets": {
     "echo": [
-      {"s": "Noroi", "t": "Gece kendi kendine oynuyor, ben karışamıyorum."},
+      {"s": "Noroi", "t": "Gece kendi kendine oynuyor. Karışamıyorum."},
       {"s": "Noroi", "t": "Bir kadın bağırıyor, ses kesiliyor, saat duruyor."},
       {"s": "@shilda", "t": "O kadın bendim. Dokunma, bu gece izlenir."},
       {"s": "Noroi", "t": "Seni kurtaramıyorum."},
-      {"s": "@shilda", "t": "Kurtaramazsın. Yanımda kal yeter."},
+      {"s": "@shilda", "t": "Kurtaramazsın. Yanımda kalman yeter."},
+      {"s": "Noroi", "t": "Yanındayım. Gitmiyorum."},
+      {"s": "@shilda", "t": "Biliyorum. Bu geceyi ilk kez yalnız izlemiyorum."},
       {"s": "Noroi", "t": "Camın ardında biri var, elinde defter."},
       {"s": "@shilda", "t": "Yüzünü hiç görmedim. Yalnız sesini."},
       {"s": "X", "t": "Not: denek geceyi izledi, müdahale etmedi."},
@@ -16,6 +18,22 @@
       {"s": "X", "t": "Kayıt tutan görünmemeli. İmzamı bile kazıttım."},
       {"s": "Noroi", "t": "Kazınmış imza senindi demek."},
       {"s": "X", "t": "Evet, yetki kaydındaki imza benim. Bana X deyin."}
+    ],
+    "night_window": [
+      {"s": "Noroi", "t": "Pencerede ay yok, ama oda aydınlık. Gece kendi ışığını taşıyor."},
+      {"s": "@shilda", "t": "1927 gecesi böyle başladı. Işık önce geldi, çığlık sonra."},
+      {"s": "Noroi", "t": "O gece bu odada kaç kişi vardı?"},
+      {"s": "@shilda", "t": "Üç. Ben, bir yığın evrak ve camın ardındaki biri."},
+      {"s": "Noroi", "t": "Evrak sayılmaz."},
+      {"s": "@shilda", "t": "Bana sayılırdı. Evrak sessizdi, ben de."}
+    ],
+    "night_pen": [
+      {"s": "Noroi", "t": "Yerde ezilmiş bir kalem. Ucu kırık, mürekkebi taze."},
+      {"s": "@shilda", "t": "O gecenin son satırını o kalem yazdı."},
+      {"s": "Noroi", "t": "Hangi satırı?"},
+      {"s": "@shilda", "t": "«Araştırma Yardımcısı S. çıkış yapmadı.» Beni böyle kapattılar."},
+      {"s": "Noroi", "t": "Çıkış yapmadı. Yani hiç çıkamadın."},
+      {"s": "@shilda", "t": "Hiç. Seni bulana kadar da kimse fark etmedi."}
     ]
   }
 }

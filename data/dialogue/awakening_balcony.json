@@ -1,0 +1,11 @@
+{
+  "room": "awakening_balcony",
+  "sets": {
+    "balcony_rail": [
+      {"s": "Noroi", "t": "Korkuluk soğuk. Aşağıda hiçbir şey yok, yalnız sis."},
+      {"s": "@shilda", "t": "Düşme. Seni yakalayacak hâlimde değilim."},
+      {"s": "Noroi", "t": "Sanki bir şey söylemek istiyorsun ama söylemiyorsun."},
+      {"s": "@shilda", "t": "Yanlış duydun. Burada seslenecek kimse yok."}
+    ]
+  }
+}

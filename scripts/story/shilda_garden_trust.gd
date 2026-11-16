@@ -34,7 +34,7 @@ func on_interact(_by: Node) -> void:
 	# İlk derin diyalog — oyuncunun eylemlerini tartar
 	DialogueManager.say(keeper_name, "Kökler seni de çeker. Yanımda dur.")
 	if trusted:
-		DialogueManager.say("Noroi", "Seni dinliyorum, çiçeklere zarar vermedim.")
+		DialogueManager.say("Noroi", "Seni dinliyorum. Çiçeklere zarar vermedim.")
 		DialogueManager.say(keeper_name, "Fark ettim, aceleci değilsin. Sana inanmak istiyorum.")
 		GameState.add_vigil_trust(1)
 	else:

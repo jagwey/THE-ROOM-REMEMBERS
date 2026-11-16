@@ -1,0 +1,223 @@
+[gd_scene load_steps=15 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
+[ext_resource type="Script" path="res://scripts/world/echo_altar.gd" id="altar"]
+[ext_resource type="Script" path="res://scripts/world/curse_barrier.gd" id="curse"]
+[ext_resource type="Script" path="res://scripts/world/gate_blocker.gd" id="gate"]
+[ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore"]
+[ext_resource type="Script" path="res://scripts/world/pressure_plate.gd" id="plate"]
+[ext_resource type="Script" path="res://scripts/world/sequence_shrine.gd" id="shrine"]
+[ext_resource type="Script" path="res://scripts/world/soul_seal.gd" id="soul"]
+[ext_resource type="Script" path="res://scripts/world/sequence_step.gd" id="step"]
+[ext_resource type="Script" path="res://scripts/world/blood_thorn.gd" id="thorn"]
+[ext_resource type="Script" path="res://scripts/world/echo_trial.gd" id="trial"]
+
+[sub_resource type="RectangleShape2D" id="GateShape"]
+size = Vector2(32, 88)
+
+[sub_resource type="RectangleShape2D" id="Interact"]
+size = Vector2(48, 96)
+
+[sub_resource type="RectangleShape2D" id="PlateShape"]
+size = Vector2(44, 18)
+
+[node name="CoreLastRecord" type="Node2D"]
+script = ExtResource("room")
+room_id = &"core_last_record"
+region_id = &"core"
+room_width = 1280.0
+bg_region = "core"
+checkpoint = Vector2(120, 288)
+default_spawn = Vector2(120, 288)
+doors = [{"x": 40.0, "to": "core_memory_vault", "spawn": "from_core_last_record"}]
+
+[node name="Spawns" type="Node2D" parent="."]
+
+[node name="keeper_observe" type="Marker2D" parent="Spawns"]
+position = Vector2(640, 288)
+
+[node name="Interactive" type="Node2D" parent="."]
+
+[node name="RecordL1" type="Area2D" parent="Interactive"]
+position = Vector2(140, 288)
+script = ExtResource("lore")
+lore_id = &"last_1"
+texture_path = "res://assets/props/photograph.png"
+sprite_scale = 0.5
+lines = PackedStringArray("Noroi|Son kayıt, ilk parça: “Önce izledim. Gözlem her kaydın başıdır.”", "Noroi|Altında: “Kasa beden, yankı, kesim ve atılış ister; sırayla.”")
+evidence_title = "Son Kayıt, Birinci Parça"
+evidence_body = "Önce izledim; gözlem her kaydın başıdır. Kasa beden, yankı, kesim ve atılış ister."
+evidence_section = "izler"
+
+[node name="LastThorn" type="Area2D" parent="Interactive"]
+position = Vector2(180, 290)
+script = ExtResource("thorn")
+anchor_x = 260
+puzzle_hint = &"core_last_record_corpse"
+body_line = "Dikende ölürsem bedenim ilk plakada kalır."
+solved_line = "Beden plakada; kasa bir ağırlık aldı."
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/LastThorn"]
+shape = SubResource("Interact")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/LastThorn"]
+texture_filter = 0
+centered = true
+
+[node name="LastCorpsePlate" type="Area2D" parent="Interactive"]
+position = Vector2(260, 278)
+script = ExtResource("plate")
+collision_layer = 0
+collision_mask = 1
+puzzle_id = &"core_last_record_corpse"
+accept_player = false
+accept_stone = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/LastCorpsePlate"]
+shape = SubResource("PlateShape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/LastCorpsePlate"]
+texture_filter = 0
+centered = true
+
+[node name="RecordL2" type="Area2D" parent="Interactive"]
+position = Vector2(340, 288)
+script = ExtResource("lore")
+lore_id = &"last_2"
+texture_path = "res://assets/props/photograph.png"
+sprite_scale = 0.5
+lines = PackedStringArray("Noroi|İkinci parça: “İzlediğimi kaydettim. Kayıt gözlemden sonra gelir.”", "Noroi|Kenarda: “Mühür ruhla, çizgi gölgeyle geçilir.”")
+evidence_title = "Son Kayıt, İkinci Parça"
+evidence_body = "İzlediğimi kaydettim; kayıt gözlemden sonra gelir. Mühür ruhla, çizgi gölgeyle geçilir."
+evidence_section = "izler"
+
+[node name="LastEcho" type="Area2D" parent="Interactive"]
+position = Vector2(430, 268)
+script = ExtResource("altar")
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+monitorable = true
+puzzle_id = &"core_last_record_echo"
+intro_text = "Sunağa dokun, plakada bekle. Yankın ağırlığı tutsun."
+solved_text = "Yankı plakayı tutuyor."
+switch_kinds = PackedStringArray("plate")
+switch_positions = PackedVector2Array(150, 32)
+live_only = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/LastEcho"]
+shape = SubResource("Interact")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/LastEcho"]
+texture_filter = 0
+centered = true
+
+[node name="LastSeal" type="StaticBody2D" parent="Interactive"]
+position = Vector2(700, 288)
+script = ExtResource("soul")
+puzzle_id = &"core_last_record_seal"
+refusal_line = "Mühür ruh istiyor; Ruh Kesimi için Yasak Kanat'a gitmeliyim."
+
+[node name="RecordL3" type="Area2D" parent="Interactive"]
+position = Vector2(760, 288)
+script = ExtResource("lore")
+lore_id = &"last_3"
+texture_path = "res://assets/props/photograph.png"
+sprite_scale = 0.5
+lines = PackedStringArray("Noroi|Üçüncü parça: “En son vedalaştım. Başka söz kalmadı.”", "Noroi|Sayfalar bu sırayla çevrilmeli. Yanlış sıra kilidi sıfırlar.")
+evidence_title = "Son Kayıt, Üçüncü Parça"
+evidence_body = "En son veda geldi. Üç ad: Gözlem, Kayıt, Veda. Kasa bu sırayı ister."
+evidence_section = "izler"
+
+[node name="LastStripe" type="StaticBody2D" parent="Interactive"]
+position = Vector2(840, 288)
+script = ExtResource("curse")
+refusal_line = "Kırmızı çizgi beni itiyor; Gölge Atılması için Ayna Tapınağı'na gitmeliyim."
+
+[node name="LastStand" type="Area2D" parent="Interactive"]
+position = Vector2(910, 278)
+script = ExtResource("plate")
+collision_layer = 0
+collision_mask = 1
+puzzle_id = &"core_last_record_cross"
+accept_player = true
+accept_stone = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/LastStand"]
+shape = SubResource("PlateShape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/LastStand"]
+texture_filter = 0
+centered = true
+
+[node name="LastGate" type="StaticBody2D" parent="Interactive"]
+position = Vector2(980, 268)
+script = ExtResource("gate")
+collision_layer = 1
+collision_mask = 0
+open_flag = &"core_last_record_open"
+puzzle_listen = &""
+puzzle_listen_all = PackedStringArray("core_last_record_corpse", "core_last_record_echo", "core_last_record_seal", "core_last_record_cross")
+ignore_world_flag = false
+latch_on_live = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/LastGate"]
+shape = SubResource("GateShape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/LastGate"]
+texture_filter = 0
+centered = true
+
+[node name="LastShrine" type="Node2D" parent="Interactive"]
+script = ExtResource("shrine")
+puzzle_id = &"core_last_record"
+order = PackedStringArray("gozlem", "kayit", "veda")
+fail_line = "Yanlış sayfa. Kasa sıfırlandı."
+success_line = "Sayfalar sırayla çevrildi. Son kayıt açıldı."
+evidence_id = "ev_last_record_x"
+evidence_title = "X'in Son Notu"
+evidence_body = "Her şeyi kaydettim; bırakmadım, izledim. Son satır: kayıt açık kalsın, biri hatırlasın."
+require_live = PackedStringArray("core_last_record_corpse", "core_last_record_echo", "core_last_record_seal", "core_last_record_cross")
+require_line = "Kasa hâlâ beden, yankı, kesim ve atılış bekliyor."
+
+[node name="Step_veda" type="Area2D" parent="Interactive/LastShrine"]
+position = Vector2(1060, 288)
+script = ExtResource("step")
+step_id = "veda"
+label = "Veda Sayfası"
+texture_path = "res://assets/props/ledger.png"
+sprite_scale = 0.5
+tint = Color(0.75, 0.55, 0.8, 1)
+
+[node name="Step_gozlem" type="Area2D" parent="Interactive/LastShrine"]
+position = Vector2(1140, 288)
+script = ExtResource("step")
+step_id = "gozlem"
+label = "Gözlem Sayfası"
+texture_path = "res://assets/props/ledger.png"
+sprite_scale = 0.5
+tint = Color(0.6, 0.8, 0.9, 1)
+
+[node name="Step_kayit" type="Area2D" parent="Interactive/LastShrine"]
+position = Vector2(1215, 288)
+script = ExtResource("step")
+step_id = "kayit"
+label = "Kayıt Sayfası"
+texture_path = "res://assets/props/ledger.png"
+sprite_scale = 0.5
+tint = Color(0.9, 0.8, 0.55, 1)
+
+[node name="EchoTrial" type="Area2D" parent="Interactive"]
+position = Vector2(565, 268)
+script = ExtResource("trial")
+trial_room = &"core_last_record"
+shrine_path = NodePath("../LastShrine")
+order = PackedStringArray("gozlem", "kayit", "gozlem", "veda")
+time_limit = 90.0
+ability_kind = &"soul_slash"
+ability_at = 3
+ability_line = "Veda yazılmadan mühür yeniden kesilmeli."
+twist_label = "Ruh Kesimi"
+intro_line = "Veda'dan önce mührü yeniden kesmeliyim. Ruh Kesimi şart."
+reward_title = "Yankı Sınavı: Son Kayıt"
+reward_body = "Son kayıt iki kez okundu ve Veda sayfası yine sona kaldı. Yankı, bu sayfayı kimsenin silmediğini fısıldadı."

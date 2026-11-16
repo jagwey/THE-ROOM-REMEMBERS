@@ -11,6 +11,19 @@ const DEATHS := 4
 const MAIN_ROOMS := 25
 const SIDE_ROOMS := 15
 const MAIN_PUZZLES := 18
+## Opsiyonel derin bulmaca odaları (6): oda başına ~9 dk çözüm + okuma (docs: dispatch-deep).
+const DEEP_ROOMS := 6
+const DEEP_SEC := 540.0
+## Geri dönüş köşeleri (8): parça bul + kapıyı aç + kaydı al ~2.5 dk (okuma süresi satırlardan zaten sayılır).
+## Yankı Sınavları (6, opsiyonel): intro okuma + ~1.5 deneme x 60-90 sn + ödül diyaloğu = ~150 sn.
+const TRIALS := 6
+## Kırık Anı (5 x ~3 dk) + S.'nin Odası (~10 dk): opsiyonel, ek yürüyüş yok.
+const MEMORIES := 5
+const MEMORY_SEC := 180.0
+const S_ROOM_SEC := 600.0
+const TRIAL_SEC := 150.0
+const NOOKS := 8
+const NOOK_SEC := 150.0
 
 var _lines := 0
 var _chars := 0
@@ -57,6 +70,15 @@ func _run() -> void:
 	var read_sec := float(_chars) / READ_CPS + float(_lines) * BOX_SEC
 	var main_sec := read_sec + MAIN_ROOMS * ROOM_WALK_SEC + MAIN_PUZZLES * PUZZLE_SEC + DEATHS * DEATH_SEC
 	var full_sec := main_sec + SIDE_ROOMS * (ROOM_WALK_SEC + 20.0)
+	var nook_sec := float(NOOKS) * NOOK_SEC
+	full_sec += nook_sec
+	var deep_sec := float(DEEP_ROOMS) * DEEP_SEC
+	print("PLAYTIME nooks=%d nook_min=%.1f (included in with_sides_min)" % [NOOKS, nook_sec / 60.0])
+	var trial_sec := float(TRIALS) * TRIAL_SEC
+	print("PLAYTIME deep_rooms=%d deep_min=%.1f total_with_deep_min=%.1f" % [DEEP_ROOMS, deep_sec / 60.0, (full_sec + deep_sec) / 60.0])
+	var mem_sec := float(MEMORIES) * MEMORY_SEC + S_ROOM_SEC
+	print("PLAYTIME memories=%d s_room=1 extra_min=%.1f total_all_min=%.1f" % [MEMORIES, mem_sec / 60.0, (full_sec + deep_sec + trial_sec + mem_sec) / 60.0])
+	print("PLAYTIME trials=%d trials_min=%.1f total_with_deep_trials_min=%.1f" % [TRIALS, trial_sec / 60.0, (full_sec + deep_sec + trial_sec) / 60.0])
 	print("PLAYTIME lines=%d chars=%d json_lines=%d json_words=%d" % [_lines, _chars, _json_lines, _json_words])
 	print("PLAYTIME read_min=%.1f main_min=%.1f with_sides_min=%.1f" % [read_sec / 60.0, main_sec / 60.0, full_sec / 60.0])
 	print("PLAYTIME target_min=165-195 measured_with_sides_min=%.1f" % (full_sec / 60.0))

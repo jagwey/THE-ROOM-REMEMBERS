@@ -1,5 +1,7 @@
 [gd_scene load_steps=19 format=3]
 
+[ext_resource type="Script" path="res://scripts/world/nook_record.gd" id="nook_rec"]
+[ext_resource type="Script" path="res://scripts/world/soul_seal.gd" id="nook_gate"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/experiment/far.png" id="1"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/experiment/mid.png" id="2"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/experiment/front.png" id="3"]
@@ -13,6 +15,7 @@
 [ext_resource type="Script" path="res://scripts/world/pressure_plate.gd" id="plate"]
 [ext_resource type="Script" path="res://scripts/world/blood_thorn.gd" id="thorn"]
 [ext_resource type="Script" path="res://scripts/world/gate_blocker.gd" id="gate"]
+[ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore"]
 [ext_resource type="Texture2D" path="res://assets/props/pressure_plate.png" id="plate_art"]
 [ext_resource type="Texture2D" path="res://assets/props/door_closed.png" id="gate_art"]
 
@@ -128,6 +131,18 @@ locked_message = "Hücrelerin kayıtlarını incelemeliyim."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ForwardIntake"]
 shape = SubResource("Hit")
+
+[node name="WallNotches" type="Area2D" parent="Interactive"]
+position = Vector2(180, 288)
+script = ExtResource("lore")
+lore_id = &"cells_wall_notches"
+texture_path = "res://assets/props/photograph.png"
+sprite_scale = 0.45
+lines = PackedStringArray("Noroi|Duvara hücre sayıları kazınmış: A için dört çentik, B için bir. C'nin sayısı kazınmış.", "Noroi|Çizgilerin sonunda taze bir iz var: «14». Biri benden önce bu sırayla geçmiş.")
+repeat_line = "Noroi|A dört, B bir. Kodun ilk iki hanesi hücre kayıtlarında."
+evidence_title = "Hücre Numaraları"
+evidence_body = "Duvara kazınmış: A hücresi 4, B hücresi 1; C silinmiş. Altında silik bir iz: Denek 14."
+evidence_section = "notlar"
 
 [node name="CellAPlate" type="Area2D" parent="Interactive"]
 position = Vector2(250, 300)
@@ -502,3 +517,51 @@ position = Vector2(170, 288)
 position = Vector2(170, 288)
 script = ExtResource("memory_seal_pt")
 room_id = &"experiment_cells"
+
+[node name="CellsGlimpse" type="Area2D" parent="Interactive"]
+position = Vector2(820, 288)
+script = ExtResource("lore")
+lore_id = &"cells_glimpse"
+texture_path = "res://assets/props/ledger.png"
+sprite_scale = 0.45
+dialogue_room = &"experiment_cells"
+dialogue_set = &"cells_glimpse"
+repeat_line = "Noroi|Üç kayıt, üç boş hücre. Biri kalmamış."
+
+[node name="NookFrag" type="Area2D" parent="Interactive"]
+position = Vector2(306.0, 288.0)
+script = ExtResource("nook_rec")
+lore_id = &"nook_cells_a"
+role = "fragment"
+ability = "soul"
+nook_id = "cells"
+texture_path = "res://assets/props/photograph.png"
+sprite_scale = 0.55
+lines = PackedStringArray("Noroi|Hücre duvarında kazınmış bir sayaç: “gün 11, S. yazıyor.”", "Noroi|Çizgiler aniden kesilmiş. Devamı duvardaki damarın ardında.")
+evidence_title = "Duvar Sayacı"
+evidence_body = "Hücre duvarında gün sayan çizgiler var; “S. yazıyor” diye kesilmiş. Devamı damarın ardında."
+evidence_section = "izler"
+
+[node name="NookVein" type="StaticBody2D" parent="Interactive"]
+position = Vector2(696.0, 288.0)
+script = ExtResource("nook_gate")
+puzzle_id = &"nook_cells_gate"
+blocking = false
+refusal_line = "Hücre duvarında mor bir damar var; Ruh Kesimi'ni Yasak Kanat'ta öğrenmeliyim."
+
+[node name="NookRecord" type="Area2D" parent="Interactive"]
+position = Vector2(501.0, 288.0)
+script = ExtResource("nook_rec")
+lore_id = &"nook_cells_b"
+role = "record"
+ability = "soul"
+nook_id = "cells"
+gate_puzzle = &"nook_cells_gate"
+frag_id = "nook_cells_a"
+need_line = "Sayaç yarım kalmış; önce duvardaki kazınmış çizgileri okumalıyım."
+texture_path = "res://assets/props/ledger.png"
+sprite_scale = 0.7
+lines = PackedStringArray("Noroi|Damarın ardında kâğıt parçası: “Tez yarım kaldı, ekip dağıldı.”", "Noroi|Köşede imza: Araştırma Yardımcısı S., 1927.", "Shilda|Yarım kalanları bitirmeyi severim. Bunu da bitirelim.")
+evidence_title = "Yarım Tez"
+evidence_body = "Hücre duvarındaki kâğıt, Araştırma Yardımcısı S.'nin 1927'de yarım kalan tezini anlatıyor; ekip dağılmış."
+evidence_section = "izler"

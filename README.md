@@ -178,6 +178,21 @@ flowchart LR
 ### Katakomb çiçeği ve Sarnıç (Faz 0)
 Kemik Mahzeni girişinde (x≈150) tükenmez bir çiçek kaynağı durur. Çiçek elde ölürsen ceset çiçeği taşır ve fener gibi yanar; karanlık yol aydınlanır. Çiçek hayat başınadır, ölümde cesede geçer ve elden silinir. Sarnıç yan kapısı artık yetenek istemez.
 
+### Geliştirmede (yayınlanmadı) — Metin cilası
+- Tüm diyalog, oda ve script metinleri Türkçe dil/ton/tekrar açısından elden geçirildi (44 dosya). Aynalı Zemin açık ipucu düzeltildi: kırmızı şeritlere basılmaz.
+- Eleştiri ve öneri raporu: `docs/gelistirme/oyun-elestiri-ve-oneriler-2026-11-15.md`.
+- Ayarlar: ayrı Müzik/Efekt sesi, metin hızı, ekran sarsıntısı, yazı boyutu, ipucu seviyesi (`scripts/autoload/game_settings.gd`, `user://settings.cfg`).
+- Hikâye: Shilda'nın Güven ve Acı fazları dolduruldu (diyalog ~440→700 satır; 1927 gecesi, Denek 14, okuma hücresi, kırılmamış ayna yüzleşmesi).
+- Zayıf odalar: Çekirdek girişine yankı-kapı bulmacası; sarmaşık, sarnıç, geçit, sayfa, ters ayna, hücre, okuma odası ve yüzleşme sahnelerine ipucu/hikâye satırları.
+- 6 derin bulmaca odası (yan kapıdan, isteğe bağlı, ödüllü): Sessiz Çanlar, Kök Damarları, Kayıt Mahzeni, İkiz Laboratuvarı, Ters Salon, Son Kayıt. Her biri ceset/yankı/kesim/atılma gibi en az üç mekaniği birleştirir; sıra ipucu odadaki üç kayıttan toplanır. Oda sayısı 46.
+- 8 geri dönüş köşesi: eski odalarda Ruh Kesimi (mor damar) veya Gölge Atılması (kırmızı çizgi) ile açılan küçük alanlar; iki parçalı kayıtlar Araştırma Yardımcısı S.'nin 1927 öncesini anlatır. Defterde "Kayıtlar N/8" sayacı.
+- Yankı Sınavı (6): derin oda çözülünce odadaki sunak 60–90 sn'lik zamanlı bir varyant açar (farklı sıra, plakada bekleme, yanlış adımda süre cezası). Başarısızlık cezasızdır; başarı defter sayfası verir. Defterde "Sınavlar N/6" sayacı. Ana ilerlemeye sayılmaz.
+- Ses/ışık cilası: bulmaca tipine göre ayrı çözüm sesleri; 9 odada küçük ortam dokunuşları (`room_touch.gd`).
+- Sınav çeşitlemeleri: Sessiz Çanlar'da çanlar çalarken plaka basılı kalmalı, Kayıt Mahzeni'nde kadran sınav kaydındaki yıla ayarlanmalı, Ters Salon'da kırmızı şerit kestirmeyi kapatır (atılma gerekir), Son Kayıt'ta bir adım önce Ruh Kesimi ister.
+- Görsel cila (`room_polish.gd`, 7 oda): bahçede taç sayısı kadar ışık noktası, serada toprak izi, galeride camda yüzler ve "Beden: N", 1927'de camın ardında X silueti, tapınakta bir adım önden yürüyen gölge, balkonda dürbün vinyeti, anı kasasında yıl parıltıları.
+- Kırık Anı (5): her bölümün sakin bir odasında Shilda'nın insan hâlinden üç parça; tarih ve sebep-sonuç ipuçlarıyla doğru sıraya dizilir (İlk Gün, Sera, Yasak Raf, Yanlış Sayı, Geç Yansıma). Yanlış sıra cezasız; ödül defter kaydı + Shilda satırı. Defterde "Anılar N/5".
+- S.'nin Odası (oda 47, Uyanış'tan yan kapı): 8 köşe kaydı toplanınca açılır. Ceset+diken+plaka, yankı sunağı, ruh kesimi mührü ve lanet şeridinin üstünden atılma birleşir; son sıra Kırık Anı başlıklarının kronolojisidir. Ödül: "Epilog: S.'nin Defteri" ve kısa bir Shilda/Noroi konuşması. Oda sayısı 47; tahmini süre ~190 dk.
+
 ### v1.18.3 (yayınlandı 2026-11-15, versionCode 51) — Defterden hızlı seyahat
 - Defter → Harita sekmesinde daha önce girilmiş bir odaya dokun: oda seçilir, üstte adı ve "Gitmek için tekrar dokun" çıkar. Aynı odaya tekrar dokununca defter kapanır, ekran kararır ve oda girişinde doğarsın.
 - Engeller (kırmızı uyarı): bulunduğun oda, hiç görmediğin oda, kapı geçişi sürerken, ölürken ve kristal savunması aktifken gidilmez. Defter zaten yalnız serbest oyunda açıldığı için diyalog/sinematik/final sırasında çalışmaz.

@@ -2,17 +2,43 @@
   "room": "experiment_intake",
   "sets": {
     "file": [
-      {"s": "Noroi", "t": "Kabul kaydı, yıl 1995, numara Denek 14."},
+      {"s": "Noroi", "t": "Kabul kaydı: yıl 1995, numara Denek 14."},
       {"s": "Noroi", "t": "Eşyalar: cep saati, kurumuş çiçek, kazınmış bir ad."},
       {"s": "@shilda", "t": "O çiçek benimdi. Cebine ben koydum."},
-      {"s": "Noroi", "t": "Demek bu kapıdan kendi ayaklarımla girdim, unutmuşum."},
+      {"s": "Noroi", "t": "Demek bu kapıdan kendi ayaklarımla girdim. Unutmuşum."},
+      {"s": "Noroi", "t": "Kayıtta «kendi isteğiyle» yazıyor, imzalı. Bunu neden yaptım?"},
+      {"s": "@shilda", "t": "Bilmiyorum. Yanındaydım ve gitmeni istemedim."},
+      {"s": "Noroi", "t": "Peki neden çiçek? Neden cebime?"},
+      {"s": "@shilda", "t": "Bir şey seninle kalsın diye. Unutsan bile sende dursun."},
       {"s": "Noroi", "t": "Son hane: sekiz."}
     ],
     "coat": [
       {"s": "Noroi", "t": "Askıdaki paltonun iç cebinde saatimin kayışı var."},
-      {"s": "Noroi", "t": "Denek 14'ün eşyası bu, yani benim."},
-      {"s": "@shilda", "t": "Dosyayı imzalayan adını kazımış. İz kaldı."},
-      {"s": "Noroi", "t": "Ötedeki devre odası artık beni tanıyor."}
+      {"s": "Noroi", "t": "Denek 14'ün eşyası, yani benim."},
+      {"s": "Noroi", "t": "Palto bana göre dikilmiş. Yakası hâlâ özenle katlı."},
+      {"s": "@shilda", "t": "Kabul günü ben katlamıştım. Üşümezsin diye."},
+      {"s": "Noroi", "t": "Gölgeler palto katlamaz."},
+      {"s": "@shilda", "t": "Gölge olmadan önce katlamıştım."},
+      {"s": "@shilda", "t": "Dosyayı imzalayan adını kazıtmış. Yalnız bir iz kalmış."},
+      {"s": "Noroi", "t": "Ötedeki devre odası beni tanıyor olmalı."}
+    ],
+    "intake_ledger": [
+      {"s": "Noroi", "t": "Kabul defterinde on üç satır dolu. On dördüncüsü benim."},
+      {"s": "Noroi", "t": "Önceki on üç denekten hiçbirinin çıkış kaydı yok."},
+      {"s": "@shilda", "t": "Onlar çıkmadı. Kapı yalnız seni geri bıraktı."},
+      {"s": "Noroi", "t": "Neden ben?"},
+      {"s": "@shilda", "t": "Çünkü sen unutsan da dönüyorsun. Ötekiler dönmedi."},
+      {"s": "Noroi", "t": "Bu iltifat mı, yoksa lanet mi?"},
+      {"s": "@shilda", "t": "İkisi de. Burada çoğu şey öyle."}
+    ],
+    "intake_slip": [
+      {"s": "Noroi", "t": "Kabul formunun arka yüzünde küçük bir çizim: iki el."},
+      {"s": "Noroi", "t": "Biri diğerinin cebine bir şey koyuyor."},
+      {"s": "@shilda", "t": "Kimse görmesin diye arka yüze çizdim."},
+      {"s": "Noroi", "t": "Neden saklayasın? Çiçek koymak suç mu?"},
+      {"s": "@shilda", "t": "Burada her şey suçtu. Özellikle sana iyi davranmak."},
+      {"s": "Noroi", "t": "O zaman sana bir teşekkür borcum var."},
+      {"s": "@shilda", "t": "Borç değil. Yeter ki anımsa; anımsayamazsan ben anımsarım."}
     ]
   }
 }

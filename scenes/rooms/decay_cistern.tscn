@@ -1,5 +1,7 @@
 [gd_scene load_steps=14 format=3]
 
+[ext_resource type="Script" path="res://scripts/world/nook_record.gd" id="nook_rec"]
+[ext_resource type="Script" path="res://scripts/world/dash_line.gd" id="nook_gate"]
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
 [ext_resource type="Script" path="res://scripts/world/water_level.gd" id="water"]
 [ext_resource type="Script" path="res://scripts/world/valve.gd" id="valve"]
@@ -7,6 +9,7 @@
 [ext_resource type="Script" path="res://scripts/world/blood_thorn.gd" id="thorn"]
 [ext_resource type="Script" path="res://scripts/world/page_pickup.gd" id="page"]
 [ext_resource type="Script" path="res://scripts/world/drain_link.gd" id="link"]
+[ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore"]
 [ext_resource type="Texture2D" path="res://assets/props/memory_echo.png" id="valve_tex"]
 
 [sub_resource type="RectangleShape2D" id="Interact"]
@@ -34,6 +37,15 @@ platforms = PackedVector3Array(760, 210, 100, 460, 130, 100)
 floor_gaps = PackedVector2Array(560, 720)
 
 [node name="Interactive" type="Node2D" parent="."]
+
+[node name="GoalSign" type="Area2D" parent="Interactive"]
+position = Vector2(190, 288)
+script = ExtResource("lore")
+lore_id = &"decay_cistern_goal"
+texture_path = "res://assets/props/photograph.png"
+sprite_scale = 0.5
+lines = PackedStringArray("Noroi|Sarnıç dolu. Üç ıslak sayfa var: biri dipte, ikisi yukarıda.", "Noroi|Vanalar suyu yükseltir, zemindeki levha boşaltır. Her sayfa kendi seviyesinde.", "Shilda|Son sayfa 1927 tarihli. Mürekkep hâlâ silinmedi.")
+repeat_line = "Noroi|Üç sayfa. Vanayla yükselt, levhayla boşalt."
 
 [node name="Water" type="Node2D" parent="Interactive"]
 position = Vector2(640, 0)
@@ -158,3 +170,50 @@ page_id = 2
 position = Vector2(510, 116)
 script = ExtResource("page")
 page_id = 3
+
+[node name="CisternEdge" type="Area2D" parent="Interactive"]
+position = Vector2(420, 288)
+script = ExtResource("lore")
+lore_id = &"cistern_edge"
+texture_path = "res://assets/props/pocket_watch.png"
+sprite_scale = 0.45
+dialogue_room = &"decay_cistern"
+dialogue_set = &"cistern_edge"
+repeat_line = "Noroi|Suyun dibinde bir şey parlıyor. Bakmayı bıraktım."
+
+[node name="NookFrag" type="Area2D" parent="Interactive"]
+position = Vector2(900.0, 288.0)
+script = ExtResource("nook_rec")
+lore_id = &"nook_cistern_a"
+role = "fragment"
+ability = "dash"
+nook_id = "cistern"
+texture_path = "res://assets/props/photograph.png"
+sprite_scale = 0.55
+lines = PackedStringArray("Noroi|Sarnıç kenarında ıslak bir defter: “Su seviyesi, yazan S.”", "Noroi|Sayfalar bir kırmızı çizgide bitiyor. Çizgiyi geçmek gerek.")
+evidence_title = "Islak Defter"
+evidence_body = "Islak defterde su seviyesi yazılmış, S. imzalı; sayfalar kırmızı bir çizgide bitiyor."
+evidence_section = "izler"
+
+[node name="NookLine" type="Area2D" parent="Interactive"]
+position = Vector2(960.0, 288.0)
+script = ExtResource("nook_gate")
+puzzle_id = &"nook_cistern_gate"
+refusal_line = "Sarnıçta kırmızı bir çizgi uzanıyor; Gölge Atılması için Ayna Tapınağı'na gitmeliyim."
+
+[node name="NookRecord" type="Area2D" parent="Interactive"]
+position = Vector2(1030.0, 288.0)
+script = ExtResource("nook_rec")
+lore_id = &"nook_cistern_b"
+role = "record"
+ability = "dash"
+nook_id = "cistern"
+gate_puzzle = &"nook_cistern_gate"
+frag_id = "nook_cistern_a"
+need_line = "Çizginin ardı hazır; ama önce sarnıç kenarındaki ıslak defteri okumalıyım."
+texture_path = "res://assets/props/ledger.png"
+sprite_scale = 0.7
+lines = PackedStringArray("Noroi|Çizginin ardında suya düşmemiş bir kâğıt: “Pompa kapatıldı, 1927.”", "Noroi|Altında bir dilek: “S. uyanınca su çekilsin.”", "Shilda|Su çekilsin… Çocukken de böyle şeyler dilerdim galiba.")
+evidence_title = "Pompa Kâğıdı"
+evidence_body = "Pompanın 1927'de kapatıldığı yazıyor. Araştırma Yardımcısı S. uyanınca suyun çekilmesini dilemiş."
+evidence_section = "izler"

@@ -379,6 +379,7 @@ func _test_return_spawn_coordinates() -> void:
 				var spawn_pos: Vector2 = spawns[sname]
 				var door_x: float = float(d["x"])
 				var expected_inward := 48.0 if door_x < bounds.size.x * 0.5 else -48.0
-				var expected_x := door_x + expected_inward
+				var expected_x := float(d.get("spawn_x", door_x + expected_inward))
+				var expected_y := float(d.get("spawn_y", 288.0))
 				check(is_equal_approx(spawn_pos.x, expected_x), "%s %s spawn X is 48px inward (%f)" % [rid, sname, expected_x], spawn_pos.x)
-				check(is_equal_approx(spawn_pos.y, 288.0), "%s %s spawn Y is 288.0" % [rid, sname], spawn_pos.y)
+				check(is_equal_approx(spawn_pos.y, expected_y), "%s %s spawn Y is %.1f" % [rid, sname, expected_y], spawn_pos.y)

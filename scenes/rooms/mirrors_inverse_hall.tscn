@@ -1,0 +1,199 @@
+[gd_scene load_steps=15 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
+[ext_resource type="Script" path="res://scripts/world/echo_altar.gd" id="altar"]
+[ext_resource type="Script" path="res://scripts/world/curse_barrier.gd" id="curse"]
+[ext_resource type="Script" path="res://scripts/world/gate_blocker.gd" id="gate"]
+[ext_resource type="Script" path="res://scripts/world/control_invert.gd" id="invert"]
+[ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore"]
+[ext_resource type="Script" path="res://scripts/world/path_mimic.gd" id="mimic"]
+[ext_resource type="Script" path="res://scripts/world/pressure_plate.gd" id="plate"]
+[ext_resource type="Script" path="res://scripts/world/sequence_shrine.gd" id="shrine"]
+[ext_resource type="Script" path="res://scripts/world/sequence_step.gd" id="step"]
+[ext_resource type="Script" path="res://scripts/world/echo_trial.gd" id="trial"]
+
+[sub_resource type="RectangleShape2D" id="GateShape"]
+size = Vector2(32, 88)
+
+[sub_resource type="RectangleShape2D" id="Interact"]
+size = Vector2(48, 96)
+
+[sub_resource type="RectangleShape2D" id="PlateShape"]
+size = Vector2(44, 18)
+
+[node name="MirrorsInverseHall" type="Node2D"]
+script = ExtResource("room")
+room_id = &"mirrors_inverse_hall"
+region_id = &"mirrors"
+room_width = 1280.0
+bg_region = "mirrors"
+checkpoint = Vector2(120, 288)
+default_spawn = Vector2(120, 288)
+doors = [{"x": 40.0, "to": "mirrors_labyrinth", "spawn": "from_mirrors_inverse_hall"}]
+platforms = PackedVector3Array(480, 252, 100)
+
+[node name="Spawns" type="Node2D" parent="."]
+
+[node name="keeper_observe" type="Marker2D" parent="Spawns"]
+position = Vector2(640, 288)
+
+[node name="Interactive" type="Node2D" parent="."]
+
+[node name="RecordI1" type="Area2D" parent="Interactive"]
+position = Vector2(140, 288)
+script = ExtResource("lore")
+lore_id = &"inverse_1"
+texture_path = "res://assets/props/photograph.png"
+sprite_scale = 0.5
+lines = PackedStringArray("Noroi|Salon notu: “Önce ana ayna yanar. Yansıma ancak ondan sonra görünür.”", "Noroi|Altında: “Salonda yön tersine döner; yalnız yön, kayıt değil.”")
+evidence_title = "Ters Salon Notu, Birinci Satır"
+evidence_body = "Önce ayna ağlar, sonra yansıma konuşur. Salonda yalnız yön tersine döner."
+evidence_section = "izler"
+
+[node name="InverseZone" type="Area2D" parent="Interactive"]
+position = Vector2(440, 230)
+script = ExtResource("invert")
+size = Vector2(640, 200)
+enter_line = "Yön tersine döndü. Ayna beni yanıltıyor."
+exit_line = "Yön yerine oturdu."
+
+[node name="InverseEcho" type="Area2D" parent="Interactive"]
+position = Vector2(210, 268)
+script = ExtResource("altar")
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+monitorable = true
+puzzle_id = &"mirrors_inverse_hall_echo_cue"
+intro_text = "Yansımanın yolunu ters yönde yankınla yürü."
+solved_text = "Yankı yansımanın izini buldu."
+switch_kinds = PackedStringArray()
+switch_positions = PackedVector2Array()
+live_only = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/InverseEcho"]
+shape = SubResource("Interact")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/InverseEcho"]
+texture_filter = 0
+centered = true
+
+[node name="InverseMimic" type="Node2D" parent="Interactive"]
+script = ExtResource("mimic")
+puzzle_id = &"mirrors_inverse_hall_mimic"
+checkpoints = PackedVector2Array(340, 288, 520, 246, 700, 288)
+echo_only = true
+
+[node name="RecordI2" type="Area2D" parent="Interactive"]
+position = Vector2(740, 288)
+script = ExtResource("lore")
+lore_id = &"inverse_2"
+texture_path = "res://assets/props/photograph.png"
+sprite_scale = 0.5
+lines = PackedStringArray("Noroi|İkinci satır: “Gölge en son kırılır. Ondan önce yansıma gelir.”", "Noroi|Yanında: “Kırmızı çizgiyi yalnız atılan gölge geçer.”")
+evidence_title = "Ters Salon Notu, İkinci Satır"
+evidence_body = "Gölge en son kırılır. Kırmızı çizgiyi yalnız Gölge Atılması geçer."
+evidence_section = "izler"
+
+[node name="InverseStripe" type="StaticBody2D" parent="Interactive"]
+position = Vector2(810, 288)
+script = ExtResource("curse")
+refusal_line = "Kırmızı çizgi beni itiyor; Gölge Atılması için Ayna Tapınağı'na gitmeliyim."
+
+[node name="InverseStand" type="Area2D" parent="Interactive"]
+position = Vector2(880, 278)
+script = ExtResource("plate")
+collision_layer = 0
+collision_mask = 1
+puzzle_id = &"mirrors_inverse_hall_cross"
+accept_player = true
+accept_stone = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/InverseStand"]
+shape = SubResource("PlateShape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/InverseStand"]
+texture_filter = 0
+centered = true
+
+[node name="RecordI3" type="Area2D" parent="Interactive"]
+position = Vector2(930, 288)
+script = ExtResource("lore")
+lore_id = &"inverse_3"
+texture_path = "res://assets/props/photograph.png"
+sprite_scale = 0.5
+lines = PackedStringArray("Noroi|Üçüncü satır silik: “Yanlış sırada bütün aynalar söner.”", "Noroi|Çizgiyi geçmeden aynalar ışımaz.")
+evidence_title = "Ters Salon Notu, Üçüncü Satır"
+evidence_body = "Üç adım: Ayna, Yansıma, Gölge. Çizgiyi geçmeden aynalar ışımaz."
+evidence_section = "izler"
+
+[node name="InverseGate" type="StaticBody2D" parent="Interactive"]
+position = Vector2(985, 268)
+script = ExtResource("gate")
+collision_layer = 1
+collision_mask = 0
+open_flag = &"mirrors_inverse_hall_open"
+puzzle_listen = &""
+puzzle_listen_all = PackedStringArray("mirrors_inverse_hall_mimic", "mirrors_inverse_hall_cross")
+ignore_world_flag = false
+latch_on_live = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/InverseGate"]
+shape = SubResource("GateShape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/InverseGate"]
+texture_filter = 0
+centered = true
+
+[node name="InverseShrine" type="Node2D" parent="Interactive"]
+script = ExtResource("shrine")
+puzzle_id = &"mirrors_inverse_hall"
+order = PackedStringArray("ayna", "yansima", "golge")
+fail_line = "Yanlış ayna. Salon sıfırlandı."
+success_line = "Aynalar sırayla ışıdı. Yansıma konuştu."
+evidence_id = "ev_inverse_reflection"
+evidence_title = "Yansımanın Kaydı"
+evidence_body = "Aynada gördüğün sen değilsin; odanın hatırladığı. Ters dönen yalnız yön, kayıt değil."
+require_live = PackedStringArray("mirrors_inverse_hall_mimic", "mirrors_inverse_hall_cross")
+require_line = "Aynalar hâlâ yankının izini ve çizginin ötesini bekliyor."
+
+[node name="Step_golge" type="Area2D" parent="Interactive/InverseShrine"]
+position = Vector2(1050, 288)
+script = ExtResource("step")
+step_id = "golge"
+label = "Gölge Aynası"
+texture_path = "res://assets/props/ledger.png"
+sprite_scale = 0.5
+tint = Color(0.5, 0.4, 0.7, 1)
+
+[node name="Step_yansima" type="Area2D" parent="Interactive/InverseShrine"]
+position = Vector2(1130, 288)
+script = ExtResource("step")
+step_id = "yansima"
+label = "Yansıma Aynası"
+texture_path = "res://assets/props/ledger.png"
+sprite_scale = 0.5
+tint = Color(0.6, 0.8, 0.9, 1)
+
+[node name="Step_ayna" type="Area2D" parent="Interactive/InverseShrine"]
+position = Vector2(1210, 288)
+script = ExtResource("step")
+step_id = "ayna"
+label = "Ana Ayna"
+texture_path = "res://assets/props/ledger.png"
+sprite_scale = 0.5
+tint = Color(0.9, 0.85, 0.6, 1)
+
+[node name="EchoTrial" type="Area2D" parent="Interactive"]
+position = Vector2(600, 268)
+script = ExtResource("trial")
+trial_room = &"mirrors_inverse_hall"
+shrine_path = NodePath("../InverseShrine")
+order = PackedStringArray("golge", "yansima", "ayna")
+time_limit = 75.0
+recall_at = 2
+recall_line = "Ayna beni sunağa geri çağırıyor."
+twist_label = "Sunağa dönüş"
+intro_line = "Yansımadan sonra ayna beni sunağa geri çağıracak. Ana ayna ondan sonra yanar."
+reward_title = "Yankı Sınavı: Ters Salon"
+reward_body = "Ayna sırayı tersten okudu ve seni tanıdı. Yansıma bu kez senden önce yürümedi."

@@ -166,12 +166,13 @@ func effective_width(speaker: String) -> float:
 
 func _begin_page() -> void:
 	var page := _pages[_page_index]
-	_typing = true
-	_typed_len = 0
+	var instant := GameSettings.text_cps() <= 0.0 ## Metin hızı: Anında
+	_typing = not instant
+	_typed_len = page.length() if instant else 0
 	_type_accum = 0.0
 	line_shown.emit(_speaker, page)
 	page_shown.emit(_speaker, page, _page_index, _pages.size())
-	if page.is_empty():
+	if page.is_empty() or instant:
 		_typing = false
 		typing_finished.emit()
 	if not _options.is_empty() and _page_index == _pages.size() - 1:
@@ -212,7 +213,7 @@ func _process(delta: float) -> void:
 	if not is_open or not _typing:
 		return
 	var page := _pages[_page_index]
-	_type_accum += delta * TYPE_CPS
+	_type_accum += delta * GameSettings.text_cps()
 	var add := int(_type_accum)
 	if add <= 0:
 		return

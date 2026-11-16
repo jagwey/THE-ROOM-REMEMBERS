@@ -2,16 +2,38 @@
   "room": "experiment_observation",
   "sets": {
     "notes": [
-      {"s": "Noroi", "t": "Yankı camın ardında durdu; masada kurşun kalemle yazılmış notlar var."},
-      {"s": "Noroi", "t": "«Denek 14 öldü. 12. Tekrar uyanış: hafıza sıfır.»"},
-      {"s": "Noroi", "t": "«Saymayı bırakmıyorum, o bırakıyor», diye yazılmış; imza kazınmış."},
-      {"s": "Noroi", "t": "Bunları sen de okumuşsun."},
+      {"s": "Noroi", "t": "Yankı camın ardında durdu. Masada kurşun kalemle yazılmış notlar var."},
+      {"s": "Noroi", "t": "«Denek 14 öldü. On ikinci uyanış: hafıza sıfır.»"},
+      {"s": "Noroi", "t": "«Saymayı bırakmıyorum, o bırakıyor.» Altındaki imza kazınmış."},
+      {"s": "Noroi", "t": "Bunları sen de okumuşsun. Kimdin sen burada?"},
       {"s": "@shilda", "t": "Ben de insandım. Bu camın ardında çalışırdım."},
-      {"s": "Noroi", "t": "Sen de insandın demek."},
+      {"s": "Noroi", "t": "İnsandın demek."},
       {"s": "@shilda", "t": "O masa beni hiç saymadı. Yalnız seni saydı."},
+      {"s": "Noroi", "t": "Yani her uyanışımı gördün. Her seferinde."},
+      {"s": "@shilda", "t": "On iki kez. On ikisinde de camın bu yanındaydım."},
+      {"s": "Noroi", "t": "Bu defterdeki Denek 14 benim. Bunu hep biliyordun."},
+      {"s": "@shilda", "t": "Hep. Her ölümünde adını fısıldadım, sen duymadın."},
+      {"s": "Noroi", "t": "Duymamak mı, yoksa duyup unutmak mı daha kötü, bilmiyorum."},
+      {"s": "@shilda", "t": "Ağlayamıyorum bile. Gölgenin gözü yok."},
       {"s": "Noroi", "t": "Masada biri oturmuş gibi bir iz var, yüzü yok."},
-      {"s": "@shilda", "t": "Çekirdekte açıklamaya gerek kalmasın."},
+      {"s": "@shilda", "t": "Daha fazla bakma. Gerisini çekirdekte kendin görürsün."},
       {"s": "Noroi", "t": "Cam karardı, yankı sustu."}
+    ],
+    "obs_stand": [
+      {"s": "Noroi", "t": "Camın önünde ayakta durulmuş bir iz var. Oturan değil, bekleyen."},
+      {"s": "@shilda", "t": "Oturmak yasaktı. Notlar ayakta tutulurdu."},
+      {"s": "Noroi", "t": "Kurşun kalemle yazılanlar senin elinden mi?"},
+      {"s": "@shilda", "t": "Birkaçı. Ötekileri yazan, imzasını kazıttı."},
+      {"s": "Noroi", "t": "Seninle o kişi arasında ne vardı?"},
+      {"s": "@shilda", "t": "Bir cam. Bazen bu çok şey demek."}
+    ],
+    "obs_file": [
+      {"s": "Noroi", "t": "Dosyanın son sayfası boş. Yalnız tek satır: «Denek 14 gönüllüdür.»"},
+      {"s": "Noroi", "t": "Gönüllüymüşüm. Yani buraya yine kendim geldim."},
+      {"s": "@shilda", "t": "Geldin. Bir sebebin vardı ve o sebebi ben biliyorum."},
+      {"s": "Noroi", "t": "Söyle o zaman."},
+      {"s": "@shilda", "t": "Henüz değil, ama söyleyeceğim. Söz."},
+      {"s": "Noroi", "t": "Sözün neye yarar bilmiyorum. Yine de tutacağını sanıyorum."}
     ]
   }
 }

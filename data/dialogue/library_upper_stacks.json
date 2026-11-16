@@ -1,0 +1,13 @@
+{
+  "room": "library_upper_stacks",
+  "sets": {
+    "stacks_note": [
+      {"s": "Noroi", "t": "Üst raflarda tozdan çok mürekkep kokusu var."},
+      {"s": "@shilda", "t": "Burada çok yazıldı. Çoğu yanlış yazıldı."},
+      {"s": "Noroi", "t": "Hangi kayda inanayım?"},
+      {"s": "@shilda", "t": "Kâğıt yalan söyleyebilir. Ben o geceyi yaşadım."},
+      {"s": "Noroi", "t": "Sana inanıyorum. Biraz da korkarak."},
+      {"s": "@shilda", "t": "Korkunun yarısı akıldır. Tut onu."}
+    ]
+  }
+}

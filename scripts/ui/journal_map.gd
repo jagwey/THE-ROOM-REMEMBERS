@@ -1,5 +1,8 @@
 class_name JournalMap
 extends Control
+const NookRecordScript := preload("res://scripts/world/nook_record.gd")
+const EchoTrialScript := preload("res://scripts/world/echo_trial.gd")
+const MemoryShrineScript := preload("res://scripts/world/memory_shrine.gd")
 ## "Harita & Mühürler": 6 bölgenin şematik, prosedürel gotik haritası (parşömen üstü koyu mürekkep).
 ## Veri: GameState (rooms_visited, corpses, flags, evidence) + PuzzleManager. Her çizimde taze okunur.
 
@@ -199,6 +202,17 @@ func _draw() -> void:
 			shortcuts.append(sid)
 	_text(Vector2(0, 50), "Kanıt %d" % ev_count, UiTheme.HINT, INK)
 	_text(Vector2(0, 68), "Kısayol %d" % shortcuts.size(), UiTheme.HINT, GOLD if shortcuts.size() > 0 else Color(INK, 0.55))
+	var cnt_size: int = UiTheme.HINT
+	var cnt_total := _text_w("Kayıtlar 8/8", cnt_size) + _text_w("Sınavlar 6/6", cnt_size) + _text_w("Anılar 5/5", cnt_size) + 32.0
+	while cnt_size > 10 and cnt_total > page_w - 24.0:
+		cnt_size -= 1
+		cnt_total = _text_w("Kayıtlar 8/8", cnt_size) + _text_w("Sınavlar 6/6", cnt_size) + _text_w("Anılar 5/5", cnt_size) + 32.0
+	var cnt_x := 0.0
+	_text(Vector2(cnt_x, 86), "Kayıtlar %d/%d" % [NookRecordScript.count(), NookRecordScript.TOTAL], cnt_size, GOLD if NookRecordScript.count() > 0 else Color(INK, 0.55))
+	cnt_x += _text_w("Kayıtlar 8/8", cnt_size) + 16.0
+	_text(Vector2(cnt_x, 86), "Sınavlar %d/%d" % [EchoTrialScript.count(), EchoTrialScript.TOTAL], cnt_size, GOLD if EchoTrialScript.count() > 0 else Color(INK, 0.55))
+	cnt_x += _text_w("Sınavlar 6/6", cnt_size) + 16.0
+	_text(Vector2(cnt_x, 86), "Anılar %d/%d" % [MemoryShrineScript.count(), MemoryShrineScript.TOTAL], cnt_size, GOLD if MemoryShrineScript.count() > 0 else Color(INK, 0.55))
 	var tip := "Odaya dokun: hızlı git"
 	var tip_size: int = UiTheme.HINT
 	while tip_size > 10 and _text_w(tip, tip_size) > page_w - 24.0 - 110.0:

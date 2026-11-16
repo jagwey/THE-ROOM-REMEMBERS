@@ -192,7 +192,7 @@ position = Vector2(500, 290)
 script = ExtResource("blood_thorn")
 anchor_x = 430.0
 puzzle_hint = &"awakening_seal_second"
-body_line = "İkinci plaka da bir beden istiyor. Bu sefer ötekini ezmem."
+body_line = "İkinci plaka da bir beden istiyor. Birincinin üstüne düşmemeliyim."
 solved_line = "İkinci kristal sustu. İki beden iki plakayı tutuyor."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BloodThorn2"]

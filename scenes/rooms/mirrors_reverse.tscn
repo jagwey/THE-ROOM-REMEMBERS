@@ -319,6 +319,7 @@ collision_mask = 2
 script = ExtResource("6")
 size = Vector2(400, 200)
 enter_line = "Burada sağ sola dönüyor, adımlarımı ters atmalıyım."
+exit_line = "Yansıma bıraktı beni. Ayaklarım yine bana ait."
 
 [node name="HazardA" type="Area2D" parent="Interactive"]
 position = Vector2(445, 306)

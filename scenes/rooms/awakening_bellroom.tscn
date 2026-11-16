@@ -1,0 +1,207 @@
+[gd_scene load_steps=13 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
+[ext_resource type="Script" path="res://scripts/world/echo_altar.gd" id="altar"]
+[ext_resource type="Script" path="res://scripts/world/gate_blocker.gd" id="gate"]
+[ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore"]
+[ext_resource type="Script" path="res://scripts/world/pressure_plate.gd" id="plate"]
+[ext_resource type="Script" path="res://scripts/world/sequence_shrine.gd" id="shrine"]
+[ext_resource type="Script" path="res://scripts/world/sequence_step.gd" id="step"]
+[ext_resource type="Script" path="res://scripts/world/blood_thorn.gd" id="thorn"]
+[ext_resource type="Script" path="res://scripts/world/echo_trial.gd" id="trial"]
+
+[sub_resource type="RectangleShape2D" id="GateShape"]
+size = Vector2(32, 88)
+
+[sub_resource type="RectangleShape2D" id="Interact"]
+size = Vector2(48, 96)
+
+[sub_resource type="RectangleShape2D" id="PlateShape"]
+size = Vector2(44, 18)
+
+[node name="AwakeningBellroom" type="Node2D"]
+script = ExtResource("room")
+room_id = &"awakening_bellroom"
+region_id = &"awakening"
+room_width = 1280.0
+bg_region = "awakening"
+checkpoint = Vector2(120, 288)
+default_spawn = Vector2(120, 288)
+doors = [{"x": 40.0, "to": "awakening_vigil", "spawn": "from_awakening_bellroom"}]
+
+[node name="Spawns" type="Node2D" parent="."]
+
+[node name="keeper_observe" type="Marker2D" parent="Spawns"]
+position = Vector2(640, 288)
+
+[node name="Interactive" type="Node2D" parent="."]
+
+[node name="RecordDay" type="Area2D" parent="Interactive"]
+position = Vector2(150, 288)
+script = ExtResource("lore")
+lore_id = &"bellroom_day"
+texture_path = "res://assets/props/photograph.png"
+sprite_scale = 0.5
+lines = PackedStringArray("Noroi|Nöbet defterinin ilk sayfası: “Gün çanı ilk çalar. Kimse ondan önce ses çıkarmaz.”", "Noroi|Altına bir not düşülmüş: “Gece çanı her zaman sonuncudur.”")
+evidence_title = "Nöbet Defteri, Birinci Sayfa"
+evidence_body = "Çanlar sırayla çalar: Gün çanı ilktir, Gece çanı sonuncudur."
+evidence_section = "izler"
+
+[node name="BellThorn" type="Area2D" parent="Interactive"]
+position = Vector2(230, 290)
+script = ExtResource("thorn")
+anchor_x = 330
+puzzle_hint = &"awakening_bellroom_corpse"
+body_line = "Dokunursam ölürüm; bedenim plakada çan tutar."
+solved_line = "Diken sustu; beden plakayı tutuyor."
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BellThorn"]
+shape = SubResource("Interact")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/BellThorn"]
+texture_filter = 0
+centered = true
+
+[node name="CorpsePlate" type="Area2D" parent="Interactive"]
+position = Vector2(330, 278)
+script = ExtResource("plate")
+collision_layer = 0
+collision_mask = 1
+puzzle_id = &"awakening_bellroom_corpse"
+accept_player = false
+accept_stone = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/CorpsePlate"]
+shape = SubResource("PlateShape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/CorpsePlate"]
+texture_filter = 0
+centered = true
+
+[node name="RecordGrief" type="Area2D" parent="Interactive"]
+position = Vector2(430, 288)
+script = ExtResource("lore")
+lore_id = &"bellroom_grief"
+texture_path = "res://assets/props/photograph.png"
+sprite_scale = 0.5
+lines = PackedStringArray("Noroi|İkinci sayfa: “Yas çanı ortadadır. Gün ile Gece'nin arasında çalar.”", "Noroi|Altı kazınmış: “Üç plaka birlikte basılmadan kapı açılmaz.”")
+evidence_title = "Nöbet Defteri, İkinci Sayfa"
+evidence_body = "Yas çanı ortadadır; Gün ve Gece'nin arasında çalar. Kapı üç ağırlık aynı anda tutulmadan açılmaz."
+evidence_section = "izler"
+
+[node name="BellEcho" type="Area2D" parent="Interactive"]
+position = Vector2(540, 268)
+script = ExtResource("altar")
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+monitorable = true
+puzzle_id = &"awakening_bellroom_echo"
+intro_text = "Sunağa dokun, plakada bekle. Yankın orada kalır; sen öteki plakaya bas."
+solved_text = "Yankı plakayı tutuyor."
+switch_kinds = PackedStringArray("plate")
+switch_positions = PackedVector2Array(150, 32)
+live_only = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BellEcho"]
+shape = SubResource("Interact")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/BellEcho"]
+texture_filter = 0
+centered = true
+
+[node name="StandPlate" type="Area2D" parent="Interactive"]
+position = Vector2(760, 278)
+script = ExtResource("plate")
+collision_layer = 0
+collision_mask = 1
+puzzle_id = &"awakening_bellroom_stand"
+accept_player = true
+accept_stone = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/StandPlate"]
+shape = SubResource("PlateShape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/StandPlate"]
+texture_filter = 0
+centered = true
+
+[node name="RecordTower" type="Area2D" parent="Interactive"]
+position = Vector2(620, 288)
+script = ExtResource("lore")
+lore_id = &"bellroom_tower"
+texture_path = "res://assets/props/photograph.png"
+sprite_scale = 0.5
+lines = PackedStringArray("Noroi|Çan kulesi planı: üç plaka, üç ağırlık. Beden, yankı ve nöbetçi.", "Noroi|Nöbetçi benim galiba. Son plakada ben duracağım.")
+evidence_title = "Çan Kulesi Planı"
+evidence_body = "Üç plaka aynı anda tutulmalı: beden, yankı ve nöbetçi."
+evidence_section = "izler"
+
+[node name="BellGate" type="StaticBody2D" parent="Interactive"]
+position = Vector2(860, 268)
+script = ExtResource("gate")
+collision_layer = 1
+collision_mask = 0
+open_flag = &"awakening_bellroom_open"
+puzzle_listen = &""
+puzzle_listen_all = PackedStringArray("awakening_bellroom_corpse", "awakening_bellroom_echo", "awakening_bellroom_stand")
+ignore_world_flag = false
+latch_on_live = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BellGate"]
+shape = SubResource("GateShape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/BellGate"]
+texture_filter = 0
+centered = true
+
+[node name="BellShrine" type="Node2D" parent="Interactive"]
+script = ExtResource("shrine")
+puzzle_id = &"awakening_bellroom"
+order = PackedStringArray("gun", "yas", "gece")
+fail_line = "Yanlış çan. Sessizlik geri döndü."
+success_line = "Üç çan sırayla çaldı. Nöbet defteri sana açıldı."
+evidence_id = "ev_bellroom_first_watch"
+evidence_title = "İlk Nöbet"
+evidence_body = "Çanlar Gün, Yas, Gece sırasıyla çalar. Nöbetçi kapıyı üç ağırlıkla tutar: beden, yankı ve kendisi."
+
+[node name="Step_gun" type="Area2D" parent="Interactive/BellShrine"]
+position = Vector2(960, 288)
+script = ExtResource("step")
+step_id = "gun"
+label = "Gün Çanı"
+texture_path = "res://assets/props/halo.png"
+sprite_scale = 0.5
+tint = Color(0.9, 0.85, 0.5, 1)
+
+[node name="Step_yas" type="Area2D" parent="Interactive/BellShrine"]
+position = Vector2(1060, 288)
+script = ExtResource("step")
+step_id = "yas"
+label = "Yas Çanı"
+texture_path = "res://assets/props/halo.png"
+sprite_scale = 0.5
+tint = Color(0.55, 0.62, 0.85, 1)
+
+[node name="Step_gece" type="Area2D" parent="Interactive/BellShrine"]
+position = Vector2(1160, 288)
+script = ExtResource("step")
+step_id = "gece"
+label = "Gece Çanı"
+texture_path = "res://assets/props/halo.png"
+sprite_scale = 0.5
+tint = Color(0.72, 0.55, 0.85, 1)
+
+[node name="EchoTrial" type="Area2D" parent="Interactive"]
+position = Vector2(815, 268)
+script = ExtResource("trial")
+trial_room = &"awakening_bellroom"
+shrine_path = NodePath("../BellShrine")
+order = PackedStringArray("gece", "gun", "yas")
+time_limit = 60.0
+hold_live = PackedStringArray("awakening_bellroom_corpse")
+hold_line = "Çan plakası boş; bedenim orada durmalı."
+twist_label = "Çan plakası"
+intro_line = "Çanlar ters sırayla çalacak. Çan plakası bedensiz kalırsa ses çıkmaz."
+reward_title = "Yankı Sınavı: Çan Kulesi"
+reward_body = "Çanlar sırasını değiştirince de çaldı. Nöbet, sıraya değil dinleyene bağlıymış."

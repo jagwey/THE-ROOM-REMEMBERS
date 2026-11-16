@@ -83,6 +83,10 @@ func _on_back_body(body: Node) -> void:
 
 
 func receive_soul_slash(_from: Node) -> void:
+	if is_inside_tree():
+		for t in get_tree().get_nodes_in_group("echo_trial"):
+			if t.has_method("note_ability"):
+				t.note_ability(&"soul_slash", self)
 	if PuzzleManager.is_solved(puzzle_id):
 		return
 	if requires != &"" and not PuzzleManager.is_solved(requires):

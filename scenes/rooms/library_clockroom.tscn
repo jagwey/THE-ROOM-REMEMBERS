@@ -1,6 +1,9 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=8 format=3]
 
+[ext_resource type="Script" path="res://scripts/world/memory_shrine.gd" id="mem_shrine"]
+[ext_resource type="Script" path="res://scripts/world/sequence_step.gd" id="mem_step"]
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
+[ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore_story"]
 [ext_resource type="Script" path="res://scripts/world/ordered_relic.gd" id="relic"]
 [ext_resource type="Script" path="res://scripts/world/dial_puzzle.gd" id="dial"]
 [ext_resource type="Texture2D" path="res://assets/trr_refresh/library/clock_1927.png" id="clock_1927"]
@@ -63,3 +66,54 @@ texture_filter = 1
 position = Vector2(0, -37)
 scale = Vector2(0.8, 0.8)
 texture = ExtResource("clock_1995")
+
+[node name="ClockPendulum" type="Area2D" parent="Interactive"]
+position = Vector2(620, 288)
+script = ExtResource("lore_story")
+lore_id = &"clockroom_pendulum"
+texture_path = "res://assets/props/pocket_watch.png"
+sprite_scale = 0.45
+dialogue_room = &"library_clockroom"
+dialogue_set = &"clock_pendulum"
+repeat_line = "Noroi|Sarkaç tek yöne sarkık. Geri dönemeyen bir salınış."
+
+[node name="ClockPhoto" type="Area2D" parent="Interactive"]
+position = Vector2(1060, 288)
+script = ExtResource("lore_story")
+lore_id = &"clockroom_photo"
+texture_path = "res://assets/props/photograph.png"
+sprite_scale = 0.45
+dialogue_room = &"library_clockroom"
+dialogue_set = &"clock_photo"
+repeat_line = "Noroi|Yüzleri silinmiş bir sıra. Yalnız defter tutan elin izi kalmış."
+
+[node name="MemoryFragments" type="Node2D" parent="Interactive"]
+script = ExtResource("mem_shrine")
+memory_id = "kutuphane"
+
+[node name="Step_a" type="Area2D" parent="Interactive/MemoryFragments"]
+position = Vector2(550, 288)
+script = ExtResource("mem_step")
+step_id = "a"
+label = "Kırık Anı Parçası"
+texture_path = "res://assets/props/ledger.png"
+sprite_scale = 0.4
+tint = Color(0.85, 0.7, 0.95, 1)
+
+[node name="Step_b" type="Area2D" parent="Interactive/MemoryFragments"]
+position = Vector2(505, 288)
+script = ExtResource("mem_step")
+step_id = "b"
+label = "Kırık Anı Parçası"
+texture_path = "res://assets/props/ledger.png"
+sprite_scale = 0.4
+tint = Color(0.85, 0.7, 0.95, 1)
+
+[node name="Step_c" type="Area2D" parent="Interactive/MemoryFragments"]
+position = Vector2(460, 288)
+script = ExtResource("mem_step")
+step_id = "c"
+label = "Kırık Anı Parçası"
+texture_path = "res://assets/props/ledger.png"
+sprite_scale = 0.4
+tint = Color(0.85, 0.7, 0.95, 1)

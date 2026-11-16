@@ -1,0 +1,13 @@
+{
+  "room": "experiment_cells",
+  "sets": {
+    "cells_glimpse": [
+      {"s": "Noroi", "t": "Üç hücre, üç kayıt. Hiçbirinde kimse kalmamış."},
+      {"s": "@shilda", "t": "Burası kaçanların değil, kalamayanların hücreleriydi."},
+      {"s": "Noroi", "t": "Fark yok sanki. Kalamayan da kaçamıyor."},
+      {"s": "@shilda", "t": "Fark var: kaçamayan hâlâ çabalıyor. Sen çabalamayı bırakmadın."},
+      {"s": "Noroi", "t": "Bunu iltifat sayıyorum."},
+      {"s": "@shilda", "t": "Öyle olsun. Saymak senin hakkın."}
+    ]
+  }
+}

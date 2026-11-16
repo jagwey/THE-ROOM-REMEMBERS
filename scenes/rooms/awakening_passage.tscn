@@ -11,6 +11,7 @@
 [ext_resource type="Script" path="res://scripts/world/sequence_shrine.gd" id="shrine"]
 [ext_resource type="Script" path="res://scripts/world/sequence_step.gd" id="step"]
 [ext_resource type="Script" path="res://scripts/world/blood_thorn.gd" id="thorn"]
+[ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore"]
 [ext_resource type="Texture2D" path="res://assets/layers/rubble.png" id="9"]
 [ext_resource type="Texture2D" path="res://assets/layers/vines.png" id="10"]
 [ext_resource type="Texture2D" path="res://assets/layers/candlestick.png" id="11"]
@@ -212,12 +213,21 @@ echo_id = &"awakening_rift_echo"
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/RiftEchoStone"]
 shape = SubResource("TransitionHit")
 
+[node name="RingSign" type="Area2D" parent="Interactive"]
+position = Vector2(340, 288)
+script = ExtResource("lore")
+lore_id = &"passage_ring_sign"
+texture_path = "res://assets/props/curse.png"
+sprite_scale = 0.5
+lines = PackedStringArray("Noroi|Üç halka, üç çentik sayısı. Yankı taşı sırayı fısıldıyor.", "Noroi|Önce halkalarla kilidi aç, sonra bedenimi basamağa bırak.")
+repeat_line = "Noroi|Önce yankı, sonra halkalar. Sonra basamak."
+
 [node name="RingShrine" type="Node2D" parent="Interactive"]
 script = ExtResource("shrine")
 puzzle_id = &"awakening_passage_rings"
 order = PackedStringArray("3", "1", "4")
 fail_line = "Halkalar tutmadı. Yankının sırasını baştan denemeliyim."
-success_line = "Halkalar yerine oturdu. Geçit gevşedi."
+success_line = "Halkalar yerine oturdu. Geçidin kilidi çözüldü."
 
 [node name="Ring4" type="Area2D" parent="Interactive/RingShrine"]
 position = Vector2(500, 288)

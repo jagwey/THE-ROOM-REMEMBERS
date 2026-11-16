@@ -172,7 +172,7 @@ position = Vector2(385, 290)
 script = ExtResource("blood_thorn")
 anchor_x = 330.0
 puzzle_hint = &"decay_weight_corpse"
-body_line = "Sürgü taşı tutuyor ama kapı bir beden daha istiyor. Plakanın başında ölürsem kalırım."
+body_line = "Sürgü taşı tutuyor ama kapı bir beden daha istiyor. Plakada ölürsem bedenim kalır."
 solved_line = "Dikenli plaka sustu. Beden onu basık tutuyor."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BloodThorn"]

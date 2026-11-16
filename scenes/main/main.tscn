@@ -1,4 +1,4 @@
-[gd_scene load_steps=49 format=3 uid="uid://torimon_main"]
+[gd_scene load_steps=56 format=3 uid="uid://torimon_main"]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/rooms/awakening.tscn" id="2"]
@@ -40,6 +40,13 @@
 [ext_resource type="PackedScene" path="res://scenes/rooms/mirrors_labyrinth.tscn" id="x_mirrors_labyrinth"]
 [ext_resource type="PackedScene" path="res://scenes/rooms/mirrors_shrine.tscn" id="x_mirrors_shrine"]
 [ext_resource type="PackedScene" path="res://scenes/rooms/awakening_vigil.tscn" id="x_awakening_vigil"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/core_last_record.tscn" id="x_core_last_record"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/awakening_s_room.tscn" id="x_awakening_s_room"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/mirrors_inverse_hall.tscn" id="x_mirrors_inverse_hall"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/experiment_twin_lab.tscn" id="x_experiment_twin_lab"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/library_archive_vault.tscn" id="x_library_archive_vault"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/decay_rootworks.tscn" id="x_decay_rootworks"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/awakening_bellroom.tscn" id="x_awakening_bellroom"]
 [ext_resource type="PackedScene" path="res://scenes/rooms/decay_greenhouse.tscn" id="x_decay_greenhouse"]
 [ext_resource type="PackedScene" path="res://scenes/rooms/decay_cistern.tscn" id="x_decay_cistern"]
 [ext_resource type="PackedScene" path="res://scenes/rooms/library_clockroom.tscn" id="x_library_clockroom"]
@@ -174,6 +181,34 @@ visible = false
 process_mode = 4
 
 [node name="AwakeningVigil" parent="World" instance=ExtResource("x_awakening_vigil")]
+visible = false
+process_mode = 4
+
+[node name="AwakeningBellroom" parent="World" instance=ExtResource("x_awakening_bellroom")]
+visible = false
+process_mode = 4
+
+[node name="DecayRootworks" parent="World" instance=ExtResource("x_decay_rootworks")]
+visible = false
+process_mode = 4
+
+[node name="LibraryArchiveVault" parent="World" instance=ExtResource("x_library_archive_vault")]
+visible = false
+process_mode = 4
+
+[node name="ExperimentTwinLab" parent="World" instance=ExtResource("x_experiment_twin_lab")]
+visible = false
+process_mode = 4
+
+[node name="MirrorsInverseHall" parent="World" instance=ExtResource("x_mirrors_inverse_hall")]
+visible = false
+process_mode = 4
+
+[node name="CoreLastRecord" parent="World" instance=ExtResource("x_core_last_record")]
+visible = false
+process_mode = 4
+
+[node name="AwakeningSRoom" parent="World" instance=ExtResource("x_awakening_s_room")]
 visible = false
 process_mode = 4
 

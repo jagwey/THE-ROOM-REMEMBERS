@@ -27,6 +27,15 @@ var _fs_button: Button
 var _haptics_button: Button
 var _vol_button: Button
 var _music_button: Button
+var _music_vol_label: Label
+var _sfx_vol_label: Label
+var _text_speed_button: Button
+var _shake_button: Button
+var _font_button: Button
+var _hint_button: Button
+var _settings_scroll: ScrollContainer
+var _panel_base_h: float = 292.0
+const SETTINGS_PANEL_H := 340.0
 var _help_label: Label
 var _settings_help: Label
 var _subtitle: Label
@@ -68,9 +77,10 @@ func _ready() -> void:
 	UiGate.gate_changed.connect(_on_gate_changed)
 	_panel = GothicModalPanel.new()
 	## Dokunmatikte yardım metni ve tam ekran düğmesi yok — panel kısalır.
-	_panel.setup("THE ROOM REMEMBERS", Vector2(420, 232 if MobileInputManager.is_touch_ui() else 292))
+	_panel_base_h = 232.0 if MobileInputManager.is_touch_ui() else 292.0
+	_panel.setup("THE ROOM REMEMBERS", Vector2(420, _panel_base_h))
 	add_child(_panel)
-	_subtitle = _panel.add_label("Sen unutursun. Oda hatırlar.", UiTheme.HINT)
+	_subtitle = _panel.add_label("Unuttuğun her şeyi oda saklar.", UiTheme.HINT)
 	_subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_help_label = _panel.add_label("A/D: yürü · W/Space: zıpla · E: etkileş/devam\nX: atıl · Z: saldır · Q: yankı/ruh yeteneği\nI: günlük · Esc: menü", UiTheme.HINT)
 	## Duraklatma menüsü sırası: Devam Et / Ayarlar / Kaydet ve Çık / Ana Menüye Dön.
@@ -85,22 +95,39 @@ func _ready() -> void:
 	_settings_box = VBoxContainer.new()
 	_settings_box.add_theme_constant_override("separation", 6)
 	_panel.body.add_child(_settings_box)
+	_settings_scroll = ScrollContainer.new()
+	_settings_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_settings_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_settings_scroll.custom_minimum_size = Vector2(0, 150)
+	_settings_box.add_child(_settings_scroll)
+	var sbox := VBoxContainer.new()
+	sbox.add_theme_constant_override("separation", 6)
+	sbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_settings_scroll.add_child(sbox)
 	_settings_help = Label.new()
 	_settings_help.text = how_to_play_text()
 	_settings_help.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_settings_help.add_theme_font_size_override("font_size", 8)
 	_settings_help.add_theme_color_override("font_color", Palette.PALE_LILAC)
-	_settings_box.add_child(_settings_help)
-	var audio_row := HBoxContainer.new()
-	audio_row.add_theme_constant_override("separation", 6)
-	_settings_box.add_child(audio_row)
+	sbox.add_child(_settings_help)
+	var audio_row := _settings_row(sbox)
 	_vol_button = _panel.add_button("", _cycle_volume, audio_row)
 	_vol_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_music_button = _panel.add_button("", _toggle_music, audio_row)
 	_music_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 6)
-	_settings_box.add_child(row)
+	_music_vol_label = _add_stepper(sbox, func(d: int): _step_music_volume(d))
+	_sfx_vol_label = _add_stepper(sbox, func(d: int): _step_sfx_volume(d))
+	var misc_row := _settings_row(sbox)
+	_text_speed_button = _panel.add_button("", _cycle_text_speed, misc_row)
+	_text_speed_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_shake_button = _panel.add_button("", _toggle_shake, misc_row)
+	_shake_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var misc_row2 := _settings_row(sbox)
+	_font_button = _panel.add_button("", _toggle_font_size, misc_row2)
+	_font_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_hint_button = _panel.add_button("", _cycle_hint_level, misc_row2)
+	_hint_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var row := _settings_row(sbox)
 	_fs_button = _panel.add_button("Tam ekran (F11)", toggle_fullscreen, row)
 	_fs_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_fs_button.visible = not OS.has_feature("mobile")
@@ -177,6 +204,7 @@ func _refresh_mode() -> void:
 func _show_pause_page(settings: bool) -> void:
 	_main_box.visible = not settings
 	_settings_box.visible = settings
+	_set_panel_height(SETTINGS_PANEL_H if settings else _panel_base_h)
 	_help_label.visible = not settings and not MobileInputManager.is_touch_ui()
 	_subtitle.visible = _title_mode and not settings
 	_focus(_vol_button if settings else _settings_button)
@@ -345,6 +373,82 @@ func _toggle_haptics() -> void:
 	_refresh_settings_buttons()
 
 
+func _set_panel_height(h: float) -> void:
+	if _panel == null or _panel.frame == null:
+		return
+	_panel.frame.offset_top = -h * 0.5
+	_panel.frame.offset_bottom = h * 0.5
+
+
+func _settings_row(parent: Control) -> HBoxContainer:
+	var r := HBoxContainer.new()
+	r.add_theme_constant_override("separation", 6)
+	parent.add_child(r)
+	return r
+
+
+## [-] etiket [+] satırı; etiketi döndürür (dokunmaya uygun, 30px+ düğmeler).
+func _add_stepper(parent: Control, on_step: Callable) -> Label:
+	var r := _settings_row(parent)
+	var minus := _panel.add_button("-", func(): on_step.call(-1), r)
+	minus.custom_minimum_size.x = 44.0
+	var lab := Label.new()
+	lab.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lab.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	lab.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	UiTheme.apply_outlined(lab, UiTheme.BODY, false)
+	r.add_child(lab)
+	var plus := _panel.add_button("+", func(): on_step.call(1), r)
+	plus.custom_minimum_size.x = 44.0
+	return lab
+
+
+func _step_music_volume(delta: int) -> void:
+	GameSettings.music_volume = snappedf(clampf(GameSettings.music_volume + float(delta) * GameSettings.VOLUME_STEP, 0.0, 1.0), GameSettings.VOLUME_STEP)
+	AudioManager.set_music_volume(GameSettings.music_volume)
+	_save_settings()
+	_refresh_settings_buttons()
+
+
+func _step_sfx_volume(delta: int) -> void:
+	GameSettings.sfx_volume = snappedf(clampf(GameSettings.sfx_volume + float(delta) * GameSettings.VOLUME_STEP, 0.0, 1.0), GameSettings.VOLUME_STEP)
+	AudioManager.set_sfx_volume(GameSettings.sfx_volume)
+	_save_settings()
+	_refresh_settings_buttons()
+	AudioManager.play_sfx(&"ui_click")
+
+
+func _cycle_text_speed() -> void:
+	GameSettings.text_speed = (GameSettings.text_speed + 1) % GameSettings.TEXT_SPEED_NAMES.size()
+	_save_settings()
+	_refresh_settings_buttons()
+
+
+func _toggle_shake() -> void:
+	GameSettings.screen_shake = not GameSettings.screen_shake
+	_save_settings()
+	_refresh_settings_buttons()
+
+
+func _toggle_font_size() -> void:
+	GameSettings.font_large = not GameSettings.font_large
+	_save_settings()
+	_refresh_settings_buttons()
+	_apply_font_setting()
+
+
+func _cycle_hint_level() -> void:
+	GameSettings.hint_level = (GameSettings.hint_level + 1) % GameSettings.HINT_LEVEL_NAMES.size()
+	_save_settings()
+	_refresh_settings_buttons()
+
+
+func _apply_font_setting() -> void:
+	for hud in get_tree().get_nodes_in_group("hud"):
+		if hud.has_method("apply_text_size_setting"):
+			hud.apply_text_size_setting()
+
+
 func _cycle_volume() -> void:
 	var i := 0
 	for k in VOLUME_STEPS.size():
@@ -369,6 +473,13 @@ func _refresh_settings_buttons() -> void:
 		_haptics_button.text = _haptics_text()
 	_vol_button.text = _vol_text()
 	_music_button.text = _music_text()
+	if _music_vol_label:
+		_music_vol_label.text = "Müzik sesi: %%%d" % int(round(GameSettings.music_volume * 100.0))
+		_sfx_vol_label.text = "Efekt sesi: %%%d" % int(round(GameSettings.sfx_volume * 100.0))
+		_text_speed_button.text = "Metin hızı: " + GameSettings.TEXT_SPEED_NAMES[GameSettings.text_speed]
+		_shake_button.text = "Ekran sarsıntısı: " + ("Açık" if GameSettings.screen_shake else "Kapalı")
+		_font_button.text = "Yazı boyutu: " + ("Büyük" if GameSettings.font_large else "Normal")
+		_hint_button.text = "İpucu: " + GameSettings.HINT_LEVEL_NAMES[GameSettings.hint_level]
 
 
 func _joy_text() -> String:
@@ -394,17 +505,22 @@ func _load_settings() -> void:
 		_music_on = bool(cfg.get_value("audio", "music", true))
 		MobileInputManager.floating_joystick = bool(cfg.get_value("input", "floating_joystick", true))
 		MobileInputManager.haptics_enabled = bool(cfg.get_value("input", "haptics", true))
+	GameSettings.load_settings()
 	AudioManager.set_master_volume(_volume)
 	AudioManager.set_music_enabled(_music_on)
+	AudioManager.set_music_volume(GameSettings.music_volume)
+	AudioManager.set_sfx_volume(GameSettings.sfx_volume)
 
 
 func _save_settings() -> void:
 	var cfg := ConfigFile.new()
+	cfg.load(SETTINGS_PATH) ## yeni ayar anahtarları (GameSettings) korunur
 	cfg.set_value("audio", "volume", _volume)
 	cfg.set_value("audio", "music", _music_on)
 	cfg.set_value("input", "floating_joystick", MobileInputManager.floating_joystick)
 	cfg.set_value("input", "haptics", MobileInputManager.haptics_enabled)
 	cfg.save(SETTINGS_PATH)
+	GameSettings.save_settings(SETTINGS_PATH)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -450,6 +566,7 @@ func open_menu() -> void:
 	_panel.dim.color.a = 0.78
 	_main_box.show()
 	_settings_box.hide()
+	_set_panel_height(_panel_base_h)
 	_panel.show()
 	UiGate.set_pause_menu(true)
 	MobileInputManager.clear_held_inputs()

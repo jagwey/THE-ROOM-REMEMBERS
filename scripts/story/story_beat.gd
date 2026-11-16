@@ -217,7 +217,7 @@ func _experiment_circuit() -> void:
 func _experiment_authority() -> void:
 
 	DialogueManager.say("Kayıt", "Protokol yetkilisi: [kazınmış]. Araştırma Yardımcısı S.")
-	DialogueManager.say("Kayıt", "Acil kapatma talebi reddedildi. Mühür kodu üç hane. Haneler kayıtlara dağıtılmış.")
+	DialogueManager.say("Kayıt", "Acil kapatma talebi reddedildi; mühür kodu üç hane. Haneler kayıtlara dağıtılmış.")
 	DialogueManager.say("Kayıt", "Kayıt şeridinde silik bir fısıltı izi kalmış. Sözler seçilmiyor.")
 
 	DialogueManager.say("Noroi", "Biri kimse çıkmasın diye kapıyı kilitlemiş, sesler içeride kalmış.")
@@ -250,16 +250,28 @@ func _mirrors_unbroken() -> void:
 	if not PuzzleManager.is_solved(&"mirrors_unbroken_mimic"):
 		DialogueManager.say("Noroi", "Önce yansımanın yürüdüğü yolu yankımla yürümeliyim.")
 		return
-	DialogueManager.say("Noroi", "Neden her seferinde çiçek bırakıyorsun?")
-	DialogueManager.say("Shilda", "…")
-	DialogueManager.say("Shilda", "Çünkü birinin onları hatırlaması gerekiyor.")
-	DialogueManager.say("Noroi", "Beni değil, bir sırrı koruyordun.")
-	DialogueManager.say("Shilda", "İkisini ayırmayı unuttum.")
-	DialogueManager.say("Noroi", "Döngüyü sürdürmemi de susmanı kabul etmemi de isteyemezsin.")
+	DialogueManager.say("Noroi", "Bu çiçekleri kime bırakıyorsun, Shilda?")
+	DialogueManager.say("Shilda", "Bahçe işini bilir. Sen yürüdün, yansıman da yürüdü.")
+	DialogueManager.say("Noroi", "Soruyu değiştirme. Kimi bekliyorsun?")
+	DialogueManager.say("Shilda", "Bekleyen ben değilim. Hatırlayan biri olmalı, o kadar.")
+	DialogueManager.say("Noroi", "Hatırlamak ile saklamak aynı şey değil.")
+	DialogueManager.say("Noroi", "Bu aynalarda sen yoksun. Neden hiçbir camda görünmüyorsun?")
+	DialogueManager.say("Shilda", "Gölgenin yansıması olmaz. Ayna yalnız seni görür.")
+	DialogueManager.say("Noroi", "Cebimdeki çiçek senin elinden. Kabul kaydı bunu söylüyor.")
+	DialogueManager.say("Shilda", "Evet. Gölgenin elinden ancak bu gelirdi: bir çiçek, bir kez.")
+	DialogueManager.say("Noroi", "Beni içeri sen mi çektin? Dürüst ol.")
+	DialogueManager.say("Shilda", "Çekmedim. Ama o kapıdan geçtiğini görünce sevindim, inkâr edemem.")
+	DialogueManager.say("Noroi", "Sen sevindin. Ben on iki kez öldüm.")
+	DialogueManager.say("Shilda", "Biliyorum. Her seferinde saydım, ben unutmayayım diye.")
 	if GameState.is_shilda_trusted():
-		DialogueManager.say("Shilda", "Yanındayım. Sırrı sen taşı.")
+		DialogueManager.say("Noroi", "Seni yargılamıyorum. Yalnız artık hiçbir şeyi saklama.")
+		DialogueManager.say("Shilda", "Haklısın. Yanındayım; sırrı birlikte taşıyalım.")
+		DialogueManager.say("Noroi", "Çekirdekte ne olursa olsun, ikimiz de aynı şeyi istiyoruz.")
+		DialogueManager.say("Shilda", "Bu odadan çıkmak ve kimin sustuğunu bulmak. Evet.")
 	else:
+		DialogueManager.say("Noroi", "Kızgınım, evet. Ama kaçmayacağım.")
 		DialogueManager.say("Shilda", "Bana kızgınsın. Yine de yürü.")
+		DialogueManager.say("Noroi", "Yürüyorum. Çekirdekte hesaplaşırız.")
 	var ok: bool = await DialogueManager.dialogue_finished
 	if not ok:
 		return
@@ -310,7 +322,7 @@ func _core_seal_chamber() -> void:
 
 		return
 
-	DialogueManager.say("Kayıt", "Deney başladı. Kapı kapandı. Koruma mührü devreye girdi.")
+	DialogueManager.say("Kayıt", "Deney başladı, kapı kapandı. Koruma mührü devreye girdi.")
 	DialogueManager.say("Noroi", "Silinen hafızalar burada kaldı, hiçbiri kayıp değil artık.")
 
 	DialogueManager.say("Shilda", "Bağlar çekirdeğin başındaydı.")

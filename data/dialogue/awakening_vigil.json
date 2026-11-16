@@ -2,25 +2,25 @@
   "room": "awakening_vigil",
   "sets": {
     "first_meeting": [
-      {
-        "variants": [
-          {"when": {"min_deaths": 3}, "s": "@shilda", "t": "Yine buradasın. Duvar saydı."},
-          {"s": "@shilda", "t": "Dur. Oda seni unutmadı, sen odayı unuttun."}
-        ]
-      },
+      {"variants": [{"when": {"min_deaths": 3}, "s": "@shilda", "t": "Yine buradasın. Duvar saydı."}, {"s": "@shilda", "t": "Dur. Bu oda seni tanıyor."}]},
       {"s": "Noroi", "t": "Sen kimsin?"}
     ],
     "meeting": [
-      {
-        "variants": [
-          {"when": {"min_deaths": 3}, "s": "@shilda", "t": "Bir daha geldin. Duvar bu sefer sesli saydı."},
-          {"s": "@shilda", "t": "Dur."}
-        ]
-      },
+      {"variants": [{"when": {"min_deaths": 3}, "s": "@shilda", "t": "Bir daha geldin. Sayıyı duvar tutuyor."}, {"s": "@shilda", "t": "Dur."}]},
       {"s": "Noroi", "t": "Kim var orada?"},
       {"s": "@shilda", "t": "Sağda bir kapı var."},
       {"s": "@shilda", "t": "Kırmızı yarığa basma."},
       {"s": "@shilda", "t": "Gideceksin. Ben iz bırakırım."}
+    ],
+    "vigil_log": [
+      {"s": "Noroi", "t": "Nöbet defteri açık. Son satır yarım: «Kimse gelmedi, gelirse…»"},
+      {"s": "@shilda", "t": "Okuma. Sana yazılmadı."},
+      {"s": "Noroi", "t": "Sen kimsin? Buraya mı aitsin, yoksa benim gibi mi?"},
+      {"s": "@shilda", "t": "Buraya aitim, sen değilsin. Çıkış o yönde."},
+      {"s": "Noroi", "t": "Beni kovuyor musun?"},
+      {"s": "@shilda", "t": "Koruyorum. Aynı şey değil, ama sana öyle görünebilir."},
+      {"s": "Noroi", "t": "Gözümün önünde kal yeter."},
+      {"s": "@shilda", "t": "Göreceğiz. Henüz söz veremem."}
     ]
   }
 }

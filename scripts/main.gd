@@ -53,7 +53,13 @@ const ROOM_DEFS := {
 ## v1.0 genişleme: mevcut odalardan yan bölgelere açılan kapılar (geri dönüş / metroidvania-lite).
 ## room_id -> [{x, to, req, msg}] — hedef odada "from_<room_id>" spawn'ı built_room tarafından üretilir.
 const SIDE_DOORS := {
-	"awakening": [{"x": 672.0, "to": "awakening_balcony"}],
+	"core_memory_vault": [{"x": 140.0, "to": "core_last_record", "title": "Son Kayıt"}],
+	"mirrors_labyrinth": [{"x": 600.0, "y": 202.0, "spawn_x": 650.0, "spawn_y": 222.0, "to": "mirrors_inverse_hall", "title": "Ters Salon"}],
+	"experiment_circuit": [{"x": 680.0, "to": "experiment_twin_lab", "title": "İkiz Laboratuvarı"}],
+	"library_upper_stacks": [{"x": 680.0, "to": "library_archive_vault", "title": "Kayıt Mahzeni"}],
+	"decay_garden": [{"x": 500.0, "to": "decay_rootworks", "title": "Kök Damarları"}],
+	"awakening_vigil": [{"x": 700.0, "to": "awakening_bellroom", "title": "Sessiz Çanlar"}],
+	"awakening": [{"x": 672.0, "to": "awakening_balcony"}, {"x": 980.0, "to": "awakening_s_room", "title": "S.'nin Odası", "nooks": 8}],
 	"decay_vines": [{"x": 896.0, "to": "decay_catacombs"}],
 	"decay_weight": [{"x": 720.0, "to": "decay_cistern"}],
 }
@@ -84,11 +90,13 @@ func _add_side_doors() -> void:
 			var door := Area2D.new()
 			door.name = "Side_%s" % target
 			door.set_script(door_script)
-			door.position = Vector2(float(d["x"]), 268.0)
+			door.position = Vector2(float(d["x"]), float(d.get("y", 268.0)))
 			door.set("target_room_id", StringName(target))
 			door.set("target_spawn_id", StringName("from_%s" % rid))
 			if d.has("req"):
 				door.set("required_puzzle", StringName(String(d["req"])))
+			if d.has("nooks"):
+				door.set("required_nooks", int(d["nooks"]))
 			if d.has("ability"):
 				door.set("required_ability", StringName(String(d["ability"])))
 			if d.has("msg"):
@@ -107,7 +115,7 @@ func _add_side_doors() -> void:
 				_add_door_mark(door)
 			var spawns: Dictionary = entry["spawns"]
 			var inward := 48.0 if float(d["x"]) < bounds.size.x * 0.5 else -48.0
-			spawns[StringName("from_%s" % target)] = Vector2(float(d["x"]) + inward, 288.0)
+			spawns[StringName("from_%s" % target)] = Vector2(float(d.get("spawn_x", float(d["x"]) + inward)), float(d.get("spawn_y", 288.0)))
 
 
 func _ready() -> void:

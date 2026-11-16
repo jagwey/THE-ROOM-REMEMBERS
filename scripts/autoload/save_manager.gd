@@ -1,4 +1,5 @@
 extends Node
+signal game_loaded
 ## Kayıt — iki dosya: COMMITTED (SAVE_PATH; yalnız commit_save: mühür, Kaydet ve Çık, yeni oyun, final)
 ## ve RESUME (SAVE_PATH + "_resume.json"; save_game / save_resume_point; çıkışta ilerleme kaybolmasın).
 ## Devam Et ikisinden save_serial'ı büyük olanı yükler; lanet yeniden yüklemesi yalnız committed'ı yükler.
@@ -356,6 +357,7 @@ func _apply_data(data: Dictionary, apply_room: bool) -> bool:
 	_migrate_shadow_dash_for_late_rooms()
 	_migrate_trust_flags_v118()
 	PuzzleManager.sync_from_world()
+	game_loaded.emit()
 	if apply_room:
 		CorpseManager.rebuild_world_corpses()
 	GameState.knowledge_changed.emit(&"world")

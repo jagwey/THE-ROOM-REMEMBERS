@@ -7,12 +7,15 @@ extends Area2D
 @export var target_spawn_id: StringName = &"default"
 @export var required_puzzle: StringName = &""
 @export var required_ability: StringName = &""
+## > 0 ise kapı yalnız toplanan geri dönüş kaydı sayısı bu değere ulaşınca açılır ("Kayıtlar N/8").
+@export var required_nooks: int = 0
 @export var locked_message: String = "Önce bu odanın anısını tamamlamalıyım."
 @export var door_title: String = ""
 ## Etiketi dikeyde kaydır (yakın iki kapının etiketi üst üste binmesin diye).
 @export var label_dy: float = 0.0
 
 ## Oda adları tek kaynaktan: RoomManager.ROOM_TITLES_TR (HUD başlığı, hedef, harita, kapı etiketi).
+const NookCount := preload("res://scripts/world/nook_record.gd")
 const ROOM_TITLES: Dictionary = preload("res://scripts/autoload/room_manager.gd").ROOM_TITLES_TR
 
 const LOCKED_VARIANTS := [
@@ -203,8 +206,12 @@ func _ability_blocked() -> bool:
 	return required_ability != &"" and not bool(GameState.player_progress_knowledge.get(String(required_ability), false))
 
 
+func _nooks_missing() -> bool:
+	return required_nooks > 0 and NookCount.count() < required_nooks
+
+
 func is_locked() -> bool:
-	return _ability_blocked() or (required_puzzle != &"" and not PuzzleManager.is_solved(required_puzzle))
+	return _ability_blocked() or _nooks_missing() or (required_puzzle != &"" and not PuzzleManager.is_solved(required_puzzle))
 
 
 func _build_visuals() -> void:
@@ -303,6 +310,8 @@ func on_interact(by: Node) -> void:
 		## Yetenek kilidi sabit cümle kullanır; mühür kapılarındaki LOCKED_VARIANTS döngüsü aynı kalır.
 		if _ability_blocked():
 			msg = "Bu geçidi Gölge Atılması ile geç."
+		elif _nooks_missing():
+			msg = "Kayıtlar %d/%d. Geri dönüş köşelerinde eksik kayıtlar var." % [NookCount.count(), required_nooks]
 		## Ruh mührü: yetenek yoksa "nerede bulunur", varsa "nasıl açılır" söylenir (genel varyantlar yanıltmasın).
 		elif String(required_puzzle).begins_with("soul_seal"):
 			var has_slash := bool(GameState.player_progress_knowledge.get("ability_soul_slash", false))

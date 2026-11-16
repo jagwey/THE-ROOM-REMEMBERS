@@ -1,0 +1,198 @@
+[gd_scene load_steps=14 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
+[ext_resource type="Script" path="res://scripts/world/echo_altar.gd" id="altar"]
+[ext_resource type="Script" path="res://scripts/world/gate_blocker.gd" id="gate"]
+[ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore"]
+[ext_resource type="Script" path="res://scripts/world/pressure_plate.gd" id="plate"]
+[ext_resource type="Script" path="res://scripts/world/sequence_shrine.gd" id="shrine"]
+[ext_resource type="Script" path="res://scripts/world/soul_seal.gd" id="soul"]
+[ext_resource type="Script" path="res://scripts/world/sequence_step.gd" id="step"]
+[ext_resource type="Script" path="res://scripts/world/blood_thorn.gd" id="thorn"]
+[ext_resource type="Script" path="res://scripts/world/echo_trial.gd" id="trial"]
+
+[sub_resource type="RectangleShape2D" id="GateShape"]
+size = Vector2(32, 88)
+
+[sub_resource type="RectangleShape2D" id="Interact"]
+size = Vector2(48, 96)
+
+[sub_resource type="RectangleShape2D" id="PlateShape"]
+size = Vector2(44, 18)
+
+[node name="ExperimentTwinLab" type="Node2D"]
+script = ExtResource("room")
+room_id = &"experiment_twin_lab"
+region_id = &"experiment"
+room_width = 1280.0
+bg_region = "experiment"
+checkpoint = Vector2(120, 288)
+default_spawn = Vector2(120, 288)
+doors = [{"x": 40.0, "to": "experiment_circuit", "spawn": "from_experiment_twin_lab"}]
+
+[node name="Spawns" type="Node2D" parent="."]
+
+[node name="keeper_observe" type="Marker2D" parent="Spawns"]
+position = Vector2(640, 288)
+
+[node name="Interactive" type="Node2D" parent="."]
+
+[node name="RecordT1" type="Area2D" parent="Interactive"]
+position = Vector2(140, 288)
+script = ExtResource("lore")
+lore_id = &"twin_1"
+texture_path = "res://assets/props/photograph.png"
+sprite_scale = 0.5
+lines = PackedStringArray("Noroi|Denek 14 föyü: “İşlem sırası: önce tartı, sonra kesim.”", "Noroi|Altında: “Tartı iki ağırlık ister. Biri beden, biri yankı.”")
+evidence_title = "Denek 14 Föyü, Birinci Sayfa"
+evidence_body = "İşlem sırası: önce tartı, sonra kesim. Tartı iki ağırlık ister: beden ve yankı."
+evidence_section = "izler"
+
+[node name="TwinThorn" type="Area2D" parent="Interactive"]
+position = Vector2(200, 290)
+script = ExtResource("thorn")
+anchor_x = 280
+puzzle_hint = &"experiment_twin_lab_corpse"
+body_line = "Dikende ölürsem bedenim tartının ilk kefesinde kalır."
+solved_line = "Beden kefede; tartı bir ağırlık aldı."
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/TwinThorn"]
+shape = SubResource("Interact")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/TwinThorn"]
+texture_filter = 0
+centered = true
+
+[node name="TwinCorpsePlate" type="Area2D" parent="Interactive"]
+position = Vector2(280, 278)
+script = ExtResource("plate")
+collision_layer = 0
+collision_mask = 1
+puzzle_id = &"experiment_twin_lab_corpse"
+accept_player = false
+accept_stone = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/TwinCorpsePlate"]
+shape = SubResource("PlateShape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/TwinCorpsePlate"]
+texture_filter = 0
+centered = true
+
+[node name="RecordT2" type="Area2D" parent="Interactive"]
+position = Vector2(380, 288)
+script = ExtResource("lore")
+lore_id = &"twin_2"
+texture_path = "res://assets/props/photograph.png"
+sprite_scale = 0.5
+lines = PackedStringArray("Noroi|İkinci sayfa: “Kesimden sonra dosya kapatılır. Dosya en son gelir.”", "Noroi|Not: “Kesimi mühür engeller; mühür yalnız Ruh Kesimi ile çözülür.”")
+evidence_title = "Denek 14 Föyü, İkinci Sayfa"
+evidence_body = "Dosya en son kapatılır. Kesimi mühür engeller; mühür yalnız Ruh Kesimi ile çözülür."
+evidence_section = "izler"
+
+[node name="TwinEcho" type="Area2D" parent="Interactive"]
+position = Vector2(480, 268)
+script = ExtResource("altar")
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+monitorable = true
+puzzle_id = &"experiment_twin_lab_echo"
+intro_text = "Sunağa dokun, ikinci kefede bekle. Yankın tartıyı tutsun."
+solved_text = "Yankı kefeyi tutuyor."
+switch_kinds = PackedStringArray("plate")
+switch_positions = PackedVector2Array(150, 32)
+live_only = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/TwinEcho"]
+shape = SubResource("Interact")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/TwinEcho"]
+texture_filter = 0
+centered = true
+
+[node name="RecordT3" type="Area2D" parent="Interactive"]
+position = Vector2(720, 288)
+script = ExtResource("lore")
+lore_id = &"twin_3"
+texture_path = "res://assets/props/photograph.png"
+sprite_scale = 0.5
+lines = PackedStringArray("Noroi|Üçüncü sayfa, mühürlü: “Mühür kırılmadan kesim masası çalışmaz.”", "Noroi|Beden ve yankı kefedeyken mührü kesmeliyim.")
+evidence_title = "Denek 14 Föyü, Üçüncü Sayfa"
+evidence_body = "Üç aşama: Tartı, Kesim, Dosya. Tartı açıkken mühür kesilir; sıra değişmez."
+evidence_section = "izler"
+
+[node name="TwinSeal" type="StaticBody2D" parent="Interactive"]
+position = Vector2(820, 288)
+script = ExtResource("soul")
+puzzle_id = &"experiment_twin_lab_seal"
+refusal_line = "Mühür ruh istiyor; Ruh Kesimi için Yasak Kanat'a gitmeliyim."
+
+[node name="TwinGate" type="StaticBody2D" parent="Interactive"]
+position = Vector2(900, 268)
+script = ExtResource("gate")
+collision_layer = 1
+collision_mask = 0
+open_flag = &"experiment_twin_lab_open"
+puzzle_listen = &""
+puzzle_listen_all = PackedStringArray("experiment_twin_lab_corpse", "experiment_twin_lab_echo", "experiment_twin_lab_seal")
+ignore_world_flag = false
+latch_on_live = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/TwinGate"]
+shape = SubResource("GateShape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/TwinGate"]
+texture_filter = 0
+centered = true
+
+[node name="TwinShrine" type="Node2D" parent="Interactive"]
+script = ExtResource("shrine")
+puzzle_id = &"experiment_twin_lab"
+order = PackedStringArray("tarti", "kesim", "dosya")
+fail_line = "Yanlış aşama. Tezgâh sıfırlandı."
+success_line = "Aşamalar sırayla işlendi. Dosya açıldı."
+evidence_id = "ev_twin_denek14_extra"
+evidence_title = "Denek 14 Dosyası, Ek Sayfa"
+evidence_body = "Denek 14 ek sayfası: tartı, kesim, dosya. Altta el yazısı: kayıt silinmeyecek, biri hatırlamak zorunda."
+require_live = PackedStringArray("experiment_twin_lab_corpse", "experiment_twin_lab_echo", "experiment_twin_lab_seal")
+require_line = "Tezgâh hâlâ ağırlık ve mühür bekliyor."
+
+[node name="Step_dosya" type="Area2D" parent="Interactive/TwinShrine"]
+position = Vector2(1000, 288)
+script = ExtResource("step")
+step_id = "dosya"
+label = "Dosya Masası"
+texture_path = "res://assets/props/ledger.png"
+sprite_scale = 0.5
+tint = Color(0.75, 0.55, 0.8, 1)
+
+[node name="Step_tarti" type="Area2D" parent="Interactive/TwinShrine"]
+position = Vector2(1090, 288)
+script = ExtResource("step")
+step_id = "tarti"
+label = "Tartı"
+texture_path = "res://assets/props/ledger.png"
+sprite_scale = 0.5
+tint = Color(0.6, 0.8, 0.9, 1)
+
+[node name="Step_kesim" type="Area2D" parent="Interactive/TwinShrine"]
+position = Vector2(1180, 288)
+script = ExtResource("step")
+step_id = "kesim"
+label = "Kesim Masası"
+texture_path = "res://assets/props/ledger.png"
+sprite_scale = 0.5
+tint = Color(0.9, 0.6, 0.6, 1)
+
+[node name="EchoTrial" type="Area2D" parent="Interactive"]
+position = Vector2(1245, 268)
+script = ExtResource("trial")
+trial_room = &"experiment_twin_lab"
+shrine_path = NodePath("../TwinShrine")
+order = PackedStringArray("kesim", "tarti", "dosya")
+time_limit = 60.0
+wrong_penalty = 6.0
+intro_line = "Terazi hatayı kayda geçiriyor; her yanlış adım süreni yer."
+reward_title = "Yankı Sınavı: İkiz Laboratuvarı"
+reward_body = "Terazi bu kez hatayı affetmedi ama doğruyu iki kere tarttı. Çift yürüyen deney sonunda tek sesle konuştu."

@@ -1,6 +1,7 @@
 [gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
+[ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore_story"]
 [ext_resource type="Script" path="res://scripts/world/ordered_relic.gd" id="relic"]
 [ext_resource type="Script" path="res://scripts/world/pressure_plate.gd" id="plate"]
 [ext_resource type="Script" path="res://scripts/world/blood_thorn.gd" id="thorn"]
@@ -138,3 +139,23 @@ centered = true
 position = Vector2(0, -18)
 scale = Vector2(0.45, 0.45)
 modulate = Color(0.9, 0.86, 0.92, 1)
+
+[node name="IntakeLedger" type="Area2D" parent="Interactive"]
+position = Vector2(1120, 288)
+script = ExtResource("lore_story")
+lore_id = &"intake_ledger"
+texture_path = "res://assets/props/ledger.png"
+sprite_scale = 0.45
+dialogue_room = &"experiment_intake"
+dialogue_set = &"intake_ledger"
+repeat_line = "Noroi|On üç satır çizik. On dördüncüsü hâlâ açık."
+
+[node name="IntakeSlip" type="Area2D" parent="Interactive"]
+position = Vector2(160, 288)
+script = ExtResource("lore_story")
+lore_id = &"intake_slip"
+texture_path = "res://assets/props/photograph.png"
+sprite_scale = 0.45
+dialogue_room = &"experiment_intake"
+dialogue_set = &"intake_slip"
+repeat_line = "Noroi|Arka yüzde iki el. Biri diğerinin cebine bir şey bırakıyor."

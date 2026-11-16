@@ -13,6 +13,8 @@ var _values: PackedInt32Array = PackedInt32Array()
 var _dials: Array = []
 var _value_labels: Array = []
 var _solved: bool = false
+## Yankı Sınavı: çözülmüş odada tek kadran geçici olarak döner; çözüme/kayda dokunmaz.
+var _trial_index: int = -1
 
 
 class Dial extends Area2D:
@@ -78,8 +80,38 @@ func values() -> PackedInt32Array:
 	return _values
 
 
+func begin_trial(index: int) -> void:
+	if index < 0 or index >= _values.size():
+		return
+	_trial_index = index
+	_values[index] = 12
+	_refresh(index)
+
+
+func end_trial() -> void:
+	if _trial_index < 0:
+		return
+	var i := _trial_index
+	_trial_index = -1
+	if i < _values.size() and i < targets.size():
+		_solved = _solved or PuzzleManager.is_solved(puzzle_id)
+		_values[i] = targets[i] if _solved else 12
+		_refresh(i)
+
+
 func turn(index: int) -> void:
-	if _solved or index < 0 or index >= _values.size():
+	if index < 0 or index >= _values.size():
+		return
+	if _trial_index >= 0:
+		if index != _trial_index:
+			return
+		_values[index] = 1 if _values[index] >= 12 else _values[index] + 1
+		_refresh(index)
+		var tam := get_node_or_null("/root/AudioManager")
+		if tam:
+			tam.play_sfx(&"plate_press")
+		return
+	if _solved:
 		return
 	_values[index] = 1 if _values[index] >= 12 else _values[index] + 1
 	_refresh(index)

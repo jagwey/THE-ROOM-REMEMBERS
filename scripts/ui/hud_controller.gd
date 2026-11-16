@@ -290,6 +290,15 @@ func _apply_default_hint() -> void:
 	hint_label.visible = not (MobileInputManager.is_touch_ui() or _touch_seen)
 
 
+## Yazı boyutu ayarı (Normal/Büyük): yalnız diyalog metni; sayfalama yeni boyuta göre yeniden kurulur.
+func apply_text_size_setting(resync: bool = true) -> void:
+	if dialogue_text == null:
+		return
+	UiTheme.apply_outlined(dialogue_text, int(round(float(UiTheme.BODY) * GameSettings.font_scale())), false)
+	if resync:
+		_sync_dialogue_metrics()
+
+
 func _sync_dialogue_metrics() -> void:
 	if dialogue_text == null:
 		return

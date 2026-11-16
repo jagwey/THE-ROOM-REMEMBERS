@@ -1,11 +1,14 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
+[ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore_story"]
 [ext_resource type="Script" path="res://scripts/world/ability_pickup.gd" id="ability"]
 [ext_resource type="Script" path="res://scripts/world/npc_actor.gd" id="npc"]
 [ext_resource type="Script" path="res://scripts/world/curse_barrier.gd" id="barrier"]
 [ext_resource type="Script" path="res://scripts/world/memory_seal_point.gd" id="memory_seal_pt"]
 [ext_resource type="Script" path="res://scripts/world/reach_marker.gd" id="reach"]
+[ext_resource type="Script" path="res://scripts/world/room_touch.gd" id="touch"]
+[ext_resource type="Script" path="res://scripts/world/room_polish.gd" id="polish"]
 
 [sub_resource type="RectangleShape2D" id="Interact"]
 size = Vector2(40, 48)
@@ -20,7 +23,7 @@ region_id = &"mirrors"
 room_width = 960.0
 bg_region = "mirrors"
 checkpoint = Vector2(120, 288)
-doors = [{"x": 40.0, "to": "mirrors_labyrinth", "spawn": "from_mirrors_shrine"}, {"x": 920.0, "to": "mirrors_1927", "spawn": "from_mirrors_shrine", "req": "mirrors_shrine_trial", "msg": "Gölgeyle tapınağı geçmeliyim."}]
+doors = [{"x": 40.0, "to": "mirrors_labyrinth", "spawn": "from_mirrors_shrine"}, {"x": 920.0, "to": "mirrors_1927", "spawn": "from_mirrors_shrine", "req": "mirrors_shrine_trial", "msg": "Gölge Atılması'yla tapınağı geçmeliyim."}]
 floor_gaps = PackedVector2Array(660.0, 740.0)
 
 [node name="Spawns" type="Node2D" parent="."]
@@ -92,3 +95,26 @@ room_id = &"mirrors_shrine"
 position = Vector2(780.0, 288.0)
 script = ExtResource("reach")
 puzzle_id = &"mirrors_shrine_trial"
+
+[node name="ShrineBowl" type="Area2D" parent="Interactive"]
+position = Vector2(700, 288)
+script = ExtResource("lore_story")
+lore_id = &"shrine_bowl"
+texture_path = "res://assets/props/candles.png"
+sprite_scale = 0.45
+dialogue_room = &"mirrors_shrine"
+dialogue_set = &"shrine_bowl"
+repeat_line = "Noroi|Kuru bir kandil. İçinde fitil ve bir yaprak kalmış."
+
+[node name="RoomTouch" type="Node2D" parent="."]
+position = Vector2(400,170)
+script = ExtResource("touch")
+ambient_sfx = &"curse_whisper"
+ambient_db = -28.0
+ambient_pitch = 0.6
+ambient_min = 9.0
+ambient_max = 16.0
+
+[node name="RoomPolish" type="Node2D" parent="."]
+script = ExtResource("polish")
+kind = &"shrine_shadow"

@@ -20,7 +20,7 @@ func _ready() -> void:
 func _build_ui() -> void:
 	var panel := GothicModalPanel.new()
 	panel.name = "Panel"
-	panel.setup("Unutulmuş sayfa — sırayı kur", Vector2(470, 330))
+	panel.setup("Unutulmuş sayfa — sırayı kur", Vector2(470, 380))
 	add_child(panel)
 	panel.add_label("Önce deney, sonra kapı, sonda mühür. Kartları böyle diz.", UiTheme.HINT)
 	for i in 3:
@@ -75,11 +75,14 @@ func _hide_puzzle() -> void:
 func _label_for(id: String) -> String:
 	match id:
 		"experiment_started":
-			return "Deney başlatıldı"
+			return "Kayıt I — Deney başlatıldı
+İlk denek hücreye alındı."
 		"door_closed":
-			return "Kapı kapatıldı"
+			return "Kayıt II — Kapı kapatıldı
+Çıkış, içeridekilerin ardından mühürlendi."
 		"seal_engaged":
-			return "Mühür devreye girdi"
+			return "Kayıt III — Mühür devreye girdi
+Kapı artık kimseye açılmaz."
 		_:
 			return id
 

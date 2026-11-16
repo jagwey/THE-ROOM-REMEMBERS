@@ -1,10 +1,14 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=12 format=3]
 
+[ext_resource type="Script" path="res://scripts/world/nook_record.gd" id="nook_rec"]
+[ext_resource type="Script" path="res://scripts/world/dash_line.gd" id="nook_gate"]
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
 [ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore"]
 [ext_resource type="Script" path="res://scripts/world/echo_point.gd" id="echo"]
 [ext_resource type="Script" path="res://scripts/world/crossing_zone.gd" id="cross"]
 [ext_resource type="Script" path="res://scripts/world/blood_thorn.gd" id="thorn"]
+[ext_resource type="Script" path="res://scripts/world/room_touch.gd" id="touch"]
+[ext_resource type="Script" path="res://scripts/world/room_polish.gd" id="polish"]
 
 [sub_resource type="RectangleShape2D" id="Interact"]
 size = Vector2(40, 48)
@@ -41,9 +45,9 @@ script = ExtResource("lore")
 lore_id = &"balcony_view"
 texture_path = "res://assets/props/telescope.png"
 sprite_scale = 0.9
-lines = PackedStringArray("Noroi|Kırık bir dürbün; camın ötesinde zemin yok.", "Noroi|Tesis karanlık bir boşlukta asılı duruyor, dışarısı yok.", "Noroi|Gözümde bir şimşek: beyaz önlük, yüzü kazınmış biri emir veriyor.", "Shilda|Bu balkon dışarıyı değil, bizi tutan boşluğu gösterir.", "Noroi|Sağdaki taş kopmuş. Sütunlar arası dar; bedenim basamak olursa karşı kıyıya geçerim.")
+lines = PackedStringArray("Noroi|Kırık bir dürbün; camın ötesinde zemin yok.", "Noroi|Tesis karanlık bir boşlukta asılı duruyor. Dışarısı yok.", "Noroi|Gözümde bir şimşek çaktı: beyaz önlüklü, yüzü kazınmış biri emir veriyor.", "Shilda|Orası dışarı değil. Burayı tutan boşluk bu.", "Noroi|Sağdaki taş kopmuş. Bedenim basamak olursa sütunlardan karşıya geçerim.")
 evidence_title = "Gözlem Balkonu"
-evidence_body = "Dürbünden bakınca tesisin karanlık bir boşlukta asılı durduğu görülüyor. Dışarısı yok; gözümde yüzü kazınmış bir yetkili çakıyor."
+evidence_body = "Dürbünün ötesinde tesis, karanlık bir boşlukta asılı duruyor. Dışarısı yok. Gözümde yüzü kazınmış bir yetkili beliriyor."
 evidence_section = "izler"
 focus_zoom = true
 
@@ -54,7 +58,7 @@ lore_id = &"balcony_photo"
 texture_path = "res://assets/props/photograph.png"
 lines = PackedStringArray("Noroi|Yırtık bir fotoğraf: iki kişi, biri ben, ötekinin yüzü silinmiş.", "Noroi|Arkasında bir not var: “Sesini kaybetmeyeceğim.”", "Noroi|Köşede silik bir tarih damgası var, yılı okunmuyor.")
 evidence_title = "Silinmiş Yüz"
-evidence_body = "Fotoğrafta yanımdaki kişinin yüzü kazınmış. Notta: Sesini kaybetmeyeceğim."
+evidence_body = "Fotoğrafta yanımdaki kişinin yüzü silinmiş. Arkasındaki not: “Sesini kaybetmeyeceğim.”"
 evidence_section = "notlar"
 
 [node name="BalconyTelescope" type="Area2D" parent="Interactive"]
@@ -122,7 +126,69 @@ position = Vector2(820, 290)
 script = ExtResource("thorn")
 anchor_x = 770.0
 puzzle_hint = &"balcony_step_far"
-body_line = "Dönüş için de bir basamak lazım. Bedenim sütunun dibinde kalır."
+body_line = "Dönüşte de bir basamak gerek. Bedenim sütunun dibinde kalır."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/StepThornFar"]
 shape = SubResource("PlateShape")
+
+[node name="BalconyRail" type="Area2D" parent="Interactive"]
+position = Vector2(700, 288)
+script = ExtResource("lore")
+lore_id = &"balcony_rail"
+texture_path = "res://assets/props/photograph.png"
+sprite_scale = 0.45
+dialogue_room = &"awakening_balcony"
+dialogue_set = &"balcony_rail"
+repeat_line = "Noroi|Soğuk korkuluk. Aşağıda yalnız sis var."
+
+[node name="NookFrag" type="Area2D" parent="Interactive"]
+position = Vector2(246.0, 288.0)
+script = ExtResource("nook_rec")
+lore_id = &"nook_balcony_a"
+role = "fragment"
+ability = "dash"
+nook_id = "balcony"
+texture_path = "res://assets/props/photograph.png"
+sprite_scale = 0.55
+lines = PackedStringArray("Noroi|Korkuluktaki eski kaşkolda kâğıt: “1927, nöbet S.'de.”", "Noroi|Kâğıt ortadan kesilmiş. Öteki yarısı kırmızı çizginin ardında.")
+evidence_title = "Kaşkol Notu"
+evidence_body = "Kaşkolun cebinde 1927 nöbetini S.'ye veren bir kâğıt var; yarısı çizginin ardında."
+evidence_section = "izler"
+
+[node name="NookLine" type="Area2D" parent="Interactive"]
+position = Vector2(761.0, 288.0)
+script = ExtResource("nook_gate")
+puzzle_id = &"nook_balcony_gate"
+refusal_line = "Balkonda kırmızı bir çizgi var; Gölge Atılması için Ayna Tapınağı'na gitmeliyim."
+
+[node name="NookRecord" type="Area2D" parent="Interactive"]
+position = Vector2(551.0, 288.0)
+script = ExtResource("nook_rec")
+lore_id = &"nook_balcony_b"
+role = "record"
+ability = "dash"
+nook_id = "balcony"
+gate_puzzle = &"nook_balcony_gate"
+frag_id = "nook_balcony_a"
+need_line = "Mektup yarım; önce korkuluktaki kaşkolun cebine bakmalıyım."
+texture_path = "res://assets/props/ledger.png"
+sprite_scale = 0.7
+lines = PackedStringArray("Noroi|Çizginin ardında kısa bir mektup: “Anne, buradan gökyüzü görünüyor.”", "Noroi|Altında: “Burası bana ev gibi. İmza: Araştırma Yardımcısı S.”", "Shilda|Anne… Bu kelime içimde bir yere çarptı, sonra sustu.")
+evidence_title = "Balkon Mektubu"
+evidence_body = "Araştırma Yardımcısı S., balkondan gökyüzünün göründüğünü ve burasının ev gibi geldiğini yazmış."
+evidence_section = "izler"
+
+[node name="RoomTouch" type="Node2D" parent="."]
+position = Vector2(600,150)
+script = ExtResource("touch")
+ambient_sfx = &"breath"
+ambient_db = -22.0
+ambient_pitch = 0.5
+ambient_min = 7.0
+ambient_max = 14.0
+flash = true
+
+[node name="RoomPolish" type="Node2D" parent="."]
+script = ExtResource("polish")
+kind = &"balcony_vignette"
+source_path = NodePath("../Interactive/Telescope")

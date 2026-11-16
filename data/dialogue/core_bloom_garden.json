@@ -1,0 +1,12 @@
+{
+  "room": "core_bloom_garden",
+  "sets": {
+    "bloom_facing": [
+      {"s": "Noroi", "t": "Çiçeklerin hepsi aynı yöne dönük. Bana doğru."},
+      {"s": "@shilda", "t": "Sana. Hep sana döndüler."},
+      {"s": "Noroi", "t": "Neden?"},
+      {"s": "@shilda", "t": "Sen onları fark ettiğinde ben ilk kez fark edildim."},
+      {"s": "Noroi", "t": "O halde ikimiz de buradayız. Artık yalnız değiliz."}
+    ]
+  }
+}

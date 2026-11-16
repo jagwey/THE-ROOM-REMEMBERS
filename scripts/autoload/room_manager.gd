@@ -16,6 +16,13 @@ const ROOM_ORDER: PackedStringArray = [
 	"experiment_cells", "experiment_intake", "experiment_circuit", "experiment_authority", "experiment_quarantine", "experiment_core_conduit", "experiment_observation",
 	"mirrors_reverse", "mirrors_dual", "mirrors_gallery", "mirrors_unbroken", "mirrors_labyrinth", "mirrors_shrine", "mirrors_1927",
 	"core_threshold", "core_ascent", "core_seal_chamber", "core_memory_vault", "core_bloom_garden", "core",
+	"awakening_bellroom",
+	"decay_rootworks",
+	"library_archive_vault",
+	"experiment_twin_lab",
+	"mirrors_inverse_hall",
+	"core_last_record",
+	"awakening_s_room",
 ]
 const ROOM_TITLES_TR := {
 	"awakening": "Uyanış", "awakening_balcony": "Gözlem Balkonu", "awakening_crypt": "İlk Bedenler Mahzeni",
@@ -30,6 +37,13 @@ const ROOM_TITLES_TR := {
 	"mirrors_labyrinth": "Yansıma Labirenti", "mirrors_shrine": "Ayna Tapınağı", "mirrors_1927": "1927 Gecesi",
 	"core_threshold": "Son Eşik", "core_ascent": "Son Merdiven", "core_seal_chamber": "Mühür Odası", "core_memory_vault": "Hafıza Kasası",
 	"core_bloom_garden": "Çiçek Bahçesi", "core": "Çekirdek",
+	"awakening_bellroom": "Sessiz Çanlar",
+	"decay_rootworks": "Kök Damarları",
+	"library_archive_vault": "Kayıt Mahzeni",
+	"experiment_twin_lab": "İkiz Laboratuvarı",
+	"mirrors_inverse_hall": "Ters Salon",
+	"core_last_record": "Son Kayıt",
+	"awakening_s_room": "S.'nin Odası",
 }
 
 ## Oda meta: bounds, isimli spawn, checkpoint (spawn yoksa), atmosfer klasörü, sahne kökü.

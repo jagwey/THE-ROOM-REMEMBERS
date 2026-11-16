@@ -6,7 +6,12 @@ extends Area2D
 @export var enter_line: String = ""
 
 var _inside: bool = false
+@export var exit_line: String = ""
+@export var tint_color: Color = Color(0.55, 0.7, 1.0, 0.10)
+
+var _spoke_exit: bool = false
 var _spoke: bool = false
+var _tint: ColorRect = null
 
 
 func _ready() -> void:
@@ -21,6 +26,7 @@ func _ready() -> void:
 		rect.size = size
 		cs.shape = rect
 		add_child(cs)
+	_build_reflection_tint()
 	body_entered.connect(_on_enter)
 	body_exited.connect(_on_exit)
 
@@ -40,6 +46,23 @@ func _on_exit(b: Node) -> void:
 		return
 	_inside = false
 	b.set("invert_x", false)
+	if exit_line != "" and _spoke and not _spoke_exit:
+		_spoke_exit = true
+		DialogueManager.say("Noroi", exit_line)
+
+
+## Yansıma görseli: bölge zemini soluk mavi tonlu, hafifçe nefes alan bir şerit.
+func _build_reflection_tint() -> void:
+	_tint = ColorRect.new()
+	_tint.color = tint_color
+	_tint.size = Vector2(size.x, 36)
+	_tint.position = Vector2(-size.x * 0.5, size.y * 0.5 - 20)
+	_tint.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_tint.z_index = -1
+	add_child(_tint)
+	var tw := create_tween().set_loops()
+	tw.tween_property(_tint, "modulate:a", 0.45, 1.4)
+	tw.tween_property(_tint, "modulate:a", 1.0, 1.4)
 
 
 func _exit_tree() -> void:
