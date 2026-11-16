@@ -19,7 +19,7 @@
   <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS"><img src="https://img.shields.io/badge/Kaynak-v1.18.4-8B0000?style=for-the-badge&logo=godotengine&logoColor=white" alt="Kaynak v1.18.4" /></a>
   <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases"><img src="https://img.shields.io/badge/Resmi_İndirme-GitHub_Releases-5c1d3d?style=for-the-badge&logo=github" alt="All Releases" /></a>
   <a href="https://godotengine.org/"><img src="https://img.shields.io/badge/Godot_Engine-4.7.2-478CBF?style=for-the-badge&logo=godotengine&logoColor=white" alt="Godot 4.7.2" /></a>
-  <img src="https://img.shields.io/badge/Dünya-6_Bölge_·_40_Oda_·_Bölüm_I-2b1838?style=for-the-badge" alt="World Scope" />
+  <img src="https://img.shields.io/badge/Dünya-6_Bölge_·_47_Oda_·_Bölüm_I-2b1838?style=for-the-badge" alt="World Scope" />
   <img src="https://img.shields.io/badge/Platform-Android_arm64_%7C_PC-1f3a2b?style=for-the-badge" alt="Platform" />
 </p>
 
@@ -37,19 +37,33 @@
 
 > *"Gözlerin aralanır. Taş soğuk, tavan yüksek, adın yabancı. Sen öldüğünde hafızan sıfırlanır — fakat oda bıraktığın her bedeni, kırdığın her mührü ve verdiğin her sözü hatırlar."*
 
-**THE ROOM REMEMBERS**, ölümün bir yenilgi değil, **dünyayı değiştiren fiziksel ve anlatısal bir bulmaca aracı** olduğu karanlık gotik bir 2D aksiyon-platform oyunudur.
+**THE ROOM REMEMBERS**, ölümün yenilgi değil, **dünyayı değiştiren bir bulmaca aracı** olduğu karanlık gotik bir 2D aksiyon-platform oyunudur. Yan görünüşlü, piksel sanatı bir yeraltı tesisinde geçer; hafızanın, lanetin ve bedenlerin oyunudur.
 
-Oyuncu **Noroi** olarak ne adını ne de neden bu yıkık ve zamandan kopuk yeraltı tesisinde tutulduğunu bilerek uyanır. Her ölümde Noroi'nin o yaşamdaki hatıraları silinir; fakat **oda hiçbir şeyi unutmaz**. Önceki yaşamlarından kalan kendi cansız bedenlerin odalarda kalıcı olarak durur:
-* Üzerlerine basıp yüksek çıkıntılara tırmanabilirsin (`one_way_collision`),
-* Ağır taş basınç plakalarının üstüne itip kapıları açık tutabilirsin (`anchoring`),
-  * **Canlı plaka kuralı:** plaka yalnızca taş/ceset ağırlığıyla basılır (oyuncu tek başına basamaz); kapı ağırlık durdukça açıktır, ağırlık kalkınca kapanır. Kapıdan karşı tarafa geçildiği anda bulmaca kalıcı çözülür (*geçiş kilidi*). Eski kayıtlarda çözülmüş bulmaca çözülü kalır.
-  * İstisna: `latch_on_press` plakası (yalnız Kripta `BedPlate`) basıldığı anda kalıcı çözülür; `accept_player` ve `latch_on_press` beyaz listesi `plate_rule_audit` ile denetlenir.
-  * Faz 2 odalar 07-10: Sarmaşık (çiçekli ceset `vine_gate`'i 64 px içinde yakar, `decay_vines`), Ağırlık (kapı `decay_weight_latch` VE yalnız-ceset `decay_weight_corpse` ister; eski kayıtta latch yeter), Sera (3 yalnız-ceset saksı plakası, doğrusu `decay_greenhouse_pot`; `trace_shade` doğruyu gösterir, `WallInscription` 7-2-9 kaynağı; kapı geçişte eski `decay_greenhouse`'i de çözer), Shilda Duvarı (x200-480 lanet bulutu, düz yürüyüş ~%72 lanet, ceset kalkanıyla ~%10; `FlowerRoom` artık `echo_point`, `shilda_flowers_echo`; kapılar x1120/x1400; `WallThorn` ve yanlış saksı dikenleri kendi çözülmeyen ipucu id'siyle her zaman ölümcül, eski kayıtta çözülmüş oda günlükte ceset ipucu göstermez).
-  * **Son Merdiven (`core_ascent`) üç sınav:** soldan sağa Ruh Kesimi mührü (`core_ascent_seal`), 120 px yüksekliğinde Gölge Atılması perdesi (zıplayarak aşılamaz; zıplama tepesi ~58 px; boşluk yok, `core_ascent_gap` ID'si yalnız kayıt uyumu için), yankı plakası (`core_ascent_echo`: sunak + plaka + kapı). Ret repliği yeteneğin alındığı odayı adlandırır (Yasak Kanat, Ayna Tapınağı); `ascent_audit` denetler.
-  * **Metin ve veri tutarlılığı (Faz 0 T5):** Yankı Sunağı kayıt süresi her yerde sekiz saniyedir; Çiçeklenme bahçesi ipucu "önce en çok, sonra en az, sonra kalan"; Unutulmuş Sayfa ipucu deney, kapı, mühür sırasını verir; hücre çıkış kapısı `ForwardIntake`; kullanılmayan `core_portal.gd` kaldırıldı.
-  * **Ayna Tapınağı kapısı:** artık `mirrors_labyrinth` ileri kapısı (başlık "Ayna Tapınağı", nabız atan `DoorMark`); `door_audit` bunu denetler. (Eski: `mirrors_unbroken` yan kapısı.)
-* Son 3 saniyelik mor **Yankı Tekrarlarını (Echo Replay)** izleyerek ölüm anındaki sırları çözebilirsin,
-* **Beyaz Bekçi Shilda**'nın bedenlerine bıraktığı kızıl ölüm çiçeklerinin ışığıyla karanlıkta gizlenen antik mühürleri ortaya çıkarabilirsin.
+**Noroi** adını bilmeden, neden bu yıkık ve zamandan kopuk tesiste tutulduğunu bilmeden uyanır. Her ölümde o yaşamdaki hatıraları silinir, ama **oda hiçbir şeyi unutmaz**: öldüğün yerde bedenin kalır, açtığın kapılar açık kalır, çözdüğün bulmacalar çözülü kalır. Tesisi beyaz bir muhafız, **Shilda**, bekler; bedenlerinin başında yas tutar, onlara kızıl çiçekler bırakır. Duvarlardaki sayfalar ve kayıtlar ise çok daha eski iki geceye, **1927** ve **1995**'e işaret eder.
+
+Altı bölgeyi (Uyanış, Çürüme, Kütüphane, Deney, Aynalar, Çekirdek) **47 oda** boyunca geçersin. Ana yol yaklaşık 65 dakika sürer; yan yollar, derin odalar, sınavlar ve gizli kayıtlarla tam bir oynayış yaklaşık **190 dakikadır**. Hikâye tek bir finalle biter: **BÖLÜM I SONU**.
+
+**Ne yaparsın?**
+* **Ölürsün ve bedenin kalır.** Cesetlerin platform olur, basınç plakalarına ağırlık verir, ışık taşır; plaka bulmacalarının çoğu bunu ister.
+* **Yankıyı izlersin.** Yankı, geçmiş yaşamının tekrarıdır; bir sunağa kaydedip kendi kendinle iş birliği yaparsın.
+* **Dövüşür ve süzülürsün.** 3'lü kılıç kombosu, Gölge Atılması (dash) ve Ruh Kesimi (soul slash).
+* **Bulmaca çözersin.** Sıra bulmacaları, saksı ve ağırlık düzenekleri, aynalı yankılar, şifreli mühürler; her odada türetilebilir ipuçları vardır.
+* **Laneti yönetirsin.** Diken ve ölüm laneti biriktirir; mühür noktaları onu emer.
+* **Günlükle ilerlersin.** Günlükte ipuçları, harita ve sayaçlar (Kayıtlar 8, Sınavlar 6, Anılar 5) durur; Harita sekmesinde ziyaret ettiğin bir odaya dokunarak hızlı seyahat edersin. Kayıtlar 8/8 olunca **S.'nin Odası** açılır.
+* **Oyunu ayarlarsın.** Müzik ve efekt sesi, yazı hızı, büyük yazı, ekran sarsıntısı ve ipucu seviyesi ayarlardan değişir.
+* **Güncellenirsin.** Oyun açılışta resmî sürüm deposuna bakar; yeni sürüm varsa başlık ekranında "Güncelle" düğmesi görünür.
+
+<details>
+<summary>Teknik ayrıntılar: plaka kuralı ve bölge bulmacaları (geliştirici notları)</summary>
+
+* **Canlı plaka kuralı:** plaka yalnızca taş/ceset ağırlığıyla basılır (oyuncu tek başına basamaz); kapı ağırlık durdukça açıktır, ağırlık kalkınca kapanır. Kapıdan karşı tarafa geçildiği anda bulmaca kalıcı çözülür (*geçiş kilidi*). Eski kayıtlarda çözülmüş bulmaca çözülü kalır.
+* İstisna: `latch_on_press` plakası (yalnız Kripta `BedPlate`) basıldığı anda kalıcı çözülür; `accept_player` ve `latch_on_press` beyaz listesi `plate_rule_audit` ile denetlenir.
+* Faz 2 odalar 07-10: Sarmaşık (çiçekli ceset `vine_gate`'i 64 px içinde yakar, `decay_vines`), Ağırlık (kapı `decay_weight_latch` VE yalnız-ceset `decay_weight_corpse` ister; eski kayıtta latch yeter), Sera (3 yalnız-ceset saksı plakası, doğrusu `decay_greenhouse_pot`; `trace_shade` doğruyu gösterir, `WallInscription` 7-2-9 kaynağı; kapı geçişte eski `decay_greenhouse`'i de çözer), Shilda Duvarı (x200-480 lanet bulutu, düz yürüyüş ~%72 lanet, ceset kalkanıyla ~%10; `FlowerRoom` artık `echo_point`, `shilda_flowers_echo`; kapılar x1120/x1400; `WallThorn` ve yanlış saksı dikenleri kendi çözülmeyen ipucu id'siyle her zaman ölümcül, eski kayıtta çözülmüş oda günlükte ceset ipucu göstermez).
+* **Son Merdiven (`core_ascent`) üç sınav:** soldan sağa Ruh Kesimi mührü (`core_ascent_seal`), 120 px yüksekliğinde Gölge Atılması perdesi (zıplayarak aşılamaz; zıplama tepesi ~58 px; boşluk yok, `core_ascent_gap` ID'si yalnız kayıt uyumu için), yankı plakası (`core_ascent_echo`: sunak + plaka + kapı). Ret repliği yeteneğin alındığı odayı adlandırır (Yasak Kanat, Ayna Tapınağı); `ascent_audit` denetler.
+* **Metin ve veri tutarlılığı (Faz 0 T5):** Yankı Sunağı kayıt süresi her yerde sekiz saniyedir; Çiçeklenme bahçesi ipucu "önce en çok, sonra en az, sonra kalan"; Unutulmuş Sayfa ipucu deney, kapı, mühür sırasını verir; hücre çıkış kapısı `ForwardIntake`; kullanılmayan `core_portal.gd` kaldırıldı.
+* **Ayna Tapınağı kapısı:** artık `mirrors_labyrinth` ileri kapısı (başlık "Ayna Tapınağı", nabız atan `DoorMark`); `door_audit` bunu denetler. (Eski: `mirrors_unbroken` yan kapısı.)
+
+</details>
 
 <p align="center">
   <img src="media/readme/01-awakening.png" alt="Uyanış Odası — Noroi, Cep Saati ve Shilda" width="840" />
@@ -104,7 +118,7 @@ flowchart TD
 
 ### 2. Godot 4.7 Engine Sistem Mimarisi & Autoload Hub
 
-Oyunun tüm alt sistemleri, 14 adet hafif ve otonom Autoload modülü üzerinden haberleşir:
+Oyunun tüm alt sistemleri, 17 adet hafif ve otonom Autoload modülü üzerinden haberleşir:
 
 ```mermaid
 flowchart LR
@@ -119,18 +133,21 @@ flowchart LR
         DiaM["DialogueManager<br/>(Gotik Diyalog Sistemi)"]
         MIM["MobileInputManager<br/>(Dokunmatik HUD)"]
         UC["UpdateChecker<br/>(GitHub API Releases)"]
+        EchoM["EchoManager<br/>(Yankı Kayıt & Tekrar)"]
+        EndM["EndingManager<br/>(BÖLÜM I SONU)"]
+        Misc["AudioManager · UiGate · UiTheme · Palette<br/>(Ses, Arayüz Kilidi, Tema, Renk)"]
     end
 
     subgraph World["🏰 Dünya ve Karakterler"]
         Player["Noroi (PlayerController)<br/>• Kombo / Dash / Ruh Kesimi"]
         Keeper["Shilda (KeeperController)<br/>• 5 Sütunlu Güven AI"]
-        Rooms["40 Bağlantılı Oda<br/>(BuiltRoom & Parallax)"]
+        Rooms["47 Bağlantılı Oda<br/>(BuiltRoom & Parallax)"]
         Doors["Gothic Door & Transition<br/>(Deadlock-Free Geçiş)"]
     end
 
     subgraph UI["📱 Gotik Arayüz (scripts/ui/)"]
         HUD["Gothic HUD<br/>(Kalpler, Lanet Barı)"]
-        Journal["Journal & Map<br/>(Kayıtlar, İpuçları, Atlas)"]
+        Journal["Journal & Map<br/>(Kayıtlar/Sınavlar/Anılar, Hızlı Seyahat)"]
         Title["TitleScreen<br/>(Atmosferik Menü & Güncelleme)"]
     end
 
@@ -148,22 +165,36 @@ flowchart LR
     MIM --> HUD
     Keeper --> DiaM
     Title --> UC
+    Player -->|Kayıt Al| EchoM
+    EchoM --> CM
+    Rooms -->|Final Odası| EndM
 ```
+
+| Klasör | Rolü |
+| :--- | :--- |
+| `scripts/autoload/` | 17 global yönetici (`game_state`, `room_manager`, `death_manager`, `corpse_manager`, `curse_manager`, `echo_manager`, `puzzle_manager`, `dialogue_manager`, `dialogue_data`, `save_manager`, `ending_manager`, `mobile_input_manager`, `update_checker`, `audio_manager`, `ui_gate`, `ui_theme`, `palette`). `game_settings.gd` otomatik yüklenmez; ayarları saklayan statik sınıftır. |
+| `scripts/player/`, `scripts/keeper/`, `scripts/camera/` | Noroi (`player_controller`, `soul_slash_wave`), Shilda (`keeper_controller`), takip kamerası. |
+| `scripts/world/` | Oda bileşenleri: `built_room`, `room_transition`, `pressure_plate`, `corpse`, `echo_altar`, `echo_trial` (Yankı Sınavı), `memory_shrine` (Kırık Anı), `s_room_shrine`, `nook_record` (köşe Kayıtları), `dash_line`, `room_polish`, `room_touch` ve bulmaca parçaları. |
+| `scripts/story/` | Kampanya hedefleri, final dizisi, ana hikâye odaları (`campaign_objectives`, `final_sequence`). |
+| `scripts/ui/` | HUD, günlük (`journal_ui`, `journal_map`), başlık ekranı, oturum menüsü, bölge başlık kartı, mobil dokunmatik düğmeleri. |
+| `scripts/dev/` | Headless denetimler ve yakalama araçları (aşağıdaki QA bölümü). |
+
+Kayıt `SaveManager` ile atomik yazılır (`.bak`/`.prev` yedekleri). Defterin Harita sekmesindeki hızlı seyahat yalnız ziyaret edilmiş odalara izin verir. Güncelleme akışı: `update_checker.gd` açılışta public sürüm deposunun `releases/latest` yanıtını okur; `tag_name` oyunun `config/version` değerinden yüksekse başlık ekranında "Güncelle" düğmesi çıkar.
 
 ---
 
-### 3. Dünya Atlası: 6 Bölge ve 40 Bağlı Oda
+### 3. Dünya Atlası: 6 Bölge ve 47 Bağlı Oda
 
 Tesis, birbirinden farklı görsel atmosfere, Gotik mimariye ve bulmaca dinamiklerine sahip 6 ana bölgeden oluşur:
 
 ```mermaid
 flowchart LR
-    Z1["🏛️ <b>Bölge I</b><br/>Uyanış Mahmuzu<br/><i>Awakening</i><br/>(Oda 01 - 06)"]
-    Z2["🌿 <b>Bölge II</b><br/>Çürüme Bahçesi<br/><i>Decay</i><br/>(Oda 07 - 13)"]
-    Z3["📚 <b>Bölge III</b><br/>Hafıza Kütüphanesi<br/><i>Library</i><br/>(Oda 14 - 20)"]
-    Z4["⚗️ <b>Bölge IV</b><br/>Yasak Laboratuvar<br/><i>Experiment</i><br/>(Oda 21 - 27)"]
-    Z5["🪞 <b>Bölge V</b><br/>Aynalar Salonu<br/><i>Mirrors</i><br/>(Oda 28 - 34)"]
-    Z6["💠 <b>Bölge VI</b><br/>Bellek Çekirdeği<br/><i>Core</i><br/>(Oda 35 - 40)"]
+    Z1["🏛️ <b>Bölge I</b><br/>Uyanış Mahmuzu<br/><i>Awakening</i><br/>(Oda 01 - 06 · 41 · 47)"]
+    Z2["🌿 <b>Bölge II</b><br/>Çürüme Bahçesi<br/><i>Decay</i><br/>(Oda 07 - 13 · 42)"]
+    Z3["📚 <b>Bölge III</b><br/>Hafıza Kütüphanesi<br/><i>Library</i><br/>(Oda 14 - 20 · 43)"]
+    Z4["⚗️ <b>Bölge IV</b><br/>Yasak Laboratuvar<br/><i>Experiment</i><br/>(Oda 21 - 27 · 44)"]
+    Z5["🪞 <b>Bölge V</b><br/>Aynalar Salonu<br/><i>Mirrors</i><br/>(Oda 28 - 34 · 45)"]
+    Z6["💠 <b>Bölge VI</b><br/>Bellek Çekirdeği<br/><i>Core</i><br/>(Oda 35 - 40 · 46)"]
 
     Z1 -->|Taş Bulmacası & Sağ Kapı| Z2
     Z2 -->|Arşiv Kapısı & Shilda Güveni| Z3
@@ -172,6 +203,18 @@ flowchart LR
     Z5 -->|Gölge Atılması & 729 Mührü| Z6
     Z6 -->|2 Mühür Parçası + Çekirdek Kristali| Final["🎬 <b>BÖLÜM I SONU</b><br/>(Tek Kanonik Final)"]
 ```
+
+Oda numaraları `RoomManager.ROOM_ORDER` sırasını izler. İlk 40 oda ana omurgadır; 41-47 sonradan eklenen **derin odalar** ve **S.'nin Odası**dır:
+
+| Oda | Başlık | Bölge |
+| :---: | :--- | :--- |
+| 41 | Sessiz Çanlar (`awakening_bellroom`) | Uyanış, derin oda |
+| 42 | Kök Damarları (`decay_rootworks`) | Çürüme, derin oda |
+| 43 | Kayıt Mahzeni (`library_archive_vault`) | Kütüphane, derin oda |
+| 44 | İkiz Laboratuvarı (`experiment_twin_lab`) | Deney, derin oda |
+| 45 | Ters Salon (`mirrors_inverse_hall`) | Aynalar, derin oda |
+| 46 | Son Kayıt (`core_last_record`) | Çekirdek, derin oda |
+| 47 | S.'nin Odası (`awakening_s_room`) | Gizli; Kayıtlar 8/8 ile açılır |
 
 ---
 
@@ -301,17 +344,26 @@ Shilda'nın tüm piksel sanatı 1:1 224x224 yerel ölçekte yeniden işlenmiş, 
 ## 📸 Ekran Görüntüleri Galerisi
 
 <p align="center">
-  <img src="media/readme/02-passage.png" alt="Geçitler ve Tehlikeler" width="410" />
+  <img src="media/readme/07-crypt.png" alt="Oda 03 · İlk Bedenler Mahzeni" width="410" />
   &nbsp;
-  <img src="media/readme/03-dialogue.png" alt="Gotik Diyalog Sistemi" width="410" />
+  <img src="media/readme/08-shilda-wall.png" alt="Oda 10 · Çatlak Duvar ve lanet bulutu" width="410" />
+  <br/><sub>Oda 03 · İlk Bedenler Mahzeni &nbsp;·&nbsp; Oda 10 · Çatlak Duvar ve lanet bulutu</sub>
 </p>
 <p align="center">
-  <img src="media/readme/04-journal.png" alt="Günlük ve 6 Bölge Haritası" width="410" />
+  <img src="media/readme/09-withered-garden.png" alt="Oda 11 · Solmuş Bahçe" width="410" />
   &nbsp;
-  <img src="media/readme/05-decay-garden.png" alt="Çürüme Bahçesi ve Shilda" width="410" />
+  <img src="media/readme/10-cells.png" alt="Oda 21 · Gözlem Hücreleri" width="410" />
+  <br/><sub>Oda 11 · Solmuş Bahçe &nbsp;·&nbsp; Oda 21 · Gözlem Hücreleri</sub>
 </p>
 <p align="center">
-  <img src="media/readme/06-core.png" alt="Bellek Çekirdeği ve Mühür Kristalleri" width="840" />
+  <img src="media/readme/11-observation-glass.png" alt="Oda 27 · Gözlem Camı" width="410" />
+  &nbsp;
+  <img src="media/readme/12-gallery.png" alt="Oda 30 · Bedenler Galerisi" width="410" />
+  <br/><sub>Oda 27 · Gözlem Camı &nbsp;·&nbsp; Oda 30 · Bedenler Galerisi</sub>
+</p>
+<p align="center">
+  <img src="media/readme/13-night-1927.png" alt="Oda 34 · 1927 Gecesi" width="840" />
+  <br/><sub>Oda 34 · 1927 Gecesi</sub>
 </p>
 
 ---
@@ -364,7 +416,7 @@ Depodaki tüm derlenmiş Android (`arm64-v8a`) APK paketleri düzenli olarak **[
 3. Ana sahne `scenes/main/main.tscn` olarak ayarlıdır; **F5** ile doğrudan başlatabilirsiniz.
 
 ### 3. Otomatik Headless QA ve Audit Testleri (`scripts/dev/`)
-Projeyi kod tabanı seviyesinde doğrulayan 20'den fazla otonom test betiği bulunur:
+Projeyi kod tabanı seviyesinde doğrulayan 50'den fazla otonom test betiği bulunur:
 
 ```powershell
 $godot = "C:\Users\Osman\OneDrive\Desktop\Godot_v4.7.2-stable_win64.exe\Godot_v4.7.2-stable_win64_console.exe"
@@ -373,7 +425,7 @@ $env:TORIMON_TEST = "1"
 # 1. Master E2E Doğrulama (Tier 1-4, 50 kontrol)
 & $godot --headless --path . -s res://scripts/dev/e2e_runner.gd
 
-# 2. 40 Oda ve Kapı Grafiği Bütünlüğü Denetimi
+# 2. 47 Oda ve Kapı Grafiği Bütünlüğü Denetimi
 & $godot --headless --path . -s res://scripts/dev/release_audit.gd
 
 # 3. Ölüm, Rebirth ve Kalıcı Dünya Denetimi
@@ -383,7 +435,19 @@ $env:TORIMON_TEST = "1"
 & $godot --headless --path . -s res://scripts/dev/memory_seal_audit.gd
 ```
 
-> **Sürüm hazırlık raporları:** `qa/release-readiness/` altında v1.12.2 için QA/Google Play hazırlık raporları (oda matrisi, hikâye denetimi, hata kaydı, Play kontrol listesi, GO/NO-GO) bulunur. Mevcut karar: NO-GO (cihaz/insan testi, AAB, imza ve politika eksikleri). Kanıtlar yalnız headless/statik; gerçek cihaz testi yapılmadı. Çalışma kopyasında (commit edilmemiş) kayıt sağlamlığı, kilitlenme korumaları ve kanon metin düzeltmeleri yapıldı; yeni denetimler `softlock_reset_audit.gd` ve `save_robustness_audit.gd`, hepsi `docs/gelistirme/Run-Audit.ps1` içinde. Play yayını için taslaklar `docs/play/` altında (kontrol listesi, gizlilik taslağı, lisans listesi, mağaza metni). Play sürümünde güncelleme düğmesini kapatmak için export ön ayarına `play_store` özel özelliği eklenmelidir (`UpdateChecker.is_disabled_build()`). Kanon kararları (otonom, geri alınabilir): 1995 yalnız Perde 3+ içinde okunur; `shilda_past_discovered` Yetki Masası itirafında set edilir; `lore_canon_audit` CANON-A/B bunları korur. Tempo (ana yol ~43 dk) açık, mağaza metni süre vaat etmiyor. Mağaza görselleri taslağı `docs/play/store/` altındadır (öne çıkan görsel 1024×500 + aday ekran görüntüleri; yakalama aracı `scripts/dev/room_visual_capture.gd`).
+**v1.18.4 için zorunlu denetimler (hepsi 0 FAIL).** Her biri `TORIMON_TEST=1 godot --headless --path . -s res://scripts/dev/<ad>.gd` ile çalışır:
+
+| Konu | Denetimler |
+| :--- | :--- |
+| Kanon ve metin | `lore_canon_audit`, `dialogue_lint_audit`, `dialogue_data_audit`, `story_fill_audit` |
+| Bulmaca ve ipuçları | `clue_solvability_audit`, `phase2_rooms_audit`, `phase3_rooms_audit`, `phase4_rooms_audit` |
+| Oda grafiği ve kapılar | `room_graph_audit`, `door_audit`, `room_header_fit_audit`, `fast_travel_audit` |
+| Yeni içerik | `deep_rooms_audit`, `weak_rooms_audit`, `backtrack_nooks_audit`, `echo_trials_audit`, `memory_fragments_audit`, `room_polish_audit` |
+| Ayar, kayıt, yayın | `settings_audit`, `save_quit_audit`, `release_audit` |
+
+Toplu çalıştırma için `docs/gelistirme/Run-Audit.ps1` kullanılır.
+
+> **Sürüm hazırlık raporları:** `qa/release-readiness/` altında v1.12.2 için QA/Google Play hazırlık raporları (oda matrisi, hikâye denetimi, hata kaydı, Play kontrol listesi, GO/NO-GO) bulunur. Mevcut karar: NO-GO (cihaz/insan testi, AAB, imza ve politika eksikleri). Kanıtlar yalnız headless/statik; gerçek cihaz testi yapılmadı. Çalışma kopyasında (commit edilmemiş) kayıt sağlamlığı, kilitlenme korumaları ve kanon metin düzeltmeleri yapıldı; yeni denetimler `softlock_reset_audit.gd` ve `save_robustness_audit.gd`, hepsi `docs/gelistirme/Run-Audit.ps1` içinde. Play yayını için taslaklar `docs/play/` altında (kontrol listesi, gizlilik taslağı, lisans listesi, mağaza metni). Play sürümünde güncelleme düğmesini kapatmak için export ön ayarına `play_store` özel özelliği eklenmelidir (`UpdateChecker.is_disabled_build()`). Kanon kararları (otonom, geri alınabilir): 1995 yalnız Perde 3+ içinde okunur; `shilda_past_discovered` Yetki Masası itirafında set edilir; `lore_canon_audit` CANON-A/B bunları korur. O raporda ana yol ~43 dk idi; v1.18.4 itibarıyla ana yol ~65 dk, tam oyun ~190 dk. Mağaza görselleri taslağı `docs/play/store/` altındadır (öne çıkan görsel 1024×500 + aday ekran görüntüleri; yakalama aracı `scripts/dev/room_visual_capture.gd`).
 
 ---
 
