@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS"><img src="https://img.shields.io/badge/Kaynak-v1.18.3-8B0000?style=for-the-badge&logo=godotengine&logoColor=white" alt="Kaynak v1.18.3" /></a>
+  <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS"><img src="https://img.shields.io/badge/Kaynak-v1.18.4-8B0000?style=for-the-badge&logo=godotengine&logoColor=white" alt="Kaynak v1.18.4" /></a>
   <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases"><img src="https://img.shields.io/badge/Resmi_İndirme-GitHub_Releases-5c1d3d?style=for-the-badge&logo=github" alt="All Releases" /></a>
   <a href="https://godotengine.org/"><img src="https://img.shields.io/badge/Godot_Engine-4.7.2-478CBF?style=for-the-badge&logo=godotengine&logoColor=white" alt="Godot 4.7.2" /></a>
   <img src="https://img.shields.io/badge/Dünya-6_Bölge_·_40_Oda_·_Bölüm_I-2b1838?style=for-the-badge" alt="World Scope" />
@@ -178,7 +178,7 @@ flowchart LR
 ### Katakomb çiçeği ve Sarnıç (Faz 0)
 Kemik Mahzeni girişinde (x≈150) tükenmez bir çiçek kaynağı durur. Çiçek elde ölürsen ceset çiçeği taşır ve fener gibi yanar; karanlık yol aydınlanır. Çiçek hayat başınadır, ölümde cesede geçer ve elden silinir. Sarnıç yan kapısı artık yetenek istemez.
 
-### Geliştirmede (yayınlanmadı) — Metin cilası
+### v1.18.4 (yayınlandı 2026-11-16, versionCode 52) — 6 derin oda, 8 köşe, 6 Yankı Sınavı, Kırık Anı, S.'nin Odası, metin cilası
 - Tüm diyalog, oda ve script metinleri Türkçe dil/ton/tekrar açısından elden geçirildi (44 dosya). Aynalı Zemin açık ipucu düzeltildi: kırmızı şeritlere basılmaz.
 - Eleştiri ve öneri raporu: `docs/gelistirme/oyun-elestiri-ve-oneriler-2026-11-15.md`.
 - Ayarlar: ayrı Müzik/Efekt sesi, metin hızı, ekran sarsıntısı, yazı boyutu, ipucu seviyesi (`scripts/autoload/game_settings.gd`, `user://settings.cfg`).
@@ -322,10 +322,10 @@ Depodaki tüm derlenmiş Android (`arm64-v8a`) APK paketleri düzenli olarak **[
 
 | Sürüm | Durum | APK Dosyası / İndirme | Öne Çıkan Yenilikler ve Kapsam |
 | :--- | :---: | :--- | :--- |
-| **[v1.18.3](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.18.3)** | Son yayın | [📥 `TheRoomRemembers-1.18.3-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.18.3/TheRoomRemembers-1.18.3-android-arm64.apk) | Defterden hızlı seyahat: Harita sekmesinde ziyaret edilmiş odaya iki dokunuşla ışınlanma (`versionCode 51`). |
+| **[v1.18.4](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.18.4)** | Son yayın | [📥 `TheRoomRemembers-1.18.4-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.18.4/TheRoomRemembers-1.18.4-android-arm64.apk) | 47 oda, ~190 dk: 6 derin oda + Yankı Sınavları, 8 geri dönüş köşesi, 5 Kırık Anı, S.'nin Odası, ayarlar menüsü, metin ve görsel cila (`versionCode 52`). |
+| **[v1.18.3](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.18.3)** | Önceki | [📥 `TheRoomRemembers-1.18.3-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.18.3/TheRoomRemembers-1.18.3-android-arm64.apk) | Defterden hızlı seyahat: Harita sekmesinde ziyaret edilmiş odaya iki dokunuşla ışınlanma (`versionCode 51`). |
 | **[v1.18.2](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.18.2)** | Önceki | [📥 `TheRoomRemembers-1.18.2-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.18.2/TheRoomRemembers-1.18.2-android-arm64.apk) | Oda 09 sera kapısı: doğru saksıya ceset düşünce kapı kalıcı açılır (`versionCode 50`). |
 | **[v1.18.1](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.18.1)** | Önceki | [📥 `TheRoomRemembers-1.18.1-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.18.1/TheRoomRemembers-1.18.1-android-arm64.apk) | Şifreli odalarda türetilebilir ipuçları, oda 16 eski kayıt onarımı, ipucu çözülebilirlik denetimi (`versionCode 49`). |
-| **[v1.18.0](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.18.0)** | Önceki | [📥 `TheRoomRemembers-1.18.0-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.18.0/TheRoomRemembers-1.18.0-android-arm64.apk) | Faz 4: oda 28-40 ve final revizyonu. |
 
 ---
 
