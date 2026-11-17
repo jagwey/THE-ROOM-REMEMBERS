@@ -25,6 +25,8 @@ const MemoryShrineScript := preload("res://scripts/world/memory_shrine.gd")
 var _section: String = "gunluk"
 var _entries: Array = []
 var _selected_index: int = -1
+## İzler sekmesinde listenin başındaki sayaç satırı (düğme değil) -> düğme indeksleri bu kadar kayar.
+var _list_offset: int = 0
 
 ## Ceset dönüşümü iz türlerinin Türkçe adları; bilinmeyen tür "İz".
 const TRACE_KIND_TR := {"flower": "Çiçek İzi", "silhouette": "Silüet İzi", "stain": "Leke İzi"}
@@ -146,17 +148,11 @@ func _show_section(section: String) -> void:
 		"notlar":
 			label = "Notlar"
 		"izler":
-			label = "İzler  Kayıtlar %d/%d  Sınavlar %d/%d  Anılar %d/%d" % [NookRecordScript.count(), NookRecordScript.TOTAL, EchoTrialScript.count(), EchoTrialScript.TOTAL, MemoryShrineScript.count(), MemoryShrineScript.TOTAL]
+			label = "İzler"
 		_:
 			label = "Günlük"
 	list_title.text = label
-	var title_size: int = 15 if section == "izler" else UiTheme.SPEAKER
-	if section == "izler":
-		var tf: Font = list_title.get_theme_font("font")
-		var tw: float = list_title.size.x if list_title.size.x > 40.0 else 300.0
-		while title_size > 10 and tf != null and tf.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, title_size).x > tw - 4.0:
-			title_size -= 1
-	list_title.add_theme_font_size_override("font_size", title_size)
+	list_title.add_theme_font_size_override("font_size", UiTheme.SPEAKER)
 	_entries = EchoManager.get_notes_for_section(section)
 	if section == "gunluk":
 		var hint: Dictionary = PuzzleManager.journal_hint_for_active_room()
@@ -167,6 +163,8 @@ func _show_section(section: String) -> void:
 		_entries = _entries.duplicate()
 		_append_world_traces(_entries)
 	_rebuild_list()
+	if section == "izler":
+		_add_stats_row()
 	if _entries.is_empty():
 		detail_title.text = ""
 		detail_body.text = ""
@@ -179,6 +177,7 @@ func _show_section(section: String) -> void:
 
 ## Girdiler sarmalı (autowrap) düğmeler: uzun başlıklar kesilmez, liste kaydırılır.
 func _rebuild_list() -> void:
+	_list_offset = 0
 	for c in entry_list.get_children():
 		entry_list.remove_child(c)
 		c.queue_free()
@@ -205,6 +204,20 @@ func _rebuild_list() -> void:
 		entry_list.add_child(b)
 
 
+## İzler sayaçları: başlığa sığmadığı için listenin ilk satırında, sarılan küçük etiket olarak.
+func _add_stats_row() -> void:
+	var l := Label.new()
+	l.text = "Kayıtlar %d/%d · Sınavlar %d/%d · Anılar %d/%d" % [NookRecordScript.count(), NookRecordScript.TOTAL, EchoTrialScript.count(), EchoTrialScript.TOTAL, MemoryShrineScript.count(), MemoryShrineScript.TOTAL]
+	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	l.custom_minimum_size = Vector2(170, 0)
+	l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	l.add_theme_color_override("font_color", INK_SOFT)
+	UiTheme.apply_label(l, UiTheme.HINT, false)
+	entry_list.add_child(l)
+	entry_list.move_child(l, 0)
+	_list_offset = 1
+
+
 func _on_entry_selected(index: int) -> void:
 	if index < 0 or index >= _entries.size():
 		return
@@ -215,7 +228,7 @@ func _on_entry_selected(index: int) -> void:
 	for i in entry_list.get_child_count():
 		var b := entry_list.get_child(i) as Button
 		if b:
-			b.add_theme_stylebox_override("normal", _entry_box(0.22) if i == index else StyleBoxEmpty.new())
+			b.add_theme_stylebox_override("normal", _entry_box(0.22) if i - _list_offset == index else StyleBoxEmpty.new())
 	var raw_title := String(n.get("title", ""))
 	var raw_body := String(n.get("body", ""))
 	if not GameState.is_shilda_named():

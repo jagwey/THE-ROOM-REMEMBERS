@@ -444,6 +444,7 @@ $env:TORIMON_TEST = "1"
 | Oda grafiği ve kapılar | `room_graph_audit`, `door_audit`, `room_header_fit_audit`, `fast_travel_audit` |
 | Yeni içerik | `deep_rooms_audit`, `weak_rooms_audit`, `backtrack_nooks_audit`, `echo_trials_audit`, `memory_fragments_audit`, `room_polish_audit` |
 | Ayar, kayıt, yayın | `settings_audit`, `save_quit_audit`, `release_audit` |
+| Arayüz yerleşimi | `journal_layout_audit` (günlük/harita sekmelerinde üst üste binen yazı yok; 1280x720, 1920x1080, 2400x1080, büyük yazı) |
 
 Toplu çalıştırma için `docs/gelistirme/Run-Audit.ps1` kullanılır.
 
