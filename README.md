@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS"><img src="https://img.shields.io/badge/Kaynak-v1.18.4-8B0000?style=for-the-badge&logo=godotengine&logoColor=white" alt="Kaynak v1.18.4" /></a>
+  <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS"><img src="https://img.shields.io/badge/Kaynak-v1.18.5-8B0000?style=for-the-badge&logo=godotengine&logoColor=white" alt="Kaynak v1.18.5" /></a>
   <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases"><img src="https://img.shields.io/badge/Resmi_İndirme-GitHub_Releases-5c1d3d?style=for-the-badge&logo=github" alt="All Releases" /></a>
   <a href="https://godotengine.org/"><img src="https://img.shields.io/badge/Godot_Engine-4.7.2-478CBF?style=for-the-badge&logo=godotengine&logoColor=white" alt="Godot 4.7.2" /></a>
   <img src="https://img.shields.io/badge/Dünya-6_Bölge_·_47_Oda_·_Bölüm_I-2b1838?style=for-the-badge" alt="World Scope" />
@@ -221,6 +221,10 @@ Oda numaraları `RoomManager.ROOM_ORDER` sırasını izler. İlk 40 oda ana omur
 ### Katakomb çiçeği ve Sarnıç (Faz 0)
 Kemik Mahzeni girişinde (x≈150) tükenmez bir çiçek kaynağı durur. Çiçek elde ölürsen ceset çiçeği taşır ve fener gibi yanar; karanlık yol aydınlanır. Çiçek hayat başınadır, ölümde cesede geçer ve elden silinir. Sarnıç yan kapısı artık yetenek istemez.
 
+### v1.18.5 (yayınlandı 2026-11-17, versionCode 53) — günlük yerleşim düzeltmesi
+
+Günlükteki Harita & Mühürler sekmesinde üst üste binen yazılar giderildi: başlık satırları (Mühür, Kanıt, Kısayol, Kayıt/Sınav/Anı sayaçları) yazı tipi ölçüsüne göre diziliyor, "Odaya dokun: hızlı git" ipucu sağ sayfaya taşındı, kısayol çizgisi yalnız kartların arasında çiziliyor, uzun bölge başlıkları küçülüyor ve çift haneli ceset sayısı oda dairesine sığıyor. İzler sekmesinde sayaçlar ayrı satırda. Yeni denetim: `journal_layout_audit`.
+
 ### v1.18.4 (yayınlandı 2026-11-16, versionCode 52) — 6 derin oda, 8 köşe, 6 Yankı Sınavı, Kırık Anı, S.'nin Odası, metin cilası
 - Tüm diyalog, oda ve script metinleri Türkçe dil/ton/tekrar açısından elden geçirildi (44 dosya). Aynalı Zemin açık ipucu düzeltildi: kırmızı şeritlere basılmaz.
 - Eleştiri ve öneri raporu: `docs/gelistirme/oyun-elestiri-ve-oneriler-2026-11-15.md`.
@@ -374,10 +378,10 @@ Depodaki tüm derlenmiş Android (`arm64-v8a`) APK paketleri düzenli olarak **[
 
 | Sürüm | Durum | APK Dosyası / İndirme | Öne Çıkan Yenilikler ve Kapsam |
 | :--- | :---: | :--- | :--- |
-| **[v1.18.4](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.18.4)** | Son yayın | [📥 `TheRoomRemembers-1.18.4-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.18.4/TheRoomRemembers-1.18.4-android-arm64.apk) | 47 oda, ~190 dk: 6 derin oda + Yankı Sınavları, 8 geri dönüş köşesi, 5 Kırık Anı, S.'nin Odası, ayarlar menüsü, metin ve görsel cila (`versionCode 52`). |
+| **[v1.18.5](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.18.5)** | Son yayın | [📥 `TheRoomRemembers-1.18.5-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.18.5/TheRoomRemembers-1.18.5-android-arm64.apk) | Günlük/harita sekmesinde üst üste binen yazılar düzeltildi (`versionCode 53`). |
+| **[v1.18.4](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.18.4)** | Önceki | [📥 `TheRoomRemembers-1.18.4-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.18.4/TheRoomRemembers-1.18.4-android-arm64.apk) | 47 oda, ~190 dk: 6 derin oda + Yankı Sınavları, 8 geri dönüş köşesi, 5 Kırık Anı, S.'nin Odası, ayarlar menüsü, metin ve görsel cila (`versionCode 52`). |
 | **[v1.18.3](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.18.3)** | Önceki | [📥 `TheRoomRemembers-1.18.3-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.18.3/TheRoomRemembers-1.18.3-android-arm64.apk) | Defterden hızlı seyahat: Harita sekmesinde ziyaret edilmiş odaya iki dokunuşla ışınlanma (`versionCode 51`). |
 | **[v1.18.2](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.18.2)** | Önceki | [📥 `TheRoomRemembers-1.18.2-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.18.2/TheRoomRemembers-1.18.2-android-arm64.apk) | Oda 09 sera kapısı: doğru saksıya ceset düşünce kapı kalıcı açılır (`versionCode 50`). |
-| **[v1.18.1](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.18.1)** | Önceki | [📥 `TheRoomRemembers-1.18.1-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.18.1/TheRoomRemembers-1.18.1-android-arm64.apk) | Şifreli odalarda türetilebilir ipuçları, oda 16 eski kayıt onarımı, ipucu çözülebilirlik denetimi (`versionCode 49`). |
 
 ---
 
@@ -435,7 +439,7 @@ $env:TORIMON_TEST = "1"
 & $godot --headless --path . -s res://scripts/dev/memory_seal_audit.gd
 ```
 
-**v1.18.4 için zorunlu denetimler (hepsi 0 FAIL).** Her biri `TORIMON_TEST=1 godot --headless --path . -s res://scripts/dev/<ad>.gd` ile çalışır:
+**v1.18.5 için zorunlu denetimler (hepsi 0 FAIL).** Her biri `TORIMON_TEST=1 godot --headless --path . -s res://scripts/dev/<ad>.gd` ile çalışır:
 
 | Konu | Denetimler |
 | :--- | :--- |
