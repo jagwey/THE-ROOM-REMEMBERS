@@ -371,11 +371,10 @@ func _catacombs() -> void:
 	for n in _nodes_with("decay_catacombs", "memory_code_key"):
 		flower_src = true
 	check(_room_root("decay_catacombs").find_child("FlowerSource", true, false) != null, "catacombs: FlowerSource present so flower corpse is attainable")
-	for pid in ["decay_catacomb_seal", "decay_catacombs"]:
+	for pid in ["decay_catacomb_seal"]:
 		var t := _hint_text(pid).to_lower()
 		check(("çiçekli ceset" in t or "ölülerin ışığ" in t) and ("ışığ" in t or "yanar" in t or "ceset" in t), "catacombs: HINTS[%s] mentions flower-corpse light" % pid, t)
 	_hint_reach("decay_catacombs", ["decay_catacomb_seal"])
-	note("HINTS[decay_catacombs] is not referenced by ROOM_PUZZLES (orphan duplicate of decay_catacomb_seal)")
 
 
 func _garden() -> void:

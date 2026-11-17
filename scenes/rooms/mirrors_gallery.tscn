@@ -68,7 +68,7 @@ script = ExtResource("thorn")
 anchor_x = 360.0
 puzzle_hint = &"mirrors_gallery_plate_1"
 body_line = "Dokunursam ölürüm, beden plakanın üstünde kalmalı."
-solved_line = "Plaka sustu, beden onu tutuyor."
+solved_line = "Plaka bastırıldı, beden onu tutuyor."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/Thorn1"]
 shape = SubResource("PlateShape")
@@ -96,7 +96,7 @@ script = ExtResource("thorn")
 anchor_x = 640.0
 puzzle_hint = &"mirrors_gallery_plate_2"
 body_line = "Dokunursam ölürüm. Plakaya bir beden gerek."
-solved_line = "Bir plaka daha sustu, beden onu tutuyor."
+solved_line = "Bir plaka daha bastırıldı, beden onu tutuyor."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/Thorn2"]
 shape = SubResource("PlateShape")
@@ -124,7 +124,7 @@ script = ExtResource("thorn")
 anchor_x = 920.0
 puzzle_hint = &"mirrors_gallery_plate_3"
 body_line = "Dokunursam ölürüm. Bu yükü bedenim taşımalı."
-solved_line = "Plaka sustu; beden yükünü aldı."
+solved_line = "Plaka bastırıldı; beden yükü aldı."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/Thorn3"]
 shape = SubResource("PlateShape")

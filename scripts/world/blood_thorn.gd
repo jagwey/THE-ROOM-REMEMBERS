@@ -5,7 +5,7 @@ extends Area2D
 @export var anchor_x: float = 340.0 ## ölüm anında bedenin düşeceği x (plaka merkezi)
 @export var puzzle_hint: StringName = &"awakening_seal_weight"
 ## Odaya özgü satırlar (boşsa Uyanış plakası metni).
-@export var body_line: String = "Dokunursam ölürüm. Ama beden… burada, plakanın üstünde kalır."
+@export var body_line: String = "Dokunursam ölürüm ama beden plakanın üstünde kalır."
 @export var solved_line: String = "Kristal sustu. Beden plakayı tutuyor."
 
 ## >= 0 ise ölüm anında beden bu y'de (zemin üstü) kalır; boşluğun üstüne köprü için.
@@ -49,7 +49,7 @@ func on_interact(by: Node) -> void:
 		return
 	if not _armed:
 		_armed = true
-		DialogueManager.say("Noroi", "Kırmızı kristal… dikenleri nabız gibi atıyor.")
+		DialogueManager.say("Noroi", "Kırmızı kristal. Dikenleri nabız gibi atıyor.")
 		DialogueManager.say("Noroi", body_line)
 		DialogueManager.say("Noroi", "(Yine dokunursan bilerek ölürsün.)")
 		await DialogueManager.dialogue_finished

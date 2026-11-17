@@ -5,29 +5,29 @@
       {"s": "Noroi", "t": "Cam buğulu, içerideki kırmızı yapraklar hâlâ canlı."},
       {"s": "@shilda", "t": "Dur orada. Mührün öteki yanını ben tutuyorum."},
       {"s": "Noroi", "t": "Seni göremiyorum, yalnız bir gölge var. Saksıların arasında yürüyor."},
-      {"s": "@shilda", "t": "Gölge doğru saksıyı bilir. Oraya ayağın değil, bedenin basar."},
+      {"s": "@shilda", "t": "Gölge doğru saksıyı biliyor. Oraya ayağınla değil, bedeninle basacaksın."},
       {"s": "Noroi", "t": "Yani orada ölmem gerek."},
       {"s": "@shilda", "t": "Bir beden yeter. Bu serayı birlikte açarız."},
       {"s": "Noroi", "t": "Tamam. Gölgeyi izliyorum."},
-      {"s": "@shilda", "t": "Duvarın ötesinde benden kaçacaksın. Ama henüz değil."}
+      {"s": "@shilda", "t": "Duvarın ötesinde benden kaçacaksın. Şimdilik değil."}
     ],
     "greenhouse_roots": [
       {"s": "Noroi", "t": "Saksıların dibi çatlamış. Kökler camdan dışarı sızmış."},
-      {"s": "@shilda", "t": "Bu sera benden eskidir. Çiçekler içeri girince eğilir."},
+      {"s": "@shilda", "t": "Bu sera benden de eski. Biri girince çiçekler ona doğru eğilir."},
       {"s": "Noroi", "t": "Bana bakan biri var gibi. Sen misin, çiçekler mi?"},
       {"s": "@shilda", "t": "İkisi de. Bakmayı hiç bırakmadım, sen fark etmedin."},
       {"s": "Noroi", "t": "Neden hep ışığın kenarındasın?"},
-      {"s": "@shilda", "t": "Işığın içine girersem sönerim. Kenar bana kalan tek yer."},
+      {"s": "@shilda", "t": "Işığa girersem sönerim. Bana kalan tek yer kenar."},
       {"s": "Noroi", "t": "Çiçekleri neden bu kadar iyi biliyorsun?"},
       {"s": "@shilda", "t": "Biri bana sulamayı öğretmişti. Sonra bırakmayı da öğretti."}
     ],
     "greenhouse_glass": [
-      {"s": "Noroi", "t": "Camın arkasında kırmızı yapraklar var. Dışarıdan daha canlı."},
+      {"s": "Noroi", "t": "Camın arkasında kırmızı yapraklar var. Dışarıdakilerden daha canlı."},
       {"s": "@shilda", "t": "Dışarıdan her şey canlı görünür. İçeri girince anlarsın."},
       {"s": "Noroi", "t": "Bu seraya ilk gelişim değil, değil mi?"},
-      {"s": "@shilda", "t": "Senin ilkin değil. Benimki de."},
+      {"s": "@shilda", "t": "Senin için ilk değil. Benim için de."},
       {"s": "Noroi", "t": "Ölsem de buraya dönüyorum. Seni bulmak için mi?"},
-      {"s": "@shilda", "t": "Yolun burada çünkü ben buradayım. Başka türlü olamazdı."},
+      {"s": "@shilda", "t": "Yolun buraya çıkıyor çünkü ben buradayım. Başka türlü olamazdı."},
       {"s": "Noroi", "t": "Yalnız hissetmediğimi söylemek istedim."},
       {"s": "@shilda", "t": "Bunu bana söyleme. Alışırım."}
     ]

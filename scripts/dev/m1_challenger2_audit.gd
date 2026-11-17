@@ -84,15 +84,16 @@ func _run() -> void:
 		stone.global_position = Vector2(200, 288)
 	# Step 3: Push to plate at x=940
 	var plate1: Area2D = rm._rooms[&"awakening"].root.get_node("Interactive/PressurePlate")
-	check(plate1 != null, "CHALLENGE 1", "Pressure plate exists at x=940", "pos=(%.1f, %.1f)" % [plate1.global_position.x, plate1.global_position.y])
+	check(plate1 != null, "CHALLENGE 1", "Pressure plate exists", "pos=(%.1f, %.1f)" % [plate1.global_position.x, plate1.global_position.y])
 
+	var plate_x: float = plate1.global_position.x ## awakening PressurePlate (currently x=880)
 	var push_count := 0
-	while corpse1.global_position.x < 930.0 and push_count < 15:
+	while corpse1.global_position.x < plate_x - 10.0 and push_count < 15:
 		corpse1._push(1.0)
 		await create_timer(0.28).timeout
 		push_count += 1
 
-	check(absf(corpse1.global_position.x - 940.0) <= 30.0, "CHALLENGE 1", "Corpse reached pressure plate area at x=940", "x=%.1f" % corpse1.global_position.x)
+	check(absf(corpse1.global_position.x - plate_x) <= 30.0, "CHALLENGE 1", "Corpse reached pressure plate area", "x=%.1f" % corpse1.global_position.x)
 	plate1._recompute()
 	check(plate1._pressed, "CHALLENGE 1", "Pressure plate triggered by corpse", "pressed=%s" % str(plate1._pressed))
 
@@ -104,7 +105,10 @@ func _run() -> void:
 		push_count += 1
 
 	check(corpse1.global_position.x <= 1248.0, "CHALLENGE 1", "Corpse respects room boundary max_x=1248px", "x=%.1f" % corpse1.global_position.x)
-	check(corpse1.global_position.x >= 1240.0, "CHALLENGE 1", "Corpse reached vicinity of max_x boundary", "x=%.1f" % corpse1.global_position.x)
+	## Closed DoorGate (x=1090, awakening_door_opened unset) stops the corpse ~26px before it.
+	var gate := rm._rooms[&"awakening"].root.get_node_or_null("Interactive/DoorGate") as Node2D
+	var gate_x: float = gate.global_position.x if gate else 1248.0
+	check(corpse1.global_position.x >= gate_x - 60.0, "CHALLENGE 1", "Corpse pushed up to the closed DoorGate / boundary", "x=%.1f gate=%.1f" % [corpse1.global_position.x, gate_x])
 
 	# Step 5: Boundary refusal
 	var pre_bound_x := corpse1.global_position.x
@@ -138,9 +142,9 @@ func _run() -> void:
 	var plate2: Area2D = rm._rooms[&"awakening"].root.get_node("Interactive/PressurePlate")
 	check(not pm.is_solved(&"awakening_weight"), "CHALLENGE 2", "Plate puzzle starts UNSOLVED")
 
-	# Place corpse on pressure plate at x=940
+	# Place corpse on pressure plate
 	state.character_current_life_knowledge["room"] = &"awakening"
-	var plate_cid: String = cm.record_corpse_at(Vector2(940.0, 300.0), "plate_anchor_test")
+	var plate_cid: String = cm.record_corpse_at(Vector2(plate_x, 300.0), "plate_anchor_test")
 	await create_timer(0.2).timeout
 	plate2._recompute()
 	await create_timer(0.1).timeout
@@ -201,7 +205,7 @@ func _run() -> void:
 
 	var plate3: Area2D = rm._rooms[&"awakening"].root.get_node("Interactive/PressurePlate")
 	state.character_current_life_knowledge["room"] = &"awakening"
-	var cid3: String = cm.record_corpse_at(Vector2(940.0, 300.0), "save_load_test")
+	var cid3: String = cm.record_corpse_at(Vector2(plate_x, 300.0), "save_load_test")
 	await create_timer(0.2).timeout
 	plate3._recompute()
 	check(plate3._pressed, "CHALLENGE 3", "Plate triggers with corpse on it before save", "pressed=%s" % str(plate3._pressed))
@@ -233,7 +237,7 @@ func _run() -> void:
 			break
 	check(reloaded_corpse != null, "CHALLENGE 3", "Corpse re-instantiated on plate from save file", "id=%s" % cid3)
 	if reloaded_corpse:
-		check(absf(reloaded_corpse.global_position.x - 940.0) < 5.0, "CHALLENGE 3", "Reloaded corpse position preserved at x=940", "pos=%s" % str(reloaded_corpse.global_position))
+		check(absf(reloaded_corpse.global_position.x - plate_x) < 5.0, "CHALLENGE 3", "Reloaded corpse position preserved at plate x", "pos=%s" % str(reloaded_corpse.global_position))
 
 	# Assert plate triggers immediately
 	check(plate3._pressed, "CHALLENGE 3", "Pressure plate triggers immediately upon reload", "pressed=%s" % str(plate3._pressed))

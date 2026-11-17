@@ -116,8 +116,8 @@ func _run() -> void:
 		[&"decay_greenhouse", &"decay_shilda_wall"],
 		[&"library_page", &"library_upper_stacks"],
 		[&"experiment_authority", &"experiment_quarantine"],
-		[&"mirrors_reverse", &"mirrors_labyrinth"],
-		[&"core_threshold", &"core_memory_vault"],
+		[&"mirrors_unbroken", &"mirrors_labyrinth"],
+		[&"core_seal_chamber", &"core_memory_vault"],
 	]
 	for r in routes:
 		var from_id: StringName = r[0]

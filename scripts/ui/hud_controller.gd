@@ -28,6 +28,11 @@ var _joy_touch_index: int = -1
 ## Görsel yarıçap 50 (eski 40'ın %25 fazlası); sabit modda kabul alanı biraz daha geniş.
 const JOY_RADIUS := 50.0
 const JOY_ACCEPT := 65.0
+const JOY_BASE_SIZE := 100.0
+var _joy_radius: float = JOY_RADIUS
+var _joy_accept: float = JOY_ACCEPT
+## Düğme/joystick ölçeği için ev (başlangıç) ofsetleri: ad -> Vector4(left, top, right, bottom).
+var _btn_home: Dictionary = {}
 ## Yüzen mod: sol-alt çeyrekte (x < %50, y > %50) herhangi bir dokunuş joystick'i oraya taşır.
 var _joy_home := Vector4.ZERO
 ## Çoklu dokunuş: parmak indeksi -> HudTouchButton.
@@ -64,6 +69,21 @@ func _ready() -> void:
 	_setup_seal_pad()
 	_joy_home = Vector4(joystick_root.offset_left, joystick_root.offset_top, joystick_root.offset_right, joystick_root.offset_bottom)
 	_buttons_by_name = {&"attack": btn_attack, &"dash": btn_dash, &"interact": btn_interact, &"jump": btn_jump, &"skill": btn_skill}
+	for bn in _buttons_by_name:
+		var b: Control = _buttons_by_name[bn]
+		_btn_home[bn] = Vector4(b.offset_left, b.offset_top, b.offset_right, b.offset_bottom)
+	apply_button_scale()
+	safe_area.resized.connect(apply_button_scale)
+	DeathManager.death_loop_helper.connect(_on_death_loop_helper)
+	DeathManager.rebirth_completed.connect(_flush_toasts)
+	CorpseManager.corpse_lost_to_limit.connect(_on_corpse_lost_to_limit)
+	GameState.room_changed.connect(_check_puzzle_reset_notice)
+	SaveManager.game_loaded.connect(_check_puzzle_reset_notice)
+	GameState.journal_seen_changed.connect(_refresh_journal_badge)
+	_setup_journal_badge()
+	var ambient := preload("res://scripts/world/room_ambient.gd").new()
+	ambient.name = "RoomAmbient"
+	add_child(ambient)
 	_refresh_hearts(GameState.hearts, GameState.max_hearts)
 	GameState.hearts_changed.connect(_refresh_hearts)
 	GameState.room_changed.connect(_refresh_objective_now)
@@ -286,7 +306,7 @@ func _apply_safe_area() -> void:
 
 ## Masaüstünde tuş özeti; mobilde butonlar zaten görünür, ipucu gizli kalır.
 func _apply_default_hint() -> void:
-	hint_label.text = "WASD yürü · Z saldır · X atıl · E etkileş · I günlüğü aç"
+	hint_label.text = "WASD yürü · Z saldır · X atıl · E etkileş · I günlüğü aç" + (" •" if GameState.journal_any_unseen() else "")
 	hint_label.visible = not (MobileInputManager.is_touch_ui() or _touch_seen)
 
 
@@ -352,7 +372,9 @@ func _on_dialogue_page(speaker: String, text: String, page_index: int, page_coun
 	# Konuşmacı bandı: çerçeve süsüne taşmasın (clip + ellipsis).
 	dialogue_speaker.clip_text = true
 	dialogue_speaker.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-	var max_w := maxf(40.0, dialogue_speaker.size.x)
+	# Label shrink-begin (min 200) olduğu için kendi size.x'i değil, VBox genişliği ölçü alınır.
+	var row := dialogue_speaker.get_parent() as Control
+	var max_w := maxf(dialogue_speaker.size.x, (row.size.x if row != null else 0.0) - 48.0)
 	if max_w < 40.0:
 		max_w = 160.0
 	var font: Font = dialogue_speaker.get_theme_font("font")
@@ -370,6 +392,8 @@ func _on_dialogue_page(speaker: String, text: String, page_index: int, page_coun
 		else:
 			shown = "…"
 	dialogue_speaker.text = shown
+	var need_w := font.get_string_size(shown, HORIZONTAL_ALIGNMENT_LEFT, -1, fsize).x + 8.0
+	dialogue_speaker.custom_minimum_size.x = minf(maxf(need_w, 200.0), maxf(max_w, 200.0))
 	dialogue_text.text = text
 	_apply_dialogue_skin(speaker)
 	_update_portrait(speaker)
@@ -425,6 +449,7 @@ func _on_choices_shown(options: PackedStringArray) -> void:
 		b.text = options[i]
 		b.focus_mode = Control.FOCUS_NONE
 		b.custom_minimum_size = Vector2(0, 40)
+		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		b.pressed.connect(DialogueManager.choose.bind(i))
 		_choice_box.add_child(b)
 	$SafeArea.add_child(_choice_box)
@@ -432,9 +457,29 @@ func _on_choices_shown(options: PackedStringArray) -> void:
 	await get_tree().process_frame
 	if _choice_box == null or not is_instance_valid(_choice_box):
 		return
+	_place_choice_box()
+
+
+## Seçim kutusu: panelin üstüne sığıyorsa üstüne, sığmıyorsa (panel üst kenara yakın) altına; sağdaki
+## Etkileş düğmesine ve ekran/güvenli alan kenarına binmez.
+func _place_choice_box() -> void:
+	if _choice_box == null or not is_instance_valid(_choice_box):
+		return
 	var r := dialogue_panel.get_global_rect()
+	var sa := safe_area.get_global_rect()
 	_choice_box.size = Vector2(r.size.x, 0)
-	_choice_box.global_position = Vector2(r.position.x, r.position.y - _choice_box.size.y - 6.0)
+	var h := _choice_box.size.y
+	var above_y := r.position.y - h - 6.0
+	var y := above_y
+	if above_y < sa.position.y + 4.0:
+		y = r.end.y + 6.0
+	var right := r.end.x
+	if btn_interact.visible:
+		var ib := btn_interact.get_global_rect()
+		if y + h > ib.position.y - 2.0 and y < ib.end.y + 2.0:
+			right = minf(right, ib.position.x - 6.0)
+	_choice_box.size = Vector2(maxf(120.0, right - r.position.x), 0)
+	_choice_box.global_position = Vector2(r.position.x, y)
 
 
 func _refresh_choice_highlight(sel: int) -> void:
@@ -496,6 +541,17 @@ func _update_control_visibility() -> void:
 	## Günlük (kitap) açıkken de HUD gizli; günlük kendi kapat düğmesini taşır.
 	var vis_layer := UiGate.current_layer()
 	safe_area.visible = vis_layer != UiGate.Layer.CUTSCENE and vis_layer != UiGate.Layer.JOURNAL and vis_layer != UiGate.Layer.TITLE
+
+
+## Görünür dokunmatik düğme + joystick tabanının ekran (viewport) dikdörtgenleri; kapı etiketi kaçınması için.
+## Dokunmatik arayüz görünmüyorsa boş döner.
+func get_touch_button_screen_rects() -> Array[Rect2]:
+	var out: Array[Rect2] = []
+	var ctrls: Array[Control] = [btn_attack, btn_dash, btn_interact, btn_jump, btn_skill, joystick_base]
+	for c in ctrls:
+		if c != null and c.is_visible_in_tree():
+			out.append(c.get_global_transform_with_canvas() * Rect2(Vector2.ZERO, c.size))
+	return out
 
 
 ## Düğme basışı (parmak indeksiyle). Kapı (gate) mantığı eski düğme sinyalleriyle aynı.
@@ -679,7 +735,7 @@ func _is_in_joystick_zone(screen_pos: Vector2) -> bool:
 		return _in_float_zone(screen_pos)
 	var local: Vector2 = _touch_to_joystick_local(screen_pos)
 	var center: Vector2 = joystick_base.position + joystick_base.size * 0.5
-	return local.distance_to(center) <= JOY_ACCEPT
+	return local.distance_to(center) <= _joy_accept
 
 
 func _is_in_dialogue_zone(screen_pos: Vector2) -> bool:
@@ -696,7 +752,7 @@ func _touch_to_joystick_local(screen_pos: Vector2) -> Vector2:
 
 ## Yüzen mod: joystick tabanını dokunuş noktasına taşı (güvenli alan içinde tut).
 func _recenter_joystick(screen_pos: Vector2) -> void:
-	var bounds := safe_area.get_global_rect().grow(-JOY_RADIUS)
+	var bounds := safe_area.get_global_rect().grow(-_joy_radius)
 	var target := Vector2(
 		clampf(screen_pos.x, bounds.position.x, maxf(bounds.position.x, bounds.end.x)),
 		clampf(screen_pos.y, bounds.position.y, maxf(bounds.position.y, bounds.end.y)))
@@ -739,7 +795,7 @@ func _handle_touch(event: InputEventScreenTouch) -> void:
 	else:
 		var l0: Vector2 = _touch_to_joystick_local(event.position)
 		var c0: Vector2 = joystick_base.position + joystick_base.size * 0.5
-		if l0.distance_to(c0) > JOY_ACCEPT:
+		if l0.distance_to(c0) > _joy_accept:
 			return
 	_joy_active = true
 	_joy_touch_index = event.index
@@ -759,9 +815,9 @@ func _handle_drag(event: InputEventScreenDrag) -> void:
 
 
 func _update_joy(local: Vector2, center: Vector2) -> void:
-	var offset := (local - center).limit_length(JOY_RADIUS)
+	var offset := (local - center).limit_length(_joy_radius)
 	joystick_thumb.position = center + offset - joystick_thumb.size * 0.5
-	MobileInputManager.set_move_vector(offset / JOY_RADIUS)
+	MobileInputManager.set_move_vector(offset / _joy_radius)
 
 
 func _release_joystick() -> void:
@@ -775,10 +831,209 @@ func _release_joystick() -> void:
 		_restore_joystick_home()
 
 
+## Buton boyutu ayarı (%80..%120): düğmeler sağ-alt köşeye, joystick sol-alt köşeye göre ölçeklenir;
+## gerçek boyutlar değiştiği için dokunma alanı ve güvenli alan denetimi aynen çalışır.
+func apply_button_scale() -> void:
+	if buttons_root == null or joystick_root == null or _btn_home.is_empty():
+		return
+	var s := GameSettings.button_scale()
+	var cw := buttons_root.offset_right - buttons_root.offset_left
+	var ch := buttons_root.offset_bottom - buttons_root.offset_top
+	## Küme sağ-alt köşeye göre ölçeklenir. Interact için üst sınır: üstteki diyalog panelinin alt kenarı + 2 px.
+	var cap := 99.0
+	if dialogue_panel != null and safe_area != null:
+		var h_i: Vector4 = _btn_home[&"interact"]
+		var room := safe_area.size.y + buttons_root.offset_top + ch - (dialogue_panel.offset_bottom + 2.0)
+		cap = maxf(room / maxf(1.0, ch - h_i.y), 0.86)
+	for bn in _buttons_by_name:
+		var b: Control = _buttons_by_name[bn]
+		var h: Vector4 = _btn_home[bn]
+		var bs := s
+		if bn == &"interact":
+			bs = minf(s, cap)
+		elif bn == &"dash" and safe_area != null:
+			## Bağlam ipucu yazısı (ortalı, ~92 px yarıçap) ile Dash'in arasında 2 px pay bırak.
+			var roomx := safe_area.size.x * 0.5 + buttons_root.offset_left + cw - 94.0
+			bs = minf(s, maxf(roomx / maxf(1.0, cw - h.x), 0.86))
+		b.offset_left = cw - (cw - h.x) * bs
+		b.offset_right = cw - (cw - h.z) * bs
+		b.offset_top = ch - (ch - h.y) * bs
+		b.offset_bottom = ch - (ch - h.w) * bs
+	var js := JOY_BASE_SIZE * s
+	var bottom := -26.0
+	_joy_home = Vector4(14.0, bottom - js, 14.0 + js, bottom)
+	_restore_joystick_home()
+	joystick_base.offset_left = 0.0
+	joystick_base.offset_top = 0.0
+	joystick_base.offset_right = js
+	joystick_base.offset_bottom = js
+	joystick_thumb.offset_left = js * 0.25
+	joystick_thumb.offset_top = js * 0.25
+	joystick_thumb.offset_right = js * 0.75
+	joystick_thumb.offset_bottom = js * 0.75
+	_joy_radius = JOY_RADIUS * s
+	_joy_accept = JOY_ACCEPT * s
+	if _onboard_root != null and _onboard_root.visible:
+		_place_onboarding.call_deferred()
+
+
+## --- Hedef vurgusu (nabız) ---
+var _obj_tween: Tween
+var _obj_last_text: String = ""
+var _obj_pulse_pending: bool = false
+var _obj_session_pulsed: bool = false
+var _obj_free_time: float = 0.0
+
+
+func _can_pulse_objective() -> bool:
+	return UiGate.current_layer() == UiGate.Layer.NONE and not DialogueManager.is_open and not DeathManager.is_dying
+
+
+## Hedef etiketi ~1.2 sn parlar + kısa titreşim. Önceki tween öldürülür.
+func pulse_objective() -> void:
+	if _objective == null:
+		return
+	if _obj_tween != null and _obj_tween.is_valid():
+		_obj_tween.kill()
+	_objective.modulate = Color(1.9, 1.55, 0.95, 1.0)
+	_obj_tween = create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	_obj_tween.tween_property(_objective, "modulate", Color.WHITE, 1.2)
+	MobileInputManager.vibrate(15)
+	_obj_pulse_pending = false
+
+
+## Hedef metni gerçekten değiştiyse nabız: diyalog/sahne sürerken beklemeye alınır.
+func _note_objective_text(text: String) -> void:
+	var changed := _obj_last_text != "" and text != _obj_last_text
+	_obj_last_text = text
+	if changed:
+		if _can_pulse_objective():
+			pulse_objective()
+		else:
+			_obj_pulse_pending = true
+
+
+func _tick_objective_pulse(delta: float) -> void:
+	if not _can_pulse_objective():
+		_obj_free_time = 0.0
+		return
+	_obj_free_time += delta
+	if _obj_pulse_pending and _obj_free_time >= 0.5:
+		pulse_objective()
+	elif not _obj_session_pulsed and _obj_free_time >= 2.0:
+		## Oturumda kontrol ilk kez oyuncudayken (yeni oyun/uyanış dahil) hedef bir kez vurgulanır.
+		_obj_session_pulsed = true
+		pulse_objective()
+
+
+## --- Ölüm döngüsü yardımı ---
+var _helper_label: Label
+var _helper_tween: Tween
+
+
+func _on_death_loop_helper(room_id: StringName) -> void:
+	var hint := PuzzleManager.helper_hint_for_room(room_id)
+	if hint == "":
+		pulse_objective() ## odaya özel ipucu yok: hedefi nabızla yeniden göster
+		return
+	if _helper_label == null:
+		_helper_label = Label.new()
+		_helper_label.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
+		_helper_label.offset_left = -130.0
+		_helper_label.offset_right = 130.0
+		_helper_label.offset_top = -100.0
+		_helper_label.offset_bottom = -58.0
+		_helper_label.grow_horizontal = Control.GROW_DIRECTION_BOTH
+		_helper_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		_helper_label.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
+		_helper_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		_helper_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		UiTheme.apply_outlined(_helper_label, UiTheme.HINT, false, Color(0.95, 0.9, 0.7))
+		safe_area.add_child(_helper_label)
+	_helper_label.text = "Takıldın mı? Küçük bir ipucu:\n" + hint
+	_helper_label.modulate.a = 1.0
+	_helper_label.visible = true
+	if _helper_tween != null and _helper_tween.is_valid():
+		_helper_tween.kill()
+	_helper_tween = create_tween()
+	_helper_tween.tween_interval(7.0)
+	_helper_tween.tween_property(_helper_label, "modulate:a", 0.0, 0.6)
+	_helper_tween.tween_callback(func(): _helper_label.visible = false)
+
+
+## --- Dokunmatik ilk açılış ipucu ---
+var _onboard_root: Control
+var _onboard_joy: Label
+var _onboard_btn: Label
+var _onboard_time: float = 0.0
+
+
+func _tick_onboarding(delta: float, playable: bool) -> void:
+	if GameSettings.touch_onboarding_done:
+		return
+	var touch := _touch_seen or MobileInputManager.is_touch_ui()
+	if not touch or not playable or DialogueManager.is_open:
+		if _onboard_root != null:
+			_onboard_root.visible = false
+		return
+	if _onboard_root == null:
+		_build_onboarding()
+	if not _onboard_root.visible:
+		_onboard_root.visible = true
+		_place_onboarding()
+	_onboard_time += delta
+	if MobileInputManager.move_vector.length() > 0.2 or not _btn_touch.is_empty() or _onboard_time >= 6.0:
+		_finish_onboarding()
+
+
+func _build_onboarding() -> void:
+	_onboard_root = Control.new()
+	_onboard_root.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_onboard_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	safe_area.add_child(_onboard_root)
+	_onboard_joy = _onboard_label("Sol tarafa dokunup sürükle: yürü", HORIZONTAL_ALIGNMENT_LEFT)
+	_onboard_btn = _onboard_label("Sağdaki tuşlar: zıpla, saldır, atıl", HORIZONTAL_ALIGNMENT_RIGHT)
+
+
+func _onboard_label(text: String, align: HorizontalAlignment) -> Label:
+	var l := Label.new()
+	l.text = text
+	l.horizontal_alignment = align
+	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	l.size = Vector2(170, 30)
+	UiTheme.apply_outlined(l, UiTheme.HINT, false, Color(0.95, 0.9, 0.7))
+	_onboard_root.add_child(l)
+	return l
+
+
+## Etiketler joystick'in ve düğme kümesinin hemen üstüne (güvenli alan içinde) yerleşir.
+func _place_onboarding() -> void:
+	if _onboard_root == null:
+		return
+	var origin := safe_area.get_global_rect().position
+	var sz := safe_area.size
+	var jr := joystick_base.get_global_rect().position - origin
+	_onboard_joy.position = Vector2(clampf(jr.x, 4.0, maxf(4.0, sz.x - 174.0)), maxf(4.0, jr.y - 34.0))
+	var top := sz.y
+	for bn in [&"attack", &"dash", &"jump", &"interact"]:
+		var b: Control = _buttons_by_name[bn]
+		top = minf(top, b.get_global_rect().position.y - origin.y)
+	_onboard_btn.position = Vector2(maxf(4.0, sz.x - 174.0), maxf(4.0, top - 34.0))
+
+
+func _finish_onboarding() -> void:
+	GameSettings.touch_onboarding_done = true
+	GameSettings.save_settings()
+	if _onboard_root != null:
+		_onboard_root.visible = false
+
+
 func _refresh_objective_now(_room_id: StringName = &"") -> void:
 	if _objective == null:
 		return
 	_objective.text = GameState.get_current_objective()
+	_note_objective_text(_objective.text)
 	_layout_objective_and_hint()
 	_layout_objective_and_hint.call_deferred()
 
@@ -801,9 +1056,16 @@ const GUIDE_MAX_W := 440.0
 const GUIDE_RIGHT_RESERVE := 84.0
 
 
+var _guide_fit_width: float = -1.0
+
+
 func _fit_guidance_width() -> void:
 	if _objective == null or safe_area == null:
 		return
+	## Yalnız güvenli alan genişliği değişince yeniden uygula (her karede değil).
+	if is_equal_approx(_guide_fit_width, safe_area.size.x):
+		return
+	_guide_fit_width = safe_area.size.x
 	var avail := safe_area.size.x - GUIDE_LEFT - GUIDE_RIGHT_RESERVE
 	if avail <= 0.0:
 		avail = GUIDE_MAX_W
@@ -830,7 +1092,7 @@ var _live_hint_timer: SceneTreeTimer = null
 func _on_live_feedback(_puzzle_id: StringName, live: bool) -> void:
 	if not live or hint_label == null:
 		return
-	hint_label.text = "Bir şey… açıldı."
+	hint_label.text = "Bir şey açıldı."
 	hint_label.visible = true
 	var t := get_tree().create_timer(2.5)
 	_live_hint_timer = t
@@ -843,7 +1105,7 @@ func _on_live_feedback(_puzzle_id: StringName, live: bool) -> void:
 
 func _setup_guidance() -> void:
 	_objective = Label.new()
-	_objective.position = Vector2(12, 40)
+	_objective.position = Vector2(12, 44)
 	_objective.size = Vector2(440, 32)
 	_objective.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_objective.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -872,8 +1134,17 @@ func _process(delta: float) -> void:
 	var playable := UiGate.current_layer() == UiGate.Layer.NONE
 	_objective.visible = playable
 	_context_hint.visible = playable
+	if _helper_label != null:
+		_helper_label.visible = _helper_label.visible and playable
 	hint_label.visible = playable and not (_touch_seen or MobileInputManager.is_touch_ui())
 	_fit_guidance_width()
+	_tick_objective_pulse(delta)
+	_tick_onboarding(delta, playable)
+	_tick_toasts(delta, playable)
+	_badge_tick -= delta
+	if _badge_tick <= 0.0:
+		_badge_tick = 0.4
+		_refresh_journal_badge()
 	_hint_tick -= delta
 	if _hint_tick > 0.0 or not playable:
 		return
@@ -881,6 +1152,7 @@ func _process(delta: float) -> void:
 	var obj_text := GameState.get_current_objective()
 	if obj_text != _objective.text:
 		_objective.text = obj_text
+		_note_objective_text(obj_text)
 		_layout_objective_and_hint()
 	var player := get_tree().get_first_node_in_group("player")
 	_context_hint.text = ""
@@ -910,7 +1182,7 @@ func _friendly_target(node_name: String) -> String:
 	if "stone" in n:
 		return "Ağırlığı it"
 	if "lever" in n or "reset" in n:
-		return "Kolu kullan"
+		return "Kolu çek"
 	if "clock" in n or "watch" in n:
 		return "Saati incele"
 	if "flower" in n:
@@ -998,3 +1270,111 @@ func _update_portrait(speaker: String) -> void:
 	_portrait_speaker = speaker
 	_apply_portrait_inset(PortraitsLib.TEXT_INSET if key != &"" else 0.0)
 	_medallion.show_key(key, changed)
+
+
+## --- Kısa bildirimler (toast): ölüm sinematiği/diyalog sürerken kuyrukta bekler ---
+const TOAST_CORPSE_LOST := "En eski bedenin toprağa karıştı."
+const TOAST_PUZZLE_RESET := "Bu odadaki düzenek sıfırlandı."
+var _toast_label: Label
+var _toast_queue: Array[String] = []
+var _toast_time_left: float = 0.0
+var _toast_shown_log: Array[String] = [] ## test/audit: gösterilen metinler
+
+
+func _on_corpse_lost_to_limit(_trace: Dictionary) -> void:
+	queue_toast(TOAST_CORPSE_LOST)
+
+
+func queue_toast(text: String) -> void:
+	if text == "" or _toast_queue.has(text):
+		return
+	_toast_queue.append(text)
+	_flush_toasts()
+
+
+func _toast_allowed() -> bool:
+	return UiGate.current_layer() == UiGate.Layer.NONE and not DeathManager.is_dying and not DialogueManager.is_open
+
+
+func _flush_toasts() -> void:
+	if _toast_queue.is_empty() or _toast_time_left > 0.0 or not _toast_allowed():
+		return
+	if _toast_label == null:
+		_toast_label = Label.new()
+		_toast_label.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
+		## Dar tutulur: orta-alt şeritte Skill/Zıpla düğmelerine binmesin (mobile_layout_audit).
+		_toast_label.offset_left = -70.0
+		_toast_label.offset_right = 70.0
+		_toast_label.offset_top = -170.0
+		_toast_label.offset_bottom = -112.0
+		_toast_label.grow_horizontal = Control.GROW_DIRECTION_BOTH
+		_toast_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		_toast_label.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
+		_toast_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		_toast_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		UiTheme.apply_outlined(_toast_label, UiTheme.HINT, false, Color(0.88, 0.84, 0.95))
+		safe_area.add_child(_toast_label)
+	var text: String = _toast_queue.pop_front()
+	_toast_shown_log.append(text)
+	_toast_label.text = text
+	_toast_label.modulate.a = 1.0
+	_toast_label.visible = true
+	_toast_time_left = 3.6
+
+
+func _tick_toasts(delta: float, playable: bool) -> void:
+	if _toast_label != null and _toast_label.visible:
+		_toast_label.visible = playable
+	if _toast_time_left > 0.0:
+		_toast_time_left -= delta
+		if _toast_label != null:
+			_toast_label.modulate.a = clampf(_toast_time_left / 0.6, 0.0, 1.0)
+		if _toast_time_left <= 0.0 and _toast_label != null:
+			_toast_label.visible = false
+		return
+	_flush_toasts()
+
+
+## Kayıttan yükleme/odaya giriş: canlı ilerlemesi sıfırlanan bulmaca varsa tek seferlik not.
+func _check_puzzle_reset_notice(_arg = null) -> void:
+	await get_tree().create_timer(0.8).timeout
+	if not is_inside_tree():
+		return
+	var room := RoomManager.get_active_room_id()
+	if room != &"" and PuzzleManager.take_reset_notice(room):
+		queue_toast(TOAST_PUZZLE_RESET)
+
+
+## --- Günlük "yeni" rozeti ---
+var _journal_dot: Panel
+var _badge_tick: float = 0.0
+var _badge_state: bool = false
+
+
+func _setup_journal_badge() -> void:
+	_journal_dot = Panel.new()
+	_journal_dot.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_journal_dot.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	_journal_dot.offset_left = -16.0
+	_journal_dot.offset_right = -4.0
+	_journal_dot.offset_top = 4.0
+	_journal_dot.offset_bottom = 16.0
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0.9, 0.25, 0.3)
+	sb.border_color = Palette.IVORY
+	sb.set_border_width_all(1)
+	sb.set_corner_radius_all(6)
+	_journal_dot.add_theme_stylebox_override("panel", sb)
+	_journal_dot.visible = false
+	btn_journal.add_child(_journal_dot)
+
+
+func _refresh_journal_badge() -> void:
+	if _journal_dot == null:
+		return
+	var on := GameState.journal_any_unseen()
+	_journal_dot.visible = on
+	if on != _badge_state:
+		_badge_state = on
+		if hint_label.text.begins_with("WASD"):
+			_apply_default_hint()

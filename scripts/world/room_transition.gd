@@ -31,6 +31,8 @@ const WALK_TIME := 0.22
 const FADE_OUT := 0.26
 const FADE_IN := 0.3
 const LABEL_MARGIN := 16.0
+const TOUCH_AVOID_PAD := 6.0 ## etiket ile dokunmatik düğme arası (ekran px)
+var _label_base_y: float = 0.0
 const _REGION_CARD := preload("res://scripts/ui/region_title_card.gd")
 
 ## Büyük bölge geçişi / salon girişi kapısı (daha yüksek sütunlu niş).
@@ -79,6 +81,7 @@ func _ready() -> void:
 	_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	## Her zaman kapının tam ortasında; sabit sağ kenar kayması yok.
 	_label.position = Vector2(-_label.size.x * 0.5, FOOT_Y - _door_h - 40.0 + label_dy)
+	_label_base_y = _label.position.y
 	add_child(_label)
 	call_deferred("_clamp_door_label")
 	if not UiGate.gate_changed.is_connected(_on_gate_changed):
@@ -153,6 +156,7 @@ func _clamp_door_label() -> void:
 		var b := RoomManager.get_room_bounds(StringName(room.room_id))
 		if b.size.x > 0.0:
 			bounds = b
+	_label.position.y = _label_base_y ## dokunmatik kaçınma kalıcı kaymasın: her karede tabandan hesapla
 	var w := _label.size.x
 	# Önce kapı ortasına geri al, sonra sınırlara sıkıştır (kamera kayarken yeniden hesaplanır).
 	var gx := global_position.x - w * 0.5
@@ -175,6 +179,46 @@ func _clamp_door_label() -> void:
 	if view.size.x > 0.0:
 		var gy := _label.global_position.y
 		_label.global_position.y = clampf(gy, view.position.y + LABEL_MARGIN, maxf(view.position.y + LABEL_MARGIN, view.end.y - LABEL_MARGIN - _label.size.y))
+	_avoid_touch_buttons(view)
+
+
+## Dokunmatik HUD açıkken etiket düğme/joystick altında kalmasın: ekran dikdörtgenlerine çarparsa
+## en üstteki çakışan düğmenin üstüne çıkar; kadraj üstüne sığmazsa yana kayar.
+func _avoid_touch_buttons(view: Rect2) -> void:
+	var hud := get_tree().get_first_node_in_group("hud")
+	if hud == null or not hud.has_method("get_touch_button_screen_rects"):
+		return
+	var rects: Array = hud.get_touch_button_screen_rects()
+	if rects.is_empty():
+		return
+	var xf := _label.get_global_transform_with_canvas()
+	var sc := xf.get_scale()
+	if sc.x <= 0.0 or sc.y <= 0.0:
+		return
+	var start_y := _label.global_position.y
+	var start_x := _label.global_position.x
+	for _i in 4:
+		var lr: Rect2 = _label.get_global_transform_with_canvas() * Rect2(Vector2.ZERO, _label.size)
+		var top := INF
+		for r in rects:
+			if lr.intersects(r as Rect2):
+				top = minf(top, (r as Rect2).position.y)
+		if top == INF:
+			if lr.position.y >= 0.0:
+				return
+			break ## yukarı kadraj dışına çıktı: yana kay
+		_label.global_position.y -=(lr.end.y - top + TOUCH_AVOID_PAD) / sc.y
+	# Hâlâ çakışıyor (yukarı sığmadı): başlangıca dön, yana kay.
+	_label.global_position = Vector2(start_x, start_y)
+	for _i in 4:
+		var lr2: Rect2 = _label.get_global_transform_with_canvas() * Rect2(Vector2.ZERO, _label.size)
+		var left := INF
+		for r in rects:
+			if lr2.intersects(r as Rect2):
+				left = minf(left, (r as Rect2).position.x)
+		if left == INF:
+			return
+		_label.global_position.x -= (lr2.end.x - left + TOUCH_AVOID_PAD) / sc.x
 
 
 ## Aktif Camera2D'nin dünya koordinatındaki görüş dikdörtgeni; kamera yoksa boş Rect2.
@@ -309,16 +353,16 @@ func on_interact(by: Node) -> void:
 		var msg: String = locked_message if idx == 0 else String(LOCKED_VARIANTS[idx - 1])
 		## Yetenek kilidi sabit cümle kullanır; mühür kapılarındaki LOCKED_VARIANTS döngüsü aynı kalır.
 		if _ability_blocked():
-			msg = "Bu geçidi Gölge Atılması ile geç."
+			msg = "Bu geçidi Gölge Atılması'yla geç."
 		elif _nooks_missing():
 			msg = "Kayıtlar %d/%d. Geri dönüş köşelerinde eksik kayıtlar var." % [NookCount.count(), required_nooks]
 		## Ruh mührü: yetenek yoksa "nerede bulunur", varsa "nasıl açılır" söylenir (genel varyantlar yanıltmasın).
 		elif String(required_puzzle).begins_with("soul_seal"):
 			var has_slash := bool(GameState.player_progress_knowledge.get("ability_soul_slash", false))
 			if has_slash:
-				msg = "Mor mühür. Q ile (mobilde yıldız düğmesi) Ruh Kesimi'ni savur."
+				msg = "Mor mühür. Q ile (mobilde yıldız düğmesi) Ruh Kesimi'ni kullan."
 			elif idx % 2 == 0:
-				msg = "Mor mühür kılıçla açılmaz, ruhumla kesmeyi henüz bilmiyorum."
+				msg = "Mor mühür kılıçla açılmıyor. Ruhumla kesmeyi henüz bilmiyorum."
 			else:
 				msg = "Bu mührü kıracak gücü eski kitaplarda ara."
 		AudioManager.play_sfx(&"seal_key", -8.0, 0.55)
@@ -331,7 +375,7 @@ func on_interact(by: Node) -> void:
 	if target_room_id == &"core" and not EndingManager.has_both_shards():
 		if not bool(GameState.character_current_life_knowledge.get("warned_core_shards", false)):
 			GameState.character_current_life_knowledge["warned_core_shards"] = true
-			DialogueManager.say(GameState.keeper_speaker_name(), "Mühür parçaların eksik; böyle girersen döneceksin.")
+			DialogueManager.say(GameState.keeper_speaker_name(), "Mühür parçaların eksik. Böyle girersen geri döneceksin.")
 			return
 	_travel(by)
 

@@ -301,4 +301,4 @@ hold_live = PackedStringArray("decay_rootworks_stone")
 hold_line = "Taş plakadan kaymış; onu yerine itmeliyim."
 intro_line = "Kökler suyu beklemeden uyanmak istiyor; taş yerinde kalmalı."
 reward_title = "Yankı Sınavı: Kök Ağı"
-reward_body = "Kökler sırayı bozunca da uyandı. Taş yerinde durdukça bahçıvanın defteri sana güvendi."
+reward_body = "Sıra bozulunca da kökler uyandı. Taş yerinde durduğu sürece bahçıvanın defteri sana güvendi."

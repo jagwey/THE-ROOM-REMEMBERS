@@ -318,17 +318,16 @@ func _run() -> void:
 	check(is_equal_approx(curse.curse, 80.0), "CHALLENGE 4", "Death at 55.0 curse adds +25 to reach exactly 80.0", str(curse.curse))
 	check(curse.get_band() == curse.Band.DANGER, "CHALLENGE 4", "Band elevated to DANGER (Band 2)")
 
-	# Test 4.4: Starting curse = 75.0 -> Death -> 75 + 25 = 100.0 -> Smooth transition to possession
+	# Test 4.4: Starting curse = 75.0 -> Death -> 75 + 25 = 100 -> clamped to CURSE_MAX - 1 (99.0), rebirth never auto-possesses
 	curse.restore_curse(75.0)
 	check(is_equal_approx(curse.curse, 75.0), "CHALLENGE 4", "Starting curse set to 75.0")
 	death.request_death(&"curse_test_4")
 	await await_death(death)
-	# Upon rebirth, curse reached 100.0 which automatically initiated possession
 	if curse.possessing:
-		print("[INFO] CHALLENGE 4: Possession automatically triggered after rebirth reached 100.0 curse. Awaiting finish...")
 		await await_possession(curse)
-	check(not curse.possessing, "CHALLENGE 4", "Possession resolved smoothly after 100.0 curse rebirth")
-	check(is_equal_approx(curse.curse, 50.0), "CHALLENGE 4", "Curse reset to 50.0 after possession resolution", str(curse.curse))
+	check(not curse.possessing, "CHALLENGE 4", "Rebirth at overflow curse does not start possession")
+	check(is_equal_approx(curse.curse, curse.CURSE_MAX - 1.0), "CHALLENGE 4", "Rebirth curse clamped to CURSE_MAX - 1 (99.0)", str(curse.curse))
+	check(curse.get_band() == curse.Band.CRITICAL, "CHALLENGE 4", "Band is CRITICAL after overflow rebirth")
 
 	# ====================================================================
 	# FINAL EMPIRICAL VERDICT

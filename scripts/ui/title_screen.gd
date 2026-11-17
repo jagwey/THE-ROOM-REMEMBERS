@@ -24,6 +24,7 @@ var _vol_button: Button
 var _music_button: Button
 var _joy_button: Button
 var _haptics_button: Button
+var _btn_scale_button: Button
 var _fs_button: Button
 var _card_box: VBoxContainer
 var _t: float = 0.0
@@ -295,6 +296,9 @@ func _build_settings_page(parent: Control) -> void:
 		menu._toggle_haptics()
 		_refresh_settings())
 	_haptics_button.visible = OS.has_feature("mobile") or MobileInputManager.is_touch_ui()
+	_btn_scale_button = _button(p, "", func():
+		menu.cycle_button_scale()
+		_refresh_settings())
 	_fs_button = _button(p, "Tam Ekran (F11)", func(): menu.toggle_fullscreen())
 	_fs_button.visible = not OS.has_feature("mobile") and not MobileInputManager.is_touch_ui()
 	_button(p, "< Geri", func(): _show_page(&"main"))
@@ -388,6 +392,8 @@ func _refresh_settings() -> void:
 	_music_button.text = menu._music_text()
 	_joy_button.text = menu._joy_text()
 	_haptics_button.text = menu._haptics_text()
+	if _btn_scale_button:
+		_btn_scale_button.text = menu.button_scale_text()
 
 
 func _refresh_card() -> void:
@@ -406,6 +412,14 @@ func _refresh_card() -> void:
 	_card_line(_room_display_name(rid), 15, true, Color(1.0, 0.82, 0.5))
 	_card_line("Keşif: %d / %d oda" % [visited.size(), titles.size()], 13, false, Palette.IVORY)
 	_card_line("Ölüm: %d · Can: %d/%d" % [int(gs.player_progress_knowledge.get("deaths", 0)), gs.hearts, gs.max_hearts], 13, false, Palette.IVORY)
+	var play_sec := gs.get_play_time_sec()
+	if play_sec >= 60.0:
+		_card_line("Süre: " + gs.format_play_time(play_sec), 13, false, Palette.IVORY)
+	var last_note := gs.last_journal_note_title()
+	if last_note != "":
+		if last_note.length() > 36:
+			last_note = last_note.substr(0, 35) + "…"
+		_card_line("Son not: " + last_note, 12, false, Palette.PALE_LILAC)
 	var endings: Array = gs.player_progress_knowledge.get("endings_seen", [])
 	if not endings.is_empty():
 		_card_line("Görülen son: %d" % endings.size(), 13, false, Palette.IVORY)

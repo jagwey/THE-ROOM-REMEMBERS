@@ -75,7 +75,7 @@ texture_path = "res://assets/props/pocket_watch.png"
 sprite_scale = 0.45
 dialogue_room = &"library_clockroom"
 dialogue_set = &"clock_pendulum"
-repeat_line = "Noroi|Sarkaç tek yöne sarkık. Geri dönemeyen bir salınış."
+repeat_line = "Noroi|Sarkaç tek yöne sarkık. Geri dönemiyor."
 
 [node name="ClockPhoto" type="Area2D" parent="Interactive"]
 position = Vector2(1060, 288)
@@ -85,7 +85,7 @@ texture_path = "res://assets/props/photograph.png"
 sprite_scale = 0.45
 dialogue_room = &"library_clockroom"
 dialogue_set = &"clock_photo"
-repeat_line = "Noroi|Yüzleri silinmiş bir sıra. Yalnız defter tutan elin izi kalmış."
+repeat_line = "Noroi|Yüzleri silinmiş bir sıra. Yalnızca defteri tutan elin izi kalmış."
 
 [node name="MemoryFragments" type="Node2D" parent="Interactive"]
 script = ExtResource("mem_shrine")

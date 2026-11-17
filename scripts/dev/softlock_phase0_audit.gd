@@ -103,9 +103,10 @@ func _static_checks() -> void:
 	check(src != null and src.position.x < 380.0 and src.has_method("on_interact"), "catacomb_flower_source_exists")
 	inst.free()
 	var pm := root.get_node("PuzzleManager")
-	var hint: Variant = pm.HINTS.get(&"decay_catacombs", null)
+	var hint: Variant = pm.HINTS.get(&"decay_catacomb_seal", null)
 	check(hint is Dictionary and str((hint as Dictionary).get("orientation", "")) != "", "catacomb_hint_exists")
-	for k in [&"decay_catacombs", &"decay_catacomb_seal"]:
+	check(not pm.HINTS.has(&"decay_catacombs"), "catacomb_orphan_hint_removed")
+	for k in [&"decay_catacomb_seal"]:
 		var h: Variant = pm.HINTS.get(k, {})
 		var ok: bool = h is Dictionary and str(h.get("orientation", "")) != "" and str(h.get("orientation", "")).length() <= 70 and str(h.get("explicit", "")) != "" and str(h.get("explicit", "")).length() <= 90
 		check(ok, "hint_lengths_%s" % String(k))

@@ -16,6 +16,36 @@ static var _force_title: bool = false
 var _panel: GothicModalPanel
 var _title_screen: Control
 var _menu_button: Button
+var _menu_safe_area: Control
+
+
+## HUD ile aynı güvenli alan inset'i (çentik/kesik): Menü düğmesi çentiğin altında kalmasın.
+func _apply_menu_safe_area() -> void:
+	if _menu_safe_area == null:
+		return
+	var vp_size: Vector2 = get_viewport().get_visible_rect().size
+	var safe: Rect2 = DisplayServer.get_display_safe_area()
+	var win: Vector2i = DisplayServer.window_get_size()
+	var ml := 0.0
+	var mt := 0.0
+	var mr := 0.0
+	var mb := 0.0
+	if win.x > 0 and win.y > 0 and vp_size.x > 0.0 and safe.size.x > 0.0 and safe.size.y > 0.0:
+		var sx := vp_size.x / float(win.x)
+		var sy := vp_size.y / float(win.y)
+		ml = float(safe.position.x) * sx
+		mt = float(safe.position.y) * sy
+		mr = float(win.x - safe.end.x) * sx
+		mb = float(win.y - safe.end.y) * sy
+		if ml + mr >= vp_size.x * 0.9 or mt + mb >= vp_size.y * 0.9:
+			ml = 0.0
+			mt = 0.0
+			mr = 0.0
+			mb = 0.0
+	_menu_safe_area.offset_left = clampf(ml, 0.0, 64.0)
+	_menu_safe_area.offset_top = clampf(mt, 0.0, 48.0)
+	_menu_safe_area.offset_right = -clampf(mr, 0.0, 64.0)
+	_menu_safe_area.offset_bottom = -clampf(mb, 0.0, 48.0)
 var _continue_button: Button
 var _settings_button: Button
 var _quit_button: Button ## Kaydet ve Çık
@@ -33,6 +63,7 @@ var _text_speed_button: Button
 var _shake_button: Button
 var _font_button: Button
 var _hint_button: Button
+var _btn_scale_button: Button
 var _settings_scroll: ScrollContainer
 var _panel_base_h: float = 292.0
 const SETTINGS_PANEL_H := 340.0
@@ -74,6 +105,9 @@ func _ready() -> void:
 	safe_area.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(safe_area)
 	safe_area.add_child(_menu_button)
+	_menu_safe_area = safe_area
+	_apply_menu_safe_area()
+	get_viewport().size_changed.connect(_apply_menu_safe_area)
 	UiGate.gate_changed.connect(_on_gate_changed)
 	_panel = GothicModalPanel.new()
 	## Dokunmatikte yardım metni ve tam ekran düğmesi yok — panel kısalır.
@@ -94,6 +128,7 @@ func _ready() -> void:
 	## Ayarlar alt sayfası (var olan ses/müzik/tam ekran/joystick/titreşim düğmeleri; yeni sistem yok).
 	_settings_box = VBoxContainer.new()
 	_settings_box.add_theme_constant_override("separation", 6)
+	_settings_box.size_flags_vertical = Control.SIZE_EXPAND_FILL ## kaydırma alanı panel boyunu doldurur (dar ekranda 2 satır görünüyordu)
 	_panel.body.add_child(_settings_box)
 	_settings_scroll = ScrollContainer.new()
 	_settings_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
@@ -127,8 +162,10 @@ func _ready() -> void:
 	_font_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_hint_button = _panel.add_button("", _cycle_hint_level, misc_row2)
 	_hint_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_btn_scale_button = _panel.add_button("", cycle_button_scale, _settings_row(sbox))
+	_btn_scale_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	var row := _settings_row(sbox)
-	_fs_button = _panel.add_button("Tam ekran (F11)", toggle_fullscreen, row)
+	_fs_button = _panel.add_button("Tam Ekran (F11)", toggle_fullscreen, row)
 	_fs_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_fs_button.visible = not OS.has_feature("mobile")
 	_joy_button = _panel.add_button("", _toggle_joystick_mode, row)
@@ -368,9 +405,10 @@ func _toggle_joystick_mode() -> void:
 
 
 func _toggle_haptics() -> void:
-	MobileInputManager.haptics_enabled = not MobileInputManager.haptics_enabled
+	GameSettings.cycle_haptics()
 	_save_settings()
 	_refresh_settings_buttons()
+	MobileInputManager.haptic(&"ui") ## seçilen şiddeti hemen hissettir
 
 
 func _set_panel_height(h: float) -> void:
@@ -443,6 +481,20 @@ func _cycle_hint_level() -> void:
 	_refresh_settings_buttons()
 
 
+## Buton boyutu: %80..%120 arası döner; HUD'a anında uygulanır.
+func cycle_button_scale() -> void:
+	GameSettings.button_scale_idx = (GameSettings.button_scale_idx + 1) % GameSettings.BUTTON_SCALE_PCT.size()
+	_save_settings()
+	_refresh_settings_buttons()
+	for hud in get_tree().get_nodes_in_group("hud"):
+		if hud.has_method("apply_button_scale"):
+			hud.apply_button_scale()
+
+
+func button_scale_text() -> String:
+	return "Buton boyutu: %%%d" % GameSettings.BUTTON_SCALE_PCT[GameSettings.button_scale_idx]
+
+
 func _apply_font_setting() -> void:
 	for hud in get_tree().get_nodes_in_group("hud"):
 		if hud.has_method("apply_text_size_setting"):
@@ -480,6 +532,7 @@ func _refresh_settings_buttons() -> void:
 		_shake_button.text = "Ekran sarsıntısı: " + ("Açık" if GameSettings.screen_shake else "Kapalı")
 		_font_button.text = "Yazı boyutu: " + ("Büyük" if GameSettings.font_large else "Normal")
 		_hint_button.text = "İpucu: " + GameSettings.HINT_LEVEL_NAMES[GameSettings.hint_level]
+		_btn_scale_button.text = button_scale_text()
 
 
 func _joy_text() -> String:
@@ -487,7 +540,8 @@ func _joy_text() -> String:
 
 
 func _haptics_text() -> String:
-	return "Titreşim: Açık" if MobileInputManager.haptics_enabled else "Titreşim: Kapalı"
+	GameSettings.ensure_loaded()
+	return "Titreşim: " + GameSettings.HAPTIC_NAMES[clampi(GameSettings.haptics_level, 0, 3)]
 
 
 func _vol_text() -> String:
@@ -504,7 +558,6 @@ func _load_settings() -> void:
 		_volume = clampf(float(cfg.get_value("audio", "volume", 1.0)), 0.0, 1.0)
 		_music_on = bool(cfg.get_value("audio", "music", true))
 		MobileInputManager.floating_joystick = bool(cfg.get_value("input", "floating_joystick", true))
-		MobileInputManager.haptics_enabled = bool(cfg.get_value("input", "haptics", true))
 	GameSettings.load_settings()
 	AudioManager.set_master_volume(_volume)
 	AudioManager.set_music_enabled(_music_on)
@@ -518,7 +571,7 @@ func _save_settings() -> void:
 	cfg.set_value("audio", "volume", _volume)
 	cfg.set_value("audio", "music", _music_on)
 	cfg.set_value("input", "floating_joystick", MobileInputManager.floating_joystick)
-	cfg.set_value("input", "haptics", MobileInputManager.haptics_enabled)
+	cfg.set_value("input", "haptics", GameSettings.haptics_level > 0) ## eski anahtar (türetilmiş)
 	cfg.save(SETTINGS_PATH)
 	GameSettings.save_settings(SETTINGS_PATH)
 

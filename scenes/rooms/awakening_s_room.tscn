@@ -117,7 +117,7 @@ script = ExtResource("lore")
 lore_id = &"s_wall_memories"
 texture_path = "res://assets/props/photograph.png"
 sprite_scale = 0.5
-lines = PackedStringArray("Noroi|Duvarda beş kırık anı başlığı yazılı; yılları karışık sırada.", "Kayıt|Geç Yansıma: Mart 1927.", "Kayıt|İlk Gün: Ekim 1921.", "Kayıt|Yanlış Sayı: Ocak 1926.", "Kayıt|Sera: Mart 1923.", "Kayıt|Yasak Raf: Eylül 1924.", "Noroi|Her başlığın bir yılı var. Sayfalar zamanın akışına göre çevrilir.")
+lines = PackedStringArray("Noroi|Duvarda beş kırık anı başlığı yazılı; yılları karışık sırada.", "Kayıt|Geç Yansıma: Mart 1927.", "Kayıt|İlk Gün: Ekim 1921.", "Kayıt|Yanlış Sayı: Ocak 1926.", "Kayıt|Sera: Mart 1923.", "Kayıt|Yasak Raf: Eylül 1924.", "Noroi|Her başlığın bir yılı var. Sayfaları yıl sırasına göre çevirmeliyim.")
 
 [node name="SStripe" type="StaticBody2D" parent="Interactive"]
 position = Vector2(840, 288)

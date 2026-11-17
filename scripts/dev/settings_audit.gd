@@ -60,6 +60,39 @@ func _run() -> void:
 	gs.reset_defaults()
 	gs.load_settings("user://does_not_exist_settings.cfg")
 	check(gs.text_speed == 1 and gs.hint_level == 2 and gs.shake_enabled(), "missing file -> defaults")
+	## --- titreşim seviyesi: gidiş-dönüş, eski anahtar göçü, ölçekleme ---
+	gs.haptics_level = 3
+	gs.fast_travel_hint_shown = true
+	gs.save_settings(TMP)
+	gs.reset_defaults()
+	check(gs.haptics_level == 2 and not gs.fast_travel_hint_shown, "haptics default Normal, ft hint unset")
+	gs.load_settings(TMP)
+	check(gs.haptics_level == 3 and gs.fast_travel_hint_shown, "haptics level + ft hint flag persist")
+	for legacy in [[false, 0], [true, 2]]:
+		var old := ConfigFile.new()
+		old.set_value("input", "haptics", legacy[0])
+		old.save(TMP + ".old")
+		gs.load_settings(TMP + ".old")
+		check(gs.haptics_level == legacy[1], "migration: input/haptics=%s -> level %d" % [legacy[0], legacy[1]])
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(TMP + ".old"))
+	gs.haptics_level = 1
+	check(gs.scale_haptic_ms(20) == 10 and gs.scale_haptic_ms(5) == 5, "Hafif 0.5x (clamp min 5)")
+	gs.haptics_level = 2
+	check(gs.scale_haptic_ms(25) == 25, "Normal 1x")
+	gs.haptics_level = 3
+	check(gs.scale_haptic_ms(20) == 32 and gs.scale_haptic_ms(200) == 200, "Guclu 1.6x (clamp max 200)")
+	var mim := root.get_node("MobileInputManager")
+	gs.haptics_level = 0
+	check(not mim.haptics_enabled and not gs.haptics_on(), "level 0 -> haptics_enabled getter false")
+	mim.haptics_enabled = true
+	check(gs.haptics_level == 2 and mim.haptics_enabled, "haptics_enabled setter true -> Normal")
+	mim.haptic(&"damage")
+	mim.haptic(&"death")
+	mim.haptic(&"solve")
+	mim.haptic(&"ui")
+	mim.haptic(&"no_such_pattern")
+	check(mim.HAPTIC_PATTERNS.has(&"damage") and mim.HAPTIC_PATTERNS[&"death"].size() == 3, "named patterns defined; haptic() safe headless")
+	gs.reset_defaults()
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(TMP))
 
 	## --- ipucu seviyesi kademeleri ---
@@ -103,6 +136,14 @@ func _run() -> void:
 		menu._cycle_text_speed()
 		menu._cycle_text_speed()
 		check(gs.text_speed == 1 and menu._text_speed_button.text == "Metin hızı: Normal", "text speed cycle wraps to Normal")
+		gs.haptics_level = 2
+		menu._toggle_haptics()
+		check(gs.haptics_level == 3 and menu._haptics_text() == "Titreşim: Güçlü", "haptics button cycles Normal -> Güçlü")
+		menu._toggle_haptics()
+		check(gs.haptics_level == 0 and menu._haptics_text() == "Titreşim: Kapalı", "haptics button wraps -> Kapalı")
+		menu._toggle_haptics()
+		check(gs.haptics_level == 1 and menu._haptics_text() == "Titreşim: Hafif", "haptics button -> Hafif")
+		menu._toggle_haptics()
 		menu._toggle_shake()
 		check(not gs.screen_shake and menu._shake_button.text == "Ekran sarsıntısı: Kapalı", "shake toggle off")
 		menu._cycle_hint_level()

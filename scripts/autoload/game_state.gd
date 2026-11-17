@@ -26,6 +26,7 @@ var player_progress_knowledge: Dictionary = {
 	"echoes_seen": [],
 	"memory_codes": {},
 	"endings_seen": [],
+	"play_time_sec": 0.0, ## oyun içi toplam süre (başlık/duraklatma hariç), kayıtla taşınır
 }
 
 ## Bu hayatın karakter bilgisi (ölümde sıfırlanır).
@@ -82,6 +83,95 @@ func _ready() -> void:
 	hearts_changed.emit(hearts, max_hearts)
 
 
+## Toplam oyun süresi: başlık ekranı ve duraklatma menüsü dışında birikir.
+func _process(delta: float) -> void:
+	var layer := UiGate.current_layer()
+	if layer == UiGate.Layer.TITLE or layer == UiGate.Layer.PAUSE_MENU:
+		return
+	add_play_time(minf(delta, 1.0))
+
+
+func add_play_time(seconds: float) -> void:
+	player_progress_knowledge["play_time_sec"] = get_play_time_sec() + maxf(seconds, 0.0)
+
+
+func get_play_time_sec() -> float:
+	return maxf(float(player_progress_knowledge.get("play_time_sec", 0.0)), 0.0)
+
+
+## "Xs Ydk" (örn. "2s 15dk"); bir saatin altı "Ydk".
+static func format_play_time(seconds: float) -> String:
+	var total_min := int(seconds / 60.0)
+	var h := total_min / 60
+	var m := total_min % 60
+	if h <= 0:
+		return "%ddk" % m
+	return "%ds %ddk" % [h, m]
+
+
+## --- Günlük "yeni" rozeti: bölüm başına görülen kayıt sayısı (kayıtlı) ---
+signal journal_seen_changed
+const JOURNAL_SECTIONS := ["gunluk", "notlar", "izler"]
+
+
+func journal_section_total(section: String) -> int:
+	var n := 0
+	for note in player_progress_knowledge.get("journal_notes", []):
+		if note is Dictionary and String(note.get("section", "")) == section:
+			n += 1
+	if section == "izler":
+		var tr: Variant = world_memory_state.get("traces", [])
+		if tr is Array:
+			n += (tr as Array).size()
+	return n
+
+
+## Eski kayıt / yeni oyun: anahtar yoksa mevcut sayılar "görüldü" sayılır (sahte rozet yok).
+func journal_seen_init(force: bool = false) -> void:
+	if not force and player_progress_knowledge.get("journal_seen") is Dictionary:
+		return
+	var d := {}
+	for s in JOURNAL_SECTIONS:
+		d[s] = journal_section_total(s)
+	player_progress_knowledge["journal_seen"] = d
+
+
+func journal_unseen(section: String) -> int:
+	journal_seen_init()
+	var d: Dictionary = player_progress_knowledge["journal_seen"]
+	return maxi(journal_section_total(section) - int(d.get(section, 0)), 0)
+
+
+func journal_any_unseen() -> bool:
+	for s in JOURNAL_SECTIONS:
+		if journal_unseen(s) > 0:
+			return true
+	return false
+
+
+func journal_mark_seen(section: String) -> void:
+	journal_seen_init()
+	var d: Dictionary = player_progress_knowledge["journal_seen"]
+	var total := journal_section_total(section)
+	if int(d.get(section, 0)) != total:
+		d[section] = total
+		journal_seen_changed.emit()
+
+
+## Son eklenen kayıt başlığı (otomatik "Yankı notu" satırları atlanır); yoksa "".
+func last_journal_note_title() -> String:
+	var notes: Variant = player_progress_knowledge.get("journal_notes", [])
+	if not (notes is Array):
+		return ""
+	for i in range((notes as Array).size() - 1, -1, -1):
+		var n: Variant = notes[i]
+		if n is Dictionary:
+			var t := String(n.get("title", "")).strip_edges()
+			if t != "" and t != "Yankı notu":
+				return t
+	return ""
+
+
 ## Yeni yaşam: Noroi'nin bu hayata ait geçici bilgisi silinir.
 ## Normal ölüm oyuncunun bulunduğu odada kalır; dünya hafızası ve oyuncu ilerlemesi korunur.
 func reset_character_life(keep_room: StringName = &"", keep_cp: Vector2 = Vector2.ZERO, keep_spawn: StringName = &"") -> void:
@@ -133,10 +223,14 @@ func get_checkpoint() -> Vector2:
 	return DEFAULT_CHECKPOINT
 
 
+var last_visit_was_new: bool = true## son mark_room_visited ilk ziyaret miydi (ipucu/ortam anı için)
+
+
 func mark_room_visited(room_id: StringName) -> void:
 	character_current_life_knowledge["room"] = room_id
 	var visited: Array = player_progress_knowledge["rooms_visited"]
-	if not visited.has(String(room_id)):
+	last_visit_was_new = not visited.has(String(room_id))
+	if last_visit_was_new:
 		visited.append(String(room_id))
 	room_changed.emit(room_id)
 	knowledge_changed.emit(&"player")
@@ -203,6 +297,8 @@ func damage(amount: int = 1) -> void:
 	hearts_changed.emit(hearts, max_hearts)
 	if hearts <= 0:
 		DeathManager.request_death(&"hearts")
+	else:
+		MobileInputManager.haptic(&"damage")
 
 
 ## Bellek kodu öğren: hangi yaşamda (ölüm sayısı) öğrenildiğini de kaydeder.

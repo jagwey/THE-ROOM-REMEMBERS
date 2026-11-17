@@ -73,5 +73,67 @@ func _run() -> void:
 		check(journal.map_view._hits.size() >= 1, "map has tappable rooms (%d)" % journal.map_view._hits.size())
 		journal.close_journal()
 
+	## Bugfix 2: hızlı seyahat kararırken ölüm başlarsa oda değişmez, kilitler bırakılır.
+	var dmgr := root.get_node("DeathManager")
+	var room_before: StringName = rm.get_active_room_id()
+	var started_dying: bool = false
+	var travel_res := [true]
+	var runner := func() -> void:
+		travel_res[0] = await rm.fast_travel(target)
+	runner.call()
+	await create_timer(0.1).timeout
+	check(door_script.is_transitioning(), "death-race: travel in progress")
+	dmgr.is_dying = true
+	await create_timer(1.2).timeout
+	dmgr.is_dying = false
+	check(travel_res[0] == false, "death-race: fast_travel aborted (returned false)")
+	check(rm.get_active_room_id() == room_before, "death-race: room unchanged (%s)" % rm.get_active_room_id())
+	check(not door_script.is_transitioning(), "death-race: transition lock released")
+	check(gate.current_layer() == gate.Layer.NONE, "death-race: UiGate NONE")
+	await process_frame
+	await process_frame
+	var fade_left := false
+	for c in root.get_children():
+		if c.name == "FastTravelFade" and not c.is_queued_for_deletion():
+			fade_left = true
+	check(not fade_left, "death-race: fade freed")
+
+	## Bugfix 1: geçiş sırasında arka plana geçiş kaydı kaybetmez, geçiş bitince yazar.
+	var mim := root.get_node("MobileInputManager")
+	mim.force_mobile_for_test = true
+	mim._last_save_ms = -100000
+	door_script.begin_transition_lock()
+	var wrote_mid: bool = mim._try_autosave(false)
+	check(not wrote_mid and mim.save_pending, "pending-save: skipped mid-transition and flagged")
+	door_script.reset_transition_lock()
+	await create_timer(0.7).timeout
+	check(not mim.save_pending and mim._last_save_ms > 0, "pending-save: written after transition ended")
+	## Bugfix 5: 2 sn içinde ikinci odak kaybı yeniden yazmaz.
+	var stamp: int = mim._last_save_ms
+	mim._try_autosave(false)
+	check(mim._last_save_ms == stamp, "debounce: second save within 2s skipped")
+	mim.force_mobile_for_test = false
+
+	## Bugfix 7: ölüm başlayınca yankı sunağı kaydı iptal edilir.
+	var altar: Node = null
+	for n in get_nodes_in_group("echo_altar"):
+		altar = n
+		break
+	if altar == null:
+		for rid in rm._rooms:
+			var r: Node = (rm._rooms[rid] as Dictionary)["root"]
+			for n in r.find_children("*", "Area2D", true, false):
+				if n.is_in_group("echo_altar"):
+					altar = n
+					break
+			if altar != null:
+				break
+	check(altar != null, "echo-death: altar found")
+	if altar != null:
+		altar._start_recording(current_scene.get_node("Player") as Node2D)
+		check(altar._recording, "echo-death: recording started")
+		dmgr.death_started.emit(&"test")
+		check(not altar._recording, "echo-death: recording cancelled on death")
+
 	print("FT DONE failures=", failures)
 	quit(1 if failures > 0 else 0)

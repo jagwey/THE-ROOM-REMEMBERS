@@ -2,10 +2,10 @@
   "room": "core_ascent",
   "sets": {
     "echo": [
-      {"s": "Noroi", "t": "Merdiven her basamakta bir ölümümü sayıyor. Hangisini unuttum?"},
+      {"s": "Noroi", "t": "Her basamak bir ölümümü sayıyor sanki. Hangisini unuttum?"},
       {"s": "@shilda", "t": "Sayma artık. Yankı burada: saat, çiçek, mühür, hepsi aynı basamakta."},
-      {"s": "Noroi", "t": "Ruh Kesimi mührü açar. Gölge Atılması perdeyi geçirir."},
-      {"s": "@shilda", "t": "İkisi de sende olsun, son mührü ben tutarım."}
+      {"s": "Noroi", "t": "Ruh Kesimi mührü açar. Gölge Atılması perdeden geçirir."},
+      {"s": "@shilda", "t": "İkisi de sende kalsın. Son mührü ben tutarım."}
     ],
     "go": [
       {"s": "@shilda", "t": "Tutuyorum. Bırakma."},
@@ -17,12 +17,12 @@
     ],
     "ascent_stairs": [
       {"s": "Noroi", "t": "Merdiven yukarı daralıyor. Her basamakta ses değişiyor."},
-      {"s": "@shilda", "t": "Çekirdeğe yaklaşıyoruz. Her basamak bir unutuşun karşılığı."},
+      {"s": "@shilda", "t": "Çekirdeğe yaklaşıyoruz. Her basamak bir unutuşa denk geliyor."},
       {"s": "Noroi", "t": "Bu kez unutmak istemiyorum."},
-      {"s": "@shilda", "t": "O zaman konuş. Ben sana tutunurum, sen sözlere."},
+      {"s": "@shilda", "t": "O zaman konuş. Ben sana tutunurum, sen de sözlere."},
       {"s": "Noroi", "t": "Korkuyorum. Söylemesi tuhaf ama korkuyorum."},
-      {"s": "@shilda", "t": "Ben de. Altmış sekiz yıldır ilk kez bir şey için korkuyorum."},
-      {"s": "Noroi", "t": "O halde birlikte korkarız. Daha kolay."}
+      {"s": "@shilda", "t": "Ben de. Altmış sekiz yıldır ilk kez korkuyorum."},
+      {"s": "Noroi", "t": "O zaman birlikte korkarız. Daha kolay olur."}
     ]
   }
 }

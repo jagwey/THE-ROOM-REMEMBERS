@@ -4,7 +4,7 @@
     "threshold_stone": [
       {"s": "Noroi", "t": "Eşik taşı ikiye bölünmüş. Bir yarısı sıcak, öbürü buz gibi."},
       {"s": "@shilda", "t": "Sıcak olan sensin. Soğuk olan ben."},
-      {"s": "Noroi", "t": "İkimizi de tutan bir taş mı bu?"},
+      {"s": "Noroi", "t": "Bu taş ikimizi de mi tutuyor?"},
       {"s": "@shilda", "t": "Bizi birbirimize bağlıyor. Kırarsak ikimiz de dağılırız."},
       {"s": "Noroi", "t": "O zaman kırmadan geçeriz. Bir yolu vardır."},
       {"s": "@shilda", "t": "Vardır. Yan yana yürürsek."}

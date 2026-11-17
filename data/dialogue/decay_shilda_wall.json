@@ -4,10 +4,10 @@
     "wall_marks": [
       {"s": "Noroi", "t": "Duvarda parmak izleri var. Hepsi aynı yüksekliğe uzanmış."},
       {"s": "@shilda", "t": "Beni gözlüyorsun. Bu bakışa alışık değilim."},
-      {"s": "Noroi", "t": "Gözlemiyorum. Buradasın, seni görebiliyorum; bu yetiyor."},
+      {"s": "Noroi", "t": "Gözlemiyorum. Buradasın, seni görüyorum ve bu bana yetiyor."},
       {"s": "@shilda", "t": "Yetmez. Ama başlangıç için fena değil."},
       {"s": "Noroi", "t": "Sana güvenmeye başlıyorum. Bunu bil."},
-      {"s": "@shilda", "t": "Bilmek istemezdim. Güven, taşıması en ağır şey."}
+      {"s": "@shilda", "t": "Keşke bilmeseydim. Güven taşıması en zor şey."}
     ]
   }
 }

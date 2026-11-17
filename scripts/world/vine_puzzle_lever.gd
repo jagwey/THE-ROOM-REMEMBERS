@@ -20,7 +20,7 @@ func on_interact(_by: Node) -> void:
 		DialogueManager.say("Noroi", "Sarmaşık zaten çekilmiş.")
 		return
 	_busy = true
-	DialogueManager.say("Noroi", "Düğümü çözüyorum…")
+	DialogueManager.say("Noroi", "Düğümü çözüyorum.")
 	var ok: bool = await DialogueManager.dialogue_finished
 	if ok:
 		PuzzleManager.mark_solved(puzzle_id)

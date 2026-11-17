@@ -396,7 +396,7 @@ func _warn_lines(zone_id: StringName) -> Array:
 		if room.begins_with("library"):
 			return ["Oraya girme.", "Merak etmen yetmez."]
 		if room.begins_with("experiment"):
-			return ["Orası seni tutar.", "Geri gel."]
+			return ["Orası seni bırakmaz.", "Geri gel."]
 		if room.begins_with("mirrors"):
 			return ["Yalnız girme.", "Beni bekle."]
 		if room.begins_with("core"):
@@ -633,7 +633,7 @@ func on_interact(_by: Node) -> void:
 ## §19 asama konusmasi: bolgeye gore Shilda sozu (1 Mesafeli, 2 Merak, 3 Guven, 4 Aci, 5 Ortak amac).
 func _queue_stage_talk(room: String) -> void:
 	if room == "library_witness":
-		DialogueManager.say("Shilda", "Ben seyrederim. Tanık olan sensin.")
+		DialogueManager.say("Shilda", "Ben sadece izlerim. Tanık olan sensin.")
 	elif room.begins_with("library"):
 		DialogueManager.say("Noroi", "Beni neden takip ediyorsun?")
 		DialogueManager.say("Shilda", "Seni takip etmiyorum.")

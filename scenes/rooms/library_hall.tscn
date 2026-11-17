@@ -425,7 +425,7 @@ blocking = false
 refusal_line = "Raftaki mor damar bir kapak gibi kapalı; Ruh Kesimi için Yasak Kanat'a gitmeliyim."
 
 [node name="NookRecord" type="Area2D" parent="Interactive"]
-position = Vector2(616.0, 288.0)
+position = Vector2(140.0, 288.0)
 script = ExtResource("nook_rec")
 lore_id = &"nook_hall_b"
 role = "record"

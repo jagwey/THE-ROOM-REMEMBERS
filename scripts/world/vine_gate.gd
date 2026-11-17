@@ -102,7 +102,7 @@ func receive_sword_hit(_from: Node, _dir: float, _combo: int) -> void:
 	if _is_open() or _hint_cooldown > 0.0:
 		return
 	_hint_cooldown = 4.0
-	DialogueManager.say("Noroi", "Kılıç işlemiyor. Bu sarmaşık çiçekten korkar.")
+	DialogueManager.say("Noroi", "Kılıç işe yaramıyor. Bu sarmaşık çiçekten korkar.")
 
 
 func _pulse_open() -> void:

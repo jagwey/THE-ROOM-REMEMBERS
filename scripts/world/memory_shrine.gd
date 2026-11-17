@@ -101,7 +101,7 @@ func _ready() -> void:
 	for s in d.get("order", []):
 		ord.append(String(s))
 	order = ord
-	fail_line = "Sıra tutmadı. Tarihlere ve neden-sonuca bak."
+	fail_line = "Sıra tutmadı. Tarihlere ve olayların sırasına bak."
 	penalize_wrong = false
 	if has_memory(memory_id) and not PuzzleManager.is_solved(puzzle_id):
 		PuzzleManager.mark_solved(puzzle_id)

@@ -64,7 +64,7 @@ func receive_keeper_charge(_keeper: Node) -> void:
 		if cam and cam.has_method("focus_pulse"):
 			cam.focus_pulse(global_position + Vector2(0, -70))
 		broken.emit(wall_id)
-		DialogueManager.say("Noroi", "Duvar yıkıldı… arkasında bir geçit var.")
+		DialogueManager.say("Noroi", "Duvar yıkıldı. Arkasında bir geçit var.")
 	else:
 		DialogueManager.whisper("Noroi", "Duvar çatladı, bir kez daha!")
 	SaveManager.save_game()
@@ -75,7 +75,7 @@ func receive_sword_hit(_from: Node, _dir: float, _combo: int) -> void:
 		return
 	if not _sword_hint_done:
 		_sword_hint_done = true
-		DialogueManager.whisper("Noroi", "Kılıcım taşı çizmiyor bile, bunu yıkabilecek tek güç Gölge Atılması.")
+		DialogueManager.whisper("Noroi", "Kılıcım taşı çizmiyor bile. Bunu yıkabilecek tek güç Gölge Atılması.")
 
 
 func _apply_state(animate: bool) -> void:

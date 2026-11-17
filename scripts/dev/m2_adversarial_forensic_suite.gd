@@ -101,7 +101,7 @@ func _run() -> void:
 	for i in range(5):
 		dm.clear()
 		seal.on_interact(player)
-		check(dm.is_open and dm._full_line == "Kanımda aktif bir lanet yok. Bu mühür sadece lanet altındayken uyanır.", "Interact %d rejected with canonical dialogue" % i)
+		check(dm.is_open and dm._full_line == "Kanımda aktif bir lanet yok, bu mühür yalnız lanet altındayken uyanır.", "Interact %d rejected with canonical dialogue" % i)
 
 	check(_serial(save_path) == s_init, "5 repetitive zero-curse interacts caused ZERO save commits")
 	check(gs.get_checkpoint() == cp_init, "Checkpoint remained completely unchanged")
@@ -127,7 +127,7 @@ func _run() -> void:
 	seal.on_interact(player)
 	await _wait(0.05)
 	check(dm.is_open and dm._speaker == "Noroi", "Second interact immediately blocked by 0 curse")
-	check(dm._full_line == "Kanımda aktif bir lanet yok. Bu mühür sadece lanet altındayken uyanır.", "Second interact displayed zero-curse line")
+	check(dm._full_line == "Kanımda aktif bir lanet yok, bu mühür yalnız lanet altındayken uyanır.", "Second interact displayed zero-curse line")
 	check(_serial(save_path) == s_mid, "Second interact did NOT write another save commit")
 	dm.clear()
 

@@ -135,6 +135,8 @@ func toggle_journal() -> void:
 
 func _show_section(section: String) -> void:
 	_section = section
+	if section != "harita":
+		GameState.journal_mark_seen(section) ## sekme açıldı: "yeni" rozeti söner
 	_highlight_tabs()
 	var is_map := section == "harita"
 	map_view.visible = is_map
@@ -169,7 +171,7 @@ func _show_section(section: String) -> void:
 		detail_title.text = ""
 		detail_body.text = ""
 		empty_label.visible = true
-		empty_label.text = "Sayfa boş…\nhenüz bir yankı yok."
+		empty_label.text = "Sayfa boş.\nHenüz bir yankı yok."
 		return
 	empty_label.visible = false
 	_on_entry_selected(0)
@@ -243,10 +245,21 @@ func _on_entry_selected(index: int) -> void:
 	detail_body.scroll_to_line(0)
 
 
+func _tab_base_text(id: String) -> String:
+	match id:
+		"notlar":
+			return "Notlar"
+		"izler":
+			return "İzler"
+	return "Günlük"
+
+
 func _highlight_tabs() -> void:
 	for pair in [[tab_gunluk, "gunluk"], [tab_notlar, "notlar"], [tab_izler, "izler"], [tab_harita, "harita"]]:
 		var btn: Button = pair[0]
 		var id: String = pair[1]
+		if id != "harita":
+			btn.text = _tab_base_text(id) + (" •" if id != _section and GameState.journal_unseen(id) > 0 else "")
 		if id == _section:
 			btn.modulate = Color.WHITE
 			btn.disabled = true
@@ -262,7 +275,7 @@ func _append_world_traces(notes: Array) -> void:
 	if bool(flags.get("awakening_door_opened", false)):
 		notes.append({"title": "Ağırlık", "body": "Bir beden plakaya yetti. Yol açıldı."})
 	if bool(flags.get("awakening_crystal_cracked", false)):
-		notes.append({"title": "314", "body": "Mühür, hatırladığım sayıya boyun eğdi."})
+		notes.append({"title": "314", "body": "Mühür, hatırladığım sayıyla açıldı."})
 	for t in GameState.world_memory_state.get("traces", []):
 		if t is Dictionary:
 			notes.append({

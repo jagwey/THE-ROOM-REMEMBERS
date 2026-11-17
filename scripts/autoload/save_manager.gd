@@ -48,6 +48,7 @@ func start_new_game() -> void:
 	GameState.character_current_life_knowledge = _new_life.duplicate(true)
 	GameState.clear_story_flags()
 	GameState.reset_discovered_seals()
+	GameState.journal_seen_init(true)
 	GameState.possession_count = 0
 	GameState.session_loaded_from_save = false
 	GameState.hearts = GameState.max_hearts
@@ -356,6 +357,7 @@ func _apply_data(data: Dictionary, apply_room: bool) -> bool:
 	_migrate_side_room_puzzles_for_late_rooms()
 	_migrate_shadow_dash_for_late_rooms()
 	_migrate_trust_flags_v118()
+	PuzzleManager.reset_live_for_load()
 	PuzzleManager.sync_from_world()
 	game_loaded.emit()
 	if apply_room:
@@ -497,8 +499,12 @@ func _deserialize_progress(raw: Variant) -> Dictionary:
 			base[k] = raw[k]
 	for key in ["rooms_visited", "journal_notes", "echoes_seen", "endings_seen", "lore_seen"]:
 		_coerce_container(base, key, true)
-	for key in ["memory_codes", "memory_code_life", "shilda_trust"]:
+	for key in ["memory_codes", "memory_code_life", "shilda_trust", "partial_puzzles"]:
 		_coerce_container(base, key, false)
+	if base.has("journal_seen") and not (base["journal_seen"] is Dictionary):
+		base.erase("journal_seen") ## bozuksa yeniden "görüldü" olarak başlatılır
+	if not (base.get("play_time_sec", 0.0) is float or base.get("play_time_sec", 0.0) is int):
+		base["play_time_sec"] = 0.0
 	return base
 
 

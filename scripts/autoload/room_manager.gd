@@ -224,6 +224,9 @@ func _run_door_travel(door: Node, player: Node2D, fade: CanvasLayer, rect: Color
 			fade.queue_free()
 		DoorScript.reset_transition_lock()
 		return
+	if DeathManager.is_dying:
+		_abort_travel(player, fade, door)
+		return
 	enter_room(target_room, target_spawn)
 	if is_instance_valid(player):
 		player.modulate = Color.WHITE
@@ -249,6 +252,20 @@ func _run_door_travel(door: Node, player: Node2D, fade: CanvasLayer, rect: Color
 		fade.queue_free()
 	if is_instance_valid(door) and door.has_method("finish_travel_flags"):
 		door.finish_travel_flags()
+	DoorScript.reset_transition_lock()
+
+
+## Geçiş sırasında ölüm başladıysa: oda değiştirme, tüm kilit/bayrak/kararmayı bırak.
+func _abort_travel(player: Node, fade: CanvasLayer, door: Node = null) -> void:
+	if is_instance_valid(player):
+		player.modulate = Color.WHITE
+		if "scripted_walk" in player:
+			player.set("scripted_walk", false)
+	if is_instance_valid(fade):
+		fade.queue_free()
+	if is_instance_valid(door) and door.has_method("finish_travel_flags"):
+		door.finish_travel_flags()
+	var DoorScript = load("res://scripts/world/room_transition.gd")
 	DoorScript.reset_transition_lock()
 
 
@@ -294,6 +311,10 @@ func fast_travel(room_id: StringName) -> bool:
 	var tw := tree.create_tween()
 	tw.tween_property(rect, "color:a", 1.0, float(DoorScript.FADE_OUT) * 1.4)
 	await tw.finished
+	if DeathManager.is_dying:
+		_abort_travel(tree.get_first_node_in_group("player"), fade)
+		MobileInputManager.clear_held_inputs()
+		return false
 	enter_room(room_id, &"default")
 	var player := tree.get_first_node_in_group("player") as Node2D
 	if is_instance_valid(player):

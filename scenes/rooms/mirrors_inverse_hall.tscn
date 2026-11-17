@@ -47,7 +47,7 @@ texture_path = "res://assets/props/photograph.png"
 sprite_scale = 0.5
 lines = PackedStringArray("Noroi|Salon notu: “Önce ana ayna yanar. Yansıma ancak ondan sonra görünür.”", "Noroi|Altında: “Salonda yön tersine döner; yalnız yön, kayıt değil.”")
 evidence_title = "Ters Salon Notu, Birinci Satır"
-evidence_body = "Önce ayna ağlar, sonra yansıma konuşur. Salonda yalnız yön tersine döner."
+evidence_body = "Önce ana ayna yanar, sonra yansıma görünür. Salonda yalnız yön tersine döner."
 evidence_section = "izler"
 
 [node name="InverseZone" type="Area2D" parent="Interactive"]
@@ -153,7 +153,7 @@ fail_line = "Yanlış ayna. Salon sıfırlandı."
 success_line = "Aynalar sırayla ışıdı. Yansıma konuştu."
 evidence_id = "ev_inverse_reflection"
 evidence_title = "Yansımanın Kaydı"
-evidence_body = "Aynada gördüğün sen değilsin; odanın hatırladığı. Ters dönen yalnız yön, kayıt değil."
+evidence_body = "Aynada gördüğün sen değilsin; odanın hatırladığı biri. Ters dönen yalnız yön, kayıt değil."
 require_live = PackedStringArray("mirrors_inverse_hall_mimic", "mirrors_inverse_hall_cross")
 require_line = "Aynalar hâlâ yankının izini ve çizginin ötesini bekliyor."
 

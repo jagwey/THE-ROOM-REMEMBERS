@@ -48,7 +48,7 @@ func on_interact(_by: Node) -> void:
 		_busy = false
 		return
 	if need_dash and not bool(GameState.player_progress_knowledge.get("ability_shadow_dash", false)):
-		DialogueManager.say("Noroi", dash_refusal_line if dash_refusal_line != "" else "Aralık Gölge Atılması istiyor.")
+		DialogueManager.say("Noroi", dash_refusal_line if dash_refusal_line != "" else "Bu aralık Gölge Atılması istiyor.")
 		await DialogueManager.dialogue_finished
 		_busy = false
 		return

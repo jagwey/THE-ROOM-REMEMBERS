@@ -184,7 +184,7 @@ func _play_intro() -> void:
 		return
 	else:
 		DialogueManager.say("", "Yine bu yatak. Oda saydı. Sen unuttun.")
-		DialogueManager.say("Noroi", "Bir şey eksik, duvarlar hatırlıyor.")
+		DialogueManager.say("Noroi", "Bir şey eksik. Duvarlar hatırlıyor.")
 
 
 func _clear_session_loaded_flag() -> void:

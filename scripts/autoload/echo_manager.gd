@@ -13,9 +13,9 @@ var _catalog: Dictionary = {
 	"default": {
 		"evidence_id": "ev_default_fall",
 		"lines": [
-			["Yankı", "Karanlık… ayak sesleri."],
+			["Yankı", "Karanlık. Ayak sesleri."],
 			["Yankı", "Biri fısıldadı: Oraya gitme."],
-			["Yankı", "Sonra — düşüş."],
+			["Yankı", "Sonra bir düşüş."],
 		],
 		"journal": {
 			"section": "notlar",
@@ -43,16 +43,16 @@ var _catalog: Dictionary = {
 	"awakening_rift_echo": {
 		"evidence_id": "ev_rift_314",
 		"lines": [
-			["Yankı", "Kırmızı halka… zemin yalan söylüyor."],
+			["Yankı", "Kırmızı halka. Zemin yalan söylüyor."],
 			["Yankı", "Üç çatlak. Bir nefes. Dört kalp atışı."],
-			["Yankı", "Sayı… üç… bir… dört."],
-			["Noroi", "Yarıktan kendi sesim geliyor, bu ölümden değil, bir öncekinden."],
+			["Yankı", "Sayı: üç, bir, dört."],
+			["Noroi", "Yarıktan kendi sesim geliyor. Bu ölümden değil, bir öncekinden."],
 			["Noroi", "Unutmuşum ama oda unutmamış."],
 		],
 		"journal": {
 			"section": "izler",
 			"title": "Yarığın sayısı",
-			"body": "Rüyamda gördüm: 3 — 1 — 4. Aklım bilmiyor; ellerim biliyor.",
+			"body": "Rüyamda gördüm: 3 — 1 — 4. Aklım bilmiyor ama ellerim biliyor.",
 			"kind": "evidence",
 		},
 		"memory_code": "314",
@@ -60,7 +60,7 @@ var _catalog: Dictionary = {
 	"balcony_telescope": {
 		"evidence_id": "ev_balcony_digit_1",
 		"lines": [
-			["Yankı", "Camın ötesinde bir iz: eski Noroi boşluğa bedenini bıraktı."],
+			["Yankı", "Camın ötesinde bir iz var: eski Noroi bedenini boşluğa bırakmış."],
 			["Yankı", "Karşıya o bedenin üstünden geçti. Elinde bir halka vardı."],
 			["Yankı", "Halkanın ilk hanesi parlıyor: üç."],
 		],
@@ -77,12 +77,12 @@ var _catalog: Dictionary = {
 		"lines": [
 			["Yankı", "Yatağın başında bir gölge. Elinde şırınga yok; sadece bir çiçek."],
 			["Yankı", "Yüzü kazınmış biri: Hepsini silin. Hatırlayan kalmasın."],
-			["Yankı", "Fısıltı: Sen unutursan… ben hatırlarım. Söz."],
+			["Yankı", "Fısıltı: Sen unutursan ben hatırlarım. Söz."],
 		],
 		"journal": {
 			"section": "izler",
 			"title": "Silme Emri",
-			"body": "Anılarımın silinmesi için bir imza atılmış; imza kazınmış. Bir gölge söz verdi: ben unutursam o hatırlayacak.",
+			"body": "Anılarımın silinmesi için bir imza atılmış, ama imza kazınmış. Bir gölge söz vermiş: ben unutursam o hatırlayacak.",
 			"kind": "evidence",
 		},
 		"memory_code": "",
@@ -183,7 +183,7 @@ func _write_journal(note: Dictionary, evidence_id: String) -> void:
 			"evidence_id": evidence_id + "_log",
 			"section": "gunluk",
 			"title": "Yankı notu",
-			"body": String(note.get("title", "")) + " — hatırladım; o unuttu.",
+			"body": String(note.get("title", "")) + " — oda hatırlıyor, ben unutmuşum.",
 			"kind": "inference",
 			"at_death": int(GameState.player_progress_knowledge.get("deaths", 0)),
 		})

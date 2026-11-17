@@ -184,7 +184,7 @@ script = ExtResource("thorn")
 anchor_x = 625.0
 puzzle_hint = &"decay_garden_bloom"
 body_line = "Dokunursam ölürüm; çiçek taşırsam bedenim yapraklara ışık tutar."
-solved_line = "Diken sustu. Çiçekler açık kalıyor."
+solved_line = "Diken durdu. Çiçekler açık kalıyor."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BloomThorn"]
 shape = SubResource("SealShape")

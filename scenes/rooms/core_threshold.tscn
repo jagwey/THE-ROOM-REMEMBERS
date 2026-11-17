@@ -113,7 +113,7 @@ script = ExtResource("5")
 target_room_id = &"core_ascent"
 target_spawn_id = &"from_core_threshold"
 required_puzzle = &"core_threshold"
-locked_message = "Bulutun öte yakasına geçmeliyim."
+locked_message = "Bulutun karşı tarafına geçmeliyim."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ForwardSeal"]
 shape = SubResource("Hit")
@@ -142,7 +142,7 @@ anchor_y = 288.0
 hold_corpse = true
 hold_id = &"core_threshold_cloud_a"
 puzzle_hint = &"core_threshold_crossed"
-solved_line = "Kristal sustu. Beden bulutun ilk yarısını tutuyor."
+solved_line = "Kristal söndü. Beden bulutun ilk yarısını tutuyor."
 body_line = "Bulutun girişinde ölürsem cesedim koridorun ilk yarısını korur."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/CloudThornA"]
@@ -156,8 +156,8 @@ anchor_y = 288.0
 hold_corpse = true
 hold_id = &"core_threshold_cloud_b"
 puzzle_hint = &"core_threshold_crossed"
-solved_line = "İkinci kristal de sustu. Bulutun öte yarısı açık."
-body_line = "Cesedimin gölgesinde ikinci kristale varırsam bulutun öte yarısı da açılır."
+solved_line = "İkinci kristal de söndü. Bulutun öbür yarısı açık."
+body_line = "Cesedimin gölgesinde ikinci kristale ulaşırsam bulutun öbür yarısı da açılır."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/CloudThornB"]
 shape = SubResource("Interact")

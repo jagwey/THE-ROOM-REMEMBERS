@@ -16,7 +16,19 @@ var jump_held: bool = false
 ## HUD dinamik joystick tercihi (ayar menüsünden değiştirilebilir).
 var floating_joystick: bool = true
 ## Mobil haptik titreşim tercihi (ayar menüsünden değiştirilebilir).
-var haptics_enabled: bool = true
+## Türetilmiş: asıl değer GameSettings.haptics_level (0 Kapalı · 1 Hafif · 2 Normal · 3 Güçlü).
+var haptics_enabled: bool:
+	get:
+		return GameSettings.haptics_on()
+	set(v):
+		GameSettings.haptics_level = 2 if v else 0
+## Adlı titreşim kalıpları: pozitif = titreşim ms, negatif = bekleme ms.
+const HAPTIC_PATTERNS := {
+	&"damage": [25],
+	&"death": [60, -90, 120],
+	&"solve": [15, -60, 20],
+	&"ui": [10],
+}
 ## Kontrol yeniden verilince (diyalog/ölüm/menü sonrası) basılı kalan yön girişi
 ## karakteri kendi kendine koşturmasın: önce nötre dönülmeli (taze basış şartı).
 var _need_neutral: bool = true
@@ -27,7 +39,25 @@ func vibrate(duration_ms: int = 20) -> void:
 	if not haptics_enabled:
 		return
 	if OS.has_feature("mobile") or OS.has_feature("android") or OS.get_environment("TORIMON_TEST_HAPTICS") == "1":
-		Input.vibrate_handheld(duration_ms)
+		Input.vibrate_handheld(GameSettings.scale_haptic_ms(duration_ms))
+
+
+## Adlı kalıp çalar (&"damage" | &"death" | &"solve" | &"ui"). Kapalıysa hiçbir şey yapmaz.
+func haptic(kind: StringName) -> void:
+	if not haptics_enabled or not HAPTIC_PATTERNS.has(kind):
+		return
+	_play_haptic_pattern(HAPTIC_PATTERNS[kind])
+
+
+func _play_haptic_pattern(steps: Array) -> void:
+	for s in steps:
+		var ms := int(s)
+		if ms < 0:
+			if not is_inside_tree():
+				return
+			await get_tree().create_timer(float(-ms) / 1000.0, true, false, true).timeout
+		else:
+			vibrate(ms)
 
 
 ## Dokunmatik arayüz mü (Android/iOS)? Metinler klavye tuşu yerine HUD buton adı söyler.
@@ -44,7 +74,7 @@ func control_name(action: StringName) -> String:
 		&"attack":
 			return "Kılıç" if touch else "Z"
 		&"dash":
-			return "Atılma" if touch else "X"
+			return "Atıl" if touch else "X"
 		&"jump":
 			return "Zıpla" if touch else "W/Space"
 		&"skill":
@@ -145,6 +175,9 @@ func _notification(what: int) -> void:
 		_autosave_and_pause()
 	elif what == NOTIFICATION_APPLICATION_FOCUS_OUT:
 		_autosave_only()
+	elif what == NOTIFICATION_APPLICATION_FOCUS_IN or what == NOTIFICATION_APPLICATION_RESUMED:
+		if save_pending:
+			_try_autosave(false)
 	elif what == NOTIFICATION_WM_GO_BACK_REQUEST:
 		_on_go_back()
 
@@ -198,6 +231,7 @@ func _on_go_back() -> void:
 const BACK_CONFIRM_MS := 1500
 var _first_back_ms: int = -100000
 var _back_hint: Label = null
+var _back_hint_tween: Tween = null
 
 
 func _is_gameplay_back(menu: Node) -> bool:
@@ -213,6 +247,12 @@ func _is_gameplay_back(menu: Node) -> bool:
 
 
 func _show_back_hint() -> void:
+	## Yalnız ilk iki gösterimde (kalıcı sayaç); sonra çift geri sessizce çalışır.
+	GameSettings.ensure_loaded()
+	if GameSettings.back_hint_count >= GameSettings.BACK_HINT_MAX:
+		return
+	GameSettings.back_hint_count += 1
+	GameSettings.save_settings()
 	if _back_hint == null:
 		var layer := CanvasLayer.new()
 		layer.layer = 90
@@ -229,32 +269,89 @@ func _show_back_hint() -> void:
 		layer.add_child(_back_hint)
 	_back_hint.modulate.a = 1.0
 	_back_hint.visible = true
-	var tw := create_tween()
-	tw.tween_interval(1.0)
-	tw.tween_property(_back_hint, "modulate:a", 0.0, 0.4)
+	if _back_hint_tween != null and _back_hint_tween.is_valid():
+		_back_hint_tween.kill()
+	_back_hint_tween = create_tween()
+	_back_hint_tween.tween_interval(1.0)
+	_back_hint_tween.tween_property(_back_hint, "modulate:a", 0.0, 0.4)
 
 
 ## Odak kaybı: menü açmadan ilerlemeyi kaydet.
 func _autosave_only() -> void:
-	if not OS.has_feature("mobile") or get_tree() == null or get_tree().current_scene == null:
-		return
-	var menu := get_tree().get_first_node_in_group("session_menu")
-	if menu and menu.has_method("is_title_open") and menu.is_title_open():
-		return
-	if DeathManager.is_dying or UiGate.current_layer() == UiGate.Layer.ENDING:
-		return
-	if _unsafe_to_autosave():
-		return
-	SaveManager.save_resume_point()
+	_try_autosave(false)
 
 
 var _last_autosave_frame: int = -100
+## Arka plan kaydı en az bu kadar aralıkla yazılır (bildirim perdesi çekip bırakma IO patlaması).
+const AUTOSAVE_DEBOUNCE_MS := 2000
+const PENDING_SAVE_RETRY_S := 0.25
+const PENDING_SAVE_MAX_TRIES := 40
+var _last_save_ms: int = -100000
+var save_pending: bool = false
+var _pending_retry_running: bool = false
+## Test için: masaüstünde de mobil yolu çalıştır.
+var force_mobile_for_test: bool = false
 
 const _ROOM_TRANSITION := preload("res://scripts/world/room_transition.gd")
 
-## Possession veya kapı geçişi sırasında konum/oda uyuşmayabilir; kayıt atlanır.
+## Possession veya kapı geçişi sırasında konum/oda uyuşmayabilir; kayıt ertelenir.
 func _unsafe_to_autosave() -> bool:
 	return CurseManager.possessing or _ROOM_TRANSITION.is_transitioning()
+
+
+## Kayıt yolunun ortak gövdesi. Güvensizse yazma; geçiş/ele geçirme bitince kayıt yaz (save_pending).
+## Dönüş: kayıt şimdi yazıldı mı.
+func _try_autosave(open_menu: bool) -> bool:
+	if not (OS.has_feature("mobile") or force_mobile_for_test) or get_tree() == null or get_tree().current_scene == null:
+		return false
+	var menu := get_tree().get_first_node_in_group("session_menu")
+	if menu and menu.has_method("is_title_open") and menu.is_title_open():
+		return false
+	if DeathManager.is_dying or UiGate.current_layer() == UiGate.Layer.ENDING:
+		return false
+	if _unsafe_to_autosave():
+		_schedule_pending_save()
+		return false
+	var wrote := false
+	var now := Time.get_ticks_msec()
+	if now - _last_save_ms >= AUTOSAVE_DEBOUNCE_MS:
+		SaveManager.save_resume_point()
+		_last_save_ms = now
+		wrote = true
+	save_pending = false
+	if open_menu and menu and menu.has_method("open_menu") and UiGate.current_layer() == UiGate.Layer.NONE:
+		menu.open_menu()
+	return wrote
+
+
+func _schedule_pending_save() -> void:
+	save_pending = true
+	if _pending_retry_running:
+		return
+	_pending_retry_running = true
+	_run_pending_save()
+
+
+func _run_pending_save() -> void:
+	var tries := 0
+	while save_pending and tries < PENDING_SAVE_MAX_TRIES:
+		tries += 1
+		var tree := get_tree()
+		if tree == null:
+			break
+		await tree.create_timer(PENDING_SAVE_RETRY_S).timeout
+		if not save_pending:
+			break
+		if DeathManager.is_dying or UiGate.current_layer() == UiGate.Layer.ENDING:
+			save_pending = false
+			break
+		if _unsafe_to_autosave():
+			continue
+		_try_autosave(false)
+	_pending_retry_running = false
+	if tries >= PENDING_SAVE_MAX_TRIES:
+		save_pending = false
+
 
 ## Uygulama arka plana geçince ilerlemeyi yaz ve oyunu duraklat (telefon araması, ana ekran).
 func _autosave_and_pause() -> void:
@@ -262,18 +359,7 @@ func _autosave_and_pause() -> void:
 	if frame == _last_autosave_frame:
 		return
 	_last_autosave_frame = frame
-	if not OS.has_feature("mobile") or get_tree() == null or get_tree().current_scene == null:
-		return
-	var menu := get_tree().get_first_node_in_group("session_menu")
-	if menu and menu.has_method("is_title_open") and menu.is_title_open():
-		return
-	if DeathManager.is_dying or UiGate.current_layer() == UiGate.Layer.ENDING:
-		return
-	if _unsafe_to_autosave():
-		return
-	SaveManager.save_resume_point()
-	if menu and menu.has_method("open_menu") and UiGate.current_layer() == UiGate.Layer.NONE:
-		menu.open_menu()
+	_try_autosave(true)
 
 
 func _unhandled_input(event: InputEvent) -> void:

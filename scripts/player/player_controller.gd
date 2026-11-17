@@ -538,7 +538,7 @@ func _on_skill() -> void:
 	if _input_locked or UiGate.blocks_combat() or _skill_cd > 0.0:
 		return
 	if not has_soul_slash():
-		DialogueManager.whisper("Noroi", "…İçimde bir şey kıpırdıyor, henüz uyanmadı.")
+		DialogueManager.whisper("Noroi", "İçimde bir şey kıpırdıyor, ama henüz uyanmadı.")
 		return
 	_skill_cd = SKILL_COOLDOWN
 	_play_sfx(&"soul_slash")

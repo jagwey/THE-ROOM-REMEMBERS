@@ -733,28 +733,21 @@ func _run_tier_4_scenarios() -> void:
 	for ab in ["ability_soul_slash", "ability_shadow_dash", "ability_dash", "ability_double_jump"]:
 		gs.player_progress_knowledge[ab] = true
 	var walk_unreached: Array = []
-	var walk_seen := {"awakening": true}
-	var walk_queue: Array = ["awakening"]
 	for rid_w in rm.ROOM_ORDER:
 		var room_w: Node = (rm._rooms[StringName(rid_w)] as Dictionary)["root"]
 		for dw in room_w.find_children("*", "Area2D", true, false):
 			if "required_puzzle" in dw and "target_room_id" in dw and String(dw.required_puzzle) != "":
 				pm.mark_solved(StringName(dw.required_puzzle))
-	while not walk_queue.is_empty():
-		var cur_w := String(walk_queue.pop_front())
-		var room_c: Node = (rm._rooms[StringName(cur_w)] as Dictionary)["root"]
-		for dw in room_c.find_children("*", "Area2D", true, false):
-			if not ("target_room_id" in dw and dw.has_method("is_locked")):
-				continue
-			var tw := String(dw.target_room_id)
-			if dw.is_locked() or walk_seen.has(tw) or not rm._rooms.has(StringName(tw)):
-				continue
-			walk_seen[tw] = true
-			walk_queue.append(tw)
+	## awakening_s_room yan kapısı 8 geri dönüş kaydı ister: 7 ile kilitli, 8 ile açılır.
+	gs.player_progress_knowledge["nooks"] = _fake_nooks(7)
+	var seen7: Dictionary = _walk_door_graph(rm)
+	gs.player_progress_knowledge["nooks"] = _fake_nooks(8)
+	var walk_seen: Dictionary = _walk_door_graph(rm)
 	for rid_w in rm.ROOM_ORDER:
 		if not walk_seen.has(String(rid_w)):
 			walk_unreached.append(String(rid_w))
 	record_check(4, 30, "T4-08 Main path 01->40 reaches core via unlocked doors", walk_unreached.is_empty() and walk_seen.has("core"), "unreached=%s" % [walk_unreached])
+	record_check(4, 30, "T4-08b S room locked with 7 nooks, opens with 8", not seen7.has("awakening_s_room") and walk_seen.has("awakening_s_room"), "7 nooks reach=%s, 8 nooks reach=%s" % [seen7.has("awakening_s_room"), walk_seen.has("awakening_s_room")])
 	gs.world_memory_state["puzzles"] = snap_puz
 	gs.player_progress_knowledge = snap_prog
 	pm.sync_from_world()
@@ -766,6 +759,31 @@ func _run_tier_4_scenarios() -> void:
 	var arm64_ok: bool = exp_cfg.contains("architectures/arm64-v8a=true")
 	var vibrate_ok: bool = exp_cfg.contains("permissions/vibrate=true")
 	record_check(4, 31, "T4-04 Android POCO X6 Pro 5G deployment configuration profile", orientation_ok and arm64_ok and vibrate_ok, "sensor landscape=%s arm64=%s vibrate=%s" % [orientation_ok, arm64_ok, vibrate_ok])
+
+
+func _fake_nooks(n: int) -> Dictionary:
+	var d := {}
+	for i in n:
+		d["qa_nook_%d" % i] = true
+	return d
+
+
+## Kapı grafiği BFS (awakening'den): kilitli kapılar geçilmez.
+func _walk_door_graph(rm: Node) -> Dictionary:
+	var walk_seen := {"awakening": true}
+	var walk_queue: Array = ["awakening"]
+	while not walk_queue.is_empty():
+		var cur_w := String(walk_queue.pop_front())
+		var room_c: Node = (rm._rooms[StringName(cur_w)] as Dictionary)["root"]
+		for dw in room_c.find_children("*", "Area2D", true, false):
+			if not ("target_room_id" in dw and dw.has_method("is_locked")):
+				continue
+			var tw := String(dw.target_room_id)
+			if dw.is_locked() or walk_seen.has(tw) or not rm._rooms.has(StringName(tw)):
+				continue
+			walk_seen[tw] = true
+			walk_queue.append(tw)
+	return walk_seen
 
 
 func _held_jump_height(v0: float, gravity: float, apex_mult: float, apex_speed: float) -> float:

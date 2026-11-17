@@ -164,7 +164,7 @@ func _run() -> void:
 	check(gs.get_checkpoint() == cp_before, "Zero curse does NOT change checkpoint")
 	check(dm.is_open, "Zero curse opens dialogue")
 	check(dm._speaker == "Noroi", "Dialogue speaker is Noroi", dm._speaker)
-	check(dm._full_line == "Kanımda aktif bir lanet yok. Bu mühür sadece lanet altındayken uyanır.", "Dialogue text matches exact canon", dm._full_line)
+	check(dm._full_line == "Kanımda aktif bir lanet yok, bu mühür yalnız lanet altındayken uyanır.", "Dialogue text matches exact canon", dm._full_line)
 	check(get_nodes_in_group("seal_banner").is_empty(), "Zero curse does NOT show seal banner")
 	dm.clear()
 

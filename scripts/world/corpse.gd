@@ -84,7 +84,7 @@ func on_interact(by: Node) -> void:
 	GameState.set_story_flag(&"first_corpse_discovered")
 	if not bool(GameState.player_progress_knowledge.get("first_corpse_line_seen", false)):
 		GameState.player_progress_knowledge["first_corpse_line_seen"] = true
-		DialogueManager.say("Noroi", "Bu… benim kıyafetim.")
+		DialogueManager.say("Noroi", "Bu benim kıyafetim.")
 		DialogueManager.say("Noroi", "Bunu kim bıraktı?")
 	# İlk etkileşim: Echo (oyuncu bilgisi).
 	if not _echo_done:
@@ -92,7 +92,11 @@ func on_interact(by: Node) -> void:
 		var eid := _resolve_echo_id()
 		_spawn_ghost()
 		await EchoManager.play_echo(eid)
-		DialogueManager.say("Noroi", "…Ağır ama sırtlayıp taşıyabilirim.")
+		## Kalıcılık: bu cesedin yankısı bitti (yükleyince tekrar oynamasın; setup_from_data echoes_seen okur).
+		var seen_now: Array = GameState.player_progress_knowledge.get("echoes_seen", [])
+		if not seen_now.has(String(echo_id)):
+			seen_now.append(String(echo_id))
+		DialogueManager.say("Noroi", "Ağır ama sırtlayıp taşıyabilirim.")
 		return
 	# Taşınıyorsa: bırak.
 	if is_carried():
@@ -121,7 +125,7 @@ func pick_up(by: Node2D) -> void:
 	if is_carried() or _pushing:
 		return
 	if not usable_for_puzzle:
-		DialogueManager.say("Noroi", "…Bu beden yerinden kalkmıyor.")
+		DialogueManager.say("Noroi", "Bu beden yerinden kalkmıyor.")
 		return
 	if by.has_method("is_carrying") and by.is_carrying():
 		return
@@ -137,7 +141,7 @@ func pick_up(by: Node2D) -> void:
 		am.play_sfx(&"corpse_drag")
 	if not bool(GameState.player_progress_knowledge.get("carry_hint_seen", false)):
 		GameState.player_progress_knowledge["carry_hint_seen"] = true
-		DialogueManager.whisper("Noroi", "Bedeni sırtladım; atlayabilirim, Etkileş ile bırakırım.")
+		DialogueManager.whisper("Noroi", "Bedeni sırtladım. Zıplayabilirim; Etkileş ile bırakırım.")
 
 
 ## Taşıyanın önündeki zemine bırakır; boşluk varsa ayak altına, o da yoksa son sağlam noktaya.
@@ -247,7 +251,7 @@ func _push(dir: float, by_node: Node = null) -> void:
 	var max_x: float = bounds.position.x + bounds.size.x - 32.0
 	var raw_target_x := clampf(global_position.x + dir * push_step, min_x, max_x)
 	if absf(raw_target_x - global_position.x) < 0.5:
-		DialogueManager.say("Noroi", "…Daha ileri gitmiyor.")
+		DialogueManager.say("Noroi", "Daha ileri gitmiyor.")
 		return
 
 	var space := get_world_2d().direct_space_state
@@ -264,7 +268,7 @@ func _push(dir: float, by_node: Node = null) -> void:
 			var hit_pos: Vector2 = wall_hit["position"]
 			var stop_x: float = hit_pos.x - dir * 14.0
 			if (dir > 0.0 and stop_x <= global_position.x + 2.0) or (dir < 0.0 and stop_x >= global_position.x - 2.0):
-				DialogueManager.say("Noroi", "…Önünde duvar var.")
+				DialogueManager.say("Noroi", "Önünde duvar var.")
 				return
 			target_x = minf(target_x, stop_x) if dir > 0.0 else maxf(target_x, stop_x)
 
@@ -277,11 +281,11 @@ func _push(dir: float, by_node: Node = null) -> void:
 		q_floor.exclude = [get_rid()]
 		var floor_hit: Dictionary = space.intersect_ray(q_floor)
 		if floor_hit.is_empty():
-			DialogueManager.say("Noroi", "…Uçurumun kenarında durdu.")
+			DialogueManager.say("Noroi", "Uçurumun kenarında durdu.")
 			return
 
 	if absf(target_x - global_position.x) < 0.5:
-		DialogueManager.say("Noroi", "…Daha ileri gitmiyor.")
+		DialogueManager.say("Noroi", "Daha ileri gitmiyor.")
 		return
 
 	_pushing = true
@@ -341,19 +345,19 @@ const ROOM_LINES := {
 	"core": "Çekirdeğin nabzı göğsümün içindeydi.",
 }
 const REASON_LINES := {
-	"hearts": "Bir darbe daha… ve dizlerim çözüldü.",
+	"hearts": "Bir darbe daha geldi, dizlerim boşaldı.",
 	"hazard": "Zemin yalan söyledi. Düştüm.",
 	"curse": "Lanet damarlarımdan yükseldi; ben değildim artık.",
-	"keeper": "Gölgenin pençesi… ama gözleri ağlıyordu.",
+	"keeper": "Gölgenin pençesi vurdu ama gözleri ağlıyordu.",
 	"mercy": "Gölge fısıldadı: Uyu ve unut.",
 	"cloud": "Kırmızı sis nefesimi aldı.",
 	"thorn": "Kan dikeni avucumu deldi. Bilerek dokundum.",
 }
 const LIFE_LINES := [
 	"Çiçeği bırakanı hatırlamıyorum.",
-	"Bu beden benim ama ben bu bedende değilim.",
+	"Bu beden benim ama ben içinde değilim.",
 	"Yine unuttum ama oda unutmadı.",
-	"Bir ses, bir dahaki sefere sağa bakma dedi.",
+	"Bir ses, bir dahaki sefere sağa bakma, dedi.",
 ]
 
 

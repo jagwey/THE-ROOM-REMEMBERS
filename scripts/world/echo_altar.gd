@@ -56,6 +56,8 @@ func _ready() -> void:
 		UiTheme.apply_label(_label, 14)
 	add_child(_label)
 	RoomManager.room_changed.connect(_on_room_changed)
+	if not DeathManager.death_started.is_connected(_on_death_started):
+		DeathManager.death_started.connect(_on_death_started)
 	call_deferred("_build_switches")
 	_refresh_label()
 
@@ -160,12 +162,20 @@ func _on_room_changed(from_room: StringName, to_room: StringName) -> void:
 		_cancel_recording()
 
 
+func _on_death_started(_reason: StringName) -> void:
+	if _recording:
+		_cancel_recording()
+
+
 func _exit_tree() -> void:
 	_cancel_recording()
-	if live_only:
+	## Kapanışta autoload'lar önce serbest kalabilir.
+	if live_only and is_instance_valid(PuzzleManager):
 		PuzzleManager.set_live(puzzle_id, false)
-	if RoomManager.room_changed.is_connected(_on_room_changed):
+	if is_instance_valid(RoomManager) and RoomManager.room_changed.is_connected(_on_room_changed):
 		RoomManager.room_changed.disconnect(_on_room_changed)
+	if is_instance_valid(DeathManager) and DeathManager.death_started.is_connected(_on_death_started):
+		DeathManager.death_started.disconnect(_on_death_started)
 
 
 func _physics_process(delta: float) -> void:
@@ -207,7 +217,7 @@ func _finish_recording() -> void:
 	_twin.call("play_recording", _frames.duplicate(), _events.duplicate())
 	_twin.connect("finished", _on_twin_finished)
 	_sfx(&"echo_playback")
-	_label.text = "Yankın hareket ediyor…"
+	_label.text = "Yankın hareket ediyor"
 
 
 func _on_twin_finished() -> void:

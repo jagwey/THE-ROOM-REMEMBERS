@@ -5,19 +5,19 @@
       {"s": "Noroi", "t": "Suyun üstünde ıslak sayfalar yüzüyor. Bir günlüğün parçaları."},
       {"s": "Noroi", "t": "«Gün 1, sesim hâlâ bende. Çiçeği sakladım.»"},
       {"s": "Noroi", "t": "«Gün 400. Adımı duvarlara yazıyorum ki unutmayayım.»"},
-      {"s": "@shilda", "t": "Altmış sekiz yıl önce yazıldı. Mürekkep hâlâ silinmedi."},
+      {"s": "@shilda", "t": "Altmış sekiz yıl önce yazılmış. Mürekkep hâlâ silinmemiş."},
       {"s": "Noroi", "t": "Bu senin el yazın, değil mi?"},
       {"s": "@shilda", "t": "Evet. Gölge olmadan önce yazdım."},
-      {"s": "Noroi", "t": "Sayfayı göğsüme koyuyorum. Su bildiklerini tutsun, ben yeterince unuttum."}
+      {"s": "Noroi", "t": "Sayfayı göğsüme koyuyorum. Gerisini su tutsun, ben yeterince unuttum."}
     ],
     "cistern_edge": [
-      {"s": "Noroi", "t": "Suyun altında bir şey parlıyor. Işığı sudan değil."},
-      {"s": "@shilda", "t": "Dibe bakma. Bu sarnıca düşenlerin çoğu bakmaktan düştü."},
+      {"s": "Noroi", "t": "Suyun altında bir şey parlıyor. Işık sudan gelmiyor."},
+      {"s": "@shilda", "t": "Dibe bakma. Bu sarnıca düşenlerin çoğu bakarken düştü."},
       {"s": "Noroi", "t": "Sen düştün mü?"},
-      {"s": "@shilda", "t": "Hayır. Buraya yürüyerek geldim, birinden kaçarak."},
+      {"s": "@shilda", "t": "Hayır. Buraya yürüyerek geldim, birinden kaçıyordum."},
       {"s": "Noroi", "t": "Kimden?"},
       {"s": "@shilda", "t": "Sen hep soruyorsun. Bu huyun mu, yoksa lanet mi?"},
-      {"s": "Noroi", "t": "Bilmiyorum. Bir şeyi aradığımı biliyorum, adını bilmiyorum."},
+      {"s": "Noroi", "t": "Bilmiyorum. Bir şey aradığımı biliyorum ama ne olduğunu bilmiyorum."},
       {"s": "@shilda", "t": "Aramak seni hâlâ sen yapıyor. Silinmeyen tek şey bu."}
     ]
   }

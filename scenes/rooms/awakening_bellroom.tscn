@@ -53,7 +53,7 @@ script = ExtResource("thorn")
 anchor_x = 330
 puzzle_hint = &"awakening_bellroom_corpse"
 body_line = "Dokunursam ölürüm; bedenim plakada çan tutar."
-solved_line = "Diken sustu; beden plakayı tutuyor."
+solved_line = "Diken durdu; beden plakayı tutuyor."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BellThorn"]
 shape = SubResource("Interact")
@@ -160,7 +160,7 @@ script = ExtResource("shrine")
 puzzle_id = &"awakening_bellroom"
 order = PackedStringArray("gun", "yas", "gece")
 fail_line = "Yanlış çan. Sessizlik geri döndü."
-success_line = "Üç çan sırayla çaldı. Nöbet defteri sana açıldı."
+success_line = "Üç çan sırayla çaldı. Nöbet defteri açıldı."
 evidence_id = "ev_bellroom_first_watch"
 evidence_title = "İlk Nöbet"
 evidence_body = "Çanlar Gün, Yas, Gece sırasıyla çalar. Nöbetçi kapıyı üç ağırlıkla tutar: beden, yankı ve kendisi."

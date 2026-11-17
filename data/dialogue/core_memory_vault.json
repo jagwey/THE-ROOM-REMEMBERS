@@ -3,9 +3,9 @@
   "sets": {
     "vault_dust": [
       {"s": "Noroi", "t": "Kasanın demirinde iki el izi var. Biri küçük, biri büyük."},
-      {"s": "@shilda", "t": "Küçük olan benim. Büyük olanı hiç tanımadım."},
+      {"s": "@shilda", "t": "Küçük olan benim. Büyüğünü hiç tanımadım."},
       {"s": "Noroi", "t": "Belki kayıtları tutanın eli."},
-      {"s": "@shilda", "t": "Olabilir. Elinin izi kayıtta kaldı, yüzü hiç."},
+      {"s": "@shilda", "t": "Olabilir. Elinin izi kayıtlarda var, yüzü yok."},
       {"s": "Noroi", "t": "O yüzü birlikte bulacağız."},
       {"s": "@shilda", "t": "Bulacağız. Bu kelimeyi söylemeyi özlemişim."}
     ]

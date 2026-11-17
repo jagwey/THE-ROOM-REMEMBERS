@@ -4,6 +4,8 @@ extends Node
 
 signal corpses_changed(count: int)
 signal trace_added(trace: Dictionary)
+## Sınır (MAX_CORPSES) yüzünden eski bir beden izlere dönüştü (yükleme/yeniden kurulumda yayılmaz).
+signal corpse_lost_to_limit(trace: Dictionary)
 
 const MAX_CORPSES := 3
 const CORPSE_SCENE := preload("res://scenes/world/corpse.tscn")
@@ -136,6 +138,7 @@ func _trim_excess() -> void:
 		if kind == "flower" and not bool(old.get("has_flower", false)):
 			GameState.world_memory_state["flowers_left"] = int(GameState.world_memory_state["flowers_left"]) + 1
 		trace_added.emit(trace)
+		corpse_lost_to_limit.emit(trace)
 
 
 func get_corpses() -> Array:

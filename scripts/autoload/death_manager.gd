@@ -6,6 +6,8 @@ extends Node
 signal death_started(reason: StringName)
 signal rebirth_completed
 signal phase_changed(phase: int)
+## Aynı odada bulmaca çözmeden art arda LOOP_HELPER_DEATHS ölüm: yeniden doğuştan sonra bir kez nazik ipucu.
+signal death_loop_helper(room_id: StringName)
 
 enum Phase { ALIVE, DYING, SOUL_RELEASE, SOUL_TRANSITION, RESPAWNING }
 
@@ -17,7 +19,11 @@ const REBIRTH_ROOM := &"awakening"
 const REBIRTH_SPAWN := &"rebirth_bed"
 const REBIRTH_BED := Vector2(120, 280)
 
+const LOOP_HELPER_DEATHS := 3
 var is_dying: bool = false
+var loop_room: StringName = &""
+var loop_deaths: int = 0
+var _loop_helper_sent: bool = false
 var phase: int = Phase.ALIVE
 ## Bu ölüm ilk ölüm mü (sinematik, uzun); sonrakiler hızlı.
 var cinematic: bool = false
@@ -35,6 +41,29 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_scene_root = get_tree().root
 	_scene_root.child_exiting_tree.connect(_on_root_child_exiting)
+	_connect_loop_resets.call_deferred()
+
+
+func _connect_loop_resets() -> void:
+	PuzzleManager.puzzle_solved.connect(func(_id: StringName): reset_death_loop())
+	GameState.room_changed.connect(func(room_id: StringName):
+		if not is_dying and room_id != loop_room:
+			reset_death_loop())
+
+
+func reset_death_loop() -> void:
+	loop_room = &""
+	loop_deaths = 0
+	_loop_helper_sent = false
+
+
+func _note_loop_death() -> void:
+	var room := RoomManager.get_active_room_id()
+	if room != loop_room:
+		loop_room = room
+		loop_deaths = 0
+		_loop_helper_sent = false
+	loop_deaths += 1
 
 
 func _process(_delta: float) -> void:
@@ -68,6 +97,7 @@ func _exit_tree() -> void:
 
 ## Yeni oyun / başlığa dönüş: ölüm durumunu temiz bırakır, uçuştaki ölüm coroutine'ini bayatlatır.
 func reset_state() -> void:
+	reset_death_loop()
 	_gen += 1
 	is_dying = false
 	phase = Phase.ALIVE
@@ -95,7 +125,7 @@ func request_death(reason: StringName = &"unknown", full_reset: bool = false) ->
 	_set_phase(Phase.DYING)
 	cinematic = not bool(GameState.player_progress_knowledge.get("first_death_seen", false))
 	death_started.emit(reason)
-	MobileInputManager.vibrate(45)
+	MobileInputManager.haptic(&"death")
 
 	var death_pos := Vector2.ZERO
 	var player := get_tree().get_first_node_in_group("player") as Node2D
@@ -110,6 +140,7 @@ func request_death(reason: StringName = &"unknown", full_reset: bool = false) ->
 
 	GameState.player_progress_knowledge["deaths"] = int(GameState.player_progress_knowledge["deaths"]) + 1
 	GameState.player_progress_knowledge["first_death_seen"] = true
+	_note_loop_death()
 
 	# Ceset dünya hafızasına — karakter bilgisi henüz sıfırlanmadan konum alınır.
 	var corpse_id := CorpseManager.record_corpse_at(death_pos, reason)
@@ -509,8 +540,8 @@ func _respawn(gen: int) -> void:
 	DialogueManager.clear()
 	## Karakter unutkanlığı — ilk ölümde tam, sonra sessiz (hızlı döngü).
 	if cinematic:
-		DialogueManager.say("Noroi", "…Neredeyim?")
-		DialogueManager.say("Noroi", "Bir şey… unuttum.")
+		DialogueManager.say("Noroi", "Neredeyim?")
+		DialogueManager.say("Noroi", "Bir şeyi unuttum.")
 		if _fast_mode():
 			await get_tree().create_timer(0.05).timeout
 			if gen != _gen:
@@ -531,3 +562,6 @@ func _respawn(gen: int) -> void:
 	var born := clampf(maxf(CurseManager.curse + 25.0, 50.0), 0.0, CurseManager.CURSE_MAX - 1.0)
 	CurseManager.restore_curse(born)
 	rebirth_completed.emit()
+	if loop_deaths >= LOOP_HELPER_DEATHS and not _loop_helper_sent and loop_room == active_room:
+		_loop_helper_sent = true
+		death_loop_helper.emit(active_room)

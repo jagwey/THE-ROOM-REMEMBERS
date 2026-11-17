@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS"><img src="https://img.shields.io/badge/Kaynak-v1.18.5-8B0000?style=for-the-badge&logo=godotengine&logoColor=white" alt="Kaynak v1.18.5" /></a>
+  <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS"><img src="https://img.shields.io/badge/Kaynak-v1.18.6-8B0000?style=for-the-badge&logo=godotengine&logoColor=white" alt="Kaynak v1.18.6" /></a>
   <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases"><img src="https://img.shields.io/badge/Resmi_İndirme-GitHub_Releases-5c1d3d?style=for-the-badge&logo=github" alt="All Releases" /></a>
   <a href="https://godotengine.org/"><img src="https://img.shields.io/badge/Godot_Engine-4.7.2-478CBF?style=for-the-badge&logo=godotengine&logoColor=white" alt="Godot 4.7.2" /></a>
   <img src="https://img.shields.io/badge/Dünya-6_Bölge_·_47_Oda_·_Bölüm_I-2b1838?style=for-the-badge" alt="World Scope" />
@@ -221,6 +221,27 @@ Oda numaraları `RoomManager.ROOM_ORDER` sırasını izler. İlk 40 oda ana omur
 ### Katakomb çiçeği ve Sarnıç (Faz 0)
 Kemik Mahzeni girişinde (x≈150) tükenmez bir çiçek kaynağı durur. Çiçek elde ölürsen ceset çiçeği taşır ve fener gibi yanar; karanlık yol aydınlanır. Çiçek hayat başınadır, ölümde cesede geçer ve elden silinir. Sarnıç yan kapısı artık yetenek istemez.
 
+### v1.18.6 (yayınlandı 2026-11-17, `versionCode 54`) — Türkçe metin cilası, mobil yerleşim, kararlılık
+
+- **Günlük Türkçe:** bütün diyalog JSON'ları, oda sahnelerindeki tabela/ipucu metinleri ve arayüz yazıları doğal konuşma diliyle yeniden yazıldı. Bulmaca sayıları, lore kanonu ve satır sayıları korundu.
+- **Mobil yerleşim:** hedef satırı kalplerin altında; Etkileş düğmesi diyalog kutusuna binmiyor; seçim kutusu ekrana sığıyor ve sola hizalı; Menü düğmesi çentik payına uyuyor; ayarlar paneli kaydırılabiliyor; uzun konuşmacı adları ("Araştırma Yardımcısı S.") artık kesilmiyor.
+- **Kararlılık:** kapı geçişi ya da Ruh Kesimi sırasında uygulama arka plana atılırsa kayıt bekletilir ve iş bitince yazılır (2 sn debounce). Hızlı seyahat ve kapı geçişinde ölüm yarışı giderildi (`_abort_travel`). Yankı sunağı kaydı ölümde iptal ediliyor. Ceset yankısı yüklemeden sonra tekrar oynamıyor. Yetim `HINTS[decay_catacombs]` silindi. Hedef metni genişliği yalnızca ekran boyutu değişince hesaplanıyor.
+- **Oyuncu dostu yenilikler:**
+  - Ayarlarda **Buton boyutu** (%80–%120). Düğmeler köşeye sabitlenir; Etkileş diyalog kutusuna, Atıl bağlam ipucuna binmez.
+  - **Titreşim** 4 seviyeli (Kapalı/Hafif/Normal/Güçlü). Hasarda, ölümde ve bulmaca çözülünce kendi deseniyle titrer. Eski açık/kapalı ayarı Normal/Kapalı'ya taşınır.
+  - **İlk dokunuş rehberi:** joystick ve düğme etiketleri ilk hareketten sonra ya da 6 sn sonra kaybolur, bir daha çıkmaz.
+  - **Hedef nabzı:** hedef değişince satır hafifçe parlar ve kısa titreşir.
+  - **Takılma yardımı:** aynı odada 3 kez ölünce "Takıldın mı? Küçük bir ipucu:" ile yön gösteren bir ipucu çıkar.
+  - **Geri tuşu ipucu:** toplamda en fazla 2 kez gösterilir.
+  - **Bildirim kuyruğu (`queue_toast`):** ölüm sinematiği ya da diyalog açıkken bekler. Sınır yüzünden en eski ceset silinince "En eski bedenin toprağa karıştı." der; yükleme sonrası yarım kalan düzenek için "Bu odadaki düzenek sıfırlandı." der.
+  - **Günlük rozeti:** yeni kayıt gelince Günlük düğmesinde kırmızı nokta, ilgili sekmede "•" çıkar; görülen sayı kayıtla saklanır.
+  - **Devam kartı:** son kaydın yanında oynama süresi ("Süre") ve son günlük notu da gösterilir (`play_time_sec`, eski kayıtta 0).
+  - **Ortam anları:** 6 yürüyüş odasında (Karantina, Yetki Masası, Devre, Sayfa, Nöbet, Shilda Duvarı) oda ortasında ziyaret başına bir kez kısa bir ses ve fısıltı çıkar (`scripts/world/room_ambient.gd`).
+  - **Hızlı seyahat ipucu:** görülmüş 3 odadan üst üste geçince bir kez çıkar.
+  - **Kapı etiketleri** artık dokunmatik düğmelerin ve joystick'in altında kalmaz; yukarı ya da yana kayar (`hud.get_touch_button_screen_rects()`).
+- **Eski denetimler onarıldı:** m1/m2/m3 milestone denetimlerinin (9 adet) hepsi 0 FAIL. 4 bayat beklenti güncellendi: plaka konumu sahneden okunuyor, lanet 99 tavanı, cilalı mühür metni, kaldırılmış yan kapılar. Gerçek hata olarak Sarmaşıklar odasında `Step_b` yan kapıya 104 px kalıyordu; 1020'ye taşındı (`Step_c` 1060). Bu denetimler `Run-Audit.ps1` içinde `$legacyDevAudits` olarak koşuyor. Yeni `feedback_audit` paketin içinde.
+- **Testler:** yeni `mobile_layout_audit` (8 çözünürlük × normal/büyük yazı × ~80 px çentik, 2080 kontrol) ve `mobile_capture`. e2e S.'nin Odası testi eklendi (7 Kayıt'la kilitli, 8 Kayıt'la açık). fast_travel_audit'e 14 test eklendi. door_controls rotaları güncellendi. `plate_rule_audit` derin oda plakalarını (latch_on_live kapı) tanıyor. Mühürle çakışan iki etkileşim taşındı: Kütüphane Salonu `NookRecord` (x 140) ve Deney Hücreleri `WallNotches` (x 402).
+
 ### v1.18.5 (yayınlandı 2026-11-17, versionCode 53) — günlük yerleşim düzeltmesi
 
 Günlükteki Harita & Mühürler sekmesinde üst üste binen yazılar giderildi: başlık satırları (Mühür, Kanıt, Kısayol, Kayıt/Sınav/Anı sayaçları) yazı tipi ölçüsüne göre diziliyor, "Odaya dokun: hızlı git" ipucu sağ sayfaya taşındı, kısayol çizgisi yalnız kartların arasında çiziliyor, uzun bölge başlıkları küçülüyor ve çift haneli ceset sayısı oda dairesine sığıyor. İzler sekmesinde sayaçlar ayrı satırda. Yeni denetim: `journal_layout_audit`.
@@ -378,10 +399,10 @@ Depodaki tüm derlenmiş Android (`arm64-v8a`) APK paketleri düzenli olarak **[
 
 | Sürüm | Durum | APK Dosyası / İndirme | Öne Çıkan Yenilikler ve Kapsam |
 | :--- | :---: | :--- | :--- |
-| **[v1.18.5](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.18.5)** | Son yayın | [📥 `TheRoomRemembers-1.18.5-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.18.5/TheRoomRemembers-1.18.5-android-arm64.apk) | Günlük/harita sekmesinde üst üste binen yazılar düzeltildi (`versionCode 53`). |
+| **[v1.18.6](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.18.6)** | Son yayın | [📥 `TheRoomRemembers-1.18.6-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.18.6/TheRoomRemembers-1.18.6-android-arm64.apk) | Günlük Türkçe metin cilası, dokunmatik ilk adım rehberi, buton boyutu ve titreşim ayarı, ortam anları, mobil yerleşim ve kararlılık düzeltmeleri (`versionCode 54`). |
+| **[v1.18.5](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.18.5)** | Önceki | [📥 `TheRoomRemembers-1.18.5-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.18.5/TheRoomRemembers-1.18.5-android-arm64.apk) | Günlük/harita sekmesinde üst üste binen yazılar düzeltildi (`versionCode 53`). |
 | **[v1.18.4](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.18.4)** | Önceki | [📥 `TheRoomRemembers-1.18.4-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.18.4/TheRoomRemembers-1.18.4-android-arm64.apk) | 47 oda, ~190 dk: 6 derin oda + Yankı Sınavları, 8 geri dönüş köşesi, 5 Kırık Anı, S.'nin Odası, ayarlar menüsü, metin ve görsel cila (`versionCode 52`). |
 | **[v1.18.3](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.18.3)** | Önceki | [📥 `TheRoomRemembers-1.18.3-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.18.3/TheRoomRemembers-1.18.3-android-arm64.apk) | Defterden hızlı seyahat: Harita sekmesinde ziyaret edilmiş odaya iki dokunuşla ışınlanma (`versionCode 51`). |
-| **[v1.18.2](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.18.2)** | Önceki | [📥 `TheRoomRemembers-1.18.2-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.18.2/TheRoomRemembers-1.18.2-android-arm64.apk) | Oda 09 sera kapısı: doğru saksıya ceset düşünce kapı kalıcı açılır (`versionCode 50`). |
 
 ---
 
@@ -406,7 +427,7 @@ Depodaki tüm derlenmiş Android (`arm64-v8a`) APK paketleri düzenli olarak **[
 1. **[Releases](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases)** sayfasından son sürüm `.apk` dosyasını indirin.
 2. Veya USB hata ayıklaması açık cihaza `adb` ile yükleyin:
    ```powershell
-   adb install -r TheRoomRemembers-1.13.0-android-arm64.apk
+   adb install -r TheRoomRemembers-1.18.6-android-arm64.apk
    adb shell am start -n com.torimon.theroomremembers/com.godot.game.GodotApp
    ```
 
@@ -439,7 +460,7 @@ $env:TORIMON_TEST = "1"
 & $godot --headless --path . -s res://scripts/dev/memory_seal_audit.gd
 ```
 
-**v1.18.5 için zorunlu denetimler (hepsi 0 FAIL).** Her biri `TORIMON_TEST=1 godot --headless --path . -s res://scripts/dev/<ad>.gd` ile çalışır:
+**v1.18.6 için zorunlu denetimler (hepsi 0 FAIL).** Her biri `TORIMON_TEST=1 godot --headless --path . -s res://scripts/dev/<ad>.gd` ile çalışır:
 
 | Konu | Denetimler |
 | :--- | :--- |
@@ -447,8 +468,11 @@ $env:TORIMON_TEST = "1"
 | Bulmaca ve ipuçları | `clue_solvability_audit`, `phase2_rooms_audit`, `phase3_rooms_audit`, `phase4_rooms_audit` |
 | Oda grafiği ve kapılar | `room_graph_audit`, `door_audit`, `room_header_fit_audit`, `fast_travel_audit` |
 | Yeni içerik | `deep_rooms_audit`, `weak_rooms_audit`, `backtrack_nooks_audit`, `echo_trials_audit`, `memory_fragments_audit`, `room_polish_audit` |
-| Ayar, kayıt, yayın | `settings_audit`, `save_quit_audit`, `release_audit` |
+| Ayar, kayıt, yayın | `settings_audit` (buton boyutu, titreşim seviyesi + taşıma), `save_quit_audit`, `save_robustness_audit`, `release_audit` |
+| Geri bildirim | `feedback_audit` (ceset toast'ı, oynama süresi, düzenek sıfırlama notu, günlük rozeti, ortam anı, hızlı seyahat ipucu) |
+| Eski milestone | `m1_challenger1_audit`, `m1_challenger2_audit`, `m1_forensic_auditor_suite`, `m1_rebirth_audit`, `m1_stress_challenger2`, `m2_seal_audit`, `m2_adversarial_forensic_suite`, `m2_challenger1_stress`, `m3_transition_audit` |
 | Arayüz yerleşimi | `journal_layout_audit` (günlük/harita sekmelerinde üst üste binen yazı yok; 1280x720, 1920x1080, 2400x1080, büyük yazı) |
+| Mobil yerleşim | `mobile_layout_audit` (dokunmatik düğmeler, HUD, diyalog ve seçim kutusu çakışmıyor; dokunma hedefi ≥44 px; ~80 px çentik payı; 8 telefon/tablet çözünürlüğü, normal ve büyük yazı), `controls_audit`, `door_controls_audit` |
 
 Toplu çalıştırma için `docs/gelistirme/Run-Audit.ps1` kullanılır.
 

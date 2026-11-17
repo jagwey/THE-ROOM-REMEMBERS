@@ -2,13 +2,13 @@
   "room": "mirrors_gallery",
   "sets": {
     "reflections": [
-      {"s": "Noroi", "t": "Her camda başka bir ben var. Hepsi benden önce ölmüş."},
-      {"s": "@shilda", "t": "Onlar unuttuğun geceler. Duvar sayıyı saklar."},
+      {"s": "Noroi", "t": "Her camda başka bir ben var. Hepsi ölmüş."},
+      {"s": "@shilda", "t": "Onlar unuttuğun geceler. Sayıyı duvar saklıyor."},
       {"s": "Noroi", "t": "Neden ben hatırlamıyorum?"},
       {"s": "@shilda", "t": "Oda seni her ölümde sıfırlıyor. Beni sıfırlamıyor."},
       {"s": "Noroi", "t": "O yüzden aynı soruyu tekrar tekrar soruyorum."},
       {"s": "@shilda", "t": "Ben her seferinde sustum. Artık susmayacağım."},
-      {"s": "Noroi", "t": "Susmak seni koruyor muydu?"},
+      {"s": "Noroi", "t": "Susmak seni mi koruyordu?"},
       {"s": "@shilda", "t": "Beni değil. Yalnız seni, daha az acı çek diye."},
       {"s": "Noroi", "t": "Acıyı benim yerime kimse seçemez."},
       {"s": "@shilda", "t": "Biliyorum. Bu yüzden artık seçmiyorum, sana bırakıyorum."},
@@ -16,9 +16,9 @@
     ],
     "gallery_cracks": [
       {"s": "Noroi", "t": "Bu camın çatlakları bir yüz gibi. Kadın yüzü."},
-      {"s": "@shilda", "t": "Bakma. Kendi yüzümü bu camda unutmuştum, görmek istemem."},
+      {"s": "@shilda", "t": "Bakma. Kendi yüzümü bu camda unuttum, görmek istemiyorum."},
       {"s": "Noroi", "t": "Ben bakarsam?"},
-      {"s": "@shilda", "t": "O zaman yalnız sen görürsün. Ben görmedim say."},
+      {"s": "@shilda", "t": "O zaman sadece sen görürsün. Ben görmemiş olurum."},
       {"s": "Noroi", "t": "Üzgün ama güzel."},
       {"s": "@shilda", "t": "Susar mısın artık?"}
     ],

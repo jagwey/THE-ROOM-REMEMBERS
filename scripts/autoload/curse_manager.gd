@@ -96,13 +96,13 @@ func _update_band(prev: float) -> void:
 		if band > old:
 			match band:
 				Band.FIRST_SIGNS:
-					curse_whisper.emit("…kulaklarında uğultu.")
+					curse_whisper.emit("Kulaklarımda uğultu var.")
 				Band.DANGER:
-					curse_whisper.emit("Kırmızı… her yerde.")
+					curse_whisper.emit("Kırmızı. Her yerde.")
 				Band.CRITICAL:
 					curse_whisper.emit("Dayanamıyorum—")
 	if prev < 40.0 and curse >= 40.0:
-		curse_whisper.emit("Bir şey… içimde büyüyor.")
+		curse_whisper.emit("İçimde bir şey büyüyor.")
 
 
 func _begin_possession() -> void:

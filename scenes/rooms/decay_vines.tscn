@@ -152,7 +152,7 @@ script = ExtResource("lore")
 lore_id = &"decay_vines_sign"
 texture_path = "res://assets/props/curse.png"
 sprite_scale = 0.5
-lines = PackedStringArray("Noroi|Duvar boyu sarmaşık. Kılıç işlemez, dallar çiçek kokusundan çekilir.", "Noroi|Kökte yanık izi var. Bir bedeni çiçekle getirirsem yolu açar.")
+lines = PackedStringArray("Noroi|Duvar boyu sarmaşık. Kılıç işlemez, dallar çiçek kokusuna doğru uzanıyor.", "Noroi|Kökte yanık izi var. Bir bedeni çiçekle getirirsem yolu açar.")
 repeat_line = "Noroi|Çiçeği al, bedeni sarmaşığa taşı."
 
 [node name="FlowerSource" type="Area2D" parent="Interactive"]
@@ -474,7 +474,7 @@ sprite_scale = 0.4
 tint = Color(0.85, 0.7, 0.95, 1)
 
 [node name="Step_b" type="Area2D" parent="Interactive/MemoryFragments"]
-position = Vector2(1000, 288)
+position = Vector2(1020, 288)
 script = ExtResource("mem_step")
 step_id = "b"
 label = "Kırık Anı Parçası"
@@ -483,7 +483,7 @@ sprite_scale = 0.4
 tint = Color(0.85, 0.7, 0.95, 1)
 
 [node name="Step_c" type="Area2D" parent="Interactive/MemoryFragments"]
-position = Vector2(1050, 288)
+position = Vector2(1060, 288)
 script = ExtResource("mem_step")
 step_id = "c"
 label = "Kırık Anı Parçası"

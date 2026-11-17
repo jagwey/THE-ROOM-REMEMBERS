@@ -14,26 +14,26 @@
       {"s": "Noroi", "t": "Bu defterdeki Denek 14 benim. Bunu hep biliyordun."},
       {"s": "@shilda", "t": "Hep. Her ölümünde adını fısıldadım, sen duymadın."},
       {"s": "Noroi", "t": "Duymamak mı, yoksa duyup unutmak mı daha kötü, bilmiyorum."},
-      {"s": "@shilda", "t": "Ağlayamıyorum bile. Gölgenin gözü yok."},
-      {"s": "Noroi", "t": "Masada biri oturmuş gibi bir iz var, yüzü yok."},
+      {"s": "@shilda", "t": "Ağlayamıyorum bile. Gölgenin gözü olmaz."},
+      {"s": "Noroi", "t": "Masada biri oturmuş gibi bir iz var. Yüzü yok."},
       {"s": "@shilda", "t": "Daha fazla bakma. Gerisini çekirdekte kendin görürsün."},
       {"s": "Noroi", "t": "Cam karardı, yankı sustu."}
     ],
     "obs_stand": [
-      {"s": "Noroi", "t": "Camın önünde ayakta durulmuş bir iz var. Oturan değil, bekleyen."},
+      {"s": "Noroi", "t": "Camın önünde ayakta durmuş birinin izi var. Oturan değil, bekleyen."},
       {"s": "@shilda", "t": "Oturmak yasaktı. Notlar ayakta tutulurdu."},
       {"s": "Noroi", "t": "Kurşun kalemle yazılanlar senin elinden mi?"},
-      {"s": "@shilda", "t": "Birkaçı. Ötekileri yazan, imzasını kazıttı."},
+      {"s": "@shilda", "t": "Birkaçı. Ötekileri yazan imzasını kazıttı."},
       {"s": "Noroi", "t": "Seninle o kişi arasında ne vardı?"},
       {"s": "@shilda", "t": "Bir cam. Bazen bu çok şey demek."}
     ],
     "obs_file": [
-      {"s": "Noroi", "t": "Dosyanın son sayfası boş. Yalnız tek satır: «Denek 14 gönüllüdür.»"},
+      {"s": "Noroi", "t": "Dosyanın son sayfası boş. Sadece tek satır var: «Denek 14 gönüllüdür.»"},
       {"s": "Noroi", "t": "Gönüllüymüşüm. Yani buraya yine kendim geldim."},
       {"s": "@shilda", "t": "Geldin. Bir sebebin vardı ve o sebebi ben biliyorum."},
       {"s": "Noroi", "t": "Söyle o zaman."},
       {"s": "@shilda", "t": "Henüz değil, ama söyleyeceğim. Söz."},
-      {"s": "Noroi", "t": "Sözün neye yarar bilmiyorum. Yine de tutacağını sanıyorum."}
+      {"s": "Noroi", "t": "Sözün neye yarar bilmem. Yine de tutacağını sanıyorum."}
     ]
   }
 }

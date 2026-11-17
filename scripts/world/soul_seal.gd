@@ -79,7 +79,7 @@ func _on_back_body(body: Node) -> void:
 		return
 	if signf(body.global_position.x - global_position.x) != float(signi(back_side)):
 		return
-	_solve("Mühür bu yandan sadece bir sürgü… çektim, çözüldü.")
+	_solve("Mühür bu yandan sadece bir sürgü. Çektim, çözüldü.")
 
 
 func receive_soul_slash(_from: Node) -> void:
@@ -93,7 +93,7 @@ func receive_soul_slash(_from: Node) -> void:
 		if wrong_line != "":
 			DialogueManager.whisper("Noroi", wrong_line)
 		return
-	_solve("Mühür ruhumu tanıdı… ve çözüldü.")
+	_solve("Mühür ruhumu tanıdı ve çözüldü.")
 
 
 func _solve(line: String) -> void:
@@ -120,7 +120,7 @@ func receive_sword_hit(_from: Node, _dir: float, _combo: int) -> void:
 	elif refusal_line != "":
 		DialogueManager.whisper("Noroi", refusal_line)
 	else:
-		DialogueManager.whisper("Noroi", "Kılıç geçmiyor, mühür bir ruh bekliyor ve o gücü henüz tanımıyorum.")
+		DialogueManager.whisper("Noroi", "Kılıç işe yaramıyor, mühür ruh istiyor. O gücü henüz tanımıyorum.")
 
 
 func _open(animate: bool) -> void:

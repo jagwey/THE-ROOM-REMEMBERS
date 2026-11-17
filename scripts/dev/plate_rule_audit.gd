@@ -260,6 +260,14 @@ func _static_scene_checks() -> void:
 		if not cur.is_empty():
 			nodes.append(cur)
 		var plate_ids: Array = []
+		## Derin odalar (v1.18.4): oyuncu plakası yalnız latch_on_live kapının puzzle_listen_all
+		## girdisiyse kabul — kapı canlı açılınca kalıcı çözülür, oyuncu plakadan inince kilitlenme olmaz.
+		var latched_listens: Array = []
+		for n in nodes:
+			var gp: Dictionary = n["props"]
+			if String(gp.get("latch_on_live", "false")) == "true" and gp.has("puzzle_listen_all"):
+				for lm in RegEx.create_from_string("\"([^\"]+)\"").search_all(String(gp["puzzle_listen_all"])):
+					latched_listens.append(lm.get_string(1))
 		for n in nodes:
 			var pr: Dictionary = n["props"]
 			if String(pr.get("script", "")).contains("ExtResource"):
@@ -271,7 +279,9 @@ func _static_scene_checks() -> void:
 				var is_latch := String(pr.get("latch_on_press", "false")) == "true"
 				if is_accept or is_latch:
 					var key := "%s:%s" % [room, n["name"]]
-					if not ACCEPT_PLAYER_WHITELIST.has(key) or not is_latch:
+					var pid := String(pr.get("puzzle_id", "")).trim_prefix("&").trim_prefix("\"").trim_suffix("\"")
+					var gate_latched := is_accept and not is_latch and latched_listens.has(pid)
+					if not gate_latched and (not ACCEPT_PLAYER_WHITELIST.has(key) or not is_latch):
 						accept_bad.append(key)
 		var barriers: Array = []
 		for n in nodes:

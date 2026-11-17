@@ -83,7 +83,7 @@ anchor_y = 288.0
 hold_corpse = true
 puzzle_hint = &"catacomb_bridge_thorn"
 body_line = "Çiçek bendeyken dikene dokunursam ölürüm; bedenim köprü ve ışık olur."
-solved_line = "Diken sustu. Köprü kurulu kalıyor."
+solved_line = "Diken durdu. Köprü yerinde kalıyor."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/Thorn"]
 shape = SubResource("Interact")

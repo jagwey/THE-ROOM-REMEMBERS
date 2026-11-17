@@ -111,7 +111,7 @@ script = ExtResource("thorn")
 anchor_x = 620.0
 puzzle_hint = &"decay_greenhouse_pot"
 body_line = "Gölge burada durdu. Bu saksıda ölürsem mühür yanıt verir."
-solved_line = "Saksı sustu. Beden mührü basık tutuyor."
+solved_line = "Saksı yanıt verdi. Beden mührü basılı tutuyor."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ThornB"]
 shape = SubResource("PlateShape")
@@ -154,7 +154,7 @@ texture_path = "res://assets/props/red_flower.png"
 sprite_scale = 0.45
 dialogue_room = &"decay_greenhouse"
 dialogue_set = &"greenhouse_roots"
-repeat_line = "Noroi|Köklerin camı çatlatmış. Burası bir bekleyişin içinde büyümüş."
+repeat_line = "Noroi|Kökler camı çatlatmış. Burası bekleyerek büyümüş."
 
 [node name="GreenhouseGlass" type="Area2D" parent="Interactive"]
 position = Vector2(940, 288)
@@ -164,7 +164,7 @@ texture_path = "res://assets/props/mirror_cracked.png"
 sprite_scale = 0.45
 dialogue_room = &"decay_greenhouse"
 dialogue_set = &"greenhouse_glass"
-repeat_line = "Noroi|Camın öte yanı daha canlı görünüyor. Hep öyle olur."
+repeat_line = "Noroi|Camın öbür tarafı daha canlı görünüyor. Hep öyle olur."
 
 [node name="RoomTouch" type="Node2D" parent="."]
 position = Vector2(400,180)

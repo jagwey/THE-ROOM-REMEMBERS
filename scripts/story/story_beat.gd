@@ -83,11 +83,11 @@ func _library_hall() -> void:
 	else:
 		DialogueManager.say("Arşivci", "Yine geldin, Noroi. Bu sefer hangi rafa bakacaksın?")
 
-	DialogueManager.say("Arşivci", "Bir kayıt kurtarıcı diyor, öteki kapıyı kilitleyen. İmza kazınmış.")
+	DialogueManager.say("Arşivci", "Bir kayda göre kurtarıcı, ötekine göre kapıyı kilitleyen. İmza kazınmış.")
 
 	DialogueManager.say("Noroi", "Hangisine inanayım?")
 
-	DialogueManager.say("Arşivci", "Kayıtlar yazılı. Raflar sırayla çekilir.")
+	DialogueManager.say("Arşivci", "Kayıtlar ortada. Rafları sırayla çek.")
 
 	var ok: bool = await DialogueManager.dialogue_finished
 
@@ -254,11 +254,11 @@ func _mirrors_unbroken() -> void:
 	DialogueManager.say("Shilda", "Bahçe işini bilir. Sen yürüdün, yansıman da yürüdü.")
 	DialogueManager.say("Noroi", "Soruyu değiştirme. Kimi bekliyorsun?")
 	DialogueManager.say("Shilda", "Bekleyen ben değilim. Hatırlayan biri olmalı, o kadar.")
-	DialogueManager.say("Noroi", "Hatırlamak ile saklamak aynı şey değil.")
+	DialogueManager.say("Noroi", "Hatırlamakla saklamak aynı şey değil.")
 	DialogueManager.say("Noroi", "Bu aynalarda sen yoksun. Neden hiçbir camda görünmüyorsun?")
 	DialogueManager.say("Shilda", "Gölgenin yansıması olmaz. Ayna yalnız seni görür.")
 	DialogueManager.say("Noroi", "Cebimdeki çiçek senin elinden. Kabul kaydı bunu söylüyor.")
-	DialogueManager.say("Shilda", "Evet. Gölgenin elinden ancak bu gelirdi: bir çiçek, bir kez.")
+	DialogueManager.say("Shilda", "Evet. Bir gölgeden ancak bu gelirdi: tek bir çiçek.")
 	DialogueManager.say("Noroi", "Beni içeri sen mi çektin? Dürüst ol.")
 	DialogueManager.say("Shilda", "Çekmedim. Ama o kapıdan geçtiğini görünce sevindim, inkâr edemem.")
 	DialogueManager.say("Noroi", "Sen sevindin. Ben on iki kez öldüm.")

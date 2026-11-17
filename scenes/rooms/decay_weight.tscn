@@ -173,7 +173,7 @@ script = ExtResource("blood_thorn")
 anchor_x = 330.0
 puzzle_hint = &"decay_weight_corpse"
 body_line = "Sürgü taşı tutuyor ama kapı bir beden daha istiyor. Plakada ölürsem bedenim kalır."
-solved_line = "Dikenli plaka sustu. Beden onu basık tutuyor."
+solved_line = "Dikenli plaka durdu. Beden onu basılı tutuyor."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BloodThorn"]
 shape = SubResource("PlateShape")

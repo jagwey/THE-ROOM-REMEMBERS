@@ -6,7 +6,7 @@
       {"s": "Noroi", "t": "Cebimdeki saat altıyı gösteriyor, bugünün saati."},
       {"s": "@shilda", "t": "O gece bir ses kayboldu. Saatler onu bekliyor."},
       {"s": "Noroi", "t": "Neden bu kadar eminsin?"},
-      {"s": "@shilda", "t": "O geceyi sessizce yaşayan biri bilir. Bu kadarını söylerim."},
+      {"s": "@shilda", "t": "O geceyi yaşayan bilir. Sana bu kadarını söyleyebilirim."},
       {"s": "Noroi", "t": "Yanındaki saat başka bir yılı gösteriyor."}
     ],
     "clock_1995": [
@@ -15,18 +15,18 @@
       {"s": "@shilda", "t": "Saatler kendi kendine durmaz. O gün biri durdurdu."},
       {"s": "Noroi", "t": "Kim?"},
       {"s": "@shilda", "t": "Kayıtları tutan. Adını kimse bilmiyordu."},
-      {"s": "@shilda", "t": "İki gece. İkisini de saatler tutuyor."},
+      {"s": "@shilda", "t": "İki gece. İkisini de bu saatler saklıyor."},
       {"s": "Noroi", "t": "İkisini birlikte dinleyince kapı titredi."},
       {"s": "@shilda", "t": "Üç kadran: 1927, 1995, bugün. Sırayla, soldan sağa."}
     ],
     "clock_pendulum": [
-      {"s": "Noroi", "t": "Sarkaç tek yöne sarkıp kalmış. Geri dönemeyen bir salınış."},
+      {"s": "Noroi", "t": "Sarkaç tek yöne sarkıp kalmış. Geri dönemiyor."},
       {"s": "Noroi", "t": "Saat durunca zaman gerçekten duruyor mu?"},
       {"s": "@shilda", "t": "Dışarıda durmaz. Burada durur, içeridekiler de onunla."},
-      {"s": "Noroi", "t": "Peki sen hâlâ yürüyorsun. Ya da süzülüyorsun."},
+      {"s": "Noroi", "t": "Sen ise hâlâ yürüyorsun. Ya da süzülüyorsun."},
       {"s": "@shilda", "t": "Dışarıda sayılmam, içeride de. Arada bir yerdeyim."},
       {"s": "Noroi", "t": "Fark ettim: bana kızmayı bıraktın."},
-      {"s": "@shilda", "t": "Sana hiç kızmadım. Kendime kızıyordum, sen yanlış yerdeydin."}
+      {"s": "@shilda", "t": "Sana hiç kızmadım. Kendime kızıyordum, sen de yanlış yerdeydin."}
     ],
     "clock_photo": [
       {"s": "Noroi", "t": "Camın altında tozlu bir fotoğraf. Sıradaki herkesin yüzü silinmiş."},

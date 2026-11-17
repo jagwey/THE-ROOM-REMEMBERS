@@ -304,14 +304,14 @@ func _test_side_doors_alignment_and_clearance() -> void:
 	const EXPECTED_DOORS := {
 		"awakening": 672.0,
 		"decay_vines": 896.0,
-		"mirrors_reverse": 672.0,
-		"mirrors_unbroken": 784.0,
-		"core_threshold": 784.0,
-		"core_seal_chamber": 784.0,
 	}
+	## Linear main path redesign: these rooms intentionally no longer carry side doors.
+	const NO_SIDE_DOOR_ROOMS := ["mirrors_reverse", "mirrors_unbroken", "core_threshold", "core_seal_chamber"]
 
 	var side_doors_dict: Dictionary = main.get("SIDE_DOORS")
 	check(side_doors_dict != null, "SIDE_DOORS constant exists in main.gd")
+	for rid in NO_SIDE_DOOR_ROOMS:
+		check(not side_doors_dict.has(rid), "%s has no side door (linear main path)" % rid)
 
 	for rid in EXPECTED_DOORS.keys():
 		check(side_doors_dict.has(rid), "SIDE_DOORS has entry for %s" % rid)

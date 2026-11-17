@@ -3,7 +3,7 @@ extends Area2D
 ## Kaynak tükenmez; çiçeksiz ölümden sonra yeniden alınabilir.
 
 const PICK_LINE := "Solgun çiçek elimde ışık gibi duruyor."
-const HELD_LINE := "Çiçek zaten elimde…"
+const HELD_LINE := "Çiçek zaten elimde."
 
 ## Doluysa çiçeği aldıktan sonra söylenen ipucu satırı (<=70 karakter, fiille biter).
 @export var hint_line: String = ""

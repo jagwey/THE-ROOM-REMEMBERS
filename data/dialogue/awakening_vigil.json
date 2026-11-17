@@ -6,7 +6,7 @@
       {"s": "Noroi", "t": "Sen kimsin?"}
     ],
     "meeting": [
-      {"variants": [{"when": {"min_deaths": 3}, "s": "@shilda", "t": "Bir daha geldin. Sayıyı duvar tutuyor."}, {"s": "@shilda", "t": "Dur."}]},
+      {"variants": [{"when": {"min_deaths": 3}, "s": "@shilda", "t": "Bir daha geldin. Kaçıncı olduğunu duvar biliyor."}, {"s": "@shilda", "t": "Dur."}]},
       {"s": "Noroi", "t": "Kim var orada?"},
       {"s": "@shilda", "t": "Sağda bir kapı var."},
       {"s": "@shilda", "t": "Kırmızı yarığa basma."},
@@ -15,10 +15,10 @@
     "vigil_log": [
       {"s": "Noroi", "t": "Nöbet defteri açık. Son satır yarım: «Kimse gelmedi, gelirse…»"},
       {"s": "@shilda", "t": "Okuma. Sana yazılmadı."},
-      {"s": "Noroi", "t": "Sen kimsin? Buraya mı aitsin, yoksa benim gibi mi?"},
-      {"s": "@shilda", "t": "Buraya aitim, sen değilsin. Çıkış o yönde."},
+      {"s": "Noroi", "t": "Sen kimsin? Buranın mısın, yoksa benim gibi sonradan gelen mi?"},
+      {"s": "@shilda", "t": "Ben buranın insanıyım, sen değilsin. Çıkış şu yönde."},
       {"s": "Noroi", "t": "Beni kovuyor musun?"},
-      {"s": "@shilda", "t": "Koruyorum. Aynı şey değil, ama sana öyle görünebilir."},
+      {"s": "@shilda", "t": "Koruyorum. Kovmak değil bu, ama sana öyle görünebilir."},
       {"s": "Noroi", "t": "Gözümün önünde kal yeter."},
       {"s": "@shilda", "t": "Göreceğiz. Henüz söz veremem."}
     ]

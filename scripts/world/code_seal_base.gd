@@ -6,9 +6,9 @@ extends Area2D
 @export var code_key: String = "awakening"
 @export var puzzle_id: StringName = &"awakening_memory_code"
 @export var story_code: String = "314"
-@export var intro_line: String = "…Üzerinde çizikler var, bir kod mu bu?"
-@export var solved_line: String = "Mühür… gevşedi."
-@export var wrong_line: String = "…Yanlış, mühür kımıldamadı."
+@export var intro_line: String = "Üzerinde çizikler var. Bir kod mu bu?"
+@export var solved_line: String = "Mühür gevşedi."
+@export var wrong_line: String = "Yanlış. Mühür kımıldamadı."
 ## true ise yanlış kod girişi lanete +1 ekler.
 @export var penalize_wrong: bool = false
 ## Doluysa: listedeki her ID canlı veya çözülmüş olmadan tuş takımı açılmaz; require_line söylenir.
@@ -49,7 +49,7 @@ func on_interact(_by: Node) -> void:
 	if reaction == &"unknown":
 		DialogueManager.say("Noroi", intro_line)
 	else:
-		DialogueManager.say("Noroi", "…Bir sayı geliyor aklıma, denemeliyim.")
+		DialogueManager.say("Noroi", "Aklıma bir sayı geliyor, denemeliyim.")
 	var intro_ok: bool = await DialogueManager.dialogue_finished
 	if session != _session or not intro_ok:
 		_busy = false
@@ -65,7 +65,7 @@ func on_interact(_by: Node) -> void:
 		_busy = false
 		return
 	if entered == "":
-		DialogueManager.say("Noroi", "…Vazgeçtim.")
+		DialogueManager.say("Noroi", "Vazgeçtim.")
 		await DialogueManager.dialogue_finished
 		_busy = false
 		return
@@ -74,13 +74,13 @@ func on_interact(_by: Node) -> void:
 		_camera_focus()
 		match reaction:
 			&"same_life":
-				DialogueManager.say("Noroi", "Yankıdaki sayı buydu… %s." % _spaced(entered))
+				DialogueManager.say("Noroi", "Yankıdaki sayı buydu: %s." % _spaced(entered))
 			&"past_life":
-				DialogueManager.say("Noroi", "Bu sembollerin anlamını bilmiyorum…")
-				DialogueManager.say("Noroi", "Ellerim bu şifreyi nereden bildi?!")
+				DialogueManager.say("Noroi", "Bu sembollerin anlamını bilmiyorum.")
+				DialogueManager.say("Noroi", "Ellerim bu şifreyi nereden biliyor?!")
 			_:
-				DialogueManager.say("Noroi", "…Ben bunu hiç görmedim.")
-				DialogueManager.say("Noroi", "Zihnimin içinde başka biri var, parmaklarımı kim yönetiyor?!")
+				DialogueManager.say("Noroi", "Bunu hiç görmedim.")
+				DialogueManager.say("Noroi", "Zihnimde başka biri var. Parmaklarımı kim yönetiyor?!")
 		DialogueManager.say("Noroi", solved_line)
 		var confirm_ok: bool = await DialogueManager.dialogue_finished
 		if session != _session or not confirm_ok:
@@ -100,7 +100,7 @@ func on_interact(_by: Node) -> void:
 		_apply_wrong_penalty()
 		DialogueManager.say("Noroi", wrong_line)
 		if reaction == &"unknown":
-			DialogueManager.say("Noroi", "Bir yerde… bir yankı bunu söylemiş olmalı.")
+			DialogueManager.say("Noroi", "Bir yerde bir yankı bunu söylemiş olmalı.")
 		await DialogueManager.dialogue_finished
 	_busy = false
 

@@ -195,4 +195,4 @@ time_limit = 60.0
 wrong_penalty = 6.0
 intro_line = "Terazi hatayı kayda geçiriyor; her yanlış adım süreni yer."
 reward_title = "Yankı Sınavı: İkiz Laboratuvarı"
-reward_body = "Terazi bu kez hatayı affetmedi ama doğruyu iki kere tarttı. Çift yürüyen deney sonunda tek sesle konuştu."
+reward_body = "Terazi bu kez hatayı affetmedi ama doğruyu iki kez tarttı. İkiz deney sonunda tek ses oldu."
