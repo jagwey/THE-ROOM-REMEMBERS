@@ -14,9 +14,9 @@ func _ready() -> void:
 	add_to_group("vigil_shades")
 	if PuzzleManager.is_solved(TRACE_ID) or PuzzleManager.is_solved(&"awakening_vigil"):
 		return
-	_spawn(&"vigil_shade_true", false, "", PackedVector2Array([Vector2(720, 252), Vector2(900, 252), Vector2(1080, 252), Vector2(1180, 252)]))
-	_spawn(&"vigil_shade_left", true, "Bu iz soğuk. Yanlış gölgenin peşine düştüm.", PackedVector2Array([Vector2(600, 252), Vector2(420, 252), Vector2(260, 252)]))
-	_spawn(&"vigil_shade_near", true, "Ses vermiyor, sadece solup gitti. Bu da değil.", PackedVector2Array([Vector2(760, 252), Vector2(860, 252), Vector2(940, 252)]))
+	_spawn(&"vigil_shade_true", false, "", PackedVector2Array([Vector2(720, 252), Vector2(900, 252), Vector2(1080, 252), Vector2(1225, 252)]))
+	_spawn(&"vigil_shade_left", true, "Bu iz soğuk. Yanlış gölgenin peşine düştüm.", PackedVector2Array([Vector2(1000, 252), Vector2(880, 252), Vector2(800, 252)]))
+	_spawn(&"vigil_shade_near", true, "Ses vermiyor, sadece solup gitti. Bu da değil.", PackedVector2Array([Vector2(420, 252), Vector2(480, 252), Vector2(540, 252)]))
 	if bool(GameState.player_progress_knowledge.get("vigil_talk_done", false)):
 		start_all()
 
@@ -40,6 +40,9 @@ func _spawn(id: StringName, is_fake: bool, line: String, path: PackedVector2Arra
 	spr.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	spr.scale = Vector2(0.6, 0.6)
 	spr.modulate = Color(0.75, 0.7, 0.95, 0.55)
+	if is_fake:
+		## Sahte iz: soluk, yeşilimsi gri ve titrek; gerçek iz sakin mor kalır.
+		spr.modulate = Color(0.62, 0.7, 0.62, 0.4)
 	s.add_child(spr)
 	s.z_index = 3
 	add_child(s)

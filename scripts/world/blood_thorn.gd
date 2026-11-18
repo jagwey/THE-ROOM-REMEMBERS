@@ -15,6 +15,9 @@ extends Area2D
 @export var hold_id: StringName = &"corpse_bridge"
 
 var _armed: bool = false
+var _marker: Node2D
+var _marker_poll: float = 0.0
+var _ellipse := PackedVector2Array()
 
 
 func _ready() -> void:
@@ -36,6 +39,56 @@ func _ready() -> void:
 	var tw := spr.create_tween().set_loops()
 	tw.tween_property(spr, "modulate", Color(1.3, 0.35, 0.4, 1.0), 0.9).set_trans(Tween.TRANS_SINE)
 	tw.tween_property(spr, "modulate", Color(0.85, 0.2, 0.28, 1.0), 0.9).set_trans(Tween.TRANS_SINE)
+	_build_marker()
+
+
+## Beden düşeceği yeri (anchor_x) zeminde soluk işaretle; diken uzaktaysa ince noktalı çizgi bağla.
+func _build_marker() -> void:
+	for i in 16:
+		var a := TAU * float(i) / 16.0
+		_ellipse.append(Vector2(cos(a) * 20.0, sin(a) * 5.0))
+	_marker = Node2D.new()
+	_marker.name = "LandingMarker"
+	_marker.z_index = -1
+	_marker.draw.connect(_draw_marker)
+	add_child(_marker)
+	var mt := _marker.create_tween().set_loops()
+	mt.tween_property(_marker, "modulate:a", 0.55, 1.2).set_trans(Tween.TRANS_SINE)
+	mt.tween_property(_marker, "modulate:a", 1.0, 1.2).set_trans(Tween.TRANS_SINE)
+	_marker.queue_redraw()
+
+
+func _draw_marker() -> void:
+	var dx := anchor_x - global_position.x
+	var dy := (anchor_y - global_position.y) if anchor_y >= 0.0 else 0.0
+	var c := Vector2(dx, dy)
+	var poly := PackedVector2Array()
+	for p in _ellipse:
+		poly.append(p + c)
+	_marker.draw_colored_polygon(poly, Color(0.55, 0.05, 0.1, 0.22))
+	poly.append(poly[0])
+	_marker.draw_polyline(poly, Color(0.8, 0.12, 0.2, 0.4), 1.0)
+	_marker.draw_line(c + Vector2(-7, -2), c + Vector2(7, 2), Color(0.85, 0.15, 0.22, 0.45), 1.0)
+	_marker.draw_line(c + Vector2(-7, 2), c + Vector2(7, -2), Color(0.85, 0.15, 0.22, 0.45), 1.0)
+	if absf(dx) > 40.0:
+		var dir := signf(dx)
+		var x := 14.0 * dir
+		var end_x := dx - 24.0 * dir
+		var col := Color(0.8, 0.12, 0.2, 0.3)
+		while absf(x) < absf(end_x):
+			_marker.draw_line(Vector2(x, dy), Vector2(x + 3.0 * dir, dy), col, 1.0)
+			x += 9.0 * dir
+
+
+func _process(delta: float) -> void:
+	_marker_poll += delta
+	if _marker_poll < 0.5 or _marker == null:
+		return
+	_marker_poll = 0.0
+	var done := PuzzleManager.is_solved(puzzle_hint) or PuzzleManager.is_live(puzzle_hint)
+	if not done and hold_corpse:
+		done = _bridge_exists()
+	_marker.visible = not done
 
 
 func on_interact(by: Node) -> void:

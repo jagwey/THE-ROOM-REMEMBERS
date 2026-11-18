@@ -1,28 +1,33 @@
 extends Node2D
-## Sera iz gölgesi: tek gölge doğru saksıya (x620) yürür ve orada bekler. Oyuncu yaklaştıkça ilerler.
-## Çözülmüşse (`decay_greenhouse_pot` veya eski `decay_greenhouse`) hiç kurulmaz. Kayda geçmez.
+## Sera: üç gerçek saksı görünür olarak çizilir (plakalar kendi başına görünmez) ve
+## Noroi'nin karanlık silueti girişten doğru saksıya (x620) durmadan yürür, orada diz çöker,
+## saksı parlar; sonra söner ve gösteriyi tekrarlar (greenhouse_shade.gd).
+## Gölge yalnız çözülmemişse (`decay_greenhouse_pot` ve eski `decay_greenhouse`) kurulur. Kayda geçmez.
 
-const SHADE := preload("res://scripts/world/trace_shade.gd")
-const PATH := [Vector2(300, 252), Vector2(460, 252), Vector2(620, 252)]
+const SHADE := preload("res://scripts/world/greenhouse_shade.gd")
+const PLANTER := "res://assets/trr_refresh/decay/planter_bloom.png"
+const POT_XS := [460.0, 620.0, 780.0]
+const TARGET_X := 620.0
+const GROUND_Y := 288.0
+const PLANTER_SCALE := 0.62
 
 
 func _ready() -> void:
+	var tex: Texture2D = load(PLANTER)
+	for x in POT_XS:
+		var spr := Sprite2D.new()
+		spr.name = "Planter%d" % int(x)
+		spr.add_to_group("greenhouse_planter")
+		spr.texture = tex
+		spr.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		spr.scale = Vector2(PLANTER_SCALE, PLANTER_SCALE)
+		spr.position = Vector2(x, GROUND_Y - tex.get_height() * PLANTER_SCALE * 0.5 + 2.0)
+		spr.z_index = 1
+		add_child(spr)
 	if PuzzleManager.is_solved(&"decay_greenhouse_pot") or PuzzleManager.is_solved(&"decay_greenhouse"):
 		return
 	var s := Node2D.new()
 	s.set_script(SHADE)
 	s.name = "PotShade"
-	s.add_to_group("greenhouse_shade")
-	s.set("shade_id", &"greenhouse_shade_true")
-	s.set("fake", false)
-	s.set("waypoints", PackedVector2Array(PATH))
-	var spr := Sprite2D.new()
-	spr.texture = load("res://assets/props/memory_echo.png")
-	spr.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	spr.scale = Vector2(0.6, 0.6)
-	spr.modulate = Color(0.75, 0.7, 0.95, 0.55)
-	s.add_child(spr)
-	s.z_index = 3
+	s.set("target_x", TARGET_X)
 	add_child(s)
-	s.global_position = PATH[0]
-	s.call("start")

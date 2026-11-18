@@ -59,6 +59,8 @@ func _spawn() -> void:
 	s.name = "ShildaEcho"
 	s.set("shade_id", &"observation_shilda")
 	s.set("fake", false)
+	## Camın arkasında kendi başına yürür; oyuncuyu beklemez (UiGate duraklatması trace_shade'de kalır).
+	s.set("wait_radius", 100000.0)
 	s.set("waypoints", PackedVector2Array(PATH))
 	var spr := Sprite2D.new()
 	spr.texture = load("res://assets/props/memory_echo.png")

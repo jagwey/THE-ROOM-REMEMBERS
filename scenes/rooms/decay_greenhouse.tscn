@@ -40,8 +40,8 @@ script = ExtResource("pots")
 position = Vector2(260, 288)
 script = ExtResource("lore")
 lore_id = &"greenhouse_inscription"
-texture_path = "res://assets/trr_refresh/decay/planter_bloom.png"
-sprite_scale = 0.5
+texture_path = "res://assets/props/mirror_cracked.png"
+sprite_scale = 0.9
 lines = PackedStringArray("Noroi|Cama kazınmış: yedi yaprak açmış bir çiçek, yanında iki kök.", "Noroi|Altında dokuz damla. Sayı değil, sıra: yedi, iki, dokuz.", "Shilda|Çiçeğin yaprağı, kökü, damlası. Bahçedeki kapı bu sırayı ister.")
 evidence_title = "Cam Yazıt"
 evidence_body = "Camda çiçek çizimi: yedi yaprak, iki kök, dokuz damla. Bu sıra serada değil, bahçede gerekecek."
@@ -51,12 +51,12 @@ evidence_section = "izler"
 position = Vector2(400, 288)
 script = ExtResource("lore")
 lore_id = &"greenhouse_shared"
-texture_path = "res://assets/trr_refresh/decay/planter_bloom.png"
-sprite_scale = 0.58
+texture_path = "res://assets/props/seal.png"
+sprite_scale = 0.5
 dialogue_room = &"decay_greenhouse"
 dialogue_set = &"shared_seal"
 evidence_title = "Ortak Mühür"
-evidence_body = "Serada uzaktaki bir gölge mührün öbür yanını tutuyor. Gölgenin uğradığı saksıda ölünce yol açılır."
+evidence_body = "Serada kara bir gölge üç saksıdan birinin başında diz çöküyor. O saksının dikeninde ölünce mühür açılır."
 evidence_section = "izler"
 
 [node name="PotA" type="Area2D" parent="Interactive"]
@@ -96,32 +96,32 @@ accept_stone = false
 shape = SubResource("PlateShape")
 
 [node name="ThornA" type="Area2D" parent="Interactive"]
-position = Vector2(520, 290)
+position = Vector2(484, 290)
 script = ExtResource("thorn")
 anchor_x = 460.0
 puzzle_hint = &"greenhouse_pot_a_thorn"
-body_line = "Bu saksıda bir şey yok. Burada ölmem hiçbir şeyi açmaz."
+body_line = "Gölge bu saksıda durmadı. Burada ölürsem hiçbir şey açılmaz."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ThornA"]
 shape = SubResource("PlateShape")
 
 [node name="ThornB" type="Area2D" parent="Interactive"]
-position = Vector2(680, 290)
+position = Vector2(644, 290)
 script = ExtResource("thorn")
 anchor_x = 620.0
 puzzle_hint = &"decay_greenhouse_pot"
-body_line = "Gölge burada durdu. Bu saksıda ölürsem mühür yanıt verir."
+body_line = "Gölge tam bu saksının başında diz çöktü. Burada ölürsem mühür yanıt verir."
 solved_line = "Saksı yanıt verdi. Beden mührü basılı tutuyor."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ThornB"]
 shape = SubResource("PlateShape")
 
 [node name="ThornC" type="Area2D" parent="Interactive"]
-position = Vector2(840, 290)
+position = Vector2(804, 290)
 script = ExtResource("thorn")
 anchor_x = 780.0
 puzzle_hint = &"greenhouse_pot_c_thorn"
-body_line = "Bu saksı da boş. Gölge buradan geçmedi."
+body_line = "Bu saksı da boş. Gölge buraya hiç gelmedi."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ThornC"]
 shape = SubResource("PlateShape")

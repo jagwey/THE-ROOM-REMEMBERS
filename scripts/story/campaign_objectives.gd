@@ -34,7 +34,7 @@ const _BY_ROOM: Dictionary = {
 	"core_bloom_garden": "Bedenini plakaya bırak, taçları sayıp taşları uyandır.",
 	"mirrors_shrine": "Sunaktan Gölge Atılması'nı al, üç perdeyi ve boşluğu atılarak geç.",
 	"awakening_vigil": "Gölgeyle konuş, sonra kapıya yürüyen izin peşinden git.",
-	"decay_greenhouse": "Gölgenin gittiği saksıda öl; camdaki yazıyı not et.",
+	"decay_greenhouse": "Gölgenin diz çöktüğü saksının dikeninde öl; camdaki yazıyı oku.",
 	"library_clockroom": "İki saati ve cep saatini dinle: akrepler sırayla üç, dokuz, altı der.",
 	"library_reading_cell": "Kabini ruhla kes, duvardaki çentiklere bak.",
 	"experiment_intake": "Kabul kaydını oku, teraziyi ceset ve taşla doldur.",

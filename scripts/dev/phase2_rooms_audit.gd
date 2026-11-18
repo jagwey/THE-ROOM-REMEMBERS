@@ -1416,12 +1416,42 @@ func _rooms_07_10() -> void:
 		if n.is_in_group("greenhouse_shade"):
 			shade_n += 1
 	check(shade_n == 1, "greenhouse_trace_shade_spawned_when_unsolved")
+	var gshade: Node2D = gr.get_tree().get_first_node_in_group("greenhouse_shade") as Node2D
+	if gshade != null:
+		## Gölge oyuncuyu beklemez: oyuncu uzaktayken bile doğru saksıya varıp diz çöker, yanlış saksıda durmaz.
+		var gpl: Node2D = current_scene.get_node("Player")
+		gpl.global_position = Vector2(120.0, 288.0)
+		gshade.call("_begin_loop")
+		var stopped_wrong := false
+		var knelt := false
+		var last_x := gshade.global_position.x
+		for i in 140:
+			await create_timer(0.1).timeout
+			var gx := gshade.global_position.x
+			if int(gshade.get("state")) == 1 and absf(gx - last_x) < 0.01 and absf(gx - 460.0) < 30.0:
+				stopped_wrong = true
+			last_x = gx
+			if bool(gshade.get_meta("kneeling", false)):
+				knelt = true
+				break
+		check(knelt and absf(gshade.global_position.x - 620.0) < 1.0 and not stopped_wrong, "greenhouse_shade_walks_alone_and_kneels_at_right_pot")
+		var tb: Node2D = gr.find_child("ThornB", true, false)
+		var ta: Node2D = gr.find_child("ThornA", true, false)
+		check(tb != null and absf(tb.global_position.x - 620.0) < 40.0 and ta != null and absf(ta.global_position.x - 460.0) < 40.0, "greenhouse_thorns_sit_on_their_pots")
 	pm.mark_solved(&"decay_greenhouse")
 	var skip := Node2D.new()
 	skip.set_script(load("res://scripts/world/greenhouse_pots.gd"))
 	root.add_child(skip)
 	await process_frame
-	check(skip.get_child_count() == 0, "greenhouse_shade_skipped_when_legacy_solved")
+	var skip_shades := 0
+	var skip_planters := 0
+	for c in skip.get_children():
+		if c.is_in_group("greenhouse_shade"):
+			skip_shades += 1
+		if c.is_in_group("greenhouse_planter"):
+			skip_planters += 1
+	check(skip_shades == 0, "greenhouse_shade_skipped_when_legacy_solved")
+	check(skip_planters == 3, "greenhouse_three_visible_planters_even_when_solved")
 	skip.queue_free()
 	_unsolve(["decay_greenhouse"])
 	var inscr: Node = gr.find_child("WallInscription", true, false)

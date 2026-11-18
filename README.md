@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS"><img src="https://img.shields.io/badge/Kaynak-v1.18.6-8B0000?style=for-the-badge&logo=godotengine&logoColor=white" alt="Kaynak v1.18.6" /></a>
+  <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS"><img src="https://img.shields.io/badge/Kaynak-v1.19.0-8B0000?style=for-the-badge&logo=godotengine&logoColor=white" alt="Kaynak v1.19.0" /></a>
   <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases"><img src="https://img.shields.io/badge/Resmi_İndirme-GitHub_Releases-5c1d3d?style=for-the-badge&logo=github" alt="All Releases" /></a>
   <a href="https://godotengine.org/"><img src="https://img.shields.io/badge/Godot_Engine-4.7.2-478CBF?style=for-the-badge&logo=godotengine&logoColor=white" alt="Godot 4.7.2" /></a>
   <img src="https://img.shields.io/badge/Dünya-6_Bölge_·_47_Oda_·_Bölüm_I-2b1838?style=for-the-badge" alt="World Scope" />
@@ -58,7 +58,7 @@ Altı bölgeyi (Uyanış, Çürüme, Kütüphane, Deney, Aynalar, Çekirdek) **4
 
 * **Canlı plaka kuralı:** plaka yalnızca taş/ceset ağırlığıyla basılır (oyuncu tek başına basamaz); kapı ağırlık durdukça açıktır, ağırlık kalkınca kapanır. Kapıdan karşı tarafa geçildiği anda bulmaca kalıcı çözülür (*geçiş kilidi*). Eski kayıtlarda çözülmüş bulmaca çözülü kalır.
 * İstisna: `latch_on_press` plakası (yalnız Kripta `BedPlate`) basıldığı anda kalıcı çözülür; `accept_player` ve `latch_on_press` beyaz listesi `plate_rule_audit` ile denetlenir.
-* Faz 2 odalar 07-10: Sarmaşık (çiçekli ceset `vine_gate`'i 64 px içinde yakar, `decay_vines`), Ağırlık (kapı `decay_weight_latch` VE yalnız-ceset `decay_weight_corpse` ister; eski kayıtta latch yeter), Sera (3 yalnız-ceset saksı plakası, doğrusu `decay_greenhouse_pot`; `trace_shade` doğruyu gösterir, `WallInscription` 7-2-9 kaynağı; kapı geçişte eski `decay_greenhouse`'i de çözer), Shilda Duvarı (x200-480 lanet bulutu, düz yürüyüş ~%72 lanet, ceset kalkanıyla ~%10; `FlowerRoom` artık `echo_point`, `shilda_flowers_echo`; kapılar x1120/x1400; `WallThorn` ve yanlış saksı dikenleri kendi çözülmeyen ipucu id'siyle her zaman ölümcül, eski kayıtta çözülmüş oda günlükte ceset ipucu göstermez).
+* Faz 2 odalar 07-10: Sarmaşık (çiçekli ceset `vine_gate`'i 64 px içinde yakar, `decay_vines`), Ağırlık (kapı `decay_weight_latch` VE yalnız-ceset `decay_weight_corpse` ister; eski kayıtta latch yeter), Sera (3 yalnız-ceset saksı plakası, görünür saksı çizimleriyle; doğrusu `decay_greenhouse_pot`; `greenhouse_shade` kara silueti doğru saksıda diz çöker, `WallInscription` 7-2-9 kaynağı; kapı geçişte eski `decay_greenhouse`'i de çözer), Shilda Duvarı (x200-480 lanet bulutu, düz yürüyüş ~%72 lanet, ceset kalkanıyla ~%10; `FlowerRoom` artık `echo_point`, `shilda_flowers_echo`; kapılar x1120/x1400; `WallThorn` ve yanlış saksı dikenleri kendi çözülmeyen ipucu id'siyle her zaman ölümcül, eski kayıtta çözülmüş oda günlükte ceset ipucu göstermez).
 * **Son Merdiven (`core_ascent`) üç sınav:** soldan sağa Ruh Kesimi mührü (`core_ascent_seal`), 120 px yüksekliğinde Gölge Atılması perdesi (zıplayarak aşılamaz; zıplama tepesi ~58 px; boşluk yok, `core_ascent_gap` ID'si yalnız kayıt uyumu için), yankı plakası (`core_ascent_echo`: sunak + plaka + kapı). Ret repliği yeteneğin alındığı odayı adlandırır (Yasak Kanat, Ayna Tapınağı); `ascent_audit` denetler.
 * **Metin ve veri tutarlılığı (Faz 0 T5):** Yankı Sunağı kayıt süresi her yerde sekiz saniyedir; Çiçeklenme bahçesi ipucu "önce en çok, sonra en az, sonra kalan"; Unutulmuş Sayfa ipucu deney, kapı, mühür sırasını verir; hücre çıkış kapısı `ForwardIntake`; kullanılmayan `core_portal.gd` kaldırıldı.
 * **Ayna Tapınağı kapısı:** artık `mirrors_labyrinth` ileri kapısı (başlık "Ayna Tapınağı", nabız atan `DoorMark`); `door_audit` bunu denetler. (Eski: `mirrors_unbroken` yan kapısı.)
@@ -220,6 +220,15 @@ Oda numaraları `RoomManager.ROOM_ORDER` sırasını izler. İlk 40 oda ana omur
 
 ### Katakomb çiçeği ve Sarnıç (Faz 0)
 Kemik Mahzeni girişinde (x≈150) tükenmez bir çiçek kaynağı durur. Çiçek elde ölürsen ceset çiçeği taşır ve fener gibi yanar; karanlık yol aydınlanır. Çiçek hayat başınadır, ölümde cesede geçer ve elden silinir. Sarnıç yan kapısı artık yetenek istemez.
+
+### v1.19.0 (yayınlandı 2026-11-18, `versionCode 55`) — okunabilirlik ve softlock turu
+- **Sera (oda 09):** üç saksı artık görünür (x460/620/780). Noroi'nin kara silueti oyuncuyu beklemeden orta saksıya yürür, başında diz çöker ve saksı parlar; gösteri döngüyle tekrarlanır (`greenhouse_shade.gd`). Dikenler kendi saksılarının yanında; not objeleri (cam yazısı, mühür) saksıya benzemez. Toprak izi yalnız gölgenin diz çöktüğü saksıda.
+- **İniş işareti:** her `blood_thorn` cesedin düşeceği yere (`anchor_x`) soluk kırmızı bir yer işareti çizer; diken uzaksa arada noktalı çizgi. Bulmaca çözülünce kaybolur.
+- **Katakomb:** iki ek diken (`ThornLeft` x374 → ceset 300 / sembol 5, `ThornMid` x568 → ceset 600 / sembol 8); köprü dikeni 725 → 898. Üç çiçekli ceset (sol, orta, köprü) artık üretilebilir. Köşe kaydı `NookRecord` 570→1050 (mühür/diken boşluk kuralları).
+- **Gölgeler/yankılar:** vigil sahte gölgeleri uzakta, soluk ve titrek; gerçek gölge kapıya kadar yürür. Okuma hücresi gölgesi kapıya ulaşır. Gözlem yankısı oyuncuyu beklemez. `path_mimic` kontrol noktaları soluk halka olarak görünür.
+- **Metin:** tek dikenli odalarda "Dikende öl"; karantina ipucu "Sise gir, lanetten öl"; bahçe dikeni cesedin düştüğü yere yaklaştırıldı (400→570), Kök Damarları yan kapısı 500→460.
+- **Hedef:** Sera hedefi "Gölgenin diz çöktüğü saksının dikeninde öl; camdaki yazıyı oku."
+- Denetim: phase2 `greenhouse_shade_walks_alone_and_kneels_at_right_pot`, `greenhouse_thorns_sit_on_their_pots`, `greenhouse_three_visible_planters_even_when_solved`; polish "wrong pot leaves no mark".
 
 ### v1.18.6 (yayınlandı 2026-11-17, `versionCode 54`) — Türkçe metin cilası, mobil yerleşim, kararlılık
 
@@ -399,10 +408,10 @@ Depodaki tüm derlenmiş Android (`arm64-v8a`) APK paketleri düzenli olarak **[
 
 | Sürüm | Durum | APK Dosyası / İndirme | Öne Çıkan Yenilikler ve Kapsam |
 | :--- | :---: | :--- | :--- |
-| **[v1.18.6](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.18.6)** | Son yayın | [📥 `TheRoomRemembers-1.18.6-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.18.6/TheRoomRemembers-1.18.6-android-arm64.apk) | Günlük Türkçe metin cilası, dokunmatik ilk adım rehberi, buton boyutu ve titreşim ayarı, ortam anları, mobil yerleşim ve kararlılık düzeltmeleri (`versionCode 54`). |
+| **[v1.19.0](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.19.0)** | Son yayın | [📥 `TheRoomRemembers-1.19.0-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.19.0/TheRoomRemembers-1.19.0-android-arm64.apk) | Okunabilirlik ve softlock turu: Sera'da saksıya yürüyen gölge, diken iniş işareti, Mezar Dehlizi yeniden yerleşimi, gölge bulmacaları ve ipuçları netleşti (`versionCode 55`). |
+| **[v1.18.6](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.18.6)** | Önceki | [📥 `TheRoomRemembers-1.18.6-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.18.6/TheRoomRemembers-1.18.6-android-arm64.apk) | Günlük Türkçe metin cilası, dokunmatik ilk adım rehberi, buton boyutu ve titreşim ayarı, ortam anları, mobil yerleşim ve kararlılık düzeltmeleri (`versionCode 54`). |
 | **[v1.18.5](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.18.5)** | Önceki | [📥 `TheRoomRemembers-1.18.5-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.18.5/TheRoomRemembers-1.18.5-android-arm64.apk) | Günlük/harita sekmesinde üst üste binen yazılar düzeltildi (`versionCode 53`). |
 | **[v1.18.4](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.18.4)** | Önceki | [📥 `TheRoomRemembers-1.18.4-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.18.4/TheRoomRemembers-1.18.4-android-arm64.apk) | 47 oda, ~190 dk: 6 derin oda + Yankı Sınavları, 8 geri dönüş köşesi, 5 Kırık Anı, S.'nin Odası, ayarlar menüsü, metin ve görsel cila (`versionCode 52`). |
-| **[v1.18.3](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.18.3)** | Önceki | [📥 `TheRoomRemembers-1.18.3-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.18.3/TheRoomRemembers-1.18.3-android-arm64.apk) | Defterden hızlı seyahat: Harita sekmesinde ziyaret edilmiş odaya iki dokunuşla ışınlanma (`versionCode 51`). |
 
 ---
 

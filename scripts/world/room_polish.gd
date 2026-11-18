@@ -299,6 +299,9 @@ func _process(delta: float) -> void:
 			var shade := get_tree().get_first_node_in_group("greenhouse_shade")
 			if shade == null or not (shade is Node2D):
 				return
+			## Yalnız gölgenin diz çöktüğü saksı işaretlenir; üstünden yürüyüp geçtiği yanlış saksı değil.
+			if not bool(shade.get_meta("kneeling", true)):
+				return
 			var sx: float = (shade as Node2D).global_position.x
 			for sp in pot_paths:
 				var pot := get_node_or_null(NodePath(sp)) as Node2D

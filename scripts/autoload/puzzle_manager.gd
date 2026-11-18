@@ -219,8 +219,8 @@ const HINTS: Dictionary = {
 	},
 	&"decay_catacomb_seal": {
 		"goal": "Karanlıkta yolu ölülerin ışığı gösterir.",
-		"orientation": "Üç sembol, üç çiçekli ceset: uçurumun iki kenarı, bir köprü.",
-		"explicit": "Çiçekle uçurumun iki kenarında öl, sonra köprüde öl; 5-8-6'yı mühre gir."
+		"orientation": "Üç kristal, üç çiçekli ceset; her biri bir sembolün yanında kalmalı.",
+		"explicit": "Çiçekle her kristalde öl: sol, orta, köprü. 5-8-6'yı mühre gir."
 	},
 	&"awakening_weight": {
 		"goal": "Kapı açık kalsın diye bir ağırlık lazım.",
@@ -289,13 +289,13 @@ const HINTS: Dictionary = {
 	},
 	&"decay_greenhouse_pot": {
 		"goal": "Sera mührü yalnızca doğru saksıyı tanır.",
-		"orientation": "Gölge bir saksıya yürüyor. Yanlış saksı bedeni yutar, mührü açmaz.",
-		"explicit": "Gölgenin durduğu saksının dikenine dokun; bedenin orada kalsın."
+		"orientation": "Kara gölge bir saksının başında diz çöker. Yanlış saksı mührü açmaz.",
+		"explicit": "Gölgenin diz çöktüğü orta saksının dikenine iki kez dokun."
 	},
 	&"decay_greenhouse": {
 		"goal": "Sera mührü tek bir saksıya bağlı.",
-		"orientation": "Gölge bir saksıya yürüyor. Camdaki yazı bahçe sırasını gösterir.",
-		"explicit": "Gölgenin durduğu saksıda öl; cesedin mührü açar."
+		"orientation": "Kara gölge bir saksının başında diz çöker. Orası doğru saksı.",
+		"explicit": "Gölgenin diz çöktüğü orta saksıda öl; bedenin mührü açar."
 	},
 	&"decay_shilda_wall_broken": {
 		"goal": "Çatlak duvar kılıçla yıkılmaz. Bulutu cesedinle geç.",
@@ -474,8 +474,8 @@ const HINTS: Dictionary = {
 	},
 	&"experiment_quarantine_done": {
 		"goal": "Kırmızı sis canlıyı yer. Rapor sisin ötesinde, yüksek rafta.",
-		"orientation": "Ölü beden laneti emer. Sisin içinde öl; ceset güvenli alan açar.",
-		"explicit": "Bedeni bulutun içine koy, güvenli koridordan geç, rafa zıpla."
+		"orientation": "Sis lanet biriktirir: içinde kalırsan ölürsün, ceset laneti emer.",
+		"explicit": "Sise gir, lanetten öl; cesedin yanından geçip rafa zıpla."
 	},
 	&"experiment_conduit": {
 		"goal": "Üç damar kesilmeden enerji akmıyor.",
@@ -485,7 +485,7 @@ const HINTS: Dictionary = {
 	&"awakening_bellroom_corpse": {
 		"goal": "Üç plaka aynı anda tutulmalı; ilki beden ister.",
 		"orientation": "Dikene dokun, bedenin plakada kalsın.",
-		"explicit": "Soldaki dikende öl; bedenin ilk plakayı tutsun."
+		"explicit": "Dikende öl; bedenin ilk plakayı tutsun."
 	},
 	&"awakening_bellroom_echo": {
 		"goal": "Yankı ikinci plakayı tutmalı.",
@@ -505,7 +505,7 @@ const HINTS: Dictionary = {
 	&"decay_rootworks_corpse": {
 		"goal": "Üç ağırlık gerekir; ilki beden.",
 		"orientation": "Dikene dokun; bedenin soldaki plakada kalsın.",
-		"explicit": "Soldaki dikende öl; bedenin ilk plakayı tutsun."
+		"explicit": "Dikende öl; bedenin ilk plakayı tutsun."
 	},
 	&"decay_rootworks_stone": {
 		"goal": "İkinci ağırlık taş.",
@@ -525,7 +525,7 @@ const HINTS: Dictionary = {
 	&"library_archive_vault_corpse": {
 		"goal": "Kasa üç şey ister; ilki beden.",
 		"orientation": "Dikene dokun; bedenin soldaki plakada kalsın.",
-		"explicit": "Soldaki dikende öl; bedenin ilk plakayı tutsun."
+		"explicit": "Dikende öl; bedenin ilk plakayı tutsun."
 	},
 	&"library_archive_vault_echo": {
 		"goal": "İkinci ağırlık yankıdan gelir.",
@@ -545,7 +545,7 @@ const HINTS: Dictionary = {
 	&"experiment_twin_lab_corpse": {
 		"goal": "Tartı iki ağırlık ister; ilki beden.",
 		"orientation": "Dikene dokun; bedenin soldaki kefede kalsın.",
-		"explicit": "Soldaki dikende öl; bedenin ilk kefeyi tutsun."
+		"explicit": "Dikende öl; bedenin ilk kefeyi tutsun."
 	},
 	&"experiment_twin_lab_echo": {
 		"goal": "İkinci ağırlık yankıdan gelir.",
@@ -580,7 +580,7 @@ const HINTS: Dictionary = {
 	&"core_last_record_corpse": {
 		"goal": "Kasa dört şey ister; ilki beden.",
 		"orientation": "Dikene dokun; bedenin soldaki plakada kalsın.",
-		"explicit": "Soldaki dikende öl; bedenin ilk plakayı tutsun."
+		"explicit": "Dikende öl; bedenin ilk plakayı tutsun."
 	},
 	&"core_last_record_echo": {
 		"goal": "İkinci ağırlık yankıdan gelir.",
@@ -630,7 +630,7 @@ const HINTS: Dictionary = {
 	&"awakening_s_room_corpse": {
 		"goal": "Raf dört şey ister; ilki beden.",
 		"orientation": "Dikene dokun; bedenin soldaki plakada kalsın.",
-		"explicit": "Soldaki dikende öl; bedenin ilk plakayı tutsun."
+		"explicit": "Dikende öl; bedenin ilk plakayı tutsun."
 	},
 	&"awakening_s_room_echo": {
 		"goal": "İkinci ağırlık yankıdan gelir.",

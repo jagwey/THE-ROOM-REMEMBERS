@@ -14,6 +14,7 @@ signal reached(shade_id: StringName)
 var _idx: int = 0
 var _running: bool = false
 var _done: bool = false
+var _t: float = 0.0
 
 
 func start() -> void:
@@ -25,6 +26,13 @@ func start() -> void:
 	_idx = 0
 	_done = false
 	_running = true
+
+
+func _process(delta: float) -> void:
+	## Sahte izler titrer; gerçek iz sabit kalır.
+	if fake and not _done:
+		_t += delta
+		modulate.a = 0.55 + 0.35 * sin(_t * 17.0) * sin(_t * 5.3)
 
 
 func _physics_process(delta: float) -> void:

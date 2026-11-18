@@ -179,7 +179,7 @@ scale = Vector2(0.32, 0.32)
 texture = ExtResource("flower_tex")
 
 [node name="BloomThorn" type="Area2D" parent="Interactive"]
-position = Vector2(400, 290)
+position = Vector2(570, 290)
 script = ExtResource("thorn")
 anchor_x = 625.0
 puzzle_hint = &"decay_garden_bloom"

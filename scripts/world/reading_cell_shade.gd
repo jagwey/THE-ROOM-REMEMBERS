@@ -4,7 +4,7 @@ extends Node2D
 
 const SHADE := preload("res://scripts/world/trace_shade.gd")
 const SOLVE_ID := &"library_reading_cell"
-const PATH := [Vector2(700, 252), Vector2(780, 252), Vector2(850, 252)]
+const PATH := [Vector2(700, 252), Vector2(780, 252), Vector2(905, 252)]
 
 var _spawned: bool = false
 

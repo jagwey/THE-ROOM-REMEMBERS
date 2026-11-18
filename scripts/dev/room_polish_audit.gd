@@ -69,7 +69,11 @@ func _run() -> void:
 	var shade := Node2D.new()
 	shade.add_to_group("greenhouse_shade")
 	p.get_parent().add_child(shade)
+	shade.set_meta("kneeling", false)
 	shade.global_position = Vector2(460, 252)
+	await create_timer(0.2).timeout
+	check(p._marked.size() == 0, "greenhouse: walking over a wrong pot leaves no mark")
+	shade.set_meta("kneeling", true)
 	await create_timer(0.2).timeout
 	check(p._marked.size() == 1, "greenhouse: soil mark on the pot the shade passed")
 	shade.global_position = Vector2(300, 252)
