@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS"><img src="https://img.shields.io/badge/Kaynak-v1.19.1-8B0000?style=for-the-badge&logo=godotengine&logoColor=white" alt="Kaynak v1.19.1" /></a>
+  <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS"><img src="https://img.shields.io/badge/Kaynak-v1.19.2-8B0000?style=for-the-badge&logo=godotengine&logoColor=white" alt="Kaynak v1.19.2" /></a>
   <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases"><img src="https://img.shields.io/badge/Resmi_İndirme-GitHub_Releases-5c1d3d?style=for-the-badge&logo=github" alt="All Releases" /></a>
   <a href="https://godotengine.org/"><img src="https://img.shields.io/badge/Godot_Engine-4.7.2-478CBF?style=for-the-badge&logo=godotengine&logoColor=white" alt="Godot 4.7.2" /></a>
   <img src="https://img.shields.io/badge/Dünya-6_Bölge_·_47_Oda_·_Bölüm_I-2b1838?style=for-the-badge" alt="World Scope" />
@@ -221,6 +221,9 @@ Oda numaraları `RoomManager.ROOM_ORDER` sırasını izler. İlk 40 oda ana omur
 ### Katakomb çiçeği ve Sarnıç (Faz 0)
 Kemik Mahzeni girişinde (x≈150) tükenmez bir çiçek kaynağı durur. Çiçek elde ölürsen ceset çiçeği taşır ve fener gibi yanar; karanlık yol aydınlanır. Çiçek hayat başınadır, ölümde cesede geçer ve elden silinir. Sarnıç yan kapısı artık yetenek istemez.
 
+### v1.19.2 (yayınlandı 2026-11-19, `versionCode 57`) — telefonda ayarlar kaydırma
+- **Ayarlar parmakla kayar:** gerçek telefonda (Xiaomi, adb) liste butonların üstünden sürüklenince kaymıyordu; dokunuşu buton yutuyordu. `title_screen.gd` `_input` sürüklemeyi kendisi kaydırır (6 px eşik), kaydırma başlayınca basılı buton uzak bir sahte bırakmayla iptal edilir, yani kaydırırken ayar değişmez. Dokunmatikte Ayarlar en üstten açılır ("nasıl oynanır" metni görünür; önceden odak Ses düğmesine kaydırıyordu).
+
 ### v1.19.1 (yayınlandı 2026-11-19, `versionCode 56`) — geçilemeyen odalar, etkileşim seçici, yankı plakası, ayarlar, jenerik
 - **Etkileşim seçici:** iki veya daha fazla etkileşim cismi üst üste gelince ekranın kenarında küçük bir liste çıkar (`▸ El · etiket`). El düğmesi seçili olanı kullanır; listedeki satıra dokunmak doğrudan onu seçer ve kullanır; klavyede Tab ile sırayla değişir. Liste oyun alanını örtmez, tek hedef varken görünmez (`player_controller.gd` `get_interaction_candidates` / `choose_interaction` / `cycle_interaction`, `hud_controller.gd` InteractChooser). İşe yaramayan hedefler (`can_interact() == false`) listeye girmez.
 - **Sera (oda 09) geçilir:** fazla ceset temizliği (`corpse_manager.gd` `_trim_excess`) doğru saksıdaki en yeni bedeni siliyordu. En yeni ceset artık hiç silinmez; daha yeni bir cesedin de tuttuğu plakadaki eski ceset "tutuyor" sayılmaz.
@@ -417,7 +420,8 @@ Depodaki tüm derlenmiş Android (`arm64-v8a`) APK paketleri düzenli olarak **[
 
 | Sürüm | Durum | APK Dosyası / İndirme | Öne Çıkan Yenilikler ve Kapsam |
 | :--- | :---: | :--- | :--- |
-| **[v1.19.1](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.19.1)** | Son yayın | [📥 `TheRoomRemembers-1.19.1-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.19.1/TheRoomRemembers-1.19.1-android-arm64.apk) | Sera / Sarnıç geçilir, Kemik Mahzeni kemik kalas, üst üste etkileşimde seçici, oda 41 yankı plakası, ayarlar kaydırma, jenerikte Torimon (`versionCode 56`). |
+| **[v1.19.2](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.19.2)** | Son yayın | [📥 `TheRoomRemembers-1.19.2-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.19.2/TheRoomRemembers-1.19.2-android-arm64.apk) | Telefonda Ayarlar listesi parmakla kayar, kaydırırken ayar değişmez; Ayarlar en üstten açılır (`versionCode 57`). |
+| **[v1.19.1](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.19.1)** | Önceki | [📥 `TheRoomRemembers-1.19.1-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.19.1/TheRoomRemembers-1.19.1-android-arm64.apk) | Sera / Sarnıç geçilir, Kemik Mahzeni kemik kalas, üst üste etkileşimde seçici, oda 41 yankı plakası, ayarlar kaydırma, jenerikte Torimon (`versionCode 56`). |
 | **[v1.19.0](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.19.0)** | Önceki | [📥 `TheRoomRemembers-1.19.0-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.19.0/TheRoomRemembers-1.19.0-android-arm64.apk) | Okunabilirlik ve softlock turu: Sera'da saksıya yürüyen gölge, diken iniş işareti, Mezar Dehlizi yeniden yerleşimi, gölge bulmacaları ve ipuçları netleşti (`versionCode 55`). |
 | **[v1.18.6](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.18.6)** | Önceki | [📥 `TheRoomRemembers-1.18.6-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.18.6/TheRoomRemembers-1.18.6-android-arm64.apk) | Günlük Türkçe metin cilası, dokunmatik ilk adım rehberi, buton boyutu ve titreşim ayarı, ortam anları, mobil yerleşim ve kararlılık düzeltmeleri (`versionCode 54`). |
 | **[v1.18.5](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.18.5)** | Önceki | [📥 `TheRoomRemembers-1.18.5-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.18.5/TheRoomRemembers-1.18.5-android-arm64.apk) | Günlük/harita sekmesinde üst üste binen yazılar düzeltildi (`versionCode 53`). |
