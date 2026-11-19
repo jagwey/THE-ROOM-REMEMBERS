@@ -1720,7 +1720,11 @@ func _rooms_11_13() -> void:
 		if gv.y - gv.x > wide.y - wide.x:
 			wide = gv
 	check(wide.y - wide.x > reach_max, "cata_big_gap_unjumpable (%.0f > %.1f)" % [wide.y - wide.x, reach_max])
-	var half := (wide.y - wide.x - cw) * 0.5
+	## Köprü bedeninin altındaki kemik kalas (v1.19.1) basılabilir genişliği büyütür.
+	var th_p: Node = cat.find_child("Thorn", true, false)
+	var plank_w := float(th_p.get("bridge_plank_width")) if th_p != null and th_p.get("bridge_plank_width") != null else 0.0
+	check(plank_w >= 72.0, "cata_bridge_plank_wide (%.0f >= 72)" % plank_w)
+	var half := (wide.y - wide.x - maxf(cw, plank_w)) * 0.5
 	## Zıplama corpse tepesinden (~15 px yukarı) başlar/biter: başlangıçtan 15 px yukarıdaki seviyeye dönüşe kadar süre.
 	var corpse_top := 15.0
 	var vy2 := -jv
@@ -1733,7 +1737,7 @@ func _rooms_11_13() -> void:
 		t15 += 1.0 / 60.0
 		if vy2 > 0.0 and y2 >= -corpse_top:
 			break
-	check(half < speed * t15 - 16.0, "cata_gap_halves_jumpable_with_16px_margin (%.1f < %.1f, t15 %.3f)" % [half, speed * t15 - 16.0, t15])
+	check(half < speed * t15 - 40.0, "cata_gap_halves_jumpable_with_40px_margin (%.1f < %.1f, t15 %.3f)" % [half, speed * t15 - 40.0, t15])
 	## Gercek fizik testi: _cata_physics() (kare kare Player).
 	var th: Node = cat.find_child("Thorn", true, false)
 	check(th != null and th.is_in_group("blood_thorn") and th.puzzle_hint == &"catacomb_bridge_thorn", "cata_thorn_hint")
@@ -1879,6 +1883,10 @@ func _rooms_11_13() -> void:
 		water.set_drain(true)
 		water.step(-1)
 		check(water.level == 0, "cist_level0_with_drain")
+		## v1.19.1: dipte "Vana ↓" hedef olmaz; yoksa altındaki sayfa El ile seçilemiyordu.
+		var vc: Node = cis.find_child("ValveC", true, false)
+		var va: Node = cis.find_child("ValveA", true, false)
+		check(vc != null and not vc.can_interact() and va != null and va.can_interact(), "cist_bottom_valve_not_target_at_level0")
 		pages[0].on_interact(player)
 		check(bool(gs.get_world_flag(&"cistern_page_1", false)), "cist_p1_collect_level0")
 		water.set_drain(false)
@@ -2317,7 +2325,7 @@ func _cata_physics() -> void:
 			await create_timer(0.3).timeout
 		var cx := float(th.anchor_x)
 		var cnodes := get_nodes_in_group("corpse")
-		var corpse_half := 14.0
+		var corpse_half := maxf(14.0, float(th.get("bridge_plank_width")) * 0.5)
 		player.global_position = Vector2(gap.x - 140.0, 288.0)
 		player.velocity = Vector2.ZERO
 		player._state = &"idle"

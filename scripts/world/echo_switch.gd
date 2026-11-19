@@ -29,6 +29,9 @@ func _ready() -> void:
 		monitoring = true
 		rect.size = Vector2(48, 24)
 		_sprite.texture = load("res://assets/props/pressure_plate.png")
+		## Alan zemin hizasında (y+32); görsel diğer plakalarla aynı yükseklikte dursun,
+		## yoksa zemin şeridi (z 2) plakayı örter ve oyuncu onu göremez.
+		_sprite.position = Vector2(0, -22)
 	else:
 		add_to_group("echo_lever")
 		collision_layer = 8

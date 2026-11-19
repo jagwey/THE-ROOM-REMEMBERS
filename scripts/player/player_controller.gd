@@ -62,6 +62,7 @@ var _squash: Vector2 = Vector2.ONE
 var scripted_walk: bool = false
 var _last_interact_target: Node = null
 var _last_interact_ms: int = -10000
+var _chosen_target: Node2D = null
 var _last_safe_floor_pos: Vector2 = Vector2.ZERO
 var _safe_floor_pos: Vector2 = Vector2.ZERO
 ## Giriş yönü (çarpışma sonrası hız değil): taşlar omuz itişi için bunu okur.
@@ -715,8 +716,34 @@ func get_interaction_target() -> Node2D:
 	## Beden sırttayken tek hedef odur (etiket "Bırak").
 	if is_carrying():
 		return _carried
-	# Disabled rooms retain Area2D overlaps for a physics frame. Never interact with them.
+	var candidates := get_interaction_candidates()
+	if candidates.is_empty():
+		return null
+	## Kapı önündeyken yapışık itiş kapıyı engellemesin: 44px içinde kapı varsa itiş önceliğini baypas et.
+	var has_nearby_door := false
+	for c in candidates:
+		if c.is_in_group("room_door") and absf(c.global_position.x - global_position.x) <= 44.0:
+			has_nearby_door = true
+			break
+	## Oyuncu seçiciden bir hedef seçtiyse ve hâlâ menzildeyse o kazanır.
+	if is_instance_valid(_chosen_target) and candidates.has(_chosen_target):
+		return _chosen_target
+	_chosen_target = null
+	## Yapışık itiş hedefi: son 1.2 sn içinde itilen ceset/taş hâlâ önümüzdeyse ona öncelik.
+	if not has_nearby_door and is_instance_valid(_push_node) and Time.get_ticks_msec() - _push_ms < PUSH_STICKY_MS 			and _push_node.is_visible_in_tree() and _push_node.has_method("on_interact"):
+		var pdx := _push_node.global_position.x - global_position.x
+		if absf(pdx) <= PUSH_STICKY_RANGE and absf(_push_node.global_position.y - global_position.y) <= 48.0 				and (pdx * _facing > -4.0):
+			return _push_node
+	return candidates[0]
+
+
+## Menzildeki etkileşilebilir nesneler, yön ağırlıklı mesafeye göre sıralı (en iyi ilk).
+## HUD seçicisi (üst üste binen nesneler) bu listeyi gösterir.
+func get_interaction_candidates() -> Array[Node2D]:
 	var candidates: Array[Node2D] = []
+	if is_carrying():
+		return candidates
+	# Disabled rooms retain Area2D overlaps for a physics frame. Never interact with them.
 	var overlaps: Array = interact_area.get_overlapping_bodies()
 	overlaps.append_array(interact_area.get_overlapping_areas())
 	for collider in overlaps:
@@ -734,25 +761,32 @@ func get_interaction_target() -> Node2D:
 			continue
 		if not candidates.has(target):
 			candidates.append(target)
-	if candidates.is_empty():
-		return null
-	## Kapı önündeyken yapışık itiş kapıyı engellemesin: 44px içinde kapı varsa itiş önceliğini baypas et.
-	var has_nearby_door := false
-	for c in candidates:
-		if c.is_in_group("room_door") and absf(c.global_position.x - global_position.x) <= 44.0:
-			has_nearby_door = true
-			break
-
-	## Yapışık itiş hedefi: son 1.2 sn içinde itilen ceset/taş hâlâ önümüzdeyse ona öncelik.
-	if not has_nearby_door and is_instance_valid(_push_node) and Time.get_ticks_msec() - _push_ms < PUSH_STICKY_MS 			and _push_node.is_visible_in_tree() and _push_node.has_method("on_interact"):
-		var pdx := _push_node.global_position.x - global_position.x
-		if absf(pdx) <= PUSH_STICKY_RANGE and absf(_push_node.global_position.y - global_position.y) <= 48.0 				and (pdx * _facing > -4.0):
-			return _push_node
 	## Yön ağırlıklı: arkadaki adayın mesafesi cezalı (yüz yönündekiler öne çıkar).
 	var me := global_position
 	var fac := _facing
 	candidates.sort_custom(func(a: Node2D, b: Node2D): return _interact_score(a, me, fac) < _interact_score(b, me, fac))
-	return candidates[0]
+	return candidates
+
+
+## Seçici: hedefi işaretle (El düğmesi artık bunu kullanır). null = otomatik seçime dön.
+func choose_interaction(target: Node2D) -> void:
+	_chosen_target = target
+
+
+## Seçici: sıradaki adaya geç (klavyede Tab).
+func cycle_interaction() -> void:
+	var list := get_interaction_candidates()
+	if list.size() < 2:
+		return
+	var cur := get_interaction_target()
+	var i := list.find(cur)
+	_chosen_target = list[(i + 1) % list.size()]
+
+
+## Seçiciye dokunuş: o hedefi seç ve hemen kullan.
+func interact_with(target: Node2D) -> void:
+	_chosen_target = target
+	_on_interact()
 
 
 static func _interact_score(n: Node2D, from: Vector2, facing: float) -> float:

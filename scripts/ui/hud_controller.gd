@@ -54,6 +54,10 @@ var _header_label: Label
 var _header_tween: Tween
 var _objective: Label
 var _context_hint: Label
+## Üst üste binen etkileşim nesneleri için seçici (alt orta, zemin şeridi üstünde).
+var _chooser: VBoxContainer
+var _chooser_targets: Array = []
+const CHOOSER_MAX := 3
 var _hint_tick: float = 0.0
 ## Masaüstünde sanal joystick/düğmeler gizli; ilk gerçek dokunuşta açılır.
 var _touch_seen: bool = false
@@ -670,6 +674,14 @@ func _input(event: InputEvent) -> void:
 		return
 	if UiGate.blocks_dialogue_advance():
 		return
+	## Seçici açıkken Tab sıradaki nesneye geçer.
+	if event is InputEventKey and event.pressed and not event.echo and (event as InputEventKey).keycode == KEY_TAB 			and _chooser != null and _chooser.visible and not DialogueManager.is_open:
+		var pl := get_tree().get_first_node_in_group("player")
+		if pl and pl.has_method("cycle_interaction"):
+			pl.cycle_interaction()
+			_hint_tick = 0.0
+		get_viewport().set_input_as_handled()
+		return
 	if DialogueManager.is_open and DialogueManager.has_choices():
 		## Seçim açıkken: yukarı/aşağı vurgu, panel dokunuşu yok (butonlar kendi basışını alır).
 		if event.is_action_pressed("ui_up"):
@@ -783,6 +795,9 @@ func _handle_touch(event: InputEventScreenTouch) -> void:
 	var btn := _button_at(event.position)
 	if btn != null:
 		_press_button(btn, event.index)
+		return
+	if _chooser_hit(event.position):
+		get_viewport().set_input_as_handled()
 		return
 	if UiGate.blocks_movement():
 		return
@@ -1125,6 +1140,19 @@ func _setup_guidance() -> void:
 	_context_hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	UiTheme.apply_outlined(_context_hint, UiTheme.BODY, true)
 	safe_area.add_child(_context_hint)
+	_chooser = VBoxContainer.new()
+	_chooser.name = "InteractChooser"
+	_chooser.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
+	_chooser.offset_left = -96.0
+	_chooser.offset_right = 96.0
+	_chooser.offset_top = -14.0
+	_chooser.offset_bottom = -14.0
+	_chooser.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	_chooser.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	_chooser.add_theme_constant_override("separation", 2)
+	_chooser.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_chooser.visible = false
+	safe_area.add_child(_chooser)
 	_refresh_objective_now()
 
 
@@ -1134,6 +1162,8 @@ func _process(delta: float) -> void:
 	var playable := UiGate.current_layer() == UiGate.Layer.NONE
 	_objective.visible = playable
 	_context_hint.visible = playable
+	if not playable:
+		_hide_chooser()
 	if _helper_label != null:
 		_helper_label.visible = _helper_label.visible and playable
 	hint_label.visible = playable and not (_touch_seen or MobileInputManager.is_touch_ui())
@@ -1156,17 +1186,94 @@ func _process(delta: float) -> void:
 		_layout_objective_and_hint()
 	var player := get_tree().get_first_node_in_group("player")
 	_context_hint.text = ""
+	var touch_hint: bool = _touch_seen or MobileInputManager.is_touch_ui()
+	var cands: Array = []
+	var target: Node2D = null
 	if player and player.has_method("get_interaction_target"):
-		var target: Node2D = player.get_interaction_target()
+		target = player.get_interaction_target()
+		if target and player.has_method("get_interaction_candidates"):
+			cands = player.get_interaction_candidates()
+	if cands.size() >= 2 and cands.has(target):
+		_refresh_chooser(cands, target, touch_hint)
+	else:
+		_hide_chooser()
 		if target:
-			var target_name := InteractGlowLib.label_for(target)
-			if target_name == "İncele" or target.has_method("apply_push"):
-				target_name = _friendly_target(String(target.name))
-			var touch_hint: bool = _touch_seen or MobileInputManager.is_touch_ui()
-			_context_hint.text = ("El · " if touch_hint else "E · ") + target_name
-			btn_interact.modulate = Color(1.3, 1.12, 1.12)
-		else:
-			btn_interact.modulate = Color.WHITE
+			_context_hint.text = ("El · " if touch_hint else "E · ") + _target_label(target)
+	btn_interact.modulate = Color(1.3, 1.12, 1.12) if target else Color.WHITE
+
+
+func _target_label(target: Node2D) -> String:
+	var target_name := InteractGlowLib.label_for(target)
+	if target_name == "İncele" or target.has_method("apply_push"):
+		target_name = _friendly_target(String(target.name))
+	return target_name
+
+
+## Seçici satırlarını yeniden kur: seçili satır parlak ve "El ·" önekli, diğerleri soluk.
+func _refresh_chooser(cands: Array, selected: Node2D, touch_hint: bool) -> void:
+	var list: Array = cands.slice(0, CHOOSER_MAX)
+	if not list.has(selected):
+		list[list.size() - 1] = selected
+	_chooser_targets = list
+	while _chooser.get_child_count() < list.size():
+		_chooser.add_child(_make_chooser_row())
+	for i in _chooser.get_child_count():
+		var row := _chooser.get_child(i) as PanelContainer
+		if i >= list.size():
+			row.visible = false
+			continue
+		row.visible = true
+		var on: bool = list[i] == selected
+		var lbl := row.get_child(0) as Label
+		var key := ("El · " if touch_hint else "E · ") if on else ""
+		lbl.text = ("▸ " if on else "   ") + key + _target_label(list[i])
+		lbl.add_theme_color_override("font_color", Color(1.0, 0.93, 0.78) if on else Color(0.78, 0.74, 0.8))
+		var sb := row.get_theme_stylebox("panel") as StyleBoxFlat
+		sb.bg_color = Color(0.2, 0.08, 0.1, 0.72) if on else Color(0.04, 0.03, 0.06, 0.5)
+		sb.border_color = Color(0.9, 0.55, 0.45, 0.85) if on else Color(0.5, 0.45, 0.55, 0.35)
+	_chooser.visible = true
+
+
+func _make_chooser_row() -> PanelContainer:
+	var row := PanelContainer.new()
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var sb := StyleBoxFlat.new()
+	sb.set_border_width_all(1)
+	sb.set_corner_radius_all(3)
+	sb.content_margin_left = 6.0
+	sb.content_margin_right = 6.0
+	sb.content_margin_top = 1.0
+	sb.content_margin_bottom = 1.0
+	row.add_theme_stylebox_override("panel", sb)
+	var lbl := Label.new()
+	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	lbl.clip_text = true
+	lbl.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	UiTheme.apply_outlined(lbl, UiTheme.HINT, false)
+	row.add_child(lbl)
+	return row
+
+
+func _hide_chooser() -> void:
+	if _chooser != null and _chooser.visible:
+		_chooser.visible = false
+	_chooser_targets = []
+
+
+## Seçici satırına dokunuş: o nesneyi seç ve kullan. Dokunuş joystick'e gitmez.
+func _chooser_hit(pos: Vector2) -> bool:
+	if _chooser == null or not _chooser.visible or UiGate.current_layer() != UiGate.Layer.NONE:
+		return false
+	for i in mini(_chooser_targets.size(), _chooser.get_child_count()):
+		var row := _chooser.get_child(i) as Control
+		if row.visible and row.get_global_rect().grow(2.0).has_point(pos):
+			var t: Node2D = _chooser_targets[i]
+			var player := get_tree().get_first_node_in_group("player")
+			if is_instance_valid(t) and player and player.has_method("interact_with"):
+				player.interact_with(t)
+				_hint_tick = 0.0
+			return true
+	return false
 
 
 func _friendly_target(node_name: String) -> String:

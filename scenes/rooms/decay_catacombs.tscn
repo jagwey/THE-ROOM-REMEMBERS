@@ -81,6 +81,7 @@ script = ExtResource("thorn")
 anchor_x = 898.0
 anchor_y = 288.0
 hold_corpse = true
+bridge_plank_width = 80.0
 puzzle_hint = &"catacomb_bridge_thorn"
 body_line = "Çiçek bendeyken dikene dokunursam ölürüm; bedenim köprü ve ışık olur."
 solved_line = "Diken durdu. Köprü yerinde kalıyor."

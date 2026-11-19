@@ -16,6 +16,21 @@ func _ready() -> void:
 	monitorable = true
 
 
+func get_interact_label() -> String:
+	return "Vana ↑" if delta > 0 else "Vana ↓"
+
+
+## Sınırdaki vana (ör. dipte "↓") hiçbir şey yapmaz; hedef olmasın ki üst üste duran
+## sayfa / plaka seçilebilsin (Sarnıç: dipteki sayfa ortadaki vananın tam altında).
+func can_interact() -> bool:
+	var w := get_node_or_null(water)
+	if w == null:
+		return false
+	var lvl := int(w.get("level"))
+	var lo := 0 if bool(w.get("drain_open")) else 1
+	return clampi(lvl + delta, lo, 3) != lvl
+
+
 func on_interact(_by: Node) -> void:
 	var now := Time.get_ticks_msec()
 	if now - _last_use_msec < COOLDOWN_MSEC:

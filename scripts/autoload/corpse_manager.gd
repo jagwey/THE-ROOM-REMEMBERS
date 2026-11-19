@@ -106,13 +106,21 @@ func _trim_excess() -> void:
 				idx = i
 				break
 		if idx < 0:
-			for i in corpses.size():
+			## En yeni beden (az önce düşen) asla kırpılmaz: yanlış plakalardaki eski bedenler
+			## sınırı doldurunca doğru plakadaki yeni ceset iz'e dönüşüp odayı kilitliyordu.
+			for i in corpses.size() - 1:
 				var c: Dictionary = corpses[i] as Dictionary
 				var held := bool(c.get("anchoring", false)) or bool(c.get("anchored", false))
 				## Çözülmüş plakaya bağlı ceset artık bulmacayı tutmuyor: kırpılabilir.
 				var plate := String(c.get("anchor_plate", ""))
 				if held and plate != "" and PuzzleManager.is_solved(StringName(plate)):
 					held = false
+				## Aynı plakayı daha yeni bir beden de tutuyorsa bu eski beden fazlalık.
+				if held and plate != "":
+					for j in range(i + 1, corpses.size()):
+						if String((corpses[j] as Dictionary).get("anchor_plate", "")) == plate:
+							held = false
+							break
 				if not held:
 					idx = i
 					break

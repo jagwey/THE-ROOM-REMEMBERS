@@ -13,11 +13,14 @@ extends Area2D
 ## Açıksa beden köprü olarak sabitlenir (alınamaz) ve zaten bir köprü varsa diken yeniden ölümü vermez.
 @export var hold_corpse: bool = false
 @export var hold_id: StringName = &"corpse_bridge"
+## > 0 ise köprü bedeni varken altında bu genişlikte kemik kalas olur (ceset 28 px; telefonda iki yarım zıplama rahat olsun).
+@export var bridge_plank_width: float = 0.0
 
 var _armed: bool = false
 var _marker: Node2D
 var _marker_poll: float = 0.0
 var _ellipse := PackedVector2Array()
+var _plank: StaticBody2D
 
 
 func _ready() -> void:
@@ -40,6 +43,54 @@ func _ready() -> void:
 	tw.tween_property(spr, "modulate", Color(1.3, 0.35, 0.4, 1.0), 0.9).set_trans(Tween.TRANS_SINE)
 	tw.tween_property(spr, "modulate", Color(0.85, 0.2, 0.28, 1.0), 0.9).set_trans(Tween.TRANS_SINE)
 	_build_marker()
+	if hold_corpse and bridge_plank_width > 0.0:
+		_build_plank()
+		_update_plank.call_deferred()
+
+
+## Köprü bedeninin altındaki kemik kalas: üst yüzü ceset üstüyle aynı (zemin -15), tek yönlü.
+func _build_plank() -> void:
+	_plank = StaticBody2D.new()
+	_plank.name = "BridgePlank"
+	_plank.collision_layer = 1
+	_plank.collision_mask = 0
+	_plank.z_index = 1
+	var cs := CollisionShape2D.new()
+	var rect := RectangleShape2D.new()
+	rect.size = Vector2(bridge_plank_width, 10.0)
+	cs.shape = rect
+	cs.one_way_collision = true
+	cs.one_way_collision_margin = 8.0
+	_plank.add_child(cs)
+	_plank.draw.connect(_draw_plank)
+	add_child(_plank)
+	var fy := anchor_y if anchor_y >= 0.0 else global_position.y
+	_plank.global_position = Vector2(anchor_x, fy - 10.0)
+
+
+func _draw_plank() -> void:
+	var w := bridge_plank_width
+	var bone := Color(0.78, 0.72, 0.62, 1.0)
+	var dark := Color(0.42, 0.36, 0.3, 1.0)
+	_plank.draw_rect(Rect2(-w * 0.5, -5.0, w, 6.0), bone)
+	_plank.draw_rect(Rect2(-w * 0.5, 1.0, w, 2.0), dark)
+	for k in [-1.0, 1.0]:
+		_plank.draw_circle(Vector2(k * (w * 0.5 - 2.0), -4.0), 4.0, bone)
+		_plank.draw_circle(Vector2(k * (w * 0.5 - 2.0), 0.0), 4.0, bone)
+	var x := -w * 0.5 + 12.0
+	while x < w * 0.5 - 10.0:
+		_plank.draw_line(Vector2(x, -4.0), Vector2(x, 0.0), dark, 1.0)
+		x += 14.0
+
+
+func _update_plank() -> void:
+	if _plank == null:
+		return
+	var on := _bridge_exists()
+	_plank.visible = on
+	var cs := _plank.get_child(0) as CollisionShape2D
+	if cs:
+		cs.set_deferred("disabled", not on)
 
 
 ## Beden düşeceği yeri (anchor_x) zeminde soluk işaretle; diken uzaktaysa ince noktalı çizgi bağla.
@@ -85,6 +136,7 @@ func _process(delta: float) -> void:
 	if _marker_poll < 0.5 or _marker == null:
 		return
 	_marker_poll = 0.0
+	_update_plank()
 	var done := PuzzleManager.is_solved(puzzle_hint) or PuzzleManager.is_live(puzzle_hint)
 	if not done and hold_corpse:
 		done = _bridge_exists()
@@ -159,5 +211,6 @@ func _hold_new_corpse(ids_before: Array) -> bool:
 		c["anchor_plate"] = String(hold_id)
 		c["usable_for_puzzle"] = false
 		CorpseManager.rebuild_world_corpses()
+		_update_plank()
 		return true
 	return false

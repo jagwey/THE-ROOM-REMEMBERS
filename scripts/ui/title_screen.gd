@@ -20,6 +20,7 @@ var _new_button: Button ## Yeni Oyun
 var _has_save: bool = false
 var _credits_panel: GothicModalPanel
 var _credits_scroll: CreditsScroll
+var _settings_scroll: ScrollContainer
 var _vol_button: Button
 var _music_button: Button
 var _joy_button: Button
@@ -274,8 +275,20 @@ func _on_update_available(version: String, _url: String) -> void:
 
 
 func _build_settings_page(parent: Control) -> void:
-	var p := _new_page(parent, &"settings")
-	_page_label(p, "AYARLAR", UiTheme.BODY, true)
+	var page := _new_page(parent, &"settings")
+	_page_label(page, "AYARLAR", UiTheme.BODY, true)
+	## İçerik ekrana sığmayabilir (özellikle telefonda): kaydırılabilir alan, "Geri" hep görünür.
+	var scroll := ScrollContainer.new()
+	scroll.name = "SettingsScroll"
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.follow_focus = true
+	scroll.custom_minimum_size = Vector2(230, 160)
+	page.add_child(scroll)
+	_settings_scroll = scroll
+	var p := VBoxContainer.new()
+	p.add_theme_constant_override("separation", 6)
+	p.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(p)
 	if menu != null:
 		_page_label(p, menu.how_to_play_text(), 9)
 	var audio_row := HBoxContainer.new()
@@ -301,7 +314,7 @@ func _build_settings_page(parent: Control) -> void:
 		_refresh_settings())
 	_fs_button = _button(p, "Tam Ekran (F11)", func(): menu.toggle_fullscreen())
 	_fs_button.visible = not OS.has_feature("mobile") and not MobileInputManager.is_touch_ui()
-	_button(p, "< Geri", func(): _show_page(&"main"))
+	_button(page, "< Geri", func(): _show_page(&"main"))
 
 
 func _build_confirm_page(parent: Control) -> void:
@@ -379,8 +392,10 @@ func _show_page(id: StringName) -> void:
 
 
 func _focus_first(page: Control) -> void:
-	for c in page.get_children():
-		if c is Button and (c as Button).visible and not (c as Button).disabled:
+	if _settings_scroll and page.is_ancestor_of(_settings_scroll):
+		_settings_scroll.scroll_vertical = 0
+	for c in page.find_children("*", "Button", true, false):
+		if (c as Button).is_visible_in_tree() and not (c as Button).disabled:
 			(c as Button).grab_focus()
 			return
 
