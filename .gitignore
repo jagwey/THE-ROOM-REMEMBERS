@@ -17,3 +17,6 @@ data_*/
 
 out/
 next_audit.json
+
+# audit run outputs
+docs/gelistirme/results-*/
