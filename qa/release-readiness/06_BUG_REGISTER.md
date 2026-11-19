@@ -31,7 +31,7 @@ Test = headless SceneTree denetimi (izole kopya, `TORIMON_TEST=1`). Gerçek ciha
 | BUG-024 | ÇÖZÜLDÜ (içerik, 2026-11-16 v1.18.4) | Derin odalar, köşeler, Yankı Sınavları, Kırık Anı ve S.'nin Odası sonrası `playtime_measure` ~190 dk (hedef 165–195). İnsan süre testi hâlâ önerilir |
 | BUG-017 | DÜZELTİLDİ (metin) | `experiment_observation.json` |
 | BUG-018 | DÜZELTİLDİ | "Ruh Kesimi" her yerde (yalnız 2 dosyada yorum satırında "Kesiği" kaldı) |
-| BUG-022 | KISMEN | "Araştırma Yardımcısı S." düzeltildi; "Gölge olmadan önce" kısmı AÇIK |
+| BUG-022 | KAPANDI (v1.19.3) | "Gölge olmadan önce" kanonla uyumlu: Shilda Gölge'nin kendisi, insanken Araştırma Yardımcısı S.; "Güvenlik görevlisi" satırı kodda yok |
 | BUG-024 | ÇÖZÜLDÜ (bkz. üst satır) | v1.18.4 içerik turuyla ~190 dk |
 | BUG-030 | KISMEN | (b) `start_new_game` eski kaydı silmiyor: yeniden üretildi + düzeltildi. (a) `_write_atomic` sonuç denetimi savunma amaçlı eklendi, yeniden üretilemedi |
 | BUG-031 | DÜZELTİLDİ | `ability_pickup.gd` alımda `commit_save(&"ability_pickup")`; `save_robustness_audit` (e) |

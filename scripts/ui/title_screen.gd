@@ -130,12 +130,20 @@ func _input(event: InputEvent) -> void:
 
 
 func _cancel_button_press() -> void:
+	## BaseButton "pressing_inside"ı yalnız hareketle günceller: önce dışarı sahte
+	## hareket (sol tuş basılı), sonra dışarıda bırakma → `pressed` tetiklenmez.
+	var far := Vector2(-10000, -10000)
+	var move := InputEventMouseMotion.new()
+	move.button_mask = MOUSE_BUTTON_MASK_LEFT
+	move.position = far
+	move.global_position = far
 	var up := InputEventMouseButton.new()
 	up.button_index = MOUSE_BUTTON_LEFT
 	up.pressed = false
-	up.position = Vector2(-10000, -10000)
-	up.global_position = up.position
+	up.position = far
+	up.global_position = far
 	_drag_cancelling = true
+	get_viewport().push_input(move)
 	get_viewport().push_input(up)
 	_drag_cancelling = false
 
