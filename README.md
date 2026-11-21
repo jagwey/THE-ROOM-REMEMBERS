@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS"><img src="https://img.shields.io/badge/Kaynak-v1.20.1-8B0000?style=for-the-badge&logo=godotengine&logoColor=white" alt="Kaynak v1.20.1" /></a>
+  <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS"><img src="https://img.shields.io/badge/Kaynak-v1.20.2-8B0000?style=for-the-badge&logo=godotengine&logoColor=white" alt="Kaynak v1.20.2" /></a>
   <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases"><img src="https://img.shields.io/badge/Resmi_İndirme-GitHub_Releases-5c1d3d?style=for-the-badge&logo=github" alt="All Releases" /></a>
   <a href="https://godotengine.org/"><img src="https://img.shields.io/badge/Godot_Engine-4.7.2-478CBF?style=for-the-badge&logo=godotengine&logoColor=white" alt="Godot 4.7.2" /></a>
   <img src="https://img.shields.io/badge/Dünya-6_Bölge_·_47_Oda_·_Bölüm_I-2b1838?style=for-the-badge" alt="World Scope" />
@@ -224,6 +224,12 @@ Oda numaraları `RoomManager.ROOM_ORDER` sırasını izler. İlk 40 oda ana omur
 
 ### Katakomb çiçeği ve Sarnıç (Faz 0)
 Kemik Mahzeni girişinde (x≈150) tükenmez bir çiçek kaynağı durur. Çiçek elde ölürsen ceset çiçeği taşır ve fener gibi yanar; karanlık yol aydınlanır. Çiçek hayat başınadır, ölümde cesede geçer ve elden silinir. Sarnıç yan kapısı artık yetenek istemez.
+
+### v1.20.2 (2026-11-21, `versionCode 63`) — Kitap menüsü, hareket seçenekleri ve oda derinliği
+
+- Duraklatma, ayarlar ve kayıt işlemleri sağ üstteki günlüğün Menü sekmesinde açılır.
+- Android’de ilk başlangıçta sabit joystick, yüzen joystick veya sol/sağ tuşları seçilir. Joystick ile yukarı iterek zıplama isteğe bağlıdır.
+- Sera’nın kapıları ve sütunları aynı oda çizimine bağlandı. Sarnıç ile Kök Damarları kendi taş hazne çizimlerini kullanır.
 
 ### v1.20.1 (yayınlandı 2026-11-21, `versionCode 62`) — Ruh savaşı cilası ve uçtan uca test
 - **Ruh toplama savaşı kesmez:** kıvılcım alınınca modal diyalog yerine kıvılcımın üstünde yükselip sönen "Ruh serbest · +%10 Berraklık" yazısı (`soul_spark._float_label`); oyun akışı durmaz.
@@ -457,7 +463,8 @@ Depodaki tüm derlenmiş Android (`arm64-v8a`) APK paketleri düzenli olarak **[
 
 | Sürüm | Durum | APK Dosyası / İndirme | Öne Çıkan Yenilikler ve Kapsam |
 | :--- | :---: | :--- | :--- |
-| **[v1.20.1](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.20.1)** | Son yayın | [📥 `TheRoomRemembers-1.20.1-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.20.1/TheRoomRemembers-1.20.1-android-arm64.apk) | Ruh toplama savaşı kesmez, ölümde düşman saldırısı sıfırlanır, uçtan uca savaş testi (`versionCode 62`). |
+| **[v1.20.2](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.20.2)** | Son yayın | [📥 `TheRoomRemembers-1.20.2-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.20.2/TheRoomRemembers-1.20.2-android-arm64.apk) | Kitap menüsü, hareket düzeni seçimi ve oda çizimleri (`versionCode 63`). |
+| **[v1.20.1](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.20.1)** | Önceki | [📥 `TheRoomRemembers-1.20.1-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.20.1/TheRoomRemembers-1.20.1-android-arm64.apk) | Ruh toplama savaşı kesmez, ölümde düşman saldırısı sıfırlanır, uçtan uca savaş testi (`versionCode 62`). |
 | **[v1.20.0](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.20.0)** | Önceki | [📥 `TheRoomRemembers-1.20.0-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.20.0/TheRoomRemembers-1.20.0-android-arm64.apk) | Parçalanmış Ruhlar: saldıran ruh düşmanları (kalp eksiltir), 9 ruh toplama, Shilda final hükmü (`versionCode 61`). |
 | **[v1.19.5](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.19.5)** | Önceki | [📥 `TheRoomRemembers-1.19.5-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.19.5/TheRoomRemembers-1.19.5-android-arm64.apk) | Sera kapısı oyun içinde açılır, lanet ölümde sıfırlanır, lanetli yürüyüş normal (`versionCode 60`). |
 | **[v1.19.4](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.19.4)** | Önceki | [📥 `TheRoomRemembers-1.19.4-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.19.4/TheRoomRemembers-1.19.4-android-arm64.apk) | Sera kapısı düzeltildi, dokunmatik kontroller yeniden yerleşti (`versionCode 59`). |

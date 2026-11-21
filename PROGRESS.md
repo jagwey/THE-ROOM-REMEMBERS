@@ -1,5 +1,5 @@
 # PROGRESS
-Dal: cursor/playable-story-flow-8e4e · Sürüm: v1.2.0 (versionCode 16)
+Dal: main · Sürüm: v1.20.2 (versionCode 63)
 
 ## Kitap menüsü ve Android hareket seçenekleri (2026-11-21)
 

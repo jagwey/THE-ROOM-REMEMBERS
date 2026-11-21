@@ -5,7 +5,7 @@
 [ext_resource type="Texture2D" path="res://assets/backgrounds/mirrors/front.png" id="3"]
 [ext_resource type="Script" path="res://scripts/world/room_root.gd" id="4"]
 [ext_resource type="Script" path="res://scripts/world/room_transition.gd" id="5"]
-[ext_resource type="Script" path="res://scripts/world/control_invert.gd" id="6"]
+[ext_resource type="Script" uid="uid://b4xp1nwj1asrl" path="res://scripts/world/control_invert.gd" id="6"]
 [ext_resource type="Script" path="res://scripts/world/memory_hazard.gd" id="hazard"]
 [ext_resource type="Script" path="res://scripts/world/reach_marker.gd" id="reach"]
 [ext_resource type="Texture2D" path="res://assets/layers/mirror.png" id="7"]
