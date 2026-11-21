@@ -264,7 +264,7 @@ shape = SubResource("GateShape")
 [node name="Sprite2D" type="Sprite2D" parent="Interactive/RootGate"]
 texture_filter = 1
 position = Vector2(0, -29)
-scale = Vector2(1.45, 1.2)
+scale = Vector2(1.54, 1.09)
 texture = ExtResource("iron_gate")
 
 [node name="RootShrine" type="Node2D" parent="Interactive"]

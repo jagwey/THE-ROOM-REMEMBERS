@@ -58,6 +58,7 @@ Altı bölgeyi (Uyanış, Çürüme, Kütüphane, Deney, Aynalar, Çekirdek) **4
 
 * **Oda geçitleri:** Taş söve, kapı kanatları, mühür ve eşik ışığı ayrı çizim katmanlarıdır. Kilitliyken hedef altında `Mühürlü` yazar. Açılınca ışık ve giriş komutu görünür. Karşı kapısı doğuşa yakın olan geçişlerde Noroi geldiği eşikten odanın içine bakar.
 * **Oda derinliği:** Uzak duvar, orta dekor, ön dekor ve oynanabilir zemin ayrı düzlemlerde çizilir. Kemerler kendi duvar resminin parçasıdır. Bitkiler ve dekor, tavan ya da taş kaideleriyle hizalanır.
+* Sera'da kemerler ve iki giriş aynı 1280 × 360 piksellik duvara oturur. Batıdaki pencerenin altında Ağırlık Salonu'na dönüş vardır. Doğudaki demir ızgara doğru saksının mührü çözülünce açılır. Yanındaki taş kapı Çatlak Duvar'a çıkar.
 * **Sarnıç ve Kök Damarları:** Odaya özel taş hazne, sal ve vanalar su bulmacasının yüksekliğini gösterir. Su yüzeyi hareketli platformu izler. Rafların konsolları duvara bağlıdır. Sarnıç'ın dip sayfası su altında soluk görünür.
 * **Canlı plaka kuralı:** plaka yalnızca taş/ceset ağırlığıyla basılır (oyuncu tek başına basamaz); kapı ağırlık durdukça açıktır, ağırlık kalkınca kapanır. Kapıdan karşı tarafa geçildiği anda bulmaca kalıcı çözülür (*geçiş kilidi*). Eski kayıtlarda çözülmüş bulmaca çözülü kalır.
 * İstisna: `latch_on_press` plakası (yalnız Kripta `BedPlate`) basıldığı anda kalıcı çözülür; `accept_player` ve `latch_on_press` beyaz listesi `plate_rule_audit` ile denetlenir.

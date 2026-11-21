@@ -3,7 +3,8 @@ Dal: cursor/playable-story-flow-8e4e · Sürüm: v1.2.0 (versionCode 16)
 
 ## v1.20.1 sonrası oda derinliği (2026-11-21)
 
-- Bölgesel arka planların çizim sırası ve düşey tabanları düzeltildi. Duvardan bağımsız tavan kemerleri, ışık konileri ve örtüşen dekor parçaları kaldırıldı. Bölgesel 45 ve özel çizimli 2 oda katman sırası denetiminden geçti.
+- Bölgesel arka planların çizim sırası ve düşey tabanları düzeltildi. Duvardan bağımsız tavan kemerleri, ışık konileri ve örtüşen dekor parçaları kaldırıldı. Bölgesel çizimli 44 ve özel çizimli 3 oda katman denetiminden geçti.
+- Sera'nın iki girişini, demir ızgarayı ve sütunları tek oda çiziminde hizaladık. Kamera ilerlerken sütun başlığı ve kaidesi duvarla birlikte hareket eder. Çatlak Duvar eşiği x=1080, Ağırlık Salonu eşiği x=85.
 - Sarnıç ve Kök Damarları kendi taş hazne çizimlerini kullanıyor. Hareketli salın su yüzeyi, yeni vana çizimleri ve duvara bağlı raf konsolları sabit çarpışma noktalarıyla hizalı. Sarnıç'ta dokunmatik zıplama ile rafa inme ve sayfa toplama Godot'ta doğrulandı.
 - Ortak kapı çizimleri açık eşiği, taş çerçeveyi ve kilit mührünü ayrı katmanlarda gösteriyor. Karşı kapısı yakındaki oda geçişlerinde Noroi odanın içine dönük doğar. Godot mobil yerleşim denetimi 5320 kontrolü tamamladı.
 
