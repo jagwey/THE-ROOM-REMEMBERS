@@ -115,7 +115,7 @@ func _run() -> void:
 	await _wait(1.2)
 	player._stagger_timer = 0.0
 	player._on_curse_stagger()
-	check(player.is_on_floor() and player._stagger_timer > 0.0 and player._stagger_timer <= 0.2, "brief stumble on floor", player._stagger_timer)
+	check(player._stagger_timer == 0.0, "v1.19.5 curse never stumbles player", player._stagger_timer)
 	player._stagger_timer = 0.0
 
 	## 3) A: library_hall mührü konumunda commit; B: başka oda + bayrak/dünya değişikliği.

@@ -414,7 +414,7 @@ func _run() -> void:
 	var death_ok := await _await_death()
 	check(death_ok, "CHALLENGE_5", "Death sequence completed")
 	check(rm.get_active_room_id() == &"decay_garden", "CHALLENGE_5", "Rebirth stayed in decay_garden (did not bounce to awakening)", rm.get_active_room_id())
-	check(curse.curse >= 25.0, "CHALLENGE_5", "Death added penalty curse upon rebirth", curse.curse)
+	check(curse.curse == 0.0, "CHALLENGE_5", "v1.19.5 death resets curse upon rebirth", curse.curse)
 
 	# Sub-test 5.3: Possession transport at 100% curse transports Noroi to committed seal
 	curse._reload_committed()
@@ -444,7 +444,7 @@ func _run() -> void:
 	var death2_ok := await _await_death()
 	check(death2_ok, "CHALLENGE_5", "Second death sequence completed")
 	check(rm.get_active_room_id() == &"library_hall", "CHALLENGE_5", "Rebirth stayed in library_hall", rm.get_active_room_id())
-	check(curse.curse >= 25.0, "CHALLENGE_5", "Death added penalty curse upon rebirth", curse.curse)
+	check(curse.curse == 0.0, "CHALLENGE_5", "v1.19.5 death resets curse upon rebirth", curse.curse)
 
 	# Sub-test 5.6: Possession transport transports Noroi to newly committed library_hall seal
 	curse._reload_committed()

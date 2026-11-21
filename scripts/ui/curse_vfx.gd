@@ -21,6 +21,7 @@ var _vig_mat: ShaderMaterial
 var _vig_t: float = 0.0
 var _vig_smooth: float = 0.0
 var _hb_clock: float = 0.0
+var _shown: float = 0.0
 
 const VIGNETTE_SHADER := """
 shader_type canvas_item;
@@ -90,15 +91,20 @@ func _ready() -> void:
 	CurseManager.curse_changed.connect(_on_curse)
 	CurseManager.curse_whisper.connect(_on_whisper)
 	_on_curse(CurseManager.curse)
+	_shown = CurseManager.curse
 
 
 func _process(delta: float) -> void:
 	if UiGate.pauses_world_threats():
 		return
 	_pulse += delta
-	var c := CurseManager.curse
+	## v1.19.5: ekran tonu laneti yavaşça izler (ani kararma yok): artış ~6/sn, azalış ~12/sn.
+	var real := CurseManager.curse
+	var rate := (6.0 if real > _shown else 12.0) * delta
+	_shown = move_toward(_shown, real, rate)
+	var c := _shown
 	var t := c / CurseManager.CURSE_MAX
-	var band := CurseManager.band
+	var band := CurseManager.band_for(c)
 	## Bant 0'da ton yok; 50'den itibaren 0..1 şiddet.
 	var sev := clampf((c - CurseManager.BAND_FIRST_SIGNS) / (CurseManager.CURSE_MAX - CurseManager.BAND_FIRST_SIGNS), 0.0, 1.0)
 	_update_vignette(delta, t, _band_intensity(c))

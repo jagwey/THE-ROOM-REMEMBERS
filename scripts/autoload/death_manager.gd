@@ -557,10 +557,8 @@ func _respawn(gen: int) -> void:
 	is_dying = false
 	_set_phase(Phase.ALIVE)
 	release_time_scale()
-	## Doğuş laneti ele geçirme başlatmaz: +25, taban 50, tavan 99.
-	## Aynı karede 100'e çıkmış değer burada yeniden ele geçirmeye dönmesin.
-	var born := clampf(maxf(CurseManager.curse + 25.0, 50.0), 0.0, CurseManager.CURSE_MAX - 1.0)
-	CurseManager.restore_curse(born)
+	## v1.19.5: ölüm laneti sıfırlar (yeni beden temiz doğar). Lanet savaş/yetenekle artar.
+	CurseManager.restore_curse(0.0)
 	rebirth_completed.emit()
 	if loop_deaths >= LOOP_HELPER_DEATHS and not _loop_helper_sent and loop_room == active_room:
 		_loop_helper_sent = true

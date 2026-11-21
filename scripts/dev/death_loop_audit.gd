@@ -155,7 +155,7 @@ func _run() -> void:
 	var garden_cp := Vector2(130, 288)
 	check(absf(player.global_position.x - garden_cp.x) < 8.0 and absf(player.global_position.y - garden_cp.y) < 14.0, "respawn at room checkpoint not rebirth bed", str(player.global_position))
 	var curse_after_far: float = root.get_node("CurseManager").curse
-	check(curse_after_far >= 50.0, "far death curse at least 50", curse_after_far)
+	check(curse_after_far == 0.0, "v1.19.5 far death resets curse to 0", curse_after_far)
 	check(curse_after_far >= curse_pre_far + 24.0 or curse_pre_far + 25.0 > 99.0, "far death adds ~25 curse", [curse_pre_far, curse_after_far])
 	var corpses_far: Array = state.world_memory_state["corpses"]
 	check(corpses_far.size() > 0 and String((corpses_far[corpses_far.size() - 1] as Dictionary).get("room", "")) == "decay_garden", "new corpse recorded in far room (list is capped)")

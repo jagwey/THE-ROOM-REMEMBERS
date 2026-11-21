@@ -69,6 +69,10 @@ var _safe_floor_pos: Vector2 = Vector2.ZERO
 var input_x: float = 0.0
 ## control_invert bölgesi: yatay eksen ters. Oda çıkışı/ölüm/yeniden doğuşta sıfırlanır.
 var invert_x: bool = false
+## v1.19.5 lanet ekonomisi: ölünce sıfırlanır, savaş/yetenek kullanımıyla artar.
+const CURSE_PER_SWING := 1.5
+const CURSE_PER_DASH := 3.0
+const CURSE_PER_SHADOW_DASH := 4.0
 var _push_node: Node2D = null
 var _push_ms: int = -10000
 const PUSH_STICKY_MS := 1200
@@ -126,6 +130,8 @@ func _bind_curse_vfx() -> void:
 
 
 func _on_curse_stagger() -> void:
+	## v1.19.5: lanet artık yürüyüşü bozmaz (takılma/yavaşlama yok), yalnız görsel uyarı.
+	return
 	if UiGate.pauses_world_threats():
 		return
 	## Hafif takılma: havadayken veya tehlikeye yakınken asla (oyuncuyu tuzağa düşürmesin).
@@ -556,6 +562,8 @@ func _on_skill() -> void:
 
 func _apply_curse_drift(axis_x: float, delta: float) -> float:
 	## Yeni doğan oyuncu doğuş noktasından çekilmesin (hasar koruması bitene kadar).
+	## v1.19.5: lanet hareketi etkilemez; eksen aynen döner.
+	return clampf(axis_x, -1.0, 1.0)
 	if _hurt_cooldown > 0.0:
 		return axis_x
 	var c := CurseManager.curse
@@ -656,6 +664,8 @@ func _on_attack() -> void:
 	sprite.play("attack")
 	sprite.frame = 0
 	_play_sfx(&"sword_swing")
+	## v1.19.5: savaş laneti besler.
+	CurseManager.add_curse(CURSE_PER_SWING)
 
 
 func _on_dash() -> void:
@@ -669,6 +679,8 @@ func _on_dash() -> void:
 	if has_shadow_dash():
 		collision_mask = 1 ## lanet bariyerlerinin içinden geç
 	_play_sfx(&"dash")
+	## v1.19.5: yetenek kullanımı laneti besler.
+	CurseManager.add_curse(CURSE_PER_SHADOW_DASH if has_shadow_dash() else CURSE_PER_DASH)
 	_dash_dir = _facing if absf(MobileInputManager.get_move_axis().x) < 0.1 else signf(MobileInputManager.get_move_axis().x)
 	if _dash_dir == 0.0:
 		_dash_dir = _facing

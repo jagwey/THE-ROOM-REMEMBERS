@@ -69,8 +69,8 @@ func _run() -> void:
 	check(not death.is_dying, "Awakening: Death completed")
 	check(rm.get_active_room_id() == &"awakening", "Awakening: Room is awakening", str(rm.get_active_room_id()))
 	check(absf(player.global_position.x - 120.0) < 6.0 and absf(player.global_position.y - 280.0) < 14.0, "Awakening: Respawned at rebirth_bed (120, 280)", str(player.global_position))
-	check(curse.curse >= 50.0, "Awakening: Curse >= 50.0 after rebirth", str(curse.curse))
-	check(curse.get_band() == curse.Band.FIRST_SIGNS, "Awakening: Curse band is FIRST_SIGNS", str(curse.get_band()))
+	check(curse.curse == 0.0, "Awakening: v1.19.5 curse reset to 0 after rebirth", str(curse.curse))
+	check(curse.get_band() == curse.Band.CONTROL, "Awakening: Curse band is CONTROL", str(curse.get_band()))
 
 	print("\n==================================================")
 	print("TEST 2: FAR ROOM DEATH RESPAWNS IN SAME ROOM")
@@ -100,7 +100,7 @@ func _run() -> void:
 	check(absf(player.global_position.x - 130.0) < 6.0 and absf(player.global_position.y - 288.0) < 14.0, "Far Room: Respawned at decay_garden checkpoint (130, 288)", str(player.global_position))
 	check(state.get_world_flag(&"m1_persistent_flag", false), "Far Room: World flag persisted across death")
 	check(pm.is_solved(&"decay_vine_shortcut"), "Far Room: Solved puzzle persisted across death")
-	check(curse.curse >= curse_before + 25.0, "Far Room: Curse increased by +25 on death", "%f -> %f" % [curse_before, curse.curse])
+	check(curse.curse == 0.0, "Far Room: v1.19.5 curse reset on death", "%f -> %f" % [curse_before, curse.curse])
 
 	# Check corpse left in decay_garden
 	var corpses: Array = state.world_memory_state.get("corpses", [])

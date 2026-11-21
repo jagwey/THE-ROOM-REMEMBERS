@@ -99,7 +99,7 @@ func _run() -> void:
 	check(death.phase == death.Phase.ALIVE, "SUITE 1.1", "DeathManager.phase is ALIVE")
 	check(player.visible, "SUITE 1.1", "Player is visible after rebirth")
 	check(not gate.blocks_movement(), "SUITE 1.1", "UiGate cutscene lock released after rebirth")
-	check(curse.curse >= 50.0, "SUITE 1.1", "Curse is >= 50.0 after rebirth", "curse=%.1f" % curse.curse)
+	check(curse.curse == 0.0, "SUITE 1.1", "v1.19.5 curse is 0 after rebirth", "curse=%.1f" % curse.curse)
 
 	# Test 1.2: Room change during SOUL_RELEASE phase
 	curse.reset_for_new_life()

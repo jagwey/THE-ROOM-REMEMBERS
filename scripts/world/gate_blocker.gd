@@ -36,6 +36,8 @@ func _ready() -> void:
 	PuzzleManager.puzzle_solved.connect(_on_puzzle)
 	PuzzleManager.live_changed.connect(_on_live)
 	GameState.room_changed.connect(_on_room_changed)
+	DeathManager.rebirth_completed.connect(_refresh)
+	SaveManager.game_loaded.connect(_refresh)
 	var par := get_parent() as CanvasItem
 	if par != null:
 		par.visibility_changed.connect(_reset_side)
@@ -98,8 +100,13 @@ func _on_flag(f: StringName, value: Variant) -> void:
 		_apply(bool(value))
 
 
+func _refresh() -> void:
+	_apply(_is_open())
+
+
 func _on_puzzle(puzzle_id: StringName) -> void:
-	if _listen_ids().has(String(puzzle_id)):
+	var pid := String(puzzle_id)
+	if _listen_ids().has(pid) or pid == String(legacy_puzzle) or also_solve.has(pid):
 		if _is_open():
 			_pulse_open()
 		_apply(_is_open())
@@ -129,7 +136,19 @@ func _latch_solve(ids: PackedStringArray) -> void:
 	SaveManager.save_game()
 
 
+## Kendi kendini onarma: herhangi bir yoldan (ölüm akışı, yükleme, oda geçişi) görsel/çarpışma
+## gerçek kapı durumundan saparsa düzelt. Oda pasifken (gizli) RoomManager katmanı yönetir.
+func _heal() -> void:
+	var par := get_parent() as CanvasItem
+	if par != null and not par.is_visible_in_tree():
+		return
+	var o := _is_open()
+	if visible == o or collision_layer != (0 if o else 1) or (shape != null and shape.disabled != o):
+		_apply(o)
+
+
 func _physics_process(_delta: float) -> void:
+	_heal()
 	var ids := _listen_ids()
 	if ids.is_empty() or (_all_solved(ids) and _also_done()) or not PuzzleManager.gate_open(ids):
 		_entry_side = 0

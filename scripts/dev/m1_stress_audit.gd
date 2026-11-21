@@ -110,8 +110,7 @@ func _run() -> void:
 	check(player._state == &"dash" and player.collision_mask == 1, "Stagger prep: player dashing with mask 1")
 	player._on_curse_stagger()
 	await create_timer(0.06).timeout
-	check(player.collision_mask == 17, "Interruption via curse stagger restores mask to 17", "mask=%d" % player.collision_mask)
-	check(player._state != &"dash", "Interruption via curse stagger exits dash state")
+	check(player._stagger_timer == 0.0, "v1.19.5 curse stagger never interrupts dash", "stagger=%f" % player._stagger_timer)
 
 	# 1.6 Interruption via play_death() mid-dash
 	player._dash_cd = 0.0

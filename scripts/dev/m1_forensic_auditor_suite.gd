@@ -72,9 +72,8 @@ func _run_forensic_audit() -> void:
 	check(rm.get_active_room_id() == &"awakening", "Awakening death stays in awakening")
 	check(absf(player.global_position.x - 120.0) < 5.0 and absf(player.global_position.y - 280.0) < 12.0,
 		"Awakening respawns at rebirth_bed (120, 280)", str(player.global_position))
-	check(curse.curse >= 50.0, "Curse elevated to >= 50.0 after first death", "curse=%.1f" % curse.curse)
-	check(curse.get_band() == curse.Band.FIRST_SIGNS, "Curse band is FIRST_SIGNS")
-	check(curse.visible_meter == true, "Curse meter is visible after reaching 50.0")
+	check(curse.curse == 0.0, "v1.19.5 curse reset to 0 after first death", "curse=%.1f" % curse.curse)
+	check(curse.get_band() == curse.Band.CONTROL, "Curse band is CONTROL after death")
 
 	# ---------------------------------------------------------
 	# CHECK 2: Multi-Room Death Respawn (Zone II, Zone III, Zone V)
@@ -102,8 +101,8 @@ func _run_forensic_audit() -> void:
 		check(rm.get_active_room_id() == target_room, "Death in %s stayed in %s" % [target_room, target_room], str(rm.get_active_room_id()))
 		check(player.global_position.distance_to(expected_cp) < 14.0,
 			"Respawned at %s checkpoint %s" % [target_room, str(expected_cp)], str(player.global_position))
-		check(curse.curse >= curse_before + 25.0 or curse.curse == 100.0,
-			"Death penalty added +25.0 in %s" % target_room, "before=%.1f after=%.1f" % [curse_before, curse.curse])
+		check(curse.curse == 0.0,
+			"v1.19.5 death resets curse in %s" % target_room, "before=%.1f after=%.1f" % [curse_before, curse.curse])
 		# Reset curse to 50 for next iteration to prevent premature possession
 		curse.set_curse(50.0)
 

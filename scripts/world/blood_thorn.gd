@@ -182,9 +182,13 @@ func on_interact(by: Node) -> void:
 	var before := _corpse_ids()
 	DeathManager.request_death(&"thorn")
 	if DeathManager.is_dying:
+		var changed := false
 		for pid in solve_on_death:
 			if not PuzzleManager.is_solved(StringName(pid)):
 				PuzzleManager.mark_solved(StringName(pid))
+				changed = true
+		if changed:
+			SaveManager.save_game()
 	if hold_corpse:
 		_hold_new_corpse(before)
 

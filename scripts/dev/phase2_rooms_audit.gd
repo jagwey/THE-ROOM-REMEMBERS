@@ -1401,6 +1401,13 @@ func _rooms_07_10() -> void:
 				gcx = float(((gcs.back() as Dictionary).get("position", {}) as Dictionary).get("x", -1.0))
 			check(glive and ggate._is_open(), "greenhouse_real_thorn_death_opens_gate (dx=%d corpse_x=%.0f)" % [int(start_dx), gcx])
 			check(pm.is_solved(&"decay_greenhouse"), "greenhouse_real_thorn_death_unlocks_exit (dx=%d)" % int(start_dx))
+			await create_timer(0.2).timeout
+			check(not ggate.visible and ggate.collision_layer == 0, "greenhouse_gate_visually_open_after_death (dx=%d vis=%s layer=%d)" % [int(start_dx), str(ggate.visible), ggate.collision_layer])
+			## kendi kendini onarma: dışarıdan kapalı gösterilse bile çözülmüşse açılır
+			ggate.visible = true
+			ggate.collision_layer = 1
+			await create_timer(0.2).timeout
+			check(not ggate.visible and ggate.collision_layer == 0, "greenhouse_gate_self_heals (dx=%d)" % int(start_dx))
 			var tl := 0.0
 			while tl < 6.0 and bool(root.get_node("DeathManager").is_dying):
 				await create_timer(0.1).timeout
