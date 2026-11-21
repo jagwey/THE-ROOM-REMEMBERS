@@ -54,6 +54,7 @@ anchor_x = 330
 puzzle_hint = &"awakening_bellroom_corpse"
 body_line = "Dokunursam ölürüm; bedenim plakada çan tutar."
 solved_line = "Diken durdu; beden plakayı tutuyor."
+solve_on_death = PackedStringArray("awakening_bellroom_corpse")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BellThorn"]
 shape = SubResource("Interact")

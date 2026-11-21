@@ -29,10 +29,15 @@ var _joy_touch_index: int = -1
 const JOY_RADIUS := 50.0
 const JOY_ACCEPT := 65.0
 const JOY_BASE_SIZE := 100.0
+## Joystick ev konumu: güvenli alana göre sol-alt (ağır başparmak payı + jest çubuğu).
+const JOY_MARGIN_X := 26.0
+const JOY_MARGIN_Y := 30.0
 var _joy_radius: float = JOY_RADIUS
 var _joy_accept: float = JOY_ACCEPT
 ## Düğme/joystick ölçeği için ev (başlangıç) ofsetleri: ad -> Vector4(left, top, right, bottom).
 var _btn_home: Dictionary = {}
+## Etkileş şu an Zıpla yuvasında mı (diyalog/Zıpla gizli).
+var _interact_in_corner: bool = false
 ## Yüzen mod: sol-alt çeyrekte (x < %50, y > %50) herhangi bir dokunuş joystick'i oraya taşır.
 var _joy_home := Vector4.ZERO
 ## Çoklu dokunuş: parmak indeksi -> HudTouchButton.
@@ -538,6 +543,11 @@ func _update_control_visibility() -> void:
 	btn_jump.visible = touch and not blocked
 	btn_skill.visible = touch and not blocked and GameState.has_any_ability()
 	btn_interact.visible = touch and not UiGate.blocks_dialogue_advance() and UiGate.current_layer() != UiGate.Layer.DEATH
+	## Diyalogda Zıpla gizli: Etkileş başparmağın en rahat yerine (Zıpla yuvası, sağ-alt köşe) geçer.
+	var corner := btn_interact.visible and not btn_jump.visible
+	if corner != _interact_in_corner:
+		_interact_in_corner = corner
+		apply_button_scale()
 	var layer := UiGate.current_layer()
 	btn_journal.visible = layer == UiGate.Layer.NONE or layer == UiGate.Layer.JOURNAL
 	buttons_root.modulate.a = 1.0 if btn_interact.visible or btn_attack.visible else 0.0
@@ -865,7 +875,20 @@ func apply_button_scale() -> void:
 		var h: Vector4 = _btn_home[bn]
 		var bs := s
 		if bn == &"interact":
-			bs = minf(s, cap)
+			if _interact_in_corner:
+				h = _btn_home[&"jump"]
+			else:
+				bs = minf(s, cap)
+				## Zıpla'nın soluna 8 birim boşlukla dizilir; bağlam ipucu yazısına (ortalı) taşmaz.
+				var hj: Vector4 = _btn_home[&"jump"]
+				var jump_left := cw - (cw - hj.x) * s
+				var room_x := safe_area.size.x * 0.5 + buttons_root.offset_left + cw - 94.0
+				bs = minf(bs, maxf((jump_left - 8.0 * s - cw + room_x) / maxf(1.0, h.z - h.x), 0.86))
+				b.offset_right = minf(cw - (cw - h.z) * bs, jump_left - 8.0 * s)
+				b.offset_left = b.offset_right - (h.z - h.x) * bs
+				b.offset_top = ch - (ch - h.y) * bs
+				b.offset_bottom = ch - (ch - h.w) * bs
+				continue
 		elif bn == &"dash" and safe_area != null:
 			## Bağlam ipucu yazısı (ortalı, ~92 px yarıçap) ile Dash'in arasında 2 px pay bırak.
 			var roomx := safe_area.size.x * 0.5 + buttons_root.offset_left + cw - 94.0
@@ -875,8 +898,8 @@ func apply_button_scale() -> void:
 		b.offset_top = ch - (ch - h.y) * bs
 		b.offset_bottom = ch - (ch - h.w) * bs
 	var js := JOY_BASE_SIZE * s
-	var bottom := -26.0
-	_joy_home = Vector4(14.0, bottom - js, 14.0 + js, bottom)
+	var bottom := -JOY_MARGIN_Y
+	_joy_home = Vector4(JOY_MARGIN_X, bottom - js, JOY_MARGIN_X + js, bottom)
 	_restore_joystick_home()
 	joystick_base.offset_left = 0.0
 	joystick_base.offset_top = 0.0

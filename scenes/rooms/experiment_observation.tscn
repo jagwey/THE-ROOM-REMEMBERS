@@ -52,6 +52,7 @@ anchor_x = 260.0
 puzzle_hint = &"experiment_observation_projector"
 body_line = "Dokunursam ölürüm. Bedenim projektörü yakar."
 solved_line = "Projektör yandı. Camın ardında biri yürüyor."
+solve_on_death = PackedStringArray("experiment_observation_projector")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ProjectorThorn"]
 shape = SubResource("PlateShape")

@@ -143,6 +143,7 @@ anchor_x = 300.0
 puzzle_hint = &"decay_cistern_drain"
 body_line = "Dokunursam ölürüm; bedenim plakayı tutar, sarnıç boşalır."
 solved_line = "Diken durdu; tahliye plakası bedeni tutuyor."
+solve_on_death = PackedStringArray("decay_cistern_drain")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/DrainThorn"]
 shape = SubResource("Interact")

@@ -55,6 +55,7 @@ anchor_x = 280
 puzzle_hint = &"experiment_twin_lab_corpse"
 body_line = "Dikende ölürsem bedenim tartının ilk kefesinde kalır."
 solved_line = "Beden kefede; tartı bir ağırlık aldı."
+solve_on_death = PackedStringArray("experiment_twin_lab_corpse")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/TwinThorn"]
 shape = SubResource("Interact")

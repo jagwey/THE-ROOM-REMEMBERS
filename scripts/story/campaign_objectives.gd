@@ -7,7 +7,7 @@ const _BY_ROOM: Dictionary = {
 	"awakening_passage": "Halkalara yankıdaki sırayla dokun, kristalle basamak kur.",
 	"awakening_seal": "İki kristal, iki beden, iki plaka. Kapı açılınca sayıyı mühre yaz.",
 	"decay_vines": "Çiçeği al, kırık camda öl; çiçekli cesedin sarmaşığı yakar.",
-	"decay_weight": "Taşı plakaya it, dikene dokunup bedenini öbür plakada bırak.",
+	"decay_weight": "Taşı plakaya it, dikene iki kez dokunup bedenini öbür plakada bırak.",
 	"decay_garden": "Camda okuduğun sırayla (7, 2, 9) çiçekleri aç; yaprağı ışıkta oku.",
 	"library_hall": "Kayıt A'yı oku, raf kitaplarını sırayla çek.",
 	"library_witness": "Yankıları dinle; rakamları saat, çiçek, mühür sırasıyla gir.",

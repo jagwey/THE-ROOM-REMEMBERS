@@ -15,6 +15,9 @@ extends Area2D
 @export var hold_id: StringName = &"corpse_bridge"
 ## > 0 ise köprü bedeni varken altında bu genişlikte kemik kalas olur (ceset 28 px; telefonda iki yarım zıplama rahat olsun).
 @export var bridge_plank_width: float = 0.0
+## Doluysa bu dikende bilerek ölmek bu bulmacaları doğrudan çözer (cihazda plaka fiziği
+## cesedi kaçırsa bile kapı kalıcı açılır; Sera gibi "doğru dikende öl" odaları).
+@export var solve_on_death: PackedStringArray = PackedStringArray()
 
 var _armed: bool = false
 var _marker: Node2D
@@ -178,6 +181,10 @@ func on_interact(by: Node) -> void:
 		player.note_safe_floor(Vector2(anchor_x, fy))
 	var before := _corpse_ids()
 	DeathManager.request_death(&"thorn")
+	if DeathManager.is_dying:
+		for pid in solve_on_death:
+			if not PuzzleManager.is_solved(StringName(pid)):
+				PuzzleManager.mark_solved(StringName(pid))
 	if hold_corpse:
 		_hold_new_corpse(before)
 

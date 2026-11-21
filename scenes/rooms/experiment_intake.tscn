@@ -78,6 +78,7 @@ position = Vector2(760, 290)
 script = ExtResource("thorn")
 anchor_x = 760.0
 puzzle_hint = &"experiment_intake_corpse"
+solve_on_death = PackedStringArray("experiment_intake_corpse")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/CorpseThorn"]
 shape = SubResource("PlateShape")

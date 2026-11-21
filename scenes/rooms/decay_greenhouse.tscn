@@ -112,6 +112,7 @@ anchor_x = 620.0
 puzzle_hint = &"decay_greenhouse_pot"
 body_line = "Gölge tam bu saksının başında diz çöktü. Burada ölürsem mühür yanıt verir."
 solved_line = "Saksı yanıt verdi. Beden mührü basılı tutuyor."
+solve_on_death = PackedStringArray("decay_greenhouse_pot", "decay_greenhouse")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ThornB"]
 shape = SubResource("PlateShape")

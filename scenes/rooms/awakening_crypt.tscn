@@ -95,6 +95,7 @@ anchor_x = 280.0
 puzzle_hint = &"awakening_crypt_bed"
 body_line = "Yatak beni bekliyor. Bedenim uzanırsa anı açılır."
 solved_line = "Beden yatağa uzandı. Anı artık açık."
+solve_on_death = PackedStringArray("awakening_crypt_bed")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/CryptThorn"]
 shape = SubResource("PlateShape")

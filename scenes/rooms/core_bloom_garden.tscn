@@ -88,6 +88,7 @@ anchor_x = 260.0
 puzzle_hint = &"core_bloom_weight"
 body_line = "Dikene dokunursam ölürüm. Beden plakada kalmalı ki taşlar ağırlığı duysun."
 solved_line = "Plaka bastırıldı, beden ağırlığını verdi."
+solve_on_death = PackedStringArray("core_bloom_weight")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/BloodThorn"]
 shape = SubResource("PlateShape")

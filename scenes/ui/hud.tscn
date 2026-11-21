@@ -169,20 +169,20 @@ anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -264.0
-offset_top = -218.0
-offset_right = -8.0
-offset_bottom = -8.0
+offset_left = -278.0
+offset_top = -224.0
+offset_right = -14.0
+offset_bottom = -14.0
 grow_horizontal = 0
 grow_vertical = 0
 mouse_filter = 2
 
 [node name="Attack" type="TextureButton" parent="SafeArea/Buttons"]
 layout_mode = 0
-offset_left = 174
-offset_top = 134
-offset_right = 246
-offset_bottom = 206
+offset_left = 196
+offset_top = 44
+offset_right = 260
+offset_bottom = 108
 mouse_filter = 2
 ignore_texture_size = true
 stretch_mode = 5
@@ -191,10 +191,10 @@ script = ExtResource("2")
 
 [node name="Dash" type="TextureButton" parent="SafeArea/Buttons"]
 layout_mode = 0
-offset_left = 88
-offset_top = 152
-offset_right = 140
-offset_bottom = 204
+offset_left = 112
+offset_top = 74
+offset_right = 172
+offset_bottom = 134
 mouse_filter = 2
 ignore_texture_size = true
 stretch_mode = 5
@@ -203,10 +203,10 @@ script = ExtResource("2")
 
 [node name="Skill" type="TextureButton" parent="SafeArea/Buttons"]
 layout_mode = 0
-offset_left = 92
-offset_top = 94
-offset_right = 144
-offset_bottom = 146
+offset_left = 124
+offset_top = 10
+offset_right = 182
+offset_bottom = 68
 mouse_filter = 2
 ignore_texture_size = true
 stretch_mode = 5
@@ -216,10 +216,10 @@ gothic_ring = true
 
 [node name="Jump" type="TextureButton" parent="SafeArea/Buttons"]
 layout_mode = 0
-offset_left = 128
-offset_top = 36
-offset_right = 180
-offset_bottom = 88
+offset_left = 184
+offset_top = 128
+offset_right = 260
+offset_bottom = 204
 mouse_filter = 2
 ignore_texture_size = true
 stretch_mode = 5
@@ -229,10 +229,10 @@ glyph = &"jump"
 gothic_ring = true
 [node name="Interact" type="TextureButton" parent="SafeArea/Buttons"]
 layout_mode = 0
-offset_left = 201
-offset_top = 52
-offset_right = 253
-offset_bottom = 104
+offset_left = 108
+offset_top = 144
+offset_right = 172
+offset_bottom = 208
 mouse_filter = 2
 ignore_texture_size = true
 stretch_mode = 5

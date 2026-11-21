@@ -52,6 +52,7 @@ anchor_x = 260
 puzzle_hint = &"awakening_s_room_corpse"
 body_line = "Dikende ölürsem bedenim ilk plakada kalır."
 solved_line = "Beden plakada; raf bir ağırlık aldı."
+solve_on_death = PackedStringArray("awakening_s_room_corpse")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/SThorn"]
 shape = SubResource("Interact")

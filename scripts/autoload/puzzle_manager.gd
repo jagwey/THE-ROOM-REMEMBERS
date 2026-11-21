@@ -285,7 +285,7 @@ const HINTS: Dictionary = {
 	&"decay_weight_corpse": {
 		"goal": "Kapı hem taşı hem bedeni bekliyor.",
 		"orientation": "Taş sürgüyü tutar. Dikenli plaka ise bir beden ister.",
-		"explicit": "Taşı plakaya it; dikene dokunup bedenini diğer plakada bırak."
+		"explicit": "Taşı plakaya it; dikene iki kez dokunup bedenini diğer plakada bırak."
 	},
 	&"decay_greenhouse_pot": {
 		"goal": "Sera mührü yalnızca doğru saksıyı tanır.",
@@ -340,22 +340,22 @@ const HINTS: Dictionary = {
 	&"mirrors_dual_weight": {
 		"goal": "Dikenli plakaya sürekli bir beden basmalı.",
 		"orientation": "Dikene değ, bedenin plakanın üstünde kalsın.",
-		"explicit": "Dikene dokun; beden plakayı tutarken kapı açık kalır."
+		"explicit": "Orta saksının dikenine iki kez dokun; beden plakayı tutarken kapı açık kalır."
 	},
 	&"mirrors_gallery_plate_1": {
 		"goal": "Galerideki üç plakaya da beden bırakılmalı.",
 		"orientation": "Her plakanın yanında diken var. Üçüne de sırayla beden bırak.",
-		"explicit": "İlk dikene dokun; beden ilk plakada kalır."
+		"explicit": "İlk dikene iki kez dokun; beden ilk plakada kalır."
 	},
 	&"mirrors_gallery_plate_2": {
 		"goal": "Galerinin ikinci plakası hâlâ boş.",
 		"orientation": "Plakalar bedeni tutar. İkincisi ortada.",
-		"explicit": "Ortadaki dikene dokun; beden plakada kalır."
+		"explicit": "Ortadaki dikene iki kez dokun; beden plakada kalır."
 	},
 	&"mirrors_gallery_plate_3": {
 		"goal": "Son plaka da bir beden bekliyor.",
 		"orientation": "Üçüncü plaka en sağda. Bedeni orada bırak.",
-		"explicit": "Sağdaki dikene dokun; beden son plakada kalır."
+		"explicit": "Sağdaki dikene iki kez dokun; beden son plakada kalır."
 	},
 	&"mirrors_1927_walk": {
 		"goal": "Gece kendiliğinden ilerliyor; gölgeyi izle.",

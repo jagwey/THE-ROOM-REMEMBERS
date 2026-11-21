@@ -243,6 +243,7 @@ position = Vector2(790, 290)
 script = ExtResource("blood_thorn")
 anchor_x = 720.0
 puzzle_hint = &"awakening_corpse_plate"
+solve_on_death = PackedStringArray("awakening_corpse_plate")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/AwakeningThorn"]
 shape = SubResource("PlateShape")
