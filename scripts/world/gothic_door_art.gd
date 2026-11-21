@@ -1,7 +1,6 @@
 extends RefCounted
 ## Prosedürel gotik kemerli kapı sanatı (piksel stili, bir kez üretilir, önbelleğe alınır).
-## Katmanlar: frame (taş sütun/söve + sivri kemer + ince tracery), back (simsiyah iç, #05030a → #0d0816),
-## seal (kemer merkezinde parlayan mühür/rün). Görseller alt-orta tabanlıdır: taban = zemin çizgisi.
+## Kemer, duvar taşları ve eşik sabit. Kilitli kanatlar ve açık niş aynı açıklığı kullanır.
 
 const STANDARD := {"iw": 52.0, "t": 10.0, "h": 116, "grand": false, "cusp": 5.0, "plinth": 8}
 const GRAND := {"iw": 60.0, "t": 14.0, "h": 150, "grand": true, "cusp": 7.0, "plinth": 13}
@@ -13,6 +12,9 @@ const STONE_HI := Color(0.46, 0.4, 0.52)
 const MORTAR := Color(0.055, 0.045, 0.075)
 const VOID_TOP := Color(0.0196, 0.0118, 0.0392) ## #05030a
 const VOID_BOTTOM := Color(0.051, 0.031, 0.086) ## #0d0816
+const WALL_RETURN := 16
+const WOOD := Color(0.18, 0.123, 0.17)
+const IRON := Color(0.14, 0.12, 0.16)
 
 static var _cache: Dictionary = {}
 
@@ -44,13 +46,19 @@ static func _build(sp: Dictionary) -> Dictionary:
 	var grand: bool = sp["grand"]
 	var cusp_r: float = sp["cusp"]
 	var plinth: int = sp["plinth"]
-	var w := int(iw + 2.0 * t)
+	var w := int(iw + 2.0 * t) + 2 * WALL_RETURN
 	var cx := float(w) * 0.5
 	var r_out := iw + t
 	var sy := ceilf(sqrt(r_out * r_out - iw * iw * 0.25))
 	var hw_out := iw * 0.5 + t
+	var rear_width := iw * 0.6
+	var rear_x := cx + 4.0
+	var rear_spring := sy + 2.0
 	var frame := Image.create(w, h, false, Image.FORMAT_RGBA8)
 	var back := Image.create(w, h, false, Image.FORMAT_RGBA8)
+	var leaves := Image.create(w, h, false, Image.FORMAT_RGBA8)
+	var threshold := Image.create(w, h, false, Image.FORMAT_RGBA8)
+	_paint_wall_returns(frame, h, w)
 	var cusp_pts: Array[Vector2] = []
 	for f in [0.34, 0.7]:
 		var a: float = -PI + (PI / 3.0) * f
@@ -64,10 +72,14 @@ static func _build(sp: Dictionary) -> Dictionary:
 			var d_out := _depth(cx, sy, iw, hw_out, r_out, px, py)
 			var d_back := _depth(cx, sy, iw, iw * 0.5 + 3.0, iw + 3.0, px, py)
 			if d_back >= 0.0 and d_out >= 0.0:
-				var k := clampf(float(y) / float(h - 1), 0.0, 1.0)
-				var c := VOID_TOP.lerp(VOID_BOTTOM, k)
-				var n := (_hash(float(x), float(y)) - 0.5) * 0.012
-				back.set_pixel(x, y, Color(c.r + n, c.g + n, c.b + n * 1.4, 1.0))
+				var rear_depth := _depth(rear_x, rear_spring, rear_width, rear_width * 0.5,
+					rear_width, px, py)
+				back.set_pixel(x, y, _passage_color(px - cx, y, h, iw, rear_depth))
+			if d_open >= 0.0:
+				if d_open > 3.0 and y < h - 5:
+					leaves.set_pixel(x, y, _leaf_color(x, y, int(cx), h, d_open - 3.0))
+				if y >= h - 18:
+					threshold.set_pixel(x, y, _threshold_light(px - cx, h - y, iw))
 			var is_stone := d_out >= 0.0 and d_open < 0.0
 			if not is_stone and d_open >= 0.0 and py < sy:
 				for cp in cusp_pts:
@@ -90,7 +102,7 @@ static func _build(sp: Dictionary) -> Dictionary:
 				if frame.get_pixel(x, y).a > 0.5:
 					var edge := (y == key_top or x == int(cx) - kw or x == int(cx) + kw - 1)
 					frame.set_pixel(x, y, STONE_HI if edge else STONE_LIGHT.lightened(0.08))
-		var dcy := key_top + kh / 2
+		var dcy := key_top + int(kh * 0.5)
 		for oy in range(-2, 3):
 			for ox in range(-2, 2):
 				var m := absi(ox) + absi(oy)
@@ -98,14 +110,94 @@ static func _build(sp: Dictionary) -> Dictionary:
 					var xx := int(cx) + ox
 					if frame.get_pixel(xx, dcy + oy).a > 0.5:
 						frame.set_pixel(xx, dcy + oy, MORTAR)
+	## Aşınmış söve, zeminle aynı düzlemde açıklığın altını tamamlar.
+	var sill_x := int(cx - hw_out)
+	frame.fill_rect(Rect2i(sill_x, h - 3, int(hw_out * 2), 1), STONE_LIGHT)
+	frame.fill_rect(Rect2i(sill_x, h - 2, int(hw_out * 2), 2), STONE_DARK)
 	return {
 		"frame": ImageTexture.create_from_image(frame),
 		"back": ImageTexture.create_from_image(back),
+		"leaves": ImageTexture.create_from_image(leaves),
+		"threshold": ImageTexture.create_from_image(threshold),
 		"seal": _build_seal(),
 		"size": Vector2(w, h),
-		"seal_y": float(h) - (sy - iw * 0.22), ## tabandan yukarı yükseklik
+		"seal_y": roundf(float(h) * 0.49),
 		"opening_w": iw,
 	}
+
+
+static func _paint_wall_returns(frame: Image, h: int, w: int) -> void:
+	## En geniş sıra tabanda. Üstte taşlar kısalarak söveye girer.
+	var widths := [16, 12, 8, 6]
+	for row in widths.size():
+		var reach: int = widths[row]
+		var top := h - (row + 1) * 9
+		var left := WALL_RETURN - reach
+		for side in 2:
+			var start := left if side == 0 else w - left - reach - 3
+			for y in range(top, top + 9):
+				for x in range(start, start + reach + 3):
+					var noise := (_hash(float(x), float(y)) - 0.5) * 0.045
+					var stone := STONE_MID.lightened(noise)
+					if y == top:
+						stone = STONE_LIGHT.lerp(STONE_MID, 0.35)
+					elif y == top + 8 or (reach >= 12 and (x - start) == int(reach * 0.5) - row):
+						stone = MORTAR
+					frame.set_pixel(x, y, stone)
+
+
+static func _leaf_color(x: int, y: int, cx: int, h: int, depth: float) -> Color:
+	if depth < 3.0 or x == cx or x == cx - 1:
+		return MORTAR
+	var board := posmod(absi(x - cx) - 1, 7)
+	var band := y - int(h * 0.6) if y < int(h * 0.72) else y - (h - 18)
+	if band >= 0 and band < 5:
+		if band == 2 and board == 3:
+			return STONE_LIGHT
+		return IRON.lightened(0.10) if band == 0 else IRON
+	if board == 0:
+		return WOOD.darkened(0.36)
+	var grain := (_hash(float(x), floorf(float(y) / 3.0)) - 0.5) * 0.05
+	return WOOD.lightened(grain + float(posmod(x, 5)) * 0.012)
+
+
+## The outer arch and the narrower throat share one horizon. The overlap exposes the masonry
+## inside the opening; shortening the first few floor treads sells distance at native pixel scale.
+static func _passage_color(x: float, y: int, h: int, iw: float, rear_depth: float) -> Color:
+	var above_floor := h - y
+	var throat_half := iw * 0.3
+	var rear_center := 4.0
+	var left_t := inverse_lerp(-iw * 0.5, rear_center - throat_half, x)
+	var right_t := inverse_lerp(iw * 0.5, rear_center + throat_half, x)
+	var floor_depth := lerpf(3.0, 18.0, clampf(minf(left_t, right_t), 0.0, 1.0))
+	if float(above_floor) <= floor_depth:
+		var tread := Color("#403442").lerp(Color("#29212d"), float(above_floor) / 18.0)
+		if above_floor in [5, 11, 15, 18]:
+			return tread.darkened(0.42)
+		if above_floor in [4, 10, 14]:
+			return tread.lightened(0.045)
+		return tread
+	if rear_depth >= 1.0:
+		return VOID_TOP.lerp(VOID_BOTTOM, float(y) / float(h))
+	var face := Color("#423544") if x < rear_center else Color("#302735")
+	if y < int(h * 0.4):
+		face = face.darkened(0.26)
+	var bed := posmod(y - roundi((x - rear_center) * 0.33), 11)
+	if bed == 0 or absf(rear_depth) < 1.4:
+		return face.darkened(0.52)
+	if bed == 1:
+		return face.lightened(0.035)
+	return face.darkened(clampf(1.0 + rear_depth / 11.0, 0.0, 1.0) * 0.32)
+
+
+static func _threshold_light(x: float, above_floor: int, iw: float) -> Color:
+	var depth := float(above_floor) / 18.0
+	var center := lerpf(-3.0, 4.0, depth)
+	var width := iw * lerpf(0.36, 0.17, depth)
+	if absf(x - center) >= width or above_floor in [5, 11, 15, 18]:
+		return Color.TRANSPARENT
+	var strength := 1.0 - absf(x - center) / width
+	return Color(0.72, 0.59, 0.72, strength * lerpf(0.28, 0.09, depth))
 
 
 static func _stone_color(x: int, y: int, px: float, py: float, cx: float, sy: float, iw: float, t: float,
@@ -167,34 +259,24 @@ static func _stone_color(x: int, y: int, px: float, py: float, cx: float, sy: fl
 	return c
 
 
-## Kemer merkezi için parlayan gotik mühür: çift halka, sekiz diş, merkezde göz/elmas rün.
+## Kanatların birleştiği yerdeki fiziksel mühür.
 static func _build_seal() -> ImageTexture:
-	var s := 40
+	var s := 16
 	var img := Image.create(s, s, false, Image.FORMAT_RGBA8)
 	var c0 := Vector2(float(s) * 0.5, float(s) * 0.5)
-	var crimson := Color(1.0, 0.27, 0.4)
-	var violet := Color(0.72, 0.55, 1.0)
+	var crimson := Color(0.78, 0.28, 0.36)
 	for y in s:
 		for x in s:
 			var v := Vector2(float(x) + 0.5, float(y) + 0.5) - c0
-			var d := v.length()
-			var ang := atan2(v.y, v.x)
-			var col := Color(0, 0, 0, 0)
-			if d < 19.5:
-				var a := 1.0 - d / 19.5
-				col = Color(0.8, 0.15, 0.3, a * a * 0.45)
-			if absf(d - 14.5) < 0.9:
-				col = crimson
-			if absf(d - 10.0) < 0.7 and fposmod(ang * 8.0 / TAU, 1.0) < 0.62:
-				col = violet
-			if d > 14.8 and d < 18.0 and fposmod(ang * 8.0 / TAU + 0.5, 1.0) < 0.2:
-				col = crimson.lerp(Color.WHITE, 0.25)
 			var m := absf(v.x) + absf(v.y)
-			if m <= 5.2:
-				col = violet if m >= 3.8 else Color(0.12, 0.03, 0.08, 1.0)
-			if absf(v.x) < 0.9 and absf(v.y) < 3.0:
-				col = Color(1.0, 0.85, 0.9)
-			if d < 1.4:
-				col = Color(1.0, 0.95, 0.98)
+			var col := Color.TRANSPARENT
+			if m <= 7.0:
+				col = MORTAR
+			if m <= 6.0:
+				col = crimson.lightened(0.17) if v.y < 0.0 else crimson
+			if m <= 4.0:
+				col = crimson.darkened(0.57)
+			if m <= 2.0:
+				col = crimson.lightened(0.25)
 			img.set_pixel(x, y, col)
 	return ImageTexture.create_from_image(img)

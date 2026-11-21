@@ -13,7 +13,7 @@ const DRESS := preload("res://scripts/world/platform_dress.gd")
 @export var platforms: PackedVector3Array = PackedVector3Array()
 ## Zemindeki boşluklar: Vector2(x_start, x_end) — düşen ölür (hazard).
 @export var floor_gaps: PackedVector2Array = PackedVector2Array()
-## Her öğe: {"x": float, "y": float(ops.), "to": String, "spawn": String, "req": String, "msg": String, "title"?, "mark"?, "label_dy"?}
+## Her öğe: {"x": float, "y"?, "to": String, "spawn"?, "req"?, "msg"?, "title"?, "mark"?, "label_dy"?, "wall_recessed"?}
 @export var doors: Array = []
 @export var dark: bool = false
 @export var dark_color: Color = Color(0.16, 0.13, 0.2, 1.0)
@@ -31,7 +31,8 @@ func _ready() -> void:
 	bounds = Rect2(0, 0, room_width, 360)
 	if atmosphere_bg == "":
 		atmosphere_bg = "res://assets/backgrounds/%s" % bg_region
-	_build_parallax()
+	if not has_node("RoomArchitecture"):
+		_build_parallax()
 	_build_floor()
 	_build_platforms()
 	_build_invisible_platforms()
@@ -139,11 +140,12 @@ func _build_floor() -> void:
 		pit.add_child(cs2)
 		pit.body_entered.connect(func(b): if b.is_in_group("player") and not DeathManager.is_dying: DeathManager.request_death(&"hazard"))
 		add_child(pit)
-		var abyss := Polygon2D.new()
-		abyss.polygon = PackedVector2Array([Vector2(g.x, 300), Vector2(g.y, 300), Vector2(g.y, 360), Vector2(g.x, 360)])
-		abyss.color = Color(0.05, 0.03, 0.07, 1)
-		abyss.z_index = 1
-		add_child(abyss)
+		if not has_node("RoomArchitecture"):
+			var abyss := Polygon2D.new()
+			abyss.polygon = PackedVector2Array([Vector2(g.x, 300), Vector2(g.y, 300), Vector2(g.y, 360), Vector2(g.x, 360)])
+			abyss.color = Color(0.05, 0.03, 0.07, 1)
+			abyss.z_index = 1
+			add_child(abyss)
 
 
 func _tile_strip(at: Vector2, w: float) -> Sprite2D:
@@ -176,7 +178,8 @@ func _build_platforms() -> void:
 		strip.z_index = 2
 		body.add_child(strip)
 		add_child(body)
-		_add_dress("PlatformDress%d" % i, p.x, p.y, p.z, false, false)
+		if not has_node("RoomArchitecture"):
+			_add_dress("PlatformDress%d" % i, p.x, p.y, p.z, false, false)
 		i += 1
 
 
@@ -291,6 +294,7 @@ func _build_spawns_and_doors() -> void:
 			door.set("door_title", String(d.get("title")))
 		if d.has("label_dy"):
 			door.set("label_dy", float(d.get("label_dy")))
+		door.set("wall_recessed", bool(d.get("wall_recessed", false)))
 		var cs := CollisionShape2D.new()
 		var rect := RectangleShape2D.new()
 		rect.size = Vector2(44, 96)

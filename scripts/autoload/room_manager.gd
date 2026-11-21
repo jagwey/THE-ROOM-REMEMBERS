@@ -197,6 +197,7 @@ func _run_door_travel(door: Node, player: Node2D, fade: CanvasLayer, rect: Color
 	var walk_time: float = float(DoorScript.WALK_TIME)
 	var fade_out: float = float(DoorScript.FADE_OUT)
 	var fade_in: float = float(DoorScript.FADE_IN)
+	var from_room := _current
 	var target_room: StringName = door.target_room_id
 	var target_spawn: StringName = door.target_spawn_id
 	var door_x: float = (door as Node2D).global_position.x if door is Node2D else 0.0
@@ -204,10 +205,9 @@ func _run_door_travel(door: Node, player: Node2D, fade: CanvasLayer, rect: Color
 	if player:
 		if player is CharacterBody2D:
 			(player as CharacterBody2D).velocity = Vector2.ZERO
-		var sprite := player.get_node_or_null("AnimatedSprite2D") as AnimatedSprite2D
 		var walk := absf(door_x - player.global_position.x) > 2.0
-		if sprite and walk:
-			sprite.flip_h = door_x < player.global_position.x
+		if walk and player.has_method("face_direction"):
+			player.face_direction(door_x - player.global_position.x)
 		if walk and "scripted_walk" in player:
 			player.set("scripted_walk", true)
 		tw.tween_property(player, "global_position:x", door_x, walk_time) \
@@ -229,6 +229,7 @@ func _run_door_travel(door: Node, player: Node2D, fade: CanvasLayer, rect: Color
 		return
 	enter_room(target_room, target_spawn)
 	if is_instance_valid(player):
+		_face_from_arrival_door(player, from_room)
 		player.modulate = Color.WHITE
 		if player is CharacterBody2D:
 			(player as CharacterBody2D).velocity = Vector2.ZERO
@@ -253,6 +254,25 @@ func _run_door_travel(door: Node, player: Node2D, fade: CanvasLayer, rect: Color
 	if is_instance_valid(door) and door.has_method("finish_travel_flags"):
 		door.finish_travel_flags()
 	DoorScript.reset_transition_lock()
+
+
+func _face_from_arrival_door(player: Node2D, from_room: StringName) -> void:
+	if not player.has_method("face_direction"):
+		return
+	# Uzak veya tek yönlü bir bağlantıdaki kapı, doğuş yönünü belirlemesin.
+	var nearest_distance := 144.0 * 144.0
+	var arrival: Node2D
+	for door in get_tree().get_nodes_in_group("room_door"):
+		if not door.is_visible_in_tree() or door.target_room_id != from_room:
+			continue
+		var distance := player.global_position.distance_squared_to(door.global_position)
+		if distance < nearest_distance:
+			nearest_distance = distance
+			arrival = door
+	if arrival:
+		var dx := player.global_position.x - arrival.global_position.x
+		if absf(dx) > 2.0:
+			player.face_direction(dx)
 
 
 ## Geçiş sırasında ölüm başladıysa: oda değiştirme, tüm kilit/bayrak/kararmayı bırak.

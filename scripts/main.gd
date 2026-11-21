@@ -53,7 +53,7 @@ const ROOM_DEFS := {
 ## v1.0 genişleme: mevcut odalardan yan bölgelere açılan kapılar (geri dönüş / metroidvania-lite).
 ## room_id -> [{x, to, req, msg}] — hedef odada "from_<room_id>" spawn'ı built_room tarafından üretilir.
 const SIDE_DOORS := {
-	"core_memory_vault": [{"x": 140.0, "to": "core_last_record", "title": "Son Kayıt"}],
+	"core_memory_vault": [{"x": 140.0, "to": "core_last_record", "title": "Son Kayıt", "label_dy": -36.0}],
 	"mirrors_labyrinth": [{"x": 600.0, "y": 202.0, "spawn_x": 650.0, "spawn_y": 222.0, "to": "mirrors_inverse_hall", "title": "Ters Salon"}],
 	"experiment_circuit": [{"x": 680.0, "to": "experiment_twin_lab", "title": "İkiz Laboratuvarı"}],
 	"library_upper_stacks": [{"x": 680.0, "to": "library_archive_vault", "title": "Kayıt Mahzeni"}],

@@ -114,6 +114,10 @@ func _run() -> void:
 		check(not was_solved and ldoor.is_locked(), "door locked before puzzle")
 		await create_timer(0.05).timeout
 		check((ldoor.get_node("DoorSeal") as Sprite2D).visible, "seal visible while locked")
+		var leaves := ldoor.get_node("DoorLeaves") as Sprite2D
+		var threshold := ldoor.get_node("DoorInnerLight") as Sprite2D
+		var caption := ldoor.get_node("DoorLabel") as Label
+		check(leaves.visible and not threshold.visible and caption.text.ends_with("Mühürlü"), "locked door shows leaves and no travel prompt")
 		check(ldoor.get_glow_kind() == &"cursed" and ldoor.get_interact_label() == "Mühürlü Kapı", "locked glow=cursed, label=Mühürlü Kapı")
 		var msgs := []
 		for i in 3:
@@ -137,6 +141,7 @@ func _run() -> void:
 		pm.mark_solved(&"awakening_memory_code")
 		await create_timer(0.05).timeout
 		check(not ldoor.is_locked() and not (ldoor.get_node("DoorSeal") as Sprite2D).visible, "solved → seal hidden")
+		check(not leaves.visible and threshold.visible and caption.text.ends_with("Geç"), "unlocked door shows lit threshold and travel prompt")
 		## Ölüm → kilit geri gelmez.
 		state.damage(99)
 		var death := root.get_node("DeathManager")
@@ -236,7 +241,7 @@ func _run() -> void:
 			for ln in lbl.text.split("\n"):
 				tw = maxf(tw, font.get_string_size(ln, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x)
 			var th := font.get_height(fs) * 2.0
-			## Headless'ta kamera yok; oyundaki yerleşim modeli: kutu (220 px) oda sınırına 16 px payla sıkışır, metin kutuda ortalı.
+			## Headless'ta kamera yok. Etiket, metin genişliğiyle ölçülür ve oda sınırından 16 px içeride kalır.
 			var rw: float = rm.get_room_bounds(rid2).size.x
 			var box_x := clampf(dn.global_position.x - lbl.size.x * 0.5, 16.0, rw - 16.0 - lbl.size.x)
 			var cx := box_x + lbl.size.x * 0.5
@@ -246,10 +251,7 @@ func _run() -> void:
 			for b in range(a + 1, rects.size()):
 				if (rects[a][0] as Rect2).intersects(rects[b][0]):
 					overlaps.append("%s: %s/%s" % [rid2, rects[a][1], rects[b][1]])
-	var unbroken_overlaps := overlaps.filter(func(o): return String(o).begins_with("mirrors_unbroken"))
-	var other_overlaps := overlaps.filter(func(o): return not String(o).begins_with("mirrors_unbroken"))
-	check(unbroken_overlaps.is_empty(), "no_door_labels_overlap (mirrors_unbroken) %s" % str(unbroken_overlaps))
-	print("DOOR WARN door labels overlap in other rooms (not fixed here): ", other_overlaps)
+	check(overlaps.is_empty(), "no_door_labels_overlap %s" % str(overlaps))
 	print("DOOR_AUDIT failures=", failures)
 	sm.delete_all_save_files()
 	quit(1 if failures else 0)

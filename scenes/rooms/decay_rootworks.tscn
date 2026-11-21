@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3]
+[gd_scene load_steps=24 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
 [ext_resource type="Script" path="res://scripts/world/gate_blocker.gd" id="gate"]
@@ -10,7 +10,12 @@
 [ext_resource type="Script" path="res://scripts/world/blood_thorn.gd" id="thorn"]
 [ext_resource type="Script" path="res://scripts/world/valve.gd" id="valve"]
 [ext_resource type="Script" path="res://scripts/world/water_level.gd" id="water"]
-[ext_resource type="Texture2D" path="res://assets/props/memory_echo.png" id="valve_tex"]
+[ext_resource type="Texture2D" path="res://assets/trr_refresh/decay/cistern_valve_up.png" id="valve_tex"]
+[ext_resource type="Texture2D" path="res://assets/trr_refresh/decay/cistern_valve_down.png" id="valve_down_tex"]
+[ext_resource type="Texture2D" path="res://assets/trr_refresh/decay/cistern_raft.png" id="raft_tex"]
+[ext_resource type="Texture2D" path="res://assets/trr_refresh/decay/rootworks_wall.png" id="wall_tex"]
+[ext_resource type="Script" path="res://scripts/world/water_surface.gd" id="water_surface"]
+[ext_resource type="Texture2D" path="res://assets/trr_refresh/decay/greenhouse_portcullis.png" id="iron_gate"]
 [ext_resource type="Texture2D" path="res://assets/props/weight_stone.png" id="stone_tex"]
 [ext_resource type="Script" path="res://scripts/world/echo_trial.gd" id="trial"]
 
@@ -37,7 +42,7 @@ room_width = 1280.0
 bg_region = "decay"
 checkpoint = Vector2(120, 288)
 default_spawn = Vector2(120, 288)
-doors = [{"x": 40.0, "to": "decay_garden", "spawn": "from_decay_rootworks"}]
+doors = [{"x": 40.0, "to": "decay_garden", "spawn": "from_decay_rootworks", "wall_recessed": true}]
 platforms = PackedVector3Array(820, 210, 100)
 floor_gaps = PackedVector2Array(620, 780)
 
@@ -45,6 +50,12 @@ floor_gaps = PackedVector2Array(620, 780)
 
 [node name="keeper_observe" type="Marker2D" parent="Spawns"]
 position = Vector2(640, 288)
+
+[node name="RoomArchitecture" type="Sprite2D" parent="."]
+z_index = -2
+texture_filter = 1
+texture = ExtResource("wall_tex")
+centered = false
 
 [node name="Interactive" type="Node2D" parent="."]
 
@@ -154,9 +165,15 @@ position = Vector2(0, 6)
 shape = SubResource("RaftShape")
 one_way_collision = true
 
-[node name="Deck" type="Polygon2D" parent="Interactive/RootWater/Raft"]
-color = Color(0.25, 0.3, 0.38, 1)
-polygon = PackedVector2Array(-80, 0, 80, 0, 80, 12, -80, 12)
+[node name="WaterSurface" type="Node2D" parent="Interactive/RootWater/Raft"]
+z_index = -1
+script = ExtResource("water_surface")
+
+[node name="Deck" type="Sprite2D" parent="Interactive/RootWater/Raft"]
+texture_filter = 1
+position = Vector2(-80, 0)
+texture = ExtResource("raft_tex")
+centered = false
 
 [node name="Valve0" type="Area2D" parent="Interactive/RootWater/Raft"]
 position = Vector2(-56, 0)
@@ -170,9 +187,7 @@ shape = SubResource("Interact")
 
 [node name="Sprite2D" type="Sprite2D" parent="Interactive/RootWater/Raft/Valve0"]
 texture_filter = 1
-position = Vector2(0, -14)
-scale = Vector2(0.3, 0.3)
-modulate = Color(0.55, 0.8, 1, 1)
+position = Vector2(0, -13.5)
 texture = ExtResource("valve_tex")
 
 [node name="Valve1" type="Area2D" parent="Interactive/RootWater/Raft"]
@@ -187,10 +202,8 @@ shape = SubResource("Interact")
 
 [node name="Sprite2D" type="Sprite2D" parent="Interactive/RootWater/Raft/Valve1"]
 texture_filter = 1
-position = Vector2(0, -14)
-scale = Vector2(0.3, 0.3)
-modulate = Color(0.55, 0.8, 1, 1)
-texture = ExtResource("valve_tex")
+position = Vector2(0, -13.5)
+texture = ExtResource("valve_down_tex")
 
 [node name="Valve2" type="Area2D" parent="Interactive/RootWater/Raft"]
 position = Vector2(56, 0)
@@ -204,9 +217,7 @@ shape = SubResource("Interact")
 
 [node name="Sprite2D" type="Sprite2D" parent="Interactive/RootWater/Raft/Valve2"]
 texture_filter = 1
-position = Vector2(0, -14)
-scale = Vector2(0.3, 0.3)
-modulate = Color(0.55, 0.8, 1, 1)
+position = Vector2(0, -13.5)
 texture = ExtResource("valve_tex")
 
 [node name="RootHighPlate" type="Area2D" parent="Interactive"]
@@ -251,8 +262,10 @@ latch_on_live = true
 shape = SubResource("GateShape")
 
 [node name="Sprite2D" type="Sprite2D" parent="Interactive/RootGate"]
-texture_filter = 0
-centered = true
+texture_filter = 1
+position = Vector2(0, -29)
+scale = Vector2(1.45, 1.2)
+texture = ExtResource("iron_gate")
 
 [node name="RootShrine" type="Node2D" parent="Interactive"]
 script = ExtResource("shrine")

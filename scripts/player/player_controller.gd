@@ -294,8 +294,7 @@ func _physics_process(delta: float) -> void:
 				rate *= 0.7
 			velocity.x = move_toward(velocity.x, target, rate * delta)
 			if absf(axis.x) > 0.1:
-				_facing = signf(axis.x)
-				sprite.flip_h = _facing < 0.0
+				face_direction(axis.x)
 				_state = &"run"
 			else:
 				_state = &"idle"
@@ -836,6 +835,11 @@ func receive_hazard_hit(from_x: float) -> bool:
 
 func get_facing() -> float:
 	return _facing
+
+
+func face_direction(direction: float) -> void:
+	_facing = signf(direction)
+	sprite.flip_h = _facing < 0.0
 
 
 func play_death() -> void:

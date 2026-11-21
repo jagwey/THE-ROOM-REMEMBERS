@@ -4,6 +4,7 @@ extends Area2D
 
 const LorePointScript := preload("res://scripts/world/lore_point.gd")
 const PAGE_COUNT := 3
+const PAGE_ART := preload("res://assets/trr_refresh/decay/cistern_page.png")
 const SOLVE_ID := &"decay_cistern"
 const DIARY_EVIDENCE := "Sarnıçtaki sayfalar altmış sekiz yıl önce yazılmış. Bir el yazmış, su silememiş."
 
@@ -34,12 +35,18 @@ func _ready() -> void:
 		cs.shape = rect
 		add_child(cs)
 	_sprite = Sprite2D.new()
-	_sprite.texture = load("res://assets/props/memory_echo.png")
+	_sprite.texture = PAGE_ART
 	_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	_sprite.scale = Vector2(0.35, 0.35)
-	_sprite.modulate = Color(0.85, 0.9, 1.0, 0.9)
 	add_child(_sprite)
+	var water_node := get_node_or_null(water)
+	if need_level >= 0 and water_node:
+		water_node.level_changed.connect(_update_water_visibility)
+		_update_water_visibility(water_node.level)
 	_refresh()
+
+
+func _update_water_visibility(level: int) -> void:
+	_sprite.modulate = Color.WHITE if level == need_level else Color(0.53, 0.68, 0.68, 0.70)
 
 
 func is_taken() -> bool:

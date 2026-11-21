@@ -37,11 +37,14 @@ const _REGION_CARD := preload("res://scripts/ui/region_title_card.gd")
 
 ## Büyük bölge geçişi / salon girişi kapısı (daha yüksek sütunlu niş).
 @export var grand: bool = false
+## Odanın taş duvarına oturan kapı, normal yürüyüşte oyuncunun arkasında çizilir.
+@export var wall_recessed: bool = false
 
 ## Aynı anda tek geçiş (çift dokunuş / iki kapı birden).
 static var _transitioning: bool = false
 
 var _seal: Sprite2D
+var _leaves: Sprite2D
 var _glow: Sprite2D
 var _label: Label
 var _door_h: float = 116.0
@@ -68,21 +71,19 @@ func _ready() -> void:
 	_build_visuals()
 	_label = Label.new()
 	_label.name = "DoorLabel"
-	_label.size = Vector2(220, 36)
+	_label.size.y = 36
 	_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_label.add_theme_font_size_override("font_size", 14)
 	_label.add_theme_color_override("font_shadow_color", Color.BLACK)
 	_label.add_theme_constant_override("shadow_offset_x", 1)
 	_label.add_theme_constant_override("shadow_offset_y", 1)
-	var touch := MobileInputManager.is_touch_ui()
-	var hint := "El · Geç" if touch else "[E] Geç"
-	_label.text = "%s\n%s" % [get_display_name(), hint]
 	_label.z_index = 4
 	_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	## Her zaman kapının tam ortasında; sabit sağ kenar kayması yok.
 	_label.position = Vector2(-_label.size.x * 0.5, FOOT_Y - _door_h - 40.0 + label_dy)
 	_label_base_y = _label.position.y
 	add_child(_label)
+	_refresh_door_state()
 	call_deferred("_clamp_door_label")
 	if not UiGate.gate_changed.is_connected(_on_gate_changed):
 		UiGate.gate_changed.connect(_on_gate_changed)
@@ -262,55 +263,39 @@ func _build_visuals() -> void:
 	var art: Dictionary = GothicDoorArt.get_textures(grand)
 	var sz: Vector2 = art["size"]
 	_door_h = sz.y
-	var cy := FOOT_Y - sz.y * 0.5 ## Sprite merkezi: taban tam zeminde (y=0).
-	var back := Sprite2D.new()
-	back.name = "DoorBack"
-	back.texture = art["back"]
-	back.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	back.position = Vector2(0, cy)
-	back.z_index = 1
-	add_child(back)
-	## Karanlığın içinden yükselen soluk kırmızı/mor ışık (ucuz: tek additive sprite).
-	_glow = Sprite2D.new()
-	_glow.name = "DoorInnerLight"
-	var gt := GradientTexture2D.new()
-	gt.width = 64
-	gt.height = 64
-	gt.fill = GradientTexture2D.FILL_RADIAL
-	gt.fill_from = Vector2(0.5, 0.5)
-	gt.fill_to = Vector2(1.0, 0.5)
-	var grad := Gradient.new()
-	grad.set_color(0, Color(0.5, 0.18, 0.3, 0.32))
-	grad.set_color(1, Color(0.3, 0.18, 0.4, 0.0))
-	gt.gradient = grad
-	_glow.texture = gt
-	var mat := CanvasItemMaterial.new()
-	mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
-	_glow.material = mat
-	_glow.position = Vector2(0, FOOT_Y - 12.0)
-	_glow.scale = Vector2(float(art["opening_w"]) / 64.0 * 0.9, 0.9)
-	_glow.z_index = 1
-	add_child(_glow)
-	var frame := Sprite2D.new()
-	frame.name = "DoorFrame"
-	frame.texture = art["frame"]
-	frame.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	frame.position = Vector2(0, cy)
-	frame.z_index = 2
-	add_child(frame)
-	_seal = Sprite2D.new()
-	_seal.name = "DoorSeal"
-	_seal.texture = art["seal"]
-	_seal.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	_seal.position = Vector2(0, FOOT_Y - float(art["seal_y"]))
-	_seal.z_index = 2
-	add_child(_seal)
-	_refresh_seal()
+	var cy := FOOT_Y - sz.y * 0.5
+	_add_art_layer("DoorBack", art["back"], cy, 1)
+	_leaves = _add_art_layer("DoorLeaves", art["leaves"], cy, 1)
+	_glow = _add_art_layer("DoorInnerLight", art["threshold"], cy, 1)
+	_add_art_layer("DoorFrame", art["frame"], cy, 2)
+	_seal = _add_art_layer("DoorSeal", art["seal"], FOOT_Y - float(art["seal_y"]), 2)
+	if String(required_puzzle).begins_with("soul_seal"):
+		_seal.modulate = Color(0.7, 0.56, 1.0)
 
 
-func _refresh_seal() -> void:
-	if _seal:
-		_seal.visible = is_locked()
+func _add_art_layer(layer_name: String, texture: Texture2D, y: float, depth: int) -> Sprite2D:
+	var layer := Sprite2D.new()
+	layer.name = layer_name
+	layer.texture = texture
+	layer.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	layer.position.y = y
+	layer.z_index = 0 if wall_recessed else depth
+	add_child(layer)
+	return layer
+
+
+func _refresh_door_state() -> void:
+	var locked := is_locked()
+	_leaves.visible = locked
+	_seal.visible = locked
+	_glow.visible = not locked
+	var hint := "Mühürlü"
+	if not locked:
+		hint = "El · Geç" if MobileInputManager.is_touch_ui() else "[E] Geç"
+	var caption := "%s\n%s" % [get_display_name(), hint]
+	if _label.text != caption:
+		_label.text = caption
+		_label.size.x = _label.get_minimum_size().x + 12.0
 
 
 ## Sahnelerde elle konmuş eski küçük kapı görsellerini gizle (çift kapı görünmesin).
@@ -327,17 +312,14 @@ func _hide_legacy_door_sprites() -> void:
 
 
 func _process(delta: float) -> void:
+	_refresh_door_state()
 	_phase += delta * 1.7
-	if _label and _label.visible:
+	if _label.visible:
 		_clamp_door_label()
-	if _glow:
-		_glow.modulate.a = 0.75 + 0.25 * sin(_phase)
-	if _seal:
-		var locked := is_locked()
-		if _seal.visible != locked:
-			_seal.visible = locked
-		if locked:
-			_seal.modulate = Color(1, 1, 1, 0.8 + 0.2 * sin(_phase * 1.3))
+	if _glow.visible:
+		_glow.modulate.a = 0.90 + 0.10 * sin(_phase)
+	if _seal.visible:
+		_seal.modulate.a = 0.85 + 0.15 * sin(_phase * 1.3)
 
 
 func on_interact(by: Node) -> void:

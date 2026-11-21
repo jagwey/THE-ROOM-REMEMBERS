@@ -46,6 +46,7 @@ var _label: Label
 var _label_local := Vector2(-60, -36)
 var _tick: float = 0.0
 var _is_target: bool = false
+var _subtle_prop: bool = false
 var _emph: float = 0.0
 var _emph_sprite: CanvasItem = null
 var _emph_base: Color = Color.WHITE
@@ -75,6 +76,8 @@ static func wants_glow(n: Node) -> bool:
 	if not (n is Node2D) or not n.has_method("on_interact"):
 		return false
 	if n is RigidBody2D or n.is_in_group("player"):
+		return false
+	if n.is_in_group("room_door") and n.get("wall_recessed") == true:
 		return false
 	var scr: Script = n.get_script()
 	if scr and String(scr.resource_path).get_file() in ["npc_actor.gd", "echo_twin.gd"]:
@@ -142,6 +145,7 @@ func _ready() -> void:
 	var top := -40.0
 	var label_gap := 20.0
 	var par := get_parent()
+	_subtle_prop = _script_file(par) in ["valve.gd", "page_pickup.gd"]
 	var anim: AnimatedSprite2D = null
 	for c in par.get_children():
 		if c is AnimatedSprite2D and (c as AnimatedSprite2D).sprite_frames:
@@ -172,6 +176,8 @@ func _ready() -> void:
 			break
 	position = anchor
 	_base_scale = Vector2.ONE * 1.1 * big
+	if _subtle_prop:
+		_base_scale *= 0.66
 	scale = _base_scale
 	_color = COLORS.get(kind_for(get_parent()), COLORS[&"normal"])
 	self_modulate = Color(_color, 0.0)
@@ -280,6 +286,8 @@ func _process(delta: float) -> void:
 	_update_emphasis(delta, _is_target and not spent)
 	var pulse := 0.5 + 0.5 * sin(_phase)
 	var a := (0.26 + 0.18 * pulse) * (0.35 if spent else 1.0)
+	if _subtle_prop:
+		a *= 0.22
 	a += _boost * 0.4
 	self_modulate = Color(_color, clampf(a, 0.0, 0.9))
 	scale = _base_scale * (1.0 + 0.06 * pulse + 0.18 * _boost)

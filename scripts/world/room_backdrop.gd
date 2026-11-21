@@ -1,25 +1,22 @@
 extends Node2D
-## Oda arka planı tamamlayıcı: tavan kemer/kaburga + koyu tavan geçişi, zemin altı taş katmanları,
-## süpürgelik (skirting), zemin çizgisi (y=288) derinlik gölgesi. İsteğe bağlı balkon: büyük sivri kemerli
-## açıklık (gece göğü) + korkuluk. Tek _draw, hesaplar önbelleksiz ama ucuz (az dikdörtgen).
+## Boyalı oda duvarının tavan gölgesi, zemin katmanları ve balkona özgü manzara.
 
 const FLOOR_Y := 288.0
 const ROOM_H := 360.0
 
-const VINE := preload("res://assets/trr_refresh/decay/spider_lily_vine.png")
 const SHARD := preload("res://assets/trr_refresh/mirrors/hanging_mirror_shard.png")
 
 var width: float = 960.0
 var tint: Color = Color(1, 1, 1, 1)
 var balcony: bool = false
-var motif: String = "awakening"
+var show_shards := false
 
 
-func setup(w: float, region_tint: Color, is_balcony: bool, region_motif: String = "awakening") -> void:
+func setup(w: float, region_tint: Color, is_balcony: bool, hanging_shards: bool) -> void:
 	width = maxf(w, 640.0)
 	tint = region_tint
 	balcony = is_balcony
-	motif = region_motif
+	show_shards = hanging_shards
 	queue_redraw()
 
 
@@ -50,73 +47,11 @@ static func arch_points(cx: float, spring: float, a: float, h: float, n: int = 2
 
 func _draw() -> void:
 	_draw_ceiling()
-	_draw_motif()
+	if show_shards:
+		_draw_ceiling_accents(SHARD, Vector2(24, 51), 0.48)
 	if balcony:
 		_draw_balcony()
 	_draw_floor()
-
-
-## Bölge kimliği: boyalı arka planın üstüne, tavan boşluğunda okunur bir iz.
-func _draw_motif() -> void:
-	var w := width
-	match motif:
-		"decay":
-			_draw_ceiling_accents(VINE, Vector2(36, 51), 0.52)
-		"library", "experiment":
-			# Raflar ve camlar bölgenin duvar illüstrasyonunda yer alıyor.
-			pass
-		"mirrors":
-			_draw_ceiling_accents(SHARD, Vector2(24, 51), 0.48)
-		"core":
-			var glow := _tc(Color(0.75, 0.15, 0.22), 0.22)
-			draw_rect(Rect2(0, 96, w, 36), glow)
-			var diamond := PackedVector2Array([
-				Vector2(w * 0.5, 28), Vector2(w * 0.5 + 14, 48),
-				Vector2(w * 0.5, 68), Vector2(w * 0.5 - 14, 48),
-			])
-			draw_colored_polygon(diamond, _tc(Color(0.9, 0.25, 0.3), 0.45))
-		"awakening":
-			var wax := _tc(Color(0.85, 0.7, 0.4), 0.35)
-			for i4 in int(w / 180.0):
-				var lx := 90.0 + float(i4) * 180.0
-				draw_rect(Rect2(lx, 20, 3, 22), wax)
-				draw_circle(Vector2(lx + 1.5, 16), 3.0, _tc(Color(1.0, 0.82, 0.45), 0.5))
-		"bloom":
-			var petal := _tc(Color(0.85, 0.22, 0.32), 0.7)
-			var stem := _tc(Color(0.28, 0.45, 0.24), 0.65)
-			var bx := 48.0
-			var bi := 0
-			while bx < w - 24.0:
-				var bh := 18.0 + _h(float(bi), 3.0) * 22.0
-				draw_line(Vector2(bx, 250.0), Vector2(bx, 250.0 - bh), stem, 2.0)
-				draw_circle(Vector2(bx, 248.0 - bh), 4.0, petal)
-				draw_circle(Vector2(bx - 3.0, 250.0 - bh), 2.2, petal)
-				draw_circle(Vector2(bx + 3.0, 250.0 - bh), 2.2, petal)
-				bx += 54.0 + _h(float(bi), 6.0) * 28.0
-				bi += 1
-		"vault":
-			var beam := _tc(Color(0.75, 0.82, 1.0), 0.28)
-			for vi in 3:
-				var vx := w * (0.28 + float(vi) * 0.22)
-				draw_rect(Rect2(vx - 6.0, 24.0, 12.0, 150.0), beam)
-				draw_circle(Vector2(vx, 28.0), 8.0, _tc(Color(0.9, 0.35, 0.45), 0.55))
-		"quarantine":
-			var stripe := _tc(Color(0.75, 0.12, 0.16), 0.55)
-			var qx := 0.0
-			while qx < w:
-				draw_rect(Rect2(qx, 258.0, 18.0, 8.0), stripe)
-				qx += 36.0
-			draw_rect(Rect2(0, 248.0, w, 2.0), _tc(Color(0.9, 0.25, 0.28), 0.35))
-		"labyrinth":
-			var glass := _tc(Color(0.8, 0.9, 1.0), 0.4)
-			draw_line(Vector2(0, 150.0), Vector2(w, 150.0), glass, 2.0)
-			for li in int(w / 70.0):
-				var lx2 := 20.0 + float(li) * 70.0
-				draw_line(Vector2(lx2, 132.0), Vector2(lx2 + 18.0, 168.0), glass, 1.2)
-				draw_line(Vector2(lx2 + 18.0, 168.0), Vector2(lx2 + 4.0, 188.0), _tc(Color(1.0, 0.45, 0.4), 0.35), 1.2)
-		_:
-			var unknown: String = motif
-			push_warning("room_backdrop: unknown motif %s" % unknown)
 
 
 ## Tek sıra, geniş aralık: duvar illüstrasyonuna ve geçişlere görsel alan bırakır.
@@ -127,43 +62,15 @@ func _draw_ceiling_accents(texture: Texture2D, size: Vector2, opacity: float) ->
 	for index in int(ceil(width / spacing)):
 		var x := left + index * spacing
 		if x + size.x <= width - 96.0:
-			draw_texture_rect(texture, Rect2(Vector2(x, 9), size), false, color)
+			draw_texture_rect(texture, Rect2(Vector2(x, -2), size), false, color)
 
 
 func _draw_ceiling() -> void:
-	var w := width
-	## Tavan karartması: üstte neredeyse siyah, aşağı doğru şeffaf.
-	var steps := 14
-	for i in steps:
-		var y0 := 120.0 * float(i) / float(steps)
-		var k := 1.0 - float(i) / float(steps)
-		draw_rect(Rect2(0, y0, w, 120.0 / float(steps) + 1.0), Color(0.02, 0.012, 0.04, 0.94 * k * k))
-	## Kaburga kemerleri + sütunlar (bay genişliği 224).
-	var bay := 224.0
-	var spring := 76.0
-	var stone := _tc(Color(0.2, 0.17, 0.235), 0.9)
-	var stone_hi := _tc(Color(0.36, 0.31, 0.42), 0.8)
-	var stone_dk := _tc(Color(0.07, 0.055, 0.09), 0.95)
-	var bays := int(ceil(w / bay)) + 1
-	for b in bays:
-		var cx := (float(b) + 0.5) * bay
-		var pts := arch_points(cx, spring, bay * 0.5, 68.0, 18)
-		draw_polyline(pts, stone_dk, 6.0)
-		draw_polyline(pts, stone, 4.0)
-		draw_polyline(pts, stone_hi, 1.0)
-		## İç ince kaburga (çift).
-		var pts2 := arch_points(cx, spring + 2.0, bay * 0.5 - 12.0, 52.0, 14)
-		draw_polyline(pts2, Color(stone.r, stone.g, stone.b, 0.5), 2.0)
-	for b in bays + 1:
-		var px := float(b) * bay
-		draw_rect(Rect2(px - 6.0, 0, 12.0, spring + 18.0), stone)
-		draw_rect(Rect2(px - 6.0, 0, 3.0, spring + 18.0), stone_hi)
-		draw_rect(Rect2(px + 3.0, 0, 3.0, spring + 18.0), stone_dk)
-		draw_rect(Rect2(px - 9.0, spring + 10.0, 18.0, 5.0), stone_hi)
-		draw_rect(Rect2(px - 7.0, spring + 15.0, 14.0, 4.0), stone_dk)
-	## Alt sınır: süs silmesi çizgisi.
-	draw_rect(Rect2(0, 0, w, 3.0), stone_dk)
-	draw_rect(Rect2(0, 3.0, w, 1.0), Color(stone_hi.r, stone_hi.g, stone_hi.b, 0.5))
+	# Mimari ve taşıyıcılar far.png üzerinde birlikte kayar; burada yalnız ortam gölgesi var.
+	var edge := Color(0.033, 0.023, 0.045, 0.45)
+	var clear := Color(edge.r, edge.g, edge.b, 0.0)
+	var corners := PackedVector2Array([Vector2.ZERO, Vector2(width, 0), Vector2(width, 60), Vector2(0, 60)])
+	draw_polygon(corners, PackedColorArray([edge, edge, clear, clear]))
 
 
 func _draw_floor() -> void:

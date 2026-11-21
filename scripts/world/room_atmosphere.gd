@@ -5,17 +5,9 @@ extends Node2D
 
 const MOTE_MAX := 28 ## <= 40 particles per room
 const ROOM_H := 360.0
-const BEAM_TEX := "res://assets/layers/light_beam.png"
-## Isik huzmeleri y=288 zemin cizgisini asmaz (dondurulmus alt kose dahil): merkez 130, yukseklik 240.
-const SHAFT_CY := 130.0
-const SHAFT_H := 240.0
 
 var _motes: CPUParticles2D
-var _beams: Array[Sprite2D] = []
-var _beam_base: Array[float] = []
-var _beam_phase: Array[float] = []
 var _built: bool = false
-var _t: float = 0.0
 
 
 func _ready() -> void:
@@ -26,57 +18,82 @@ func _ready() -> void:
 	call_deferred("_build_atmosphere")
 
 
-## Zemin çizgisi (y=288) ile arka plan mobilya tabanlarını hizala: far/mid/front sprite'larını
-## bölge başına aşağı kaydır, parallax dikey kaymasını kapat, tavan kemeri + zemin katmanlarını ekle.
-const FLOOR_Y := 288.0
 const BackdropScript := preload("res://scripts/world/room_backdrop.gd")
-## Far katmanda zemin satırı (PNG içi), mid katmanda 234; front alt satırları bölgeye göre.
-const FAR_FLOOR_ROW := {"awakening": 228.0, "core": 253.0, "decay": 243.0, "experiment": 243.0, "library": 240.0, "mirrors": 232.0}
-const MID_FLOOR_ROW := 234.0
+## Resmin arka duvarı y=228..253'te bitiyor. Oyuncuya doğru yaklaşan iki ayrı zemin düzlemi.
+const MID_BASE := 270.0
+const FRONT_BASE := 284.0
 const FRONT_BOTTOM_ROW := {"awakening": 265.0, "core": 274.0, "decay": 265.0, "experiment": 288.0, "library": 288.0, "mirrors": 288.0}
-
-
-func _region_key() -> String:
-	var rid := String(room_id)
-	for k in FAR_FLOOR_ROW:
-		if rid.begins_with(k):
-			return k
-	return "awakening"
 
 
 func _align_backdrop() -> void:
 	if has_meta("backdrop_aligned"):
 		return
 	set_meta("backdrop_aligned", true)
-	var key := _region_key()
-	var shifts := {
-		"ParallaxFar": FLOOR_Y - float(FAR_FLOOR_ROW[key]),
-		"ParallaxMid": FLOOR_Y - MID_FLOOR_ROW,
-		"ParallaxFront": FLOOR_Y - float(FRONT_BOTTOM_ROW[key]),
-	}
-	var last_idx := -1
-	for nm in shifts:
-		var px := get_node_or_null(nm)
-		if px == null:
-			continue
-		last_idx = maxi(last_idx, px.get_index())
-		if px is Parallax2D:
-			## Dikey parallax yok: sprite'lar dünyada sabit y'de dursun (hizalama kamera y'sine bağlı kalmasın).
-			var ss: Vector2 = (px as Parallax2D).scroll_scale
-			(px as Parallax2D).scroll_scale = Vector2(ss.x, 1.0)
-		var dy: float = shifts[nm]
-		if dy > 0.0:
-			for c in px.get_children():
-				if c is Node2D:
-					(c as Node2D).position.y += dy
+	# Özel, tam boy oda çizimi hem tavanı hem zemini içeriyor.
+	if has_node("RoomArchitecture"):
+		for layer_name in ["ParallaxFar", "ParallaxMid", "ParallaxFront"]:
+			var layer := get_node_or_null(layer_name) as CanvasItem
+			if layer:
+				layer.hide()
+		return
+	var far := get_node_or_null("ParallaxFar") as Parallax2D
+	var mid := get_node_or_null("ParallaxMid") as Parallax2D
+	var front := get_node_or_null("ParallaxFront") as Parallax2D
+	# Bölgeler arasında kullanılan resim, odanın adından farklı olabilir (örneğin Uyanış Geçidi).
+	var region := ""
+	if front and front.get_child_count() > 0:
+		var first := front.get_child(0) as Sprite2D
+		if first and first.texture:
+			region = first.texture.resource_path.get_base_dir().get_file()
+	_place_plane(far, -7, 0.0)
+	_place_plane(mid, -5, MID_BASE - 234.0)
+	_curate_middle_plane(mid)
+	_place_plane(front, -4, FRONT_BASE - float(FRONT_BOTTOM_ROW.get(region, FRONT_BASE)))
 	var back := Node2D.new()
 	back.set_script(BackdropScript)
 	back.name = "BackdropFill"
+	back.z_index = -6
 	add_child(back)
-	move_child(back, last_idx + 1 if last_idx >= 0 else 0)
-	var tint := _region_color().lerp(Color.WHITE, 0.55)
-	back.call("setup", _backdrop_width(), tint, String(room_id) == "awakening_balcony", _motif())
+	_refresh_backdrop_width(back)
 	call_deferred("_refresh_backdrop_width", back)
+
+
+func _place_plane(plane: Parallax2D, depth: int, offset_y: float) -> void:
+	if plane == null:
+		return
+	plane.z_index = depth
+	plane.scroll_scale.y = 1.0
+	# Yalnız yatay tekrar: üstte/alta başka bir kopya girmez.
+	plane.repeat_size.y = 0.0
+	for child in plane.get_children():
+		if child is Sprite2D:
+			(child as Sprite2D).position.y += offset_y
+
+
+## Bazı bölge PNG'leri bağımsız parçaları yan yana taşır. Yalnız mekâna oturan parçayı göster.
+func _curate_middle_plane(plane: Parallax2D) -> void:
+	if plane == null:
+		return
+	for child in plane.get_children():
+		var sprite := child as Sprite2D
+		if sprite == null or sprite.texture == null:
+			continue
+		match sprite.texture.resource_path:
+			"res://assets/backgrounds/decay/mid.png":
+				# Saksıların ve gerçek çıkışın önüne sahte bir kapı gelmesin. Sarmaşık tavandan sarkar.
+				sprite.region_enabled = true
+				sprite.region_rect = Rect2(480, 113, 128, 128)
+				sprite.position.x += 480
+				sprite.position.y = -2
+			"res://assets/backgrounds/library/mid.png", "res://assets/backgrounds/mirrors/mid.png":
+				# Raf ve boy aynası kaidelerine basar. Sağ yarıdaki bağımsız ışık ve cam parçaları oda resminde zaten var.
+				sprite.region_enabled = true
+				sprite.region_rect = Rect2(0, 0, 320, 360)
+			"res://assets/backgrounds/experiment/mid.png":
+				# Sağdaki deney tankı yerde durur; soldaki zincirin bu duvarda bir askı noktası yok.
+				sprite.region_enabled = true
+				sprite.region_rect = Rect2(320, 0, 320, 360)
+				sprite.position.x += 320
 
 
 func _backdrop_width() -> float:
@@ -87,16 +104,10 @@ func _backdrop_width() -> float:
 
 func _refresh_backdrop_width(back: Node) -> void:
 	if is_instance_valid(back):
-		back.call("setup", _backdrop_width(), _region_color().lerp(Color.WHITE, 0.55), String(room_id) == "awakening_balcony", _motif())
+		var balcony := room_id == &"awakening_balcony"
+		var shards := String(room_id).begins_with("mirrors") and room_id != &"mirrors_labyrinth"
+		back.call("setup", _backdrop_width(), _region_color().lerp(Color.WHITE, 0.55), balcony, shards)
 
-
-
-func _process(delta: float) -> void:
-	_t += delta
-	for i in _beams.size():
-		var s := _beams[i]
-		var k := 0.5 + 0.5 * sin(_t * 0.45 + _beam_phase[i])
-		s.modulate.a = _beam_base[i] * (0.45 + 0.55 * k)
 
 
 func _on_visibility_changed() -> void:
@@ -109,30 +120,7 @@ func _on_visibility_changed() -> void:
 			_motes.emission_rect_extents = Vector2(bw * 0.5, ROOM_H * 0.5)
 			_motes.position = Vector2(bw * 0.5, ROOM_H * 0.5)
 	_motes.emitting = vis
-	set_process(vis and not _beams.is_empty())
-
-
-func _motif() -> String:
-	var rid := String(room_id)
-	if rid == "core_bloom_garden":
-		return "bloom"
-	if rid == "core_memory_vault":
-		return "vault"
-	if rid == "experiment_quarantine":
-		return "quarantine"
-	if rid == "mirrors_labyrinth":
-		return "labyrinth"
-	if rid.begins_with("core"):
-		return "core"
-	if rid.begins_with("decay"):
-		return "decay"
-	if rid.begins_with("library"):
-		return "library"
-	if rid.begins_with("experiment"):
-		return "experiment"
-	if rid.begins_with("mirrors"):
-		return "mirrors"
-	return "awakening"
+	set_process(vis)
 
 
 func _region_color() -> Color:
@@ -200,33 +188,7 @@ func _build_atmosphere() -> void:
 	_motes.color_ramp = g
 	_motes.emitting = is_visible_in_tree()
 	add_child(_motes)
-	# Light shafts
-	var tex := load(BEAM_TEX) as Texture2D
-	if tex:
-		var count := clampi(int(w / 600.0), 1, 3)
-		var rng := RandomNumberGenerator.new()
-		rng.seed = hash(rid)
-		var mat := CanvasItemMaterial.new()
-		mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
-		for i in count:
-			var s := Sprite2D.new()
-			s.name = "LightShaft%d" % i
-			s.texture = tex
-			s.material = mat
-			s.z_index = 2
-			s.centered = true
-			var cx := (float(i) + 0.5) / float(count) * w + rng.randf_range(-60.0, 60.0)
-			s.position = Vector2(cx, SHAFT_CY)
-			s.rotation = rng.randf_range(-0.2, 0.1)
-			var tw := float(tex.get_width())
-			var th := float(tex.get_height())
-			s.scale = Vector2(rng.randf_range(0.9, 1.6) * 90.0 / tw * 1.5, SHAFT_H / th)
-			var base := rng.randf_range(0.10, 0.2)
-			s.modulate = Color(col.r, col.g, col.b, base)
-			add_child(s)
-			_beams.append(s)
-			_beam_base.append(base)
-			_beam_phase.append(rng.randf_range(0.0, TAU))
+	# Boyalı pencerenin ışığı aynı düzlemde kalır. Oda merkezinde ikinci bir ışık deseni oluşmaz.
 	_on_visibility_changed()
 
 
