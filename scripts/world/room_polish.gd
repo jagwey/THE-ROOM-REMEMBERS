@@ -134,7 +134,7 @@ func _build_glass() -> void:
 			face.modulate.a = 0.1
 	_label = Label.new()
 	_label.position = anchor + Vector2(-48, -86)
-	_label.add_theme_font_size_override("font_size", 10)
+	_label.add_theme_font_size_override("font_size", UiTheme.HINT)
 	_label.modulate = Color(0.85, 0.9, 1.0, 0.7)
 	_label.z_index = 4
 	add_child(_label)

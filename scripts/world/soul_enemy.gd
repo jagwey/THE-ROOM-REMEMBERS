@@ -111,7 +111,7 @@ func _build_visuals() -> void:
 			shield = Sprite2D.new()
 			shield.texture = halo_tex
 			shield.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-			shield.modulate = Color(0.75, 0.85, 1.0, 0.65)
+			shield.modulate = Palette.SHIELD_BLUE
 			shield.scale = Vector2(0.14, 0.42)
 			shield.position = Vector2(_facing * 14.0, -22)
 			add_child(shield)
@@ -303,7 +303,7 @@ func _telegraph_fx(t: float) -> void:
 
 func _flash_shield(up: bool) -> void:
 	if shield:
-		shield.modulate = Color(0.75, 0.85, 1.0, 0.65) if up else Color(0.75, 0.85, 1.0, 0.12)
+		shield.modulate = Palette.SHIELD_BLUE if up else Palette.SHIELD_BLUE_DOWN
 
 
 ## `dir`: kılıç yönü (oyuncunun baktığı yön). Bekçi önden gelen darbeyi, kalkan açıkken sektirir.
@@ -338,7 +338,7 @@ func _block_fx() -> void:
 	if shield:
 		var tw := create_tween()
 		shield.modulate = Color(1, 1, 1, 1)
-		tw.tween_property(shield, "modulate", Color(0.75, 0.85, 1.0, 0.65), 0.2)
+		tw.tween_property(shield, "modulate", Palette.SHIELD_BLUE, 0.2)
 
 
 func _take_damage(amount: int, dir: float) -> void:

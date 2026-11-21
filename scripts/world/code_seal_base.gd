@@ -29,7 +29,7 @@ func _ready() -> void:
 		$Sprite2D.texture = load("res://assets/props/seal.png")
 		$Sprite2D.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	if PuzzleManager.is_solved(puzzle_id):
-		modulate = Color(0.6, 0.9, 0.7, 1)
+		modulate = Palette.SOLVED_GREEN
 
 
 func on_interact(_by: Node) -> void:
@@ -91,7 +91,7 @@ func on_interact(_by: Node) -> void:
 		GameState.learn_memory_code(code_key, story_code)
 		PuzzleManager.mark_solved(puzzle_id)
 		_on_solved()
-		modulate = Color(0.6, 0.9, 0.7, 1)
+		modulate = Palette.SOLVED_GREEN
 		var am := get_node_or_null("/root/AudioManager")
 		if am:
 			am.play_sfx(&"seal_open")

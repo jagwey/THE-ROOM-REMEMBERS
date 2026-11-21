@@ -48,7 +48,7 @@ func _draw() -> void:
 	var r := minf(size.x, size.y) * 0.5
 	draw_circle(c, r - 1.0, Color(Palette.VOID, 0.92))
 	draw_arc(c, r - 1.0, 0.0, TAU, 48, Color(Palette.PALE_LILAC, 0.9), 1.5, true)
-	draw_arc(c, r - 4.0, 0.0, TAU, 48, Color(0.78, 0.62, 0.3, 0.75), 1.0, true)
+	draw_arc(c, r - 4.0, 0.0, TAU, 48, Palette.GOLD_DIM, 1.0, true)
 
 
 ## Anahtar boşsa gizlenir. animate: konuşmacı değişti -> kısa fade + soldan kayma.

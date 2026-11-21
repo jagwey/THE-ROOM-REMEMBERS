@@ -120,7 +120,7 @@ texture_filter = 0
 texture = ExtResource("stone_tex")
 centered = true
 position = Vector2(0, -18)
-scale = Vector2(0.45, 0.45)
+scale = Vector2(0.375, 0.375)
 
 [node name="RootStonePlate" type="Area2D" parent="Interactive"]
 position = Vector2(540, 278)
@@ -263,8 +263,8 @@ shape = SubResource("GateShape")
 
 [node name="Sprite2D" type="Sprite2D" parent="Interactive/RootGate"]
 texture_filter = 1
-position = Vector2(0, -29)
-scale = Vector2(1.54, 1.09)
+position = Vector2(0, -25)
+scale = Vector2(1, 1)
 texture = ExtResource("iron_gate")
 
 [node name="RootShrine" type="Node2D" parent="Interactive"]

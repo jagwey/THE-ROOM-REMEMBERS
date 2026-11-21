@@ -176,8 +176,10 @@ one_way_collision = true
 [node name="Sprite2D" type="Sprite2D" parent="Platform"]
 texture_filter = 0
 modulate = Color(0.55, 0.6, 0.75, 0.9)
-scale = Vector2(4.375, 0.375)
+texture_repeat = 2
 texture = ExtResource("walk_tile")
+region_enabled = true
+region_rect = Rect2(0, 0, 140, 12)
 
 [node name="Corpse" type="Node2D" parent="." groups=["corpses_root"]]
 

@@ -156,7 +156,7 @@ texture = ExtResource("grille")
 centered = false
 
 [node name="GreenhouseRoots" type="Area2D" parent="Interactive"]
-position = Vector2(160, 288)
+position = Vector2(184, 288)
 script = ExtResource("lore")
 lore_id = &"greenhouse_roots"
 texture_path = "res://assets/props/red_flower.png"

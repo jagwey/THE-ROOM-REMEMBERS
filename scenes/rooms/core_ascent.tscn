@@ -84,6 +84,7 @@ shape = SubResource("PlateShape")
 texture_filter = 0
 position = Vector2(0, 4)
 texture = ExtResource("plate_tex")
+modulate = Color(1, 0.62, 0.66, 1)
 
 [node name="EchoGate" type="StaticBody2D" parent="Interactive"]
 position = Vector2(1000, 248)
@@ -100,7 +101,7 @@ shape = SubResource("GateShape")
 texture_filter = 0
 position = Vector2(0, -8)
 texture = ExtResource("door_tex")
-modulate = Color(0.55, 0.5, 0.58, 0.92)
+modulate = Color(0.48, 0.42, 0.46, 1)
 
 [node name="LastStep" type="Area2D" parent="Interactive"]
 position = Vector2(1120, 288)
@@ -123,7 +124,7 @@ position = Vector2(440, 288)
 script = ExtResource("lore_story")
 lore_id = &"core_ascent_stairs"
 texture_path = "res://assets/props/candles.png"
-sprite_scale = 0.45
+sprite_scale = 0.5
 dialogue_room = &"core_ascent"
 dialogue_set = &"ascent_stairs"
 repeat_line = "Noroi|Her basamakta bir ses değişiyor. Birlikte çıkıyoruz."

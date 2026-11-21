@@ -79,7 +79,7 @@ func back() -> bool:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if visible and not menu.is_overlay_open() and event.is_action_pressed("ui_cancel") and back():
+	if visible and not (menu != null and menu.is_overlay_open()) and event.is_action_pressed("ui_cancel") and back():
 		get_viewport().set_input_as_handled()
 
 
@@ -199,11 +199,11 @@ func _build_layout() -> void:
 	var hint := Label.new()
 	hint.text = "" if MobileInputManager.is_touch_ui() else "Yön tuşları: seç · Enter: onayla · Esc: geri"
 	hint.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	UiTheme.apply_outlined(hint, 12, false, Palette.PALE_LILAC)
+	UiTheme.apply_outlined(hint, UiTheme.HINT, false, Palette.PALE_LILAC)
 	footer.add_child(hint)
 	var ver := Label.new()
 	ver.text = "v%s" % str(ProjectSettings.get_setting("application/config/version", ""))
-	UiTheme.apply_outlined(ver, 12, false, Palette.PALE_LILAC)
+	UiTheme.apply_outlined(ver, UiTheme.HINT, false, Palette.PALE_LILAC)
 	footer.add_child(ver)
 
 
@@ -279,6 +279,8 @@ func _on_update_available(version: String, _url: String) -> void:
 func _build_settings_page(parent: Control) -> void:
 	var page := _new_page(parent, &"settings")
 	_page_label(page, "AYARLAR", UiTheme.BODY, true)
+	if menu == null:
+		return
 	## İçerik ekrana sığmayabilir (özellikle telefonda): kaydırılabilir alan, "Geri" hep görünür.
 	var scroll := TouchSettingsScroll.new()
 	scroll.overlay_open = menu.is_overlay_open
@@ -293,7 +295,7 @@ func _build_settings_page(parent: Control) -> void:
 	p.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.add_child(p)
 	if menu != null:
-		_page_label(p, menu.how_to_play_text(), 9)
+		_page_label(p, menu.how_to_play_text(), UiTheme.HINT)
 	var audio_row := HBoxContainer.new()
 	audio_row.add_theme_constant_override("separation", 6)
 	p.add_child(audio_row)
@@ -324,13 +326,13 @@ func _build_settings_page(parent: Control) -> void:
 func _build_confirm_page(parent: Control) -> void:
 	var p := _new_page(parent, &"confirm")
 	_page_label(p, "YENİ OYUN", UiTheme.BODY, true)
-	_page_label(p, "Kayıtlı ilerlemen silinecek. Yeni oyuna başlamak istiyor musun?", 13)
+	_page_label(p, "Kayıtlı ilerlemen silinecek. Yeni oyuna başlamak istiyor musun?", UiTheme.HINT)
 	_button(p, "Evet", func(): new_game_requested.emit())
 	_button(p, "Vazgeç", func(): _show_page(&"main"))
 	## Yalnız başlıktaki "Oyundan Çık" uygulamayı kapatır — onaylı.
 	var q := _new_page(parent, &"quit_confirm")
 	_page_label(q, "ÇIKIŞ", UiTheme.BODY, true)
-	_page_label(q, "Oyundan çıkmak istediğine emin misin?", 13)
+	_page_label(q, "Oyundan çıkmak istediğine emin misin?", UiTheme.HINT)
 	_button(q, "Vazgeç", func(): _show_page(&"main"))
 	_button(q, "Çıkış Yap", func(): quit_requested.emit())
 
@@ -432,29 +434,29 @@ func _refresh_card() -> void:
 	var visited: Array = gs.player_progress_knowledge.get("rooms_visited", [])
 	if not SaveManager.has_save() or visited.size() <= 1 and int(gs.player_progress_knowledge.get("deaths", 0)) == 0:
 		_card_line("YENİ UYANIŞ", UiTheme.BODY, true, Palette.IVORY)
-		_card_line("Hiçbir şey hatırlamıyorsun.\nOda ise her şeyi hatırlıyor.", 13, false, Palette.IVORY)
-		_card_line("Saatine bak, plakaya bas, ilerle.", 12, false, Palette.PALE_LILAC)
+		_card_line("Hiçbir şey hatırlamıyorsun.\nOda ise her şeyi hatırlıyor.", UiTheme.HINT, false, Palette.IVORY)
+		_card_line("Saatine bak, plakaya bas, ilerle.", UiTheme.HINT, false, Palette.PALE_LILAC)
 		return
 	var rid := String(gs.character_current_life_knowledge.get("room", &"awakening"))
 	var titles: Dictionary = RoomTransitionScript.ROOM_TITLES
 	_card_line("SON KAYIT", UiTheme.BODY, true, Palette.IVORY)
-	_card_line(_room_display_name(rid), 15, true, Color(1.0, 0.82, 0.5))
-	_card_line("Keşif: %d / %d oda" % [visited.size(), titles.size()], 13, false, Palette.IVORY)
-	_card_line("Ölüm: %d · Can: %d/%d" % [int(gs.player_progress_knowledge.get("deaths", 0)), gs.hearts, gs.max_hearts], 13, false, Palette.IVORY)
+	_card_line(_room_display_name(rid), 15, true, Palette.GOLD)
+	_card_line("Keşif: %d / %d oda" % [visited.size(), titles.size()], UiTheme.HINT, false, Palette.IVORY)
+	_card_line("Ölüm: %d · Can: %d/%d" % [int(gs.player_progress_knowledge.get("deaths", 0)), gs.hearts, gs.max_hearts], UiTheme.HINT, false, Palette.IVORY)
 	var play_sec := gs.get_play_time_sec()
 	if play_sec >= 60.0:
-		_card_line("Süre: " + gs.format_play_time(play_sec), 13, false, Palette.IVORY)
+		_card_line("Süre: " + gs.format_play_time(play_sec), UiTheme.HINT, false, Palette.IVORY)
 	var last_note := gs.last_journal_note_title()
 	if last_note != "":
 		if last_note.length() > 36:
 			last_note = last_note.substr(0, 35) + "…"
-		_card_line("Son not: " + last_note, 12, false, Palette.PALE_LILAC)
+		_card_line("Son not: " + last_note, UiTheme.HINT, false, Palette.PALE_LILAC)
 	var endings: Array = gs.player_progress_knowledge.get("endings_seen", [])
 	if not endings.is_empty():
-		_card_line("Görülen son: %d" % endings.size(), 13, false, Palette.IVORY)
+		_card_line("Görülen son: %d" % endings.size(), UiTheme.HINT, false, Palette.IVORY)
 	var obj := gs.get_current_objective()
 	if not obj.is_empty():
-		_card_line("Hedef: " + obj, 12, false, Palette.PALE_LILAC)
+		_card_line("Hedef: " + obj, UiTheme.HINT, false, Palette.PALE_LILAC)
 
 
 ## HUD ile aynı Türkçe kaynak (RoomManager.ROOM_TITLES_TR). Bilinmeyen kimlik İngilizce sızmasın diye "Uyanış"a düşer.

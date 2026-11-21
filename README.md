@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS"><img src="https://img.shields.io/badge/Kaynak-v1.20.2-8B0000?style=for-the-badge&logo=godotengine&logoColor=white" alt="Kaynak v1.20.2" /></a>
+  <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS"><img src="https://img.shields.io/badge/Kaynak-v1.20.3-8B0000?style=for-the-badge&logo=godotengine&logoColor=white" alt="Kaynak v1.20.3" /></a>
   <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases"><img src="https://img.shields.io/badge/Resmi_İndirme-GitHub_Releases-5c1d3d?style=for-the-badge&logo=github" alt="All Releases" /></a>
   <a href="https://godotengine.org/"><img src="https://img.shields.io/badge/Godot_Engine-4.7.2-478CBF?style=for-the-badge&logo=godotengine&logoColor=white" alt="Godot 4.7.2" /></a>
   <img src="https://img.shields.io/badge/Dünya-6_Bölge_·_47_Oda_·_Bölüm_I-2b1838?style=for-the-badge" alt="World Scope" />
@@ -182,6 +182,8 @@ flowchart LR
 | `scripts/story/` | Kampanya hedefleri, final dizisi, ana hikâye odaları (`campaign_objectives`, `final_sequence`). |
 | `scripts/ui/` | HUD, günlük (`journal_ui`, `journal_map`), başlık ekranı, oturum menüsü, bölge başlık kartı, mobil dokunmatik düğmeleri. |
 | `scripts/dev/` | Headless denetimler ve yakalama araçları (aşağıdaki QA bölümü). |
+| `scripts/dev/traversal_bot_audit.gd`, `room_visual_capture_all.gd` | Gerçek oyuncuyla erişilebilirlik botu (`TORIMON_TEST=1 godot --headless -s ... -- [odalar]`) ve 47 oda ekran görüntüsü aracı (headless değil). |
+| `scripts/dev/puzzle_traversal_audit.gd` | Bulmaca açık hâlde (ceset köprüsü, tahta, sal seviyesi, Gölge Atılması) riskli odaları iki yönde gezen bot; `Run-Audit.ps1` içinde `puzzle_traversal`. |
 
 Kayıt `SaveManager` ile atomik yazılır (`.bak`/`.prev` yedekleri). Defterin Harita sekmesindeki hızlı seyahat yalnız ziyaret edilmiş odalara izin verir. Güncelleme akışı: `update_checker.gd` açılışta public sürüm deposunun `releases/latest` yanıtını okur; `tag_name` oyunun `config/version` değerinden yüksekse başlık ekranında "Güncelle" düğmesi çıkar.
 
@@ -224,6 +226,18 @@ Oda numaraları `RoomManager.ROOM_ORDER` sırasını izler. İlk 40 oda ana omur
 
 ### Katakomb çiçeği ve Sarnıç (Faz 0)
 Kemik Mahzeni girişinde (x≈150) tükenmez bir çiçek kaynağı durur. Çiçek elde ölürsen ceset çiçeği taşır ve fener gibi yanar; karanlık yol aydınlanır. Çiçek hayat başınadır, ölümde cesede geçer ve elden silinir. Sarnıç yan kapısı artık yetenek istemez.
+
+### v1.20.3 (2026-11-22, `versionCode 64`) — Görsel tutarlılık ve geçiş denetimi
+
+- Dekor artık Noroi'nin önüne çizilmez (9 oda). Sarmaşık, zincir, ışık huzmesi ve kor gibi gerçek ön plan parçaları önde kalır.
+- Kapalı kapılar tek tonda. Prop ölçekleri 0.5/0.25 piksel ölçeğine indirildi (34 prop). Ağırlık taşları tek ölçekte ve zemine oturuyor. Kök Damarları kapısı ile Kırılmamış Ayna platformu gerilmiyor. Basınç plakaları tek tonda; gözlem odasının mavi projektör plakası korunur.
+- Piksel titremesi için `snap_2d_transforms_to_pixel` ve `snap_2d_vertices_to_pixel` açık. Ön plan paralaksı bütün odalarda 0.85 hızda.
+- 14 px altındaki yazılar `UiTheme.HINT` boyutuna çıkarıldı (başlık ekranı, final bölge etiketi, çekirdek savunma sayacı, etkileşim adı, oda cilası).
+- Sıra taşları ayrışık renk alır (`Palette.SEQUENCE_TINTS`, parlaklığı da değişir). Altın, mavi ve yeşil renk sabitleri `Palette` içinde toplandı.
+- Sera: kök etkileşimi kapıdan 99 px uzakta, mobilde yanlış hedef seçilmez.
+- Başlık ekranında headless `menu` boş referansı giderildi.
+- Kullanılmayan 12 görsel silindi (eski Shilda portre seti, `portrait_bekci`, gotik kapı parçaları).
+- Yeni denetim `puzzle_traversal_audit.gd`: balkon, katakomb, labirent, raflar, karantina, tapınak ve sarnıç bulmaca açık hâlde gerçek oyuncu fiziğiyle iki yönde geziliyor. `Run-Audit.ps1` logları UTF-8 yazar.
 
 ### v1.20.2 (2026-11-21, `versionCode 63`) — Kitap menüsü, hareket seçenekleri ve oda derinliği
 
@@ -463,14 +477,10 @@ Depodaki tüm derlenmiş Android (`arm64-v8a`) APK paketleri düzenli olarak **[
 
 | Sürüm | Durum | APK Dosyası / İndirme | Öne Çıkan Yenilikler ve Kapsam |
 | :--- | :---: | :--- | :--- |
-| **[v1.20.2](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.20.2)** | Son yayın | [📥 `TheRoomRemembers-1.20.2-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.20.2/TheRoomRemembers-1.20.2-android-arm64.apk) | Kitap menüsü, hareket düzeni seçimi ve oda çizimleri (`versionCode 63`). |
+| **[v1.20.3](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.20.3)** | Son yayın | [📥 `TheRoomRemembers-1.20.3-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.20.3/TheRoomRemembers-1.20.3-android-arm64.apk) | Görsel tutarlılık (katman, kapı tonu, ölçek, piksel hizası, yazı boyu), sera kökü geçişi, bulmaca-açık geçiş denetimi (`versionCode 64`). |
+| **[v1.20.2](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.20.2)** | Önceki | [📥 `TheRoomRemembers-1.20.2-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.20.2/TheRoomRemembers-1.20.2-android-arm64.apk) | Kitap menüsü, hareket düzeni seçimi ve oda çizimleri (`versionCode 63`). |
 | **[v1.20.1](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.20.1)** | Önceki | [📥 `TheRoomRemembers-1.20.1-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.20.1/TheRoomRemembers-1.20.1-android-arm64.apk) | Ruh toplama savaşı kesmez, ölümde düşman saldırısı sıfırlanır, uçtan uca savaş testi (`versionCode 62`). |
 | **[v1.20.0](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.20.0)** | Önceki | [📥 `TheRoomRemembers-1.20.0-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.20.0/TheRoomRemembers-1.20.0-android-arm64.apk) | Parçalanmış Ruhlar: saldıran ruh düşmanları (kalp eksiltir), 9 ruh toplama, Shilda final hükmü (`versionCode 61`). |
-| **[v1.19.5](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.19.5)** | Önceki | [📥 `TheRoomRemembers-1.19.5-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.19.5/TheRoomRemembers-1.19.5-android-arm64.apk) | Sera kapısı oyun içinde açılır, lanet ölümde sıfırlanır, lanetli yürüyüş normal (`versionCode 60`). |
-| **[v1.19.4](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.19.4)** | Önceki | [📥 `TheRoomRemembers-1.19.4-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.19.4/TheRoomRemembers-1.19.4-android-arm64.apk) | Sera kapısı düzeltildi, dokunmatik kontroller yeniden yerleşti (`versionCode 59`). |
-| **[v1.19.0](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.19.0)** | Önceki | [📥 `TheRoomRemembers-1.19.0-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.19.0/TheRoomRemembers-1.19.0-android-arm64.apk) | Okunabilirlik ve softlock turu: Sera'da saksıya yürüyen gölge, diken iniş işareti, Mezar Dehlizi yeniden yerleşimi, gölge bulmacaları ve ipuçları netleşti (`versionCode 55`). |
-| **[v1.18.6](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.18.6)** | Önceki | [📥 `TheRoomRemembers-1.18.6-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.18.6/TheRoomRemembers-1.18.6-android-arm64.apk) | Günlük Türkçe metin cilası, dokunmatik ilk adım rehberi, buton boyutu ve titreşim ayarı, ortam anları, mobil yerleşim ve kararlılık düzeltmeleri (`versionCode 54`). |
-| **[v1.18.5](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.18.5)** | Önceki | [📥 `TheRoomRemembers-1.18.5-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.18.5/TheRoomRemembers-1.18.5-android-arm64.apk) | Günlük/harita sekmesinde üst üste binen yazılar düzeltildi (`versionCode 53`). |
 
 ---
 
@@ -497,7 +507,7 @@ Android’de ilk oyuna başlarken hareket düzeni seçilir. Oyun bu tercihi kayd
 1. **[Releases](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases)** sayfasından son sürüm `.apk` dosyasını indirin.
 2. Veya USB hata ayıklaması açık cihaza `adb` ile yükleyin:
    ```powershell
-   adb install -r TheRoomRemembers-1.20.2-android-arm64.apk
+   adb install -r TheRoomRemembers-1.20.3-android-arm64.apk
    adb shell am start -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -p com.torimon.theroomremembers
    ```
 

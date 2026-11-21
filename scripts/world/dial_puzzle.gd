@@ -146,4 +146,4 @@ func _refresh(i: int) -> void:
 	if i < labels.size() and labels[i] != "":
 		prefix = labels[i] + " "
 	(_value_labels[i] as Label).text = "%s%d" % [prefix, _values[i]]
-	(_dials[i] as Node2D).modulate = Color(0.6, 0.9, 0.7, 1) if _solved else Color(1, 1, 1, 1)
+	(_dials[i] as Node2D).modulate = Palette.SOLVED_GREEN if _solved else Color(1, 1, 1, 1)

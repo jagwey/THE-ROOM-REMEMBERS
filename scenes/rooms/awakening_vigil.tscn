@@ -41,7 +41,7 @@ position = Vector2(900, 288)
 script = ExtResource("lore")
 lore_id = &"vigil_log"
 texture_path = "res://assets/props/ledger.png"
-sprite_scale = 0.45
+sprite_scale = 0.5
 dialogue_room = &"awakening_vigil"
 dialogue_set = &"vigil_log"
 repeat_line = "Noroi|Nöbet defterinin son satırı yarım. Yine okumayacağım."
@@ -56,7 +56,7 @@ script = ExtResource("mem_step")
 step_id = "a"
 label = "Kırık Anı Parçası"
 texture_path = "res://assets/props/ledger.png"
-sprite_scale = 0.4
+sprite_scale = 0.5
 tint = Color(0.85, 0.7, 0.95, 1)
 
 [node name="Step_b" type="Area2D" parent="Interactive/MemoryFragments"]
@@ -65,7 +65,7 @@ script = ExtResource("mem_step")
 step_id = "b"
 label = "Kırık Anı Parçası"
 texture_path = "res://assets/props/ledger.png"
-sprite_scale = 0.4
+sprite_scale = 0.5
 tint = Color(0.85, 0.7, 0.95, 1)
 
 [node name="Step_c" type="Area2D" parent="Interactive/MemoryFragments"]
@@ -74,5 +74,5 @@ script = ExtResource("mem_step")
 step_id = "c"
 label = "Kırık Anı Parçası"
 texture_path = "res://assets/props/ledger.png"
-sprite_scale = 0.4
+sprite_scale = 0.5
 tint = Color(0.85, 0.7, 0.95, 1)

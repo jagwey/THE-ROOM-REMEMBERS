@@ -110,7 +110,6 @@ centered = false
 position = Vector2(640, 0)
 
 [node name="Decor" type="Node2D" parent="."]
-z_index = 1
 
 [node name="FlowersDecor" type="Sprite2D" parent="Decor"]
 texture_filter = 0
@@ -256,7 +255,7 @@ texture_filter = 0
 position = Vector2(0, -28)
 texture = ExtResource("4")
 centered = true
-modulate = Color(0.42, 0.38, 0.45, 1)
+modulate = Color(0.48, 0.42, 0.46, 1)
 
 [node name="ExitToLibrary" type="Area2D" parent="Interactive"]
 position = Vector2(930, 266)
@@ -467,7 +466,7 @@ position = Vector2(290, 288)
 script = ExtResource("lore_story")
 lore_id = &"garden_bench"
 texture_path = "res://assets/props/photograph.png"
-sprite_scale = 0.45
+sprite_scale = 0.5
 dialogue_room = &"decay_garden"
 dialogue_set = &"garden_bench"
 repeat_line = "Noroi|Tek kişilik bir taş bank. Biri burada otururdu."

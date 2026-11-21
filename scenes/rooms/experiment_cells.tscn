@@ -94,7 +94,6 @@ texture = ExtResource("3")
 centered = false
 
 [node name="Decor" type="Node2D" parent="."]
-z_index = 1
 
 [node name="Tank" type="Sprite2D" parent="Decor"]
 texture_filter = 0
@@ -137,7 +136,7 @@ position = Vector2(402, 288)
 script = ExtResource("lore")
 lore_id = &"cells_wall_notches"
 texture_path = "res://assets/props/photograph.png"
-sprite_scale = 0.45
+sprite_scale = 0.5
 lines = PackedStringArray("Noroi|Duvara hücre sayıları kazınmış: A için dört çentik, B için bir. C'nin sayısı silinmiş.", "Noroi|Çizgilerin sonunda taze bir iz var: «14». Biri benden önce bu sırayla geçmiş.")
 repeat_line = "Noroi|A dört, B bir. Kodun ilk iki hanesi hücre kayıtlarında."
 evidence_title = "Hücre Numaraları"
@@ -523,7 +522,7 @@ position = Vector2(820, 288)
 script = ExtResource("lore")
 lore_id = &"cells_glimpse"
 texture_path = "res://assets/props/ledger.png"
-sprite_scale = 0.45
+sprite_scale = 0.5
 dialogue_room = &"experiment_cells"
 dialogue_set = &"cells_glimpse"
 repeat_line = "Noroi|Üç kayıt, üç boş hücre. Biri kalmamış."
@@ -536,7 +535,7 @@ role = "fragment"
 ability = "soul"
 nook_id = "cells"
 texture_path = "res://assets/props/photograph.png"
-sprite_scale = 0.55
+sprite_scale = 0.5
 lines = PackedStringArray("Noroi|Hücre duvarında kazınmış bir sayaç: “gün 11, S. yazıyor.”", "Noroi|Çizgiler aniden kesilmiş. Devamı duvardaki damarın ardında.")
 evidence_title = "Duvar Sayacı"
 evidence_body = "Hücre duvarında gün sayan çizgiler var; “S. yazıyor” diye kesilmiş. Devamı damarın ardında."
@@ -560,7 +559,7 @@ gate_puzzle = &"nook_cells_gate"
 frag_id = "nook_cells_a"
 need_line = "Sayaç yarım kalmış; önce duvardaki kazınmış çizgileri okumalıyım."
 texture_path = "res://assets/props/ledger.png"
-sprite_scale = 0.7
+sprite_scale = 0.5
 lines = PackedStringArray("Noroi|Damarın ardında kâğıt parçası: “Tez yarım kaldı, ekip dağıldı.”", "Noroi|Köşede imza: Araştırma Yardımcısı S., 1927.", "Shilda|Yarım kalanları bitirmeyi severim. Bunu da bitirelim.")
 evidence_title = "Yarım Tez"
 evidence_body = "Hücre duvarındaki kâğıt, Araştırma Yardımcısı S.'nin 1927'de yarım kalan tezini anlatıyor; ekip dağılmış."

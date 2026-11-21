@@ -300,10 +300,10 @@ func _domain_screens() -> void:
 		var label := Label.new()
 		label.name = "Domain%d" % (i + 1)
 		label.text = "BÖLGE %02d" % (i + 1)
-		label.position = Vector2(24, 80)
-		label.size = Vector2(80, 14)
+		label.position = Vector2(16, 78)
+		label.size = Vector2(96, 20)
 		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		UiTheme.apply_outlined(label, 8, true, Palette.IVORY)
+		UiTheme.apply_outlined(label, UiTheme.HINT, true, Palette.IVORY)
 		panel.add_child(label)
 		panel.modulate.a = 0.0
 		grid.add_child(panel)

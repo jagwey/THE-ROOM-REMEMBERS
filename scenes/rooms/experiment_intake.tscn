@@ -96,6 +96,7 @@ shape = SubResource("PlateShape")
 texture_filter = 0
 position = Vector2(0, 4)
 texture = ExtResource("plate_art")
+modulate = Color(1, 0.62, 0.66, 1)
 centered = true
 
 [node name="ScaleGate" type="StaticBody2D" parent="Interactive"]
@@ -138,7 +139,7 @@ texture_filter = 0
 texture = ExtResource("stone_art")
 centered = true
 position = Vector2(0, -18)
-scale = Vector2(0.45, 0.45)
+scale = Vector2(0.375, 0.375)
 modulate = Color(0.9, 0.86, 0.92, 1)
 
 [node name="IntakeLedger" type="Area2D" parent="Interactive"]
@@ -146,7 +147,7 @@ position = Vector2(1120, 288)
 script = ExtResource("lore_story")
 lore_id = &"intake_ledger"
 texture_path = "res://assets/props/ledger.png"
-sprite_scale = 0.45
+sprite_scale = 0.5
 dialogue_room = &"experiment_intake"
 dialogue_set = &"intake_ledger"
 repeat_line = "Noroi|On üç satır çizik. On dördüncüsü hâlâ açık."
@@ -156,7 +157,7 @@ position = Vector2(160, 288)
 script = ExtResource("lore_story")
 lore_id = &"intake_slip"
 texture_path = "res://assets/props/photograph.png"
-sprite_scale = 0.45
+sprite_scale = 0.5
 dialogue_room = &"experiment_intake"
 dialogue_set = &"intake_slip"
 repeat_line = "Noroi|Arka yüzde iki el. Biri diğerinin cebine bir şey bırakıyor."

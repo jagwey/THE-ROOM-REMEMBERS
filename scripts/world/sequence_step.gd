@@ -29,6 +29,7 @@ func _ready() -> void:
 	_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	_sprite.scale = Vector2(sprite_scale, sprite_scale)
 	_sprite.position = Vector2(0, -18)
+	_apply_distinct_tint()
 	_sprite.modulate = tint
 	add_child(_sprite)
 	queue_redraw()
@@ -62,3 +63,19 @@ func _draw() -> void:
 	var span := float(pips - 1) * 6.0
 	for i in pips:
 		draw_circle(Vector2(-span * 0.5 + float(i) * 6.0, -40.0), 2.4, col)
+
+
+## Aynı sahnedeki taşların tint'leri çoğu zaman benzer; kardeş sırasına göre ayrışık palet ata.
+func _apply_distinct_tint() -> void:
+	var par := get_parent()
+	if par == null:
+		return
+	var idx := 0
+	var count := 0
+	for c in par.get_children():
+		if c.get_script() == get_script():
+			if c == self:
+				idx = count
+			count += 1
+	if count > 1:
+		tint = Palette.SEQUENCE_TINTS[idx % Palette.SEQUENCE_TINTS.size()]

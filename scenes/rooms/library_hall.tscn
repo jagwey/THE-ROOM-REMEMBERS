@@ -83,7 +83,6 @@ texture = ExtResource("3")
 centered = false
 
 [node name="Decor" type="Node2D" parent="."]
-z_index = 1
 
 [node name="ArchivistLabel" type="Label" parent="Decor"]
 offset_left = 400.0
@@ -194,7 +193,7 @@ script = ExtResource("step")
 step_id = "saat"
 label = "Saat"
 texture_path = "res://assets/layers/books.png"
-sprite_scale = 0.32
+sprite_scale = 0.25
 tint = Color(0.55, 0.62, 0.85, 1)
 
 [node name="BookCicek" type="Area2D" parent="Interactive/HallShrine"]
@@ -212,7 +211,7 @@ script = ExtResource("step")
 step_id = "muhur"
 label = "Mühür"
 texture_path = "res://assets/layers/books.png"
-sprite_scale = 0.32
+sprite_scale = 0.25
 tint = Color(0.72, 0.55, 0.85, 1)
 
 [node name="Corpse" type="Node2D" parent="." groups=["corpses_root"]]
@@ -411,7 +410,7 @@ role = "fragment"
 ability = "soul"
 nook_id = "hall"
 texture_path = "res://assets/props/photograph.png"
-sprite_scale = 0.55
+sprite_scale = 0.5
 lines = PackedStringArray("Noroi|Fişlikte bir ödünç kartı: “Araştırma Yardımcısı S., üç kitap.”", "Noroi|Kartın iade tarihi 1927'de kalmış. Kitaplardan biri raftan eksik.")
 evidence_title = "Ödünç Kartı"
 evidence_body = "Ödünç kartında Araştırma Yardımcısı S. üç kitap almış; iade tarihi 1927'de kalmış."
@@ -435,7 +434,7 @@ gate_puzzle = &"nook_hall_gate"
 frag_id = "nook_hall_a"
 need_line = "Eksik kitabın izi burada; önce fişlikteki ödünç kartını okumalıyım."
 texture_path = "res://assets/props/ledger.png"
-sprite_scale = 0.7
+sprite_scale = 0.5
 lines = PackedStringArray("Noroi|Rafın ardında bir kitabın boş sayfası: “Okuma izni: yalnız S.”", "Noroi|Altında kurumuş mürekkeple: “Kimse ona sormadı, o da söylemedi.”", "Shilda|Kimse sormadı mı? Sorarsan belki cevap veririm.")
 evidence_title = "Boş Sayfa"
 evidence_body = "Kitabın boş sayfasında okuma izni yalnız S.'ye verilmiş. Kimse ona bir şey sormamış."

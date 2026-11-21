@@ -8,7 +8,7 @@ extends Sprite2D
 const NODE_NAME := "InteractGlow"
 const LABEL_NAME := "InteractNameLabel"
 const COLORS := {
-	&"normal": Color(1.0, 0.82, 0.5),
+	&"normal": Color(1.0, 0.82, 0.5), # = Palette.GOLD (const-context)
 	&"memory": Color(0.66, 0.62, 1.0),
 	&"cursed": Color(1.0, 0.24, 0.3),
 }
@@ -189,7 +189,7 @@ func _ready() -> void:
 		_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		_label.autowrap_mode = TextServer.AUTOWRAP_OFF
 		_label.clip_text = false
-		_label.add_theme_font_size_override("font_size", 11)
+		_label.add_theme_font_size_override("font_size", UiTheme.HINT)
 		_label.add_theme_color_override("font_color", _color.lerp(Color.WHITE, 0.55))
 		_label.add_theme_color_override("font_shadow_color", Color.BLACK)
 		_label.add_theme_constant_override("shadow_offset_x", 1)
@@ -304,7 +304,7 @@ func _fit_name_label() -> void:
 	var font: Font = _label.get_theme_font("font")
 	if font == null:
 		font = ThemeDB.fallback_font
-	var tw := ceilf(font.get_string_size(_label.text, HORIZONTAL_ALIGNMENT_LEFT, -1, 11).x) + 12.0
+	var tw := ceilf(font.get_string_size(_label.text, HORIZONTAL_ALIGNMENT_LEFT, -1, UiTheme.HINT).x) + 12.0
 	var w := clampf(tw, 36.0, 260.0)
 	_label.size = Vector2(w, 20.0)
 	var parent := get_parent() as Node2D

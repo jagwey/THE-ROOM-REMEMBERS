@@ -64,7 +64,7 @@ func _draw() -> void:
 	if gothic_ring:
 		draw_circle(c, r - 1.0, Color(Palette.VOID, 0.78))
 		draw_arc(c, r - 1.5, 0.0, TAU, 48, Color(Palette.PALE_LILAC, 0.9), 2.0, true)
-		draw_arc(c, r - 5.0, 0.0, TAU, 48, Color(0.78, 0.62, 0.3, 0.75), 1.0, true)
+		draw_arc(c, r - 5.0, 0.0, TAU, 48, Palette.GOLD_DIM, 1.0, true)
 		if ring_icon != null:
 			var s := r * 1.1
 			draw_texture_rect(ring_icon, Rect2(c - Vector2(s, s) * 0.5, Vector2(s, s)), false)

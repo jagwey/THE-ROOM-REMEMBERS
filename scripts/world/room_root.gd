@@ -21,7 +21,7 @@ func _style_decor_labels() -> void:
 		return
 	for c in decor.get_children():
 		if c is Label:
-			UiTheme.apply_outlined(c as Label, 12, false)
+			UiTheme.apply_outlined(c as Label, UiTheme.HINT, false)
 
 
 func _register_room() -> void:

@@ -27,10 +27,10 @@ func _ready() -> void:
 	if not RoomManager.room_changed.is_connected(_on_room_changed):
 		RoomManager.room_changed.connect(_on_room_changed)
 	_label = Label.new()
-	_label.position = Vector2(400, 168)
-	_label.size = Vector2(160, 20)
+	_label.position = Vector2(360, 166)
+	_label.size = Vector2(240, 22)
 	_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_label.add_theme_font_size_override("font_size", 10)
+	_label.add_theme_font_size_override("font_size", UiTheme.HINT)
 	_label.visible = false
 	add_child(_label)
 
