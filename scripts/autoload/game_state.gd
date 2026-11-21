@@ -57,6 +57,8 @@ var world_memory_state: Dictionary = {
 	},
 	## Bulmaca çözümleri — string id -> bool (kalıcı).
 	"puzzles": {},
+	## Parçalanmış Ruhlar defteri (kalıcı): toplanan ruh id'leri.
+	"souls": {"collected": []},
 }
 
 ## Hikâye durumu bayrakları (v3, kalıcı): StringName -> bool. Kayıtta String anahtarlı yazılır.

@@ -59,6 +59,8 @@ var _header_label: Label
 var _header_tween: Tween
 var _objective: Label
 var _context_hint: Label
+## Parçalanmış Ruhlar sayacı: "Ruhlar oda (toplam)"; ruhsuz odada gizli. Sol üst, joystick/butonlardan uzak.
+var _soul_label: Label
 ## Üst üste binen etkileşim nesneleri için seçici (alt orta, zemin şeridi üstünde).
 var _chooser: VBoxContainer
 var _chooser_targets: Array = []
@@ -1176,7 +1178,27 @@ func _setup_guidance() -> void:
 	_chooser.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_chooser.visible = false
 	safe_area.add_child(_chooser)
+	_soul_label = Label.new()
+	_soul_label.name = "SoulCounter"
+	_soul_label.position = Vector2(12, 98)
+	_soul_label.size = Vector2(220, 20)
+	_soul_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	UiTheme.apply_outlined(_soul_label, UiTheme.HINT, false, Color(0.7, 0.85, 1.0))
+	_soul_label.visible = false
+	safe_area.add_child(_soul_label)
+	GameState.room_changed.connect(_refresh_souls)
+	SoulManager.souls_changed.connect(_refresh_souls)
+	SaveManager.game_loaded.connect(_refresh_souls)
 	_refresh_objective_now()
+
+
+func _refresh_souls(_arg: Variant = null) -> void:
+	if _soul_label == null:
+		return
+	var rid := String(RoomManager.get_active_room_id())
+	var t := SoulManager.hud_text(rid)
+	_soul_label.text = t
+	_soul_label.visible = t != ""
 
 
 func _process(delta: float) -> void:

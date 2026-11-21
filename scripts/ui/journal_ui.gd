@@ -282,6 +282,12 @@ func _append_world_traces(notes: Array) -> void:
 				"title": String(TRACE_KIND_TR.get(String(t.get("kind", "")), "İz")),
 				"body": "Fazla cesetten kalan iz. Oda unutmaz.",
 			})
+	## Parçalanmış Ruhlar: oda başına durum (toplam + oda satırları).
+	if SoulManager.collected_count() > 0 or SoulManager.total_count() > 0:
+		notes.append({
+			"title": "Parçalanmış Ruhlar %d/%d" % [SoulManager.collected_count(), SoulManager.total_count()],
+			"body": "\n".join(SoulManager.journal_lines()),
+		})
 
 
 func _entry_box(alpha: float) -> StyleBoxFlat:

@@ -80,6 +80,7 @@ func play(tree: SceneTree, fast_mode: bool = false) -> void:
 		["Noroi", "Gidelim."],
 		["Shilda", "Kapıda ışık var. Bu sefer gerçek."],
 	])
+	await _souls_verdict()
 	await _exit_door_opens()
 	await _wait(0.8)
 	await _say([[DialogueManager.UNKNOWN_VOICE, "Demek sonunda başardınız."]])
@@ -141,6 +142,16 @@ func play(tree: SceneTree, fast_mode: bool = false) -> void:
 	await _title_card()
 	await _credits()
 	_finish()
+
+
+## Parçalanmış Ruhlar hükmü: hepsi toplandıysa serbest, değilse kalanlar odalarda dolaşır.
+func _souls_verdict() -> void:
+	last_run["souls_all"] = SoulManager.all_collected()
+	last_run["souls_collected"] = SoulManager.collected_count()
+	if SoulManager.all_collected():
+		await _say([["Shilda", "Hepsini getirdin. Senden önce gelenler artık gidebilir."]])
+	else:
+		await _say([["Shilda", "Hepsini getirmedin. Kalanlar bu odalarda sonsuza dek dolaşacak."]])
 
 
 # --- Aşamalar ---------------------------------------------------------------------------

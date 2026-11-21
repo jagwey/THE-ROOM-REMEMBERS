@@ -34,7 +34,7 @@ $devAudits = @(
     'save_quit','start_flow','death_loop','interact','ui_header_portrait','keeper_naming',
     'plate_rule','ascent','release','controls','door','push','jump','eye_intro','room_header_fit','room_identity','dialogue_data','room_graph','save_robust',
     'resume_m3','update_check','m1_stress','softlock_reset','save_robustness','move_time','softlock_phase0','dialogue_lint','phase2_rooms','phase3_rooms','phase4_rooms','clue_solvability',
-    'story_fill','weak_rooms','deep_rooms','room_polish','memory_fragments','backtrack_nooks','echo_trials','fast_travel','settings','journal_layout','door_controls','mobile_layout','feedback'
+    'story_fill','weak_rooms','deep_rooms','room_polish','memory_fragments','backtrack_nooks','echo_trials','fast_travel','settings','journal_layout','door_controls','mobile_layout','feedback','soul_combat'
 )
 # Eski milestone denetimleri (tam dosya adi; {0}_audit.gd kalibina uymaz). Hepsi 0 fail ile gecer.
 $legacyDevAudits = @(

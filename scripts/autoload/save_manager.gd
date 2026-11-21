@@ -539,6 +539,17 @@ func _deserialize_world(raw: Variant) -> Dictionary:
 		base["flags"] = {}
 	if not base.has("puzzles"):
 		base["puzzles"] = {}
+	## Eski kayıt göçü: ruh defteri yoksa boş başlar.
+	if not base.get("souls", null) is Dictionary:
+		base["souls"] = {"collected": []}
+	if not (base["souls"] as Dictionary).get("collected", null) is Array:
+		base["souls"]["collected"] = []
+	else:
+		var clean_souls: Array = []
+		for sid in base["souls"]["collected"]:
+			if sid is String and not (sid in clean_souls):
+				clean_souls.append(sid)
+		base["souls"]["collected"] = clean_souls
 	## Tip korumaları (BUG-012): bozuk alanlar çökme yerine güvenli varsayılana düşer.
 	for key in ["corpses", "traces", "echo_sites", "forbidden_touched"]:
 		_coerce_container(base, key, true)

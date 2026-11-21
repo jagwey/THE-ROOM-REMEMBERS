@@ -79,6 +79,11 @@ func _audit_one(sz: Vector2i, tag: String) -> void:
 	check(items.size() == 5, tag + " all 5 buttons visible")
 	items["Joystick"] = (hud.joystick_base as Control).get_global_rect()
 	var texts := {"Hearts": hud.hearts_row.get_global_rect(), "Journal": (hud.btn_journal as Control).get_global_rect()}
+	## Ruh sayacı (Parçalanmış Ruhlar) ruhlu odada görünür: kontrollere binmemeli.
+	hud._soul_label.text = "Ruhlar 1/3 (9/9)"
+	hud._soul_label.visible = true
+	await _settle()
+	texts["Souls"] = hud._soul_label.get_global_rect()
 	if hud._context_hint.is_visible_in_tree():
 		var f: Font = hud._context_hint.get_theme_font("font")
 		var fs: int = hud._context_hint.get_theme_font_size("font_size")

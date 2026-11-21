@@ -353,6 +353,7 @@ func enter_room(room_id: StringName, spawn_id: StringName = &"default", apply_ro
 		_set_room_physics(root, true)
 		_set_room_canvas_layers(root, true)
 		_setup_m3_mechanics(room_id, root, entry["spawns"])
+		SoulManager.ensure_room(room_id, root)
 
 	var bounds: Rect2 = entry["bounds"]
 	var spawns: Dictionary = entry["spawns"]
