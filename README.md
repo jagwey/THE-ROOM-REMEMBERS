@@ -497,8 +497,8 @@ Android’de ilk oyuna başlarken hareket düzeni seçilir. Oyun bu tercihi kayd
 1. **[Releases](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases)** sayfasından son sürüm `.apk` dosyasını indirin.
 2. Veya USB hata ayıklaması açık cihaza `adb` ile yükleyin:
    ```powershell
-   adb install -r TheRoomRemembers-1.18.6-android-arm64.apk
-   adb shell am start -n com.torimon.theroomremembers/com.godot.game.GodotApp
+   adb install -r TheRoomRemembers-1.20.2-android-arm64.apk
+   adb shell am start -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -p com.torimon.theroomremembers
    ```
 
 ### 2. Godot Editöründe Çalıştırma (Geliştirici)

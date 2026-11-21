@@ -6,7 +6,7 @@ Dal: main · Sürüm: v1.20.2 (versionCode 63)
 - Oyun içi menü günlüğün içindeki Menü sekmesine taşındı. Kitap açıkken hareket ve tehditler durur, animasyonlar işlemeye devam eder. Devam Et, Ayarlar, Kaydet ve Çık ve Ana Menüye Dön aynı sayfadadır.
 - İlk mobil başlangıçta yüzen joystick, sabit joystick veya yön tuşları seçilir. Tercih cihazda kaydedilir ve ayarlardan değiştirilebilir. Joystick dikey hareketi yürüyüşe katmaz. Yukarı iterek zıplama ayarı ile ekrandaki zıplama tuşu birlikte kullanılabilir.
 - Başlık ve kitap içi ayar listeleri parmakla kaydırılır. Kaydırma başladığında parmağın altındaki düğmenin basışı iptal edilir.
-- Godot penceresinde 1280×720 ve 1440×648 ile ilk seçim, kaydırma, dokunmatik hareket ve menü akışı 36 kontrolden geçti. Android cihaz testi bekliyor.
+- Godot penceresinde 1280×720 ve 1440×648 ile ilk seçim, kaydırma, dokunmatik hareket ve menü akışı 36 kontrolden geçti. Android’de v1.20.2 mevcut kurulum üzerine yüklendi. Sürüm kodu 63 ve Godot açılışı cihazda doğrulandı.
 
 ## v1.20.1 sonrası oda derinliği (2026-11-21)
 
