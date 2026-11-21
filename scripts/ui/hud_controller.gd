@@ -25,6 +25,12 @@ const InteractGlowLib := preload("res://scripts/world/interact_glow.gd")
 
 var _joy_active: bool = false
 var _joy_touch_index: int = -1
+var _joy_input_origin: Vector2
+var _joy_jump: bool = false
+var _arrows: Array[HudTouchButton] = []
+const JOY_DEADZONE := 0.18
+const JOY_JUMP_START := 0.65
+const JOY_JUMP_RELEASE := 0.38
 ## Görsel yarıçap 50 (eski 40'ın %25 fazlası); sabit modda kabul alanı biraz daha geniş.
 const JOY_RADIUS := 50.0
 const JOY_ACCEPT := 65.0
@@ -74,6 +80,7 @@ var _continue_base := Vector2.ZERO
 
 func _ready() -> void:
 	add_to_group("hud")
+	GameSettings.ensure_loaded()
 	_apply_fonts()
 	_apply_safe_area()
 	_setup_textures()
@@ -83,6 +90,7 @@ func _ready() -> void:
 	for bn in _buttons_by_name:
 		var b: Control = _buttons_by_name[bn]
 		_btn_home[bn] = Vector4(b.offset_left, b.offset_top, b.offset_right, b.offset_bottom)
+	_setup_direction_buttons()
 	apply_button_scale()
 	safe_area.resized.connect(apply_button_scale)
 	DeathManager.death_loop_helper.connect(_on_death_loop_helper)
@@ -114,6 +122,7 @@ func _ready() -> void:
 	dialogue_panel.visible = false
 	_apply_default_hint()
 	btn_journal.pressed.connect(_toggle_journal)
+	btn_journal.tooltip_text = "Günlük ve menü"
 	_journal = get_tree().get_first_node_in_group("journal_ui") as CanvasLayer
 	get_tree().root.size_changed.connect(_apply_safe_area)
 	UiGate.gate_changed.connect(_on_gate_changed)
@@ -529,9 +538,8 @@ func _on_gate_changed(_layer: UiGate.Layer) -> void:
 ## Kapı/ölüm sonrası dışarıdan çağrılır: dokunmatik HUD'u güncel UiGate katmanına göre yeniler.
 func refresh_touch_controls() -> void:
 	_update_control_visibility()
-	if not UiGate.blocks_gameplay_input():
-		_release_joystick()
-		_release_all_buttons()
+	_release_joystick()
+	_release_all_buttons()
 
 
 func _update_control_visibility() -> void:
@@ -540,6 +548,11 @@ func _update_control_visibility() -> void:
 	var touch := _touch_seen or MobileInputManager.is_touch_ui()
 	# Hikâye diyaloğunda hareket/saldırı/dash gizlenir; etkileş devam için kalır.
 	joystick_root.visible = touch and not blocked
+	var use_arrows := GameSettings.touch_layout == GameSettings.TouchLayout.ARROWS
+	joystick_base.visible = not use_arrows
+	joystick_thumb.visible = not use_arrows
+	for arrow in _arrows:
+		arrow.visible = use_arrows
 	btn_attack.visible = touch and not blocked
 	btn_dash.visible = touch and not blocked
 	btn_jump.visible = touch and not blocked
@@ -556,7 +569,7 @@ func _update_control_visibility() -> void:
 	## Göz açma sinematiği: kalp/hedef/düğme hiçbiri görünmez.
 	## Günlük (kitap) açıkken de HUD gizli; günlük kendi kapat düğmesini taşır.
 	var vis_layer := UiGate.current_layer()
-	safe_area.visible = vis_layer != UiGate.Layer.CUTSCENE and vis_layer != UiGate.Layer.JOURNAL and vis_layer != UiGate.Layer.TITLE
+	safe_area.visible = vis_layer != UiGate.Layer.CUTSCENE and vis_layer != UiGate.Layer.JOURNAL and vis_layer != UiGate.Layer.TITLE and vis_layer != UiGate.Layer.PAUSE_MENU
 
 
 ## Görünür dokunmatik düğme + joystick tabanının ekran (viewport) dikdörtgenleri; kapı etiketi kaçınması için.
@@ -564,6 +577,7 @@ func _update_control_visibility() -> void:
 func get_touch_button_screen_rects() -> Array[Rect2]:
 	var out: Array[Rect2] = []
 	var ctrls: Array[Control] = [btn_attack, btn_dash, btn_interact, btn_jump, btn_skill, joystick_base]
+	ctrls.append_array(_arrows)
 	for c in ctrls:
 		if c != null and c.is_visible_in_tree():
 			out.append(c.get_global_transform_with_canvas() * Rect2(Vector2.ZERO, c.size))
@@ -594,7 +608,7 @@ func _press_button(btn: HudTouchButton, index: int) -> void:
 		&"jump":
 			if UiGate.blocks_movement():
 				return
-			MobileInputManager.press_jump()
+			MobileInputManager.press_jump(&"hud_jump")
 		&"skill":
 			if UiGate.blocks_combat():
 				return
@@ -614,7 +628,7 @@ func _release_button(btn: HudTouchButton) -> void:
 	elif btn == btn_interact:
 		MobileInputManager.release_interact()
 	elif btn == btn_jump:
-		MobileInputManager.release_jump()
+		MobileInputManager.release_jump(&"hud_jump")
 
 
 ## Dokunuş bitti/iptal: o parmağın tuttuğu düğme ve joystick bırakılır (gate'ten bağımsız).
@@ -667,7 +681,7 @@ func _input(event: InputEvent) -> void:
 		_touch_seen = true
 		_update_control_visibility()
 	# Bırakmalar her koşulda işlenir (kapı değişse bile takılı giriş kalmasın).
-	if event is InputEventScreenTouch and not (event as InputEventScreenTouch).pressed:
+	if event is InputEventScreenTouch and (not event.pressed or event.canceled):
 		_release_touch_index((event as InputEventScreenTouch).index)
 	elif event is InputEventMouseButton and (event as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT and not (event as InputEventMouseButton).pressed:
 		_release_touch_index(0)
@@ -748,18 +762,42 @@ func _input(event: InputEvent) -> void:
 
 
 func _in_float_zone(screen_pos: Vector2) -> bool:
-	var vp := get_viewport().get_visible_rect().size
-	return screen_pos.x < vp.x * 0.5 and screen_pos.y > vp.y * 0.5
+	var bounds := safe_area.get_global_rect()
+	return bounds.has_point(screen_pos) and screen_pos.x < bounds.get_center().x and screen_pos.y > bounds.get_center().y
 
 
 func _is_in_joystick_zone(screen_pos: Vector2) -> bool:
-	if not joystick_root.visible:
+	if not joystick_root.is_visible_in_tree():
 		return false
-	if MobileInputManager.floating_joystick:
-		return _in_float_zone(screen_pos)
-	var local: Vector2 = _touch_to_joystick_local(screen_pos)
-	var center: Vector2 = joystick_base.position + joystick_base.size * 0.5
-	return local.distance_to(center) <= _joy_accept
+	match GameSettings.touch_layout:
+		GameSettings.TouchLayout.FLOATING:
+			return _in_float_zone(screen_pos)
+		GameSettings.TouchLayout.ARROWS:
+			return _direction_at(screen_pos) != 0
+	var center := joystick_base.get_global_rect().get_center()
+	return center.distance_to(screen_pos) <= _joy_accept
+
+
+func _setup_direction_buttons() -> void:
+	for direction in [&"left", &"right"]:
+		var arrow := HudTouchButton.new()
+		arrow.glyph = direction
+		arrow.gothic_ring = true
+		joystick_root.add_child(arrow)
+		_arrows.append(arrow)
+
+
+func _direction_at(screen_pos: Vector2) -> int:
+	for i in _arrows.size():
+		if _arrows[i].get_global_rect().has_point(screen_pos):
+			return -1 if i == 0 else 1
+	return 0
+
+
+func _set_arrow_direction(direction: int) -> void:
+	_arrows[0].set_held(direction < 0)
+	_arrows[1].set_held(direction > 0)
+	MobileInputManager.set_move_vector(Vector2(float(direction), 0.0))
 
 
 func _is_in_dialogue_zone(screen_pos: Vector2) -> bool:
@@ -767,11 +805,6 @@ func _is_in_dialogue_zone(screen_pos: Vector2) -> bool:
 		return false
 	var r := dialogue_panel.get_global_rect()
 	return r.has_point(screen_pos)
-
-
-func _touch_to_joystick_local(screen_pos: Vector2) -> Vector2:
-	var xform: Transform2D = joystick_base.get_parent().get_global_transform_with_canvas()
-	return xform.affine_inverse() * screen_pos
 
 
 ## Yüzen mod: joystick tabanını dokunuş noktasına taşı (güvenli alan içinde tut).
@@ -801,7 +834,7 @@ func _is_advance_press(event: InputEvent) -> bool:
 
 
 func _handle_touch(event: InputEventScreenTouch) -> void:
-	if not event.pressed:
+	if not event.pressed or event.canceled:
 		_release_touch_index(event.index)
 		return
 	var btn := _button_at(event.position)
@@ -811,23 +844,18 @@ func _handle_touch(event: InputEventScreenTouch) -> void:
 	if _chooser_hit(event.position):
 		get_viewport().set_input_as_handled()
 		return
-	if UiGate.blocks_movement():
+	if UiGate.blocks_movement() or _joy_active or not _is_in_joystick_zone(event.position):
 		return
-	if _joy_active:
-		return
-	if MobileInputManager.floating_joystick:
-		if not _in_float_zone(event.position):
-			return
-		_recenter_joystick(event.position)
-	else:
-		var l0: Vector2 = _touch_to_joystick_local(event.position)
-		var c0: Vector2 = joystick_base.position + joystick_base.size * 0.5
-		if l0.distance_to(c0) > _joy_accept:
-			return
 	_joy_active = true
 	_joy_touch_index = event.index
-	var center: Vector2 = joystick_base.position + joystick_base.size * 0.5
-	_update_joy(_touch_to_joystick_local(event.position), center)
+	if GameSettings.touch_layout == GameSettings.TouchLayout.ARROWS:
+		_set_arrow_direction(_direction_at(event.position))
+		return
+	_joy_input_origin = joystick_base.get_global_rect().get_center()
+	if GameSettings.touch_layout == GameSettings.TouchLayout.FLOATING:
+		_joy_input_origin = event.position
+		_recenter_joystick(event.position)
+	_update_joy(event.position)
 
 
 func _handle_drag(event: InputEventScreenDrag) -> void:
@@ -836,26 +864,52 @@ func _handle_drag(event: InputEventScreenDrag) -> void:
 	if UiGate.blocks_movement():
 		_release_joystick()
 		return
-	var local: Vector2 = _touch_to_joystick_local(event.position)
-	var center: Vector2 = joystick_base.position + joystick_base.size * 0.5
-	_update_joy(local, center)
+	if GameSettings.touch_layout == GameSettings.TouchLayout.ARROWS:
+		_set_arrow_direction(_direction_at(event.position))
+	else:
+		_update_joy(event.position)
 
 
-func _update_joy(local: Vector2, center: Vector2) -> void:
-	var offset := (local - center).limit_length(_joy_radius)
-	joystick_thumb.position = center + offset - joystick_thumb.size * 0.5
-	MobileInputManager.set_move_vector(offset / _joy_radius)
+func _update_joy(screen_pos: Vector2) -> void:
+	var displacement := (screen_pos - _joy_input_origin) / _joy_radius
+	# A vertical swipe never weakens or steers horizontal movement.
+	var horizontal := signf(displacement.x) * remap(clampf(absf(displacement.x), JOY_DEADZONE, 1.0), JOY_DEADZONE, 1.0, 0.0, 1.0)
+	var up := clampf(-displacement.y, 0.0, 1.0) if GameSettings.touch_up_to_jump else 0.0
+	var jump_threshold := JOY_JUMP_RELEASE if _joy_jump else JOY_JUMP_START
+	_set_joystick_jump(up >= jump_threshold)
+	var thumb_offset := Vector2(horizontal, -up).limit_length(1.0) * _joy_radius * 0.68
+	var center := joystick_base.position + joystick_base.size * 0.5
+	joystick_thumb.position = center + thumb_offset - joystick_thumb.size * 0.5
+	MobileInputManager.set_move_vector(Vector2(horizontal, 0.0))
+
+
+func _set_joystick_jump(active: bool) -> void:
+	if _joy_jump == active:
+		return
+	_joy_jump = active
+	if active:
+		MobileInputManager.press_jump(&"joystick")
+	else:
+		MobileInputManager.release_jump(&"joystick")
 
 
 func _release_joystick() -> void:
 	_joy_active = false
 	_joy_touch_index = -1
-	MobileInputManager.set_move_vector(Vector2.ZERO)
+	_set_joystick_jump(false)
+	if not _arrows.is_empty():
+		_set_arrow_direction(0)
 	if joystick_base and joystick_thumb:
-		var center: Vector2 = joystick_base.position + joystick_base.size * 0.5
+		var center := joystick_base.position + joystick_base.size * 0.5
 		joystick_thumb.position = center - joystick_thumb.size * 0.5
 	if joystick_root:
 		_restore_joystick_home()
+
+
+func _notification(what: int) -> void:
+	if what in [NOTIFICATION_APPLICATION_FOCUS_OUT, NOTIFICATION_WM_WINDOW_FOCUS_OUT] and is_node_ready():
+		_release_joystick()
+		_release_all_buttons()
 
 
 ## Buton boyutu ayarı (%80..%120): düğmeler sağ-alt köşeye, joystick sol-alt köşeye göre ölçeklenir;
@@ -899,6 +953,8 @@ func apply_button_scale() -> void:
 		b.offset_right = cw - (cw - h.z) * bs
 		b.offset_top = ch - (ch - h.y) * bs
 		b.offset_bottom = ch - (ch - h.w) * bs
+	if _joy_active:
+		_release_joystick()
 	var js := JOY_BASE_SIZE * s
 	var bottom := -JOY_MARGIN_Y
 	_joy_home = Vector4(JOY_MARGIN_X, bottom - js, JOY_MARGIN_X + js, bottom)
@@ -913,8 +969,10 @@ func apply_button_scale() -> void:
 	joystick_thumb.offset_bottom = js * 0.75
 	_joy_radius = JOY_RADIUS * s
 	_joy_accept = JOY_ACCEPT * s
-	if _onboard_root != null and _onboard_root.visible:
-		_place_onboarding.call_deferred()
+	var arrow_size := 60.0 * s
+	for i in _arrows.size():
+		_arrows[i].position = Vector2(i * (arrow_size + 8.0), js - arrow_size)
+		_arrows[i].size = Vector2(arrow_size, arrow_size)
 
 
 ## --- Hedef vurgusu (nabız) ---
@@ -1002,73 +1060,6 @@ func _on_death_loop_helper(room_id: StringName) -> void:
 
 
 ## --- Dokunmatik ilk açılış ipucu ---
-var _onboard_root: Control
-var _onboard_joy: Label
-var _onboard_btn: Label
-var _onboard_time: float = 0.0
-
-
-func _tick_onboarding(delta: float, playable: bool) -> void:
-	if GameSettings.touch_onboarding_done:
-		return
-	var touch := _touch_seen or MobileInputManager.is_touch_ui()
-	if not touch or not playable or DialogueManager.is_open:
-		if _onboard_root != null:
-			_onboard_root.visible = false
-		return
-	if _onboard_root == null:
-		_build_onboarding()
-	if not _onboard_root.visible:
-		_onboard_root.visible = true
-		_place_onboarding()
-	_onboard_time += delta
-	if MobileInputManager.move_vector.length() > 0.2 or not _btn_touch.is_empty() or _onboard_time >= 6.0:
-		_finish_onboarding()
-
-
-func _build_onboarding() -> void:
-	_onboard_root = Control.new()
-	_onboard_root.set_anchors_preset(Control.PRESET_FULL_RECT)
-	_onboard_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	safe_area.add_child(_onboard_root)
-	_onboard_joy = _onboard_label("Sol tarafa dokunup sürükle: yürü", HORIZONTAL_ALIGNMENT_LEFT)
-	_onboard_btn = _onboard_label("Sağdaki tuşlar: zıpla, saldır, atıl", HORIZONTAL_ALIGNMENT_RIGHT)
-
-
-func _onboard_label(text: String, align: HorizontalAlignment) -> Label:
-	var l := Label.new()
-	l.text = text
-	l.horizontal_alignment = align
-	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	l.size = Vector2(170, 30)
-	UiTheme.apply_outlined(l, UiTheme.HINT, false, Color(0.95, 0.9, 0.7))
-	_onboard_root.add_child(l)
-	return l
-
-
-## Etiketler joystick'in ve düğme kümesinin hemen üstüne (güvenli alan içinde) yerleşir.
-func _place_onboarding() -> void:
-	if _onboard_root == null:
-		return
-	var origin := safe_area.get_global_rect().position
-	var sz := safe_area.size
-	var jr := joystick_base.get_global_rect().position - origin
-	_onboard_joy.position = Vector2(clampf(jr.x, 4.0, maxf(4.0, sz.x - 174.0)), maxf(4.0, jr.y - 34.0))
-	var top := sz.y
-	for bn in [&"attack", &"dash", &"jump", &"interact"]:
-		var b: Control = _buttons_by_name[bn]
-		top = minf(top, b.get_global_rect().position.y - origin.y)
-	_onboard_btn.position = Vector2(maxf(4.0, sz.x - 174.0), maxf(4.0, top - 34.0))
-
-
-func _finish_onboarding() -> void:
-	GameSettings.touch_onboarding_done = true
-	GameSettings.save_settings()
-	if _onboard_root != null:
-		_onboard_root.visible = false
-
-
 func _refresh_objective_now(_room_id: StringName = &"") -> void:
 	if _objective == null:
 		return
@@ -1214,7 +1205,6 @@ func _process(delta: float) -> void:
 	hint_label.visible = playable and not (_touch_seen or MobileInputManager.is_touch_ui())
 	_fit_guidance_width()
 	_tick_objective_pulse(delta)
-	_tick_onboarding(delta, playable)
 	_tick_toasts(delta, playable)
 	_badge_tick -= delta
 	if _badge_tick <= 0.0:

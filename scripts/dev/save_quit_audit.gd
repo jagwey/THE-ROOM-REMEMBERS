@@ -48,21 +48,21 @@ func _run() -> void:
 	var menu := _menu()
 	gate.set_story(false)
 	menu.open_menu()
-	check(menu._panel.visible, "pause menu opens")
+	check(menu.is_menu_open(), "pause menu opens")
 	var order := []
 	for b in menu._main_box.get_children():
 		order.append((b as Button).text)
 	check(order == ["Devam Et", "Ayarlar", "Kaydet ve Çık", "Ana Menüye Dön"], "pause buttons in order %s" % str(order))
 	var yeni := 0
-	for b in menu._panel.find_children("*", "Button", true, false):
+	for b in menu._book_menu.find_children("*", "Button", true, false):
 		if "Yeni" in (b as Button).text:
 			yeni += 1
 	check(yeni == 0, "no 'Yeni oyun' button in pause menu")
 	## Ayarlar: var olan ayar düğmeleri alt sayfada, Geri ana sayfaya döner.
+	check(menu._menu_help.is_visible_in_tree() and menu._menu_help.get_child(0).text == "Nasıl oynanır?", "book menu shows play instructions")
 	menu._settings_button.pressed.emit()
 	check(menu._settings_box.visible and not menu._main_box.visible, "Ayarlar opens settings sub-page")
 	check(menu._vol_button.is_visible_in_tree() and menu._music_button.is_visible_in_tree(), "settings page shows volume + music")
-	check(menu._settings_help.is_visible_in_tree() and "NASIL OYNANIR" in menu._settings_help.text and "Ölmek son değil" in menu._settings_help.text, "settings page shows Nasıl Oynanır + death line")
 	menu._show_pause_page(false)
 	check(menu._main_box.visible and not menu._settings_box.visible, "Geri returns to main pause page")
 	## 1) Onay → Vazgeç: hiçbir şey olmaz.
@@ -77,7 +77,7 @@ func _run() -> void:
 		cancel_texts.append((b as Button).text)
 	check(cancel_texts == ["Vazgeç", "Kaydet ve Çık"], "confirm buttons %s" % str(cancel_texts))
 	menu._close_confirm()
-	check(not menu.is_confirm_open() and menu._panel.visible, "Vazgeç keeps game + menu")
+	check(not menu.is_confirm_open() and menu.is_menu_open(), "Vazgeç keeps game + menu")
 	## Ana Menüye Dön onay metni.
 	menu._main_menu_button.pressed.emit()
 	check(menu.is_confirm_open() and menu._confirm_text.text == "Kaydedilmemiş ilerleme kaybolacak. Ana menüye dönmek istiyor musun?", "main menu confirm text (%s)" % menu._confirm_text.text)

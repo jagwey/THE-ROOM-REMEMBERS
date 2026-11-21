@@ -4,8 +4,8 @@ extends CanvasLayer
 
 signal title_closed
 
-const SETTINGS_PATH := "user://settings.cfg"
 const VOLUME_STEPS: Array[float] = [1.0, 0.75, 0.5, 0.25, 0.0]
+const TouchSettingsScroll := preload("res://scripts/ui/touch_settings_scroll.gd")
 const TitleScreenScript := preload("res://scripts/ui/title_screen.gd")
 const RoomTransitionScript := preload("res://scripts/world/room_transition.gd")
 
@@ -13,39 +13,11 @@ static var _title_shown: bool = false
 ## Kaydet ve Çık sonrası sahne yeniden yüklenince başlık (test ortamında da) açılır.
 static var _force_title: bool = false
 
-var _panel: GothicModalPanel
 var _title_screen: Control
-var _menu_button: Button
-var _menu_safe_area: Control
-
-
-## HUD ile aynı güvenli alan inset'i (çentik/kesik): Menü düğmesi çentiğin altında kalmasın.
-func _apply_menu_safe_area() -> void:
-	if _menu_safe_area == null:
-		return
-	var vp_size: Vector2 = get_viewport().get_visible_rect().size
-	var safe: Rect2 = DisplayServer.get_display_safe_area()
-	var win: Vector2i = DisplayServer.window_get_size()
-	var ml := 0.0
-	var mt := 0.0
-	var mr := 0.0
-	var mb := 0.0
-	if win.x > 0 and win.y > 0 and vp_size.x > 0.0 and safe.size.x > 0.0 and safe.size.y > 0.0:
-		var sx := vp_size.x / float(win.x)
-		var sy := vp_size.y / float(win.y)
-		ml = float(safe.position.x) * sx
-		mt = float(safe.position.y) * sy
-		mr = float(win.x - safe.end.x) * sx
-		mb = float(win.y - safe.end.y) * sy
-		if ml + mr >= vp_size.x * 0.9 or mt + mb >= vp_size.y * 0.9:
-			ml = 0.0
-			mt = 0.0
-			mr = 0.0
-			mb = 0.0
-	_menu_safe_area.offset_left = clampf(ml, 0.0, 64.0)
-	_menu_safe_area.offset_top = clampf(mt, 0.0, 48.0)
-	_menu_safe_area.offset_right = -clampf(mr, 0.0, 64.0)
-	_menu_safe_area.offset_bottom = -clampf(mb, 0.0, 48.0)
+var _journal: CanvasLayer
+var _book_menu: Control
+var _menu_help: VBoxContainer
+var _audio_box: VBoxContainer
 var _continue_button: Button
 var _settings_button: Button
 var _quit_button: Button ## Kaydet ve Çık
@@ -53,6 +25,14 @@ var _main_menu_button: Button ## Ana Menüye Dön
 var _main_box: VBoxContainer
 var _settings_box: VBoxContainer
 var _joy_button: Button
+var _jump_axis_button: Button
+var _touch_picker: GothicModalPanel
+var _layout_preview: Label
+var _layout_buttons: Array[Button] = []
+var _picker_jump: CheckButton
+var _picker_layout: int
+var _picker_confirm: Button
+var _after_picker: Callable
 var _fs_button: Button
 var _haptics_button: Button
 var _vol_button: Button
@@ -65,11 +45,6 @@ var _font_button: Button
 var _hint_button: Button
 var _btn_scale_button: Button
 var _settings_scroll: ScrollContainer
-var _panel_base_h: float = 292.0
-const SETTINGS_PANEL_H := 340.0
-var _help_label: Label
-var _settings_help: Label
-var _subtitle: Label
 var _title_mode: bool = false
 var _had_save: bool = false
 var _confirm_panel: GothicModalPanel
@@ -86,120 +61,131 @@ func _ready() -> void:
 	add_to_group("session_menu")
 	_had_save = SaveManager.has_save()
 	_load_settings()
-	_menu_button = Button.new()
-	_menu_button.text = "Menü"
-	# Sağ üst köşe: HUD günlük düğmesinin ALTI (üst sıra uzun oda başlığına ayrılır; anchor — geniş ekranda da köşede kalır).
-	_menu_button.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	_menu_button.offset_left = -76.0
-	_menu_button.offset_right = -8.0
-	_menu_button.offset_top = 82.0
-	_menu_button.offset_bottom = 114.0
-	_menu_button.grow_horizontal = Control.GROW_DIRECTION_BEGIN
-	GothicModalPanel.style_button(_menu_button)
-	_menu_button.pressed.connect(toggle_menu)
-	# Düz Control: MarginContainer çocuğu tüm alana yayıyordu → Menü düğmesi tam ekran oluyordu,
-	# her dokunuş menüyü açıyordu (v1.4.3 düzeltmesi). Anchor'lar burada korunur.
-	var safe_area := Control.new()
-	safe_area.name = "SafeArea"
-	safe_area.set_anchors_preset(Control.PRESET_FULL_RECT)
-	safe_area.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(safe_area)
-	safe_area.add_child(_menu_button)
-	_menu_safe_area = safe_area
-	_apply_menu_safe_area()
-	get_viewport().size_changed.connect(_apply_menu_safe_area)
-	UiGate.gate_changed.connect(_on_gate_changed)
-	_panel = GothicModalPanel.new()
-	## Dokunmatikte yardım metni ve tam ekran düğmesi yok — panel kısalır.
-	_panel_base_h = 232.0 if MobileInputManager.is_touch_ui() else 292.0
-	_panel.setup("THE ROOM REMEMBERS", Vector2(420, _panel_base_h))
-	add_child(_panel)
-	_subtitle = _panel.add_label("Unuttuğun her şeyi oda saklar.", UiTheme.HINT)
-	_subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_help_label = _panel.add_label("A/D: yürü · W/Space: zıpla · E: etkileş/devam\nX: atıl · Z: saldır · Q: yankı/ruh yeteneği\nI: günlük · Esc: menü", UiTheme.HINT)
-	## Duraklatma menüsü sırası: Devam Et / Ayarlar / Kaydet ve Çık / Ana Menüye Dön.
-	_main_box = VBoxContainer.new()
-	_main_box.add_theme_constant_override("separation", 6)
-	_panel.body.add_child(_main_box)
-	_continue_button = _panel.add_button("Devam Et", close_menu, _main_box)
-	_settings_button = _panel.add_button("Ayarlar", func(): _show_pause_page(true), _main_box)
-	_quit_button = _panel.add_button("Kaydet ve Çık", _on_quit_button, _main_box)
-	_main_menu_button = _panel.add_button("Ana Menüye Dön", request_main_menu, _main_box)
-	## Ayarlar alt sayfası (var olan ses/müzik/tam ekran/joystick/titreşim düğmeleri; yeni sistem yok).
-	_settings_box = VBoxContainer.new()
-	_settings_box.add_theme_constant_override("separation", 6)
-	_settings_box.size_flags_vertical = Control.SIZE_EXPAND_FILL ## kaydırma alanı panel boyunu doldurur (dar ekranda 2 satır görünüyordu)
-	_panel.body.add_child(_settings_box)
-	_settings_scroll = ScrollContainer.new()
-	_settings_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	_settings_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_settings_scroll.custom_minimum_size = Vector2(0, 150)
-	_settings_box.add_child(_settings_scroll)
-	var sbox := VBoxContainer.new()
-	sbox.add_theme_constant_override("separation", 6)
-	sbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_settings_scroll.add_child(sbox)
-	_settings_help = Label.new()
-	_settings_help.text = how_to_play_text()
-	_settings_help.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_settings_help.add_theme_font_size_override("font_size", 8)
-	_settings_help.add_theme_color_override("font_color", Palette.PALE_LILAC)
-	sbox.add_child(_settings_help)
-	var audio_row := _settings_row(sbox)
-	_vol_button = _panel.add_button("", _cycle_volume, audio_row)
-	_vol_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_music_button = _panel.add_button("", _toggle_music, audio_row)
-	_music_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_music_vol_label = _add_stepper(sbox, func(d: int): _step_music_volume(d))
-	_sfx_vol_label = _add_stepper(sbox, func(d: int): _step_sfx_volume(d))
-	var misc_row := _settings_row(sbox)
-	_text_speed_button = _panel.add_button("", _cycle_text_speed, misc_row)
-	_text_speed_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_shake_button = _panel.add_button("", _toggle_shake, misc_row)
-	_shake_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	var misc_row2 := _settings_row(sbox)
-	_font_button = _panel.add_button("", _toggle_font_size, misc_row2)
-	_font_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_hint_button = _panel.add_button("", _cycle_hint_level, misc_row2)
-	_hint_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_btn_scale_button = _panel.add_button("", cycle_button_scale, _settings_row(sbox))
-	_btn_scale_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	var row := _settings_row(sbox)
-	_fs_button = _panel.add_button("Tam Ekran (F11)", toggle_fullscreen, row)
-	_fs_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_fs_button.visible = not OS.has_feature("mobile")
-	_joy_button = _panel.add_button("", _toggle_joystick_mode, row)
-	_joy_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_haptics_button = _panel.add_button("", _toggle_haptics, row)
-	_haptics_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_panel.add_button("< Geri", func(): _show_pause_page(false), _settings_box)
-	_settings_box.hide()
-	_refresh_settings_buttons()
-	_panel.hide()
+	_journal = get_tree().get_first_node_in_group("journal_ui") as CanvasLayer
+	if _journal:
+		_build_book_menu()
 	_build_confirm()
+	_build_touch_picker()
 	_title_screen = TitleScreenScript.new()
 	_title_screen.menu = self
-	_title_screen.start_requested.connect(func(): _title_screen.close(close_menu))
-	_title_screen.new_game_requested.connect(func(): _title_screen.close(_start_fresh))
+	_title_screen.start_requested.connect(_request_start.bind(close_menu))
+	_title_screen.new_game_requested.connect(_request_start.bind(_start_fresh))
 	_title_screen.quit_requested.connect(_quit_app)
 	add_child(_title_screen)
 	if _should_show_title():
 		_open_title()
 
 
-## "Nasıl Oynanır" bloğu: duraklatma ve başlık Ayarlar sayfaları ortak kullanır.
-func how_to_play_text() -> String:
-	var t := "NASIL OYNANIR
-"
+func _build_book_menu() -> void:
+	_book_menu = Control.new()
+	_book_menu.name = "MenuContent"
+	_book_menu.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_journal.mount_menu(_book_menu)
+	_journal.closed.connect(_on_book_closed)
+	var left := _book_column(0.12, 0.47, 0.16)
+	var right := _book_column(0.53, 0.87, 0.40)
+
+	_main_box = VBoxContainer.new()
+	_main_box.add_theme_constant_override("separation", 6)
+	left.add_child(_main_box)
+	_continue_button = _book_button(_main_box, "Devam Et", close_menu)
+	_settings_button = _book_button(_main_box, "Ayarlar", _show_pause_page.bind(true))
+	_quit_button = _book_button(_main_box, "Kaydet ve Çık", request_save_and_exit)
+	_main_menu_button = _book_button(_main_box, "Ana Menüye Dön", request_main_menu)
+	_menu_help = VBoxContainer.new()
+	right.add_child(_menu_help)
+	_ink_label(_menu_help, "Nasıl oynanır?", UiTheme.SPEAKER)
+	var help := "A/D ile yürü.\nSpace ile zıpla.\nE ile etkileş."
 	if MobileInputManager.is_touch_ui():
-		t += "Sol joystick: yürü · Sağ düğmeler: zıpla, etkileş, saldır, atıl, yankı"
-		t += " · Sağ üst: günlük ve menü"
-	else:
-		t += "A/D: yürü · W/Space: zıpla · E: etkileş · Z: saldır · X: atıl"
-		t += " · Q: yankı · I: günlük · Esc: menü"
-	t += "
-Ölmek son değil: bedenin odada kalır ve bulmacaları çözmene yardım eder."
-	return t
+		help = "Solda hareket.\nSağda zıplama, etkileşim ve saldırı."
+	_ink_label(_menu_help, help, UiTheme.HINT)
+
+	_settings_box = VBoxContainer.new()
+	_settings_box.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	left.add_child(_settings_box)
+	_ink_label(_settings_box, "Kontroller", UiTheme.BODY)
+	_settings_scroll = TouchSettingsScroll.new()
+	var controls := _settings_list(_settings_box, _settings_scroll)
+	_joy_button = _book_button(controls, "", _toggle_joystick_mode)
+	_jump_axis_button = _book_button(controls, "", toggle_up_to_jump)
+	_btn_scale_button = _book_button(controls, "", cycle_button_scale)
+	_haptics_button = _book_button(controls, "", _toggle_haptics)
+	_text_speed_button = _book_button(controls, "", _cycle_text_speed)
+	_font_button = _book_button(controls, "", _toggle_font_size)
+	_hint_button = _book_button(controls, "", _cycle_hint_level)
+	_shake_button = _book_button(controls, "", _toggle_shake)
+	_fs_button = _book_button(controls, "Tam Ekran (F11)", toggle_fullscreen)
+	_fs_button.visible = not MobileInputManager.is_touch_ui()
+	for b in [_joy_button, _jump_axis_button, _btn_scale_button, _haptics_button]:
+		b.visible = MobileInputManager.is_touch_ui()
+	_book_button(_settings_box, "Geri", _show_pause_page.bind(false))
+
+	_audio_box = VBoxContainer.new()
+	_audio_box.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	right.add_child(_audio_box)
+	_ink_label(_audio_box, "Ses", UiTheme.BODY)
+	var audio := _settings_list(_audio_box, TouchSettingsScroll.new())
+	var audio_row := HBoxContainer.new()
+	audio.add_child(audio_row)
+	_vol_button = _book_button(audio_row, "", _cycle_volume)
+	_music_button = _book_button(audio_row, "", _toggle_music)
+	_music_vol_label = _add_stepper(audio, func(d: int): _step_music_volume(d))
+	_sfx_vol_label = _add_stepper(audio, func(d: int): _step_sfx_volume(d))
+	_show_pause_page(false)
+	_refresh_settings_buttons()
+
+
+func _book_column(left: float, right: float, top: float) -> VBoxContainer:
+	var col := VBoxContainer.new()
+	col.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	col.anchor_left = left
+	col.anchor_right = right
+	col.anchor_top = top
+	col.anchor_bottom = 0.86
+	col.add_theme_constant_override("separation", 6)
+	_book_menu.add_child(col)
+	return col
+
+
+func _book_button(parent: Control, title: String, action: Callable) -> Button:
+	var b := Button.new()
+	b.text = title
+	GothicModalPanel.style_button(b, UiTheme.HINT)
+	b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	b.pressed.connect(action)
+	parent.add_child(b)
+	return b
+
+
+func _ink_label(parent: Control, content: String, font_size: int) -> Label:
+	var label := Label.new()
+	label.text = content
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	UiTheme.apply_label(label, font_size, font_size >= UiTheme.BODY)
+	label.add_theme_color_override("font_color", Color("#3E1423"))
+	parent.add_child(label)
+	return label
+
+
+func _settings_list(parent: Control, scroll: ScrollContainer) -> VBoxContainer:
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_RESERVE
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.follow_focus = true
+	parent.add_child(scroll)
+	var list := VBoxContainer.new()
+	list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	list.add_theme_constant_override("separation", 4)
+	scroll.add_child(list)
+	return list
+
+
+## Başlık ayarlarında gösterilen ayrıntılı kontrol özeti.
+func how_to_play_text() -> String:
+	var text := "A/D ile yürü, W/Space ile zıpla. E etkileşim, Z saldırı, X atılma, Q yankı. I kitabı, Esc Menü sayfasını açar."
+	if MobileInputManager.is_touch_ui():
+		text = "Solda hareket. Sağda zıplama, etkileşim, saldırı, atılma ve yankı. Sağ üstteki kitap günlüğü ve menüyü açar."
+	return text + "\n\nÖlmek son değil. Bedenin odada kalır ve bulmacalara yardım eder."
 
 
 func _should_show_title() -> bool:
@@ -224,27 +210,24 @@ func is_title_open() -> bool:
 func _open_title() -> void:
 	_title_shown = true
 	_title_mode = true
-	_menu_button.visible = false
 	UiGate.set_title(true)
 	MobileInputManager.clear_held_inputs()
 	## Kayıt main._ready içinde yüklenir (bu düğümden sonra) — kartı bir kare sonra doldur.
 	_title_screen.call_deferred("open", _had_save)
 
 
-func _refresh_mode() -> void:
-	_subtitle.visible = _title_mode
-	_help_label.visible = not _title_mode and not MobileInputManager.is_touch_ui() and not _settings_box.visible
-	_refresh_settings_buttons()
-
-
-## Duraklatma menüsü: ana düğmeler <-> ayarlar alt sayfası.
 func _show_pause_page(settings: bool) -> void:
 	_main_box.visible = not settings
+	_menu_help.visible = not settings
 	_settings_box.visible = settings
-	_set_panel_height(SETTINGS_PANEL_H if settings else _panel_base_h)
-	_help_label.visible = not settings and not MobileInputManager.is_touch_ui()
-	_subtitle.visible = _title_mode and not settings
-	_focus(_vol_button if settings else _settings_button)
+	_audio_box.visible = settings
+	if settings:
+		_settings_scroll.set_deferred("scroll_vertical", 0)
+	_focus(_joy_button if settings and _joy_button.visible else (_vol_button if settings else _settings_button))
+
+
+func _on_book_closed() -> void:
+	_show_pause_page(false)
 
 
 ## Düğüm ağaçta ve görünürken odaklar (sahne yeniden yüklenirken/gizliyken grab_focus hatası vermesin).
@@ -259,17 +242,98 @@ func _do_focus(b: Control) -> void:
 
 ## Android geri tuşu: menü açıksa kapat, oyun sırasında menüyü aç. Başlıkta yanlışlıkla çıkmayı önler.
 func handle_back() -> void:
-	if is_confirm_open():
+	if _touch_picker.visible:
+		_close_touch_picker()
+	elif is_confirm_open():
 		_close_confirm()
-		return
-	if is_title_open():
+	elif is_title_open():
 		_title_screen.back()
-		return
-	if _panel.visible:
-		if not _title_mode:
+	elif is_menu_open():
+		if _settings_box.visible:
+			_show_pause_page(false)
+		else:
 			close_menu()
 	elif UiGate.current_layer() == UiGate.Layer.NONE:
 		open_menu()
+
+
+func _build_touch_picker() -> void:
+	_touch_picker = GothicModalPanel.new()
+	_touch_picker.setup("Hareket Kontrolleri", Vector2(510, 250), &"menu", 0.83)
+	add_child(_touch_picker)
+	_touch_picker.add_label("Sola ve sağa nasıl hareket etmek istersin?", UiTheme.BODY)
+	var choices := HBoxContainer.new()
+	choices.add_theme_constant_override("separation", 6)
+	_touch_picker.body.add_child(choices)
+	var group := ButtonGroup.new()
+	for layout in GameSettings.TOUCH_LAYOUT_NAMES.size():
+		var b := _touch_picker.add_button(GameSettings.TOUCH_LAYOUT_NAMES[layout], _select_picker_layout.bind(layout), choices)
+		b.toggle_mode = true
+		b.button_group = group
+		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		b.custom_minimum_size.y = 38
+		_layout_buttons.append(b)
+	_layout_preview = _touch_picker.add_label("", UiTheme.BODY)
+	_layout_preview.custom_minimum_size.y = 32
+	_picker_jump = CheckButton.new()
+	_picker_jump.text = "Joystick'i yukarı itince zıpla"
+	UiTheme.apply_label(_picker_jump, UiTheme.BODY, false)
+	_touch_picker.body.add_child(_picker_jump)
+	var actions := HBoxContainer.new()
+	actions.add_theme_constant_override("separation", 8)
+	_touch_picker.body.add_child(actions)
+	_touch_picker.add_button("Geri", _close_touch_picker, actions).size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_picker_confirm = _touch_picker.add_button("Kaydet ve Başla", _accept_touch_picker, actions)
+	_picker_confirm.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_touch_picker.on_close = _close_touch_picker
+	_touch_picker.hide()
+
+
+func _request_start(action: Callable) -> void:
+	if _touch_picker.visible:
+		return
+	if not MobileInputManager.is_touch_ui() or GameSettings.touch_layout_chosen:
+		_title_screen.close(action)
+		return
+	_after_picker = action
+	_picker_jump.button_pressed = GameSettings.touch_up_to_jump
+	_layout_buttons[GameSettings.touch_layout].set_pressed_no_signal(true)
+	_select_picker_layout(GameSettings.touch_layout)
+	move_child(_touch_picker, -1)
+	_touch_picker.show()
+	_focus(_layout_buttons[_picker_layout])
+
+
+func _select_picker_layout(layout: int) -> void:
+	_picker_layout = layout
+	_picker_jump.disabled = layout == GameSettings.TouchLayout.ARROWS
+	match layout:
+		GameSettings.TouchLayout.FLOATING:
+			_layout_preview.text = "Sol alana dokunduğunda joystick parmağının altında belirir."
+		GameSettings.TouchLayout.FIXED:
+			_layout_preview.text = "Joystick sol alt köşede sabit kalır."
+		GameSettings.TouchLayout.ARROWS:
+			_layout_preview.text = "Sol ve sağ oklarla yürü. Sağdaki tuşla zıpla."
+
+
+func _accept_touch_picker() -> void:
+	var action := _after_picker
+	GameSettings.touch_up_to_jump = _picker_jump.button_pressed
+	GameSettings.touch_layout_chosen = true
+	_apply_touch_layout(_picker_layout)
+	_close_touch_picker()
+	_title_screen.close(action)
+
+
+func _close_touch_picker() -> void:
+	_touch_picker.hide()
+	_after_picker = Callable()
+	if _title_mode:
+		_title_screen.focus_current_page()
+
+
+func is_overlay_open() -> bool:
+	return is_confirm_open() or (_touch_picker != null and _touch_picker.visible)
 
 
 # --- Onay diyaloğu / Kaydet ve Çık ------------------------------------------------
@@ -287,11 +351,12 @@ func _build_confirm() -> void:
 	cancel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_confirm_ok = _confirm_panel.add_button("", func(): _confirm_action.call(), row)
 	_confirm_ok.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_confirm_panel.on_close = _close_confirm
 	_confirm_panel.hide()
 
 
 func is_menu_open() -> bool:
-	return _panel != null and _panel.visible
+	return _journal != null and _journal.is_menu_page()
 
 
 func is_confirm_open() -> bool:
@@ -311,7 +376,7 @@ func _show_confirm(title: String, text: String, ok_text: String, action: Callabl
 
 func _close_confirm() -> void:
 	_confirm_panel.hide()
-	if _panel.visible and _continue_button:
+	if is_menu_open() and _continue_button:
 		_focus(_continue_button)
 
 
@@ -378,8 +443,8 @@ func _main_menu_no_save() -> void:
 func return_to_title() -> void:
 	_force_title = true
 	_title_shown = false
-	_panel.hide()
-	UiGate.set_pause_menu(false)
+	if _journal:
+		_journal.close_journal()
 	DialogueManager.clear()
 	UiGate.set_story(false)
 	UiGate.set_journal(false)
@@ -399,9 +464,27 @@ func _quit_app() -> void:
 
 
 func _toggle_joystick_mode() -> void:
-	MobileInputManager.floating_joystick = not MobileInputManager.floating_joystick
+	GameSettings.touch_layout_chosen = true
+	_apply_touch_layout((GameSettings.touch_layout + 1) % GameSettings.TOUCH_LAYOUT_NAMES.size())
+
+
+func toggle_up_to_jump() -> void:
+	if GameSettings.touch_layout == GameSettings.TouchLayout.ARROWS:
+		return
+	GameSettings.touch_up_to_jump = not GameSettings.touch_up_to_jump
+	_apply_touch_layout(GameSettings.touch_layout)
+
+
+func _apply_touch_layout(layout: int) -> void:
+	GameSettings.touch_layout = layout
 	_save_settings()
 	_refresh_settings_buttons()
+	for hud in get_tree().get_nodes_in_group("hud"):
+		hud.refresh_touch_controls()
+
+
+func up_to_jump_text() -> String:
+	return "Yukarıyla zıpla: " + ("Açık" if GameSettings.touch_up_to_jump else "Kapalı")
 
 
 func _toggle_haptics() -> void:
@@ -411,34 +494,20 @@ func _toggle_haptics() -> void:
 	MobileInputManager.haptic(&"ui") ## seçilen şiddeti hemen hissettir
 
 
-func _set_panel_height(h: float) -> void:
-	if _panel == null or _panel.frame == null:
-		return
-	_panel.frame.offset_top = -h * 0.5
-	_panel.frame.offset_bottom = h * 0.5
-
-
-func _settings_row(parent: Control) -> HBoxContainer:
-	var r := HBoxContainer.new()
-	r.add_theme_constant_override("separation", 6)
-	parent.add_child(r)
-	return r
-
-
-## [-] etiket [+] satırı; etiketi döndürür (dokunmaya uygun, 30px+ düğmeler).
 func _add_stepper(parent: Control, on_step: Callable) -> Label:
-	var r := _settings_row(parent)
-	var minus := _panel.add_button("-", func(): on_step.call(-1), r)
-	minus.custom_minimum_size.x = 44.0
-	var lab := Label.new()
-	lab.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lab.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	lab.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	UiTheme.apply_outlined(lab, UiTheme.BODY, false)
-	r.add_child(lab)
-	var plus := _panel.add_button("+", func(): on_step.call(1), r)
-	plus.custom_minimum_size.x = 44.0
-	return lab
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 3)
+	parent.add_child(row)
+	var minus := _book_button(row, "-", on_step.bind(-1))
+	var label := _ink_label(row, "", UiTheme.HINT)
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	label.size_flags_stretch_ratio = 4.0
+	var plus := _book_button(row, "+", on_step.bind(1))
+	minus.custom_minimum_size.x = 32
+	plus.custom_minimum_size.x = 32
+	return label
 
 
 func _step_music_volume(delta: int) -> void:
@@ -520,7 +589,13 @@ func _toggle_music() -> void:
 
 
 func _refresh_settings_buttons() -> void:
+	if _title_screen:
+		_title_screen.refresh_settings()
+	if _book_menu == null:
+		return
 	_joy_button.text = _joy_text()
+	_jump_axis_button.text = up_to_jump_text()
+	_jump_axis_button.disabled = GameSettings.touch_layout == GameSettings.TouchLayout.ARROWS
 	if _haptics_button:
 		_haptics_button.text = _haptics_text()
 	_vol_button.text = _vol_text()
@@ -536,7 +611,7 @@ func _refresh_settings_buttons() -> void:
 
 
 func _joy_text() -> String:
-	return "Joystick: Yüzen" if MobileInputManager.floating_joystick else "Joystick: Sabit"
+	return GameSettings.TOUCH_LAYOUT_NAMES[GameSettings.touch_layout] + "  >"
 
 
 func _haptics_text() -> String:
@@ -554,10 +629,9 @@ func _music_text() -> String:
 
 func _load_settings() -> void:
 	var cfg := ConfigFile.new()
-	if cfg.load(SETTINGS_PATH) == OK:
+	if cfg.load(GameSettings.storage_path()) == OK:
 		_volume = clampf(float(cfg.get_value("audio", "volume", 1.0)), 0.0, 1.0)
 		_music_on = bool(cfg.get_value("audio", "music", true))
-		MobileInputManager.floating_joystick = bool(cfg.get_value("input", "floating_joystick", true))
 	GameSettings.load_settings()
 	AudioManager.set_master_volume(_volume)
 	AudioManager.set_music_enabled(_music_on)
@@ -567,13 +641,12 @@ func _load_settings() -> void:
 
 func _save_settings() -> void:
 	var cfg := ConfigFile.new()
-	cfg.load(SETTINGS_PATH) ## yeni ayar anahtarları (GameSettings) korunur
+	cfg.load(GameSettings.storage_path()) ## yeni ayar anahtarları (GameSettings) korunur
 	cfg.set_value("audio", "volume", _volume)
 	cfg.set_value("audio", "music", _music_on)
-	cfg.set_value("input", "floating_joystick", MobileInputManager.floating_joystick)
 	cfg.set_value("input", "haptics", GameSettings.haptics_level > 0) ## eski anahtar (türetilmiş)
-	cfg.save(SETTINGS_PATH)
-	GameSettings.save_settings(SETTINGS_PATH)
+	cfg.save(GameSettings.storage_path())
+	GameSettings.save_settings()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -581,61 +654,40 @@ func _unhandled_input(event: InputEvent) -> void:
 		toggle_fullscreen()
 		get_viewport().set_input_as_handled()
 		return
-	if event.is_action_pressed("ui_cancel"):
-		if is_confirm_open():
-			_close_confirm()
-			get_viewport().set_input_as_handled()
-			return
-		if is_title_open():
-			get_viewport().set_input_as_handled()
-			return
-		if _panel.visible:
-			if _title_mode:
-				return
-			close_menu()
-		elif UiGate.current_layer() == UiGate.Layer.NONE:
-			open_menu()
-		else:
-			return
+	if not event.is_action_pressed("ui_cancel"):
+		return
+	if is_overlay_open() or UiGate.current_layer() == UiGate.Layer.NONE:
+		handle_back()
 		get_viewport().set_input_as_handled()
 
-func toggle_menu() -> void:
-	if is_confirm_open():
-		return
-	if _panel.visible:
-		close_menu()
-	elif UiGate.current_layer() == UiGate.Layer.NONE:
-		open_menu()
 
-## Göz açma vb. sinematikte veya modallarda Menü düğmesi gizlenir.
-func _on_gate_changed(layer: int) -> void:
-	_menu_button.visible = (layer == UiGate.Layer.NONE)
+func toggle_menu() -> void:
+	if is_overlay_open():
+		return
+	if is_menu_open():
+		close_menu()
+	else:
+		open_menu()
 
 
 func open_menu() -> void:
-	if DeathManager.is_dying or _panel.visible or UiGate.is_cutscene():
+	if _journal == null or UiGate.current_layer() not in [UiGate.Layer.NONE, UiGate.Layer.JOURNAL]:
 		return
-	_title_mode = false
-	_panel.dim.color.a = 0.78
-	_main_box.show()
-	_settings_box.hide()
-	_set_panel_height(_panel_base_h)
-	_panel.show()
-	UiGate.set_pause_menu(true)
-	MobileInputManager.clear_held_inputs()
-	_refresh_mode()
+	_show_pause_page(false)
+	_journal.show_menu_page()
 	_focus(_continue_button)
+
 
 func close_menu() -> void:
 	var was_title := _title_mode
 	_title_mode = false
-	_panel.hide()
-	UiGate.set_pause_menu(false)
+	if _journal:
+		_journal.close_journal()
 	UiGate.set_title(false)
-	_menu_button.visible = (UiGate.current_layer() == UiGate.Layer.NONE)
 	MobileInputManager.clear_held_inputs()
 	if was_title:
 		title_closed.emit()
+
 
 ## Başlıktan onaylı yeni oyun (onay title_screen'de alındı).
 func _start_fresh() -> void:

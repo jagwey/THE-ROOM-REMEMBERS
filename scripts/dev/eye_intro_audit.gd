@@ -44,9 +44,7 @@ func _run() -> void:
 	check(gate.blocks_movement(), "movement blocked during intro")
 	if hud:
 		check(not hud.safe_area.visible, "HUD hidden during intro")
-	var menu := get_first_node_in_group("session_menu")
-	if menu:
-		check(not menu._menu_button.visible, "menu button hidden during intro")
+		check(not hud.btn_journal.is_visible_in_tree(), "book button hidden during intro")
 	var x0 := player.global_position.x
 	Input.action_press("ui_right")
 	var shots := [0.05, 0.6, 1.1, 1.6, 2.4]
@@ -75,8 +73,7 @@ func _run() -> void:
 	check(not gate.is_cutscene() and not gate.blocks_movement(), "gate released after intro")
 	if hud:
 		check(hud.safe_area.visible, "HUD back after intro")
-	if menu:
-		check(menu._menu_button.visible, "menu button back after intro")
+		check(hud.btn_journal.is_visible_in_tree(), "book button back after intro")
 	if windowed:
 		print("EYE info max_avg_luminance=%.3f shots=%s" % [max_lum, ProjectSettings.globalize_path("user://qa/")])
 		check(max_lum < 0.6, "no white flash")

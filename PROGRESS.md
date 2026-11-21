@@ -1,6 +1,13 @@
 # PROGRESS
 Dal: cursor/playable-story-flow-8e4e · Sürüm: v1.2.0 (versionCode 16)
 
+## Kitap menüsü ve Android hareket seçenekleri (2026-11-21)
+
+- Oyun içi menü günlüğün içindeki Menü sekmesine taşındı. Kitap açıkken hareket ve tehditler durur, animasyonlar işlemeye devam eder. Devam Et, Ayarlar, Kaydet ve Çık ve Ana Menüye Dön aynı sayfadadır.
+- İlk mobil başlangıçta yüzen joystick, sabit joystick veya yön tuşları seçilir. Tercih cihazda kaydedilir ve ayarlardan değiştirilebilir. Joystick dikey hareketi yürüyüşe katmaz. Yukarı iterek zıplama ayarı ile ekrandaki zıplama tuşu birlikte kullanılabilir.
+- Başlık ve kitap içi ayar listeleri parmakla kaydırılır. Kaydırma başladığında parmağın altındaki düğmenin basışı iptal edilir.
+- Godot penceresinde 1280×720 ve 1440×648 ile ilk seçim, kaydırma, dokunmatik hareket ve menü akışı 36 kontrolden geçti. Android cihaz testi bekliyor.
+
 ## v1.20.1 sonrası oda derinliği (2026-11-21)
 
 - Bölgesel arka planların çizim sırası ve düşey tabanları düzeltildi. Duvardan bağımsız tavan kemerleri, ışık konileri ve örtüşen dekor parçaları kaldırıldı. Bölgesel çizimli 44 ve özel çizimli 3 oda katman denetiminden geçti.

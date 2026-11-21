@@ -6,6 +6,7 @@ signal start_requested
 signal new_game_requested
 signal quit_requested
 
+const TouchSettingsScroll := preload("res://scripts/ui/touch_settings_scroll.gd")
 const RoomTransitionScript := preload("res://scripts/world/room_transition.gd")
 const BG_DIR := "res://assets/backgrounds/awakening/"
 const DRIFT := 18.0
@@ -24,6 +25,7 @@ var _settings_scroll: ScrollContainer
 var _vol_button: Button
 var _music_button: Button
 var _joy_button: Button
+var _jump_axis_button: Button
 var _haptics_button: Button
 var _btn_scale_button: Button
 var _fs_button: Button
@@ -45,7 +47,7 @@ func open(has_save: bool) -> void:
 	_has_save = has_save
 	_start_button.disabled = not has_save
 	_refresh_card()
-	_refresh_settings()
+	refresh_settings()
 	_show_page(&"main")
 	modulate.a = 0.0
 	show()
@@ -77,75 +79,8 @@ func back() -> bool:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if visible and event.is_action_pressed("ui_cancel") and back():
+	if visible and not menu.is_overlay_open() and event.is_action_pressed("ui_cancel") and back():
 		get_viewport().set_input_as_handled()
-
-
-## Telefonda ayar listesi butonların üstünden parmakla kaydırılır (Button dokunuşu
-## yuttuğu için ScrollContainer kendi başına kaymıyordu). Sürükleme olduysa
-## basılı buton uzak bir sahte bırakmayla iptal edilir → kaydırırken ayar değişmez.
-const _DRAG_THRESHOLD := 6.0
-var _drag_active: bool = false
-var _drag_scrolling: bool = false
-var _drag_moved: float = 0.0
-var _drag_cancelling: bool = false
-
-
-func _input(event: InputEvent) -> void:
-	if _drag_cancelling:
-		return
-	if not visible or _page != &"settings" or _settings_scroll == null:
-		_drag_active = false
-		return
-	var emulated := event.device == InputEvent.DEVICE_ID_EMULATION
-	var drag := event is InputEventScreenDrag or (event is InputEventMouseMotion and ((event as InputEventMouseMotion).button_mask & MOUSE_BUTTON_MASK_LEFT) != 0)
-	var press := event is InputEventScreenTouch or (event is InputEventMouseButton and (event as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT)
-	if not drag and not press:
-		return
-	if emulated:
-		## Dokunuştan türetilen fare olayları: takipte sayma, kaydırma sürerken yut.
-		if drag and _drag_scrolling:
-			get_viewport().set_input_as_handled()
-		return
-	var local: InputEvent = _settings_scroll.make_input_local(event)
-	if press:
-		if event.is_pressed():
-			_drag_active = Rect2(Vector2.ZERO, _settings_scroll.size).has_point(local.get("position"))
-			_drag_scrolling = false
-			_drag_moved = 0.0
-		else:
-			_drag_active = false
-			_drag_scrolling = false
-		return
-	if not _drag_active:
-		return
-	var dy: float = (local.get("relative") as Vector2).y
-	_drag_moved += absf(dy)
-	if not _drag_scrolling and _drag_moved >= _DRAG_THRESHOLD:
-		_drag_scrolling = true
-		_cancel_button_press.call_deferred()
-	if _drag_scrolling:
-		_settings_scroll.scroll_vertical -= int(round(dy))
-		get_viewport().set_input_as_handled()
-
-
-func _cancel_button_press() -> void:
-	## BaseButton "pressing_inside"ı yalnız hareketle günceller: önce dışarı sahte
-	## hareket (sol tuş basılı), sonra dışarıda bırakma → `pressed` tetiklenmez.
-	var far := Vector2(-10000, -10000)
-	var move := InputEventMouseMotion.new()
-	move.button_mask = MOUSE_BUTTON_MASK_LEFT
-	move.position = far
-	move.global_position = far
-	var up := InputEventMouseButton.new()
-	up.button_index = MOUSE_BUTTON_LEFT
-	up.pressed = false
-	up.position = far
-	up.global_position = far
-	_drag_cancelling = true
-	get_viewport().push_input(move)
-	get_viewport().push_input(up)
-	_drag_cancelling = false
 
 
 func _process(delta: float) -> void:
@@ -345,7 +280,8 @@ func _build_settings_page(parent: Control) -> void:
 	var page := _new_page(parent, &"settings")
 	_page_label(page, "AYARLAR", UiTheme.BODY, true)
 	## İçerik ekrana sığmayabilir (özellikle telefonda): kaydırılabilir alan, "Geri" hep görünür.
-	var scroll := ScrollContainer.new()
+	var scroll := TouchSettingsScroll.new()
+	scroll.overlay_open = menu.is_overlay_open
 	scroll.name = "SettingsScroll"
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	scroll.follow_focus = true
@@ -363,22 +299,23 @@ func _build_settings_page(parent: Control) -> void:
 	p.add_child(audio_row)
 	_vol_button = _button(audio_row, "", func():
 		menu._cycle_volume()
-		_refresh_settings())
+		refresh_settings())
 	_vol_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_music_button = _button(audio_row, "", func():
 		menu._toggle_music()
-		_refresh_settings())
+		refresh_settings())
 	_music_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_joy_button = _button(p, "", func():
-		menu._toggle_joystick_mode()
-		_refresh_settings())
+	_joy_button = _button(p, "", menu._toggle_joystick_mode)
+	_joy_button.visible = MobileInputManager.is_touch_ui()
+	_jump_axis_button = _button(p, "", menu.toggle_up_to_jump)
+	_jump_axis_button.visible = MobileInputManager.is_touch_ui()
 	_haptics_button = _button(p, "", func():
 		menu._toggle_haptics()
-		_refresh_settings())
+		refresh_settings())
 	_haptics_button.visible = OS.has_feature("mobile") or MobileInputManager.is_touch_ui()
 	_btn_scale_button = _button(p, "", func():
 		menu.cycle_button_scale()
-		_refresh_settings())
+		refresh_settings())
 	_fs_button = _button(p, "Tam Ekran (F11)", func(): menu.toggle_fullscreen())
 	_fs_button.visible = not OS.has_feature("mobile") and not MobileInputManager.is_touch_ui()
 	_button(page, "< Geri", func(): _show_page(&"main"))
@@ -471,12 +408,18 @@ func _focus_first(page: Control) -> void:
 			return
 
 
-func _refresh_settings() -> void:
+func focus_current_page() -> void:
+	_show_page(_page)
+
+
+func refresh_settings() -> void:
 	if menu == null:
 		return
 	_vol_button.text = menu._vol_text()
 	_music_button.text = menu._music_text()
 	_joy_button.text = menu._joy_text()
+	_jump_axis_button.text = menu.up_to_jump_text()
+	_jump_axis_button.disabled = GameSettings.touch_layout == GameSettings.TouchLayout.ARROWS
 	_haptics_button.text = menu._haptics_text()
 	if _btn_scale_button:
 		_btn_scale_button.text = menu.button_scale_text()

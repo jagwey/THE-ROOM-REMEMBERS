@@ -11,6 +11,7 @@ const MemoryShrineScript := preload("res://scripts/world/memory_shrine.gd")
 @onready var tab_notlar: Button = $BookRoot/Tabs/Notlar
 @onready var tab_izler: Button = $BookRoot/Tabs/Izler
 @onready var tab_harita: Button = $BookRoot/Tabs/Harita
+@onready var tab_menu: Button = $BookRoot/Tabs/Menu
 @onready var left_page: Control = $BookRoot/LeftPage
 @onready var right_page: Control = $BookRoot/RightPage
 @onready var map_view: JournalMap = $BookRoot/MapView
@@ -20,9 +21,11 @@ const MemoryShrineScript := preload("res://scripts/world/memory_shrine.gd")
 @onready var scroll: ScrollContainer = $BookRoot/RightPage/Scroll
 @onready var detail_body: RichTextLabel = $BookRoot/RightPage/Scroll/DetailBody
 @onready var empty_label: Label = $BookRoot/RightPage/EmptyLabel
-@onready var btn_close: Button = $BookRoot/Close
+@onready var btn_close: Button = $BookRoot/Tabs/Close
 
 var _section: String = "gunluk"
+var _reading_section: String = "gunluk"
+var _menu_content: Control
 var _entries: Array = []
 var _selected_index: int = -1
 ## İzler sekmesinde listenin başındaki sayaç satırı (düğme değil) -> düğme indeksleri bu kadar kayar.
@@ -60,11 +63,11 @@ func _ready() -> void:
 	detail_body.add_theme_constant_override("line_separation", 4)
 	detail_body.add_theme_color_override("default_color", INK)
 	UiTheme.apply_label(empty_label, UiTheme.BODY, false)
-	for tab in [tab_gunluk, tab_notlar, tab_izler, tab_harita, btn_close]:
+	for tab in [tab_gunluk, tab_notlar, tab_izler, tab_harita, tab_menu, btn_close]:
 		if tab:
 			GothicModalPanel.style_button(tab, UiTheme.HINT)
-			tab.custom_minimum_size.y = 24.0
-	for tab in [tab_gunluk, tab_notlar, tab_izler, tab_harita]:
+			tab.custom_minimum_size.y = 28.0
+	for tab in [tab_gunluk, tab_notlar, tab_izler, tab_harita, tab_menu]:
 		var on := StyleBoxFlat.new()
 		on.bg_color = Palette.DARK_RED
 		on.border_color = Palette.IVORY
@@ -72,17 +75,22 @@ func _ready() -> void:
 		tab.add_theme_stylebox_override("disabled", on)
 		tab.add_theme_color_override("font_disabled_color", Palette.IVORY)
 	map_view.visible = false
+	tab_menu.hide()
 	tab_gunluk.pressed.connect(func(): _show_section("gunluk"))
 	tab_notlar.pressed.connect(func(): _show_section("notlar"))
 	tab_izler.pressed.connect(func(): _show_section("izler"))
 	tab_harita.pressed.connect(func(): _show_section("harita"))
+	tab_menu.pressed.connect(show_menu_page)
 	btn_close.pressed.connect(close_journal)
 	map_view.travel_requested.connect(_on_travel_requested)
-	EchoManager.journal_updated.connect(func(): if visible: _show_section(_section))
+	EchoManager.journal_updated.connect(func(): if visible and not is_menu_page(): _show_section(_section))
 	set_process_unhandled_input(true)
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	var menu := get_tree().get_first_node_in_group("session_menu")
+	if menu and menu.is_overlay_open():
+		return
 	if event.is_action_pressed("journal"):
 		toggle_journal()
 		get_viewport().set_input_as_handled()
@@ -90,7 +98,10 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not visible:
 		return
 	if event.is_action_pressed("ui_cancel"):
-		close_journal()
+		if is_menu_page() and menu:
+			menu.handle_back()
+		else:
+			close_journal()
 		get_viewport().set_input_as_handled()
 
 
@@ -99,13 +110,34 @@ static func can_open_in_layer(layer: int) -> bool:
 	return layer == UiGate.Layer.NONE or layer == UiGate.Layer.JOURNAL
 
 
-func open_journal() -> void:
-	if not can_open_in_layer(UiGate.current_layer()):
+func mount_menu(content: Control) -> void:
+	_menu_content = content
+	tab_menu.show()
+	content.hide()
+	$BookRoot.add_child(content)
+	content.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+
+
+func is_menu_page() -> bool:
+	return visible and _section == "menu"
+
+
+func show_menu_page() -> void:
+	if _menu_content == null or not can_open_in_layer(UiGate.current_layer()):
 		return
+	_open_page("menu")
+
+
+func open_journal() -> void:
+	if can_open_in_layer(UiGate.current_layer()):
+		_open_page(_reading_section)
+
+
+func _open_page(section: String) -> void:
 	GameState.player_progress_knowledge["journal_unlocked"] = true
-	visible = true
+	show()
 	UiGate.set_journal(true)
-	_show_section(_section)
+	_show_section(section)
 	btn_close.grab_focus()
 
 
@@ -135,6 +167,16 @@ func toggle_journal() -> void:
 
 func _show_section(section: String) -> void:
 	_section = section
+	var is_menu := section == "menu"
+	if _menu_content:
+		_menu_content.visible = is_menu
+	if is_menu:
+		_highlight_tabs()
+		map_view.hide()
+		left_page.hide()
+		right_page.hide()
+		return
+	_reading_section = section
 	if section != "harita":
 		GameState.journal_mark_seen(section) ## sekme açıldı: "yeni" rozeti söner
 	_highlight_tabs()
@@ -255,10 +297,10 @@ func _tab_base_text(id: String) -> String:
 
 
 func _highlight_tabs() -> void:
-	for pair in [[tab_gunluk, "gunluk"], [tab_notlar, "notlar"], [tab_izler, "izler"], [tab_harita, "harita"]]:
+	for pair in [[tab_gunluk, "gunluk"], [tab_notlar, "notlar"], [tab_izler, "izler"], [tab_harita, "harita"], [tab_menu, "menu"]]:
 		var btn: Button = pair[0]
 		var id: String = pair[1]
-		if id != "harita":
+		if id not in ["harita", "menu"]:
 			btn.text = _tab_base_text(id) + (" •" if id != _section and GameState.journal_unseen(id) > 0 else "")
 		if id == _section:
 			btn.modulate = Color.WHITE

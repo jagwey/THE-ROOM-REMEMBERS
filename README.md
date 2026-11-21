@@ -471,14 +471,16 @@ Depodaki tüm derlenmiş Android (`arm64-v8a`) APK paketleri düzenli olarak **[
 
 | Eylem | Masaüstü (Klavye) | Android (Dokunmatik HUD) |
 | :--- | :--- | :--- |
-| **Hareket** | `A / D`, `Sol / Sağ Ok` | Sol Sanal Joystick (Sabit veya Yüzen mod) |
-| **Zıplama** | `W`, `Space`, `Yukarı Ok` | Sağ HUD — **Zıpla (`^`)** *(Coyote + Değişken Yükseklik)* |
+| **Hareket** | `A / D`, `Sol / Sağ Ok` | Sabit joystick, yüzen joystick veya sol/sağ tuşları |
+| **Zıplama** | `W`, `Space`, `Yukarı Ok` | Sağ HUD — **Zıpla (`^`)** veya ayar açıksa joystick’i yukarı itme |
 | **Saldırı (3'lü Kombo)** | `Z` veya `J` | Sağ Alt — **Kılıç** Butonu |
 | **Atılma / Gölge Atılması** | `X` veya `K` | Sağ Alt — **Dash** Butonu |
 | **Etkileşim / İtme / Konuşma** | `E` veya `F` | Sağ Orta — **El (`Interact`)** Butonu |
 | **Yetenek (Ruh Kesimi)** | `C` veya `L` | Sağ HUD — **Ruh Kesimi (`Skill`)** Butonu |
 | **Günlük & Harita** | `I` veya `Tab` | Sağ Üst — **Günlük (Kitap)** İkonu |
-| **Duraklatma & Ayarlar** | `Esc` | Sağ Üst — **Menü** Butonu / Android Sistem Geri Tuşu |
+| **Duraklatma & Ayarlar** | `Esc` | **Kitap → Menü → Ayarlar** / Android sistem geri tuşu |
+
+Android’de ilk oyuna başlarken hareket düzeni seçilir. Oyun bu tercihi kaydeder. Düzeni başlık ekranındaki **Ayarlar** sayfasından veya oyun içindeki **Kitap → Menü → Ayarlar** yolundan değiştirebilirsiniz. Joystick sola ve sağa yürütür. Yukarı iterek zıplama isteğe bağlıdır.
 
 ---
 

@@ -14,6 +14,9 @@ const VOLUME_STEP := 0.1
 const BUTTON_SCALE_PCT: Array[int] = [80, 90, 100, 110, 120]
 const BACK_HINT_MAX := 2
 const HAPTIC_NAMES: Array[String] = ["Kapalı", "Hafif", "Normal", "Güçlü"]
+enum TouchLayout { FLOATING, FIXED, ARROWS }
+const TOUCH_LAYOUT_NAMES: Array[String] = ["Yüzen joystick", "Sabit joystick", "Yön tuşları"]
+
 const HAPTIC_MULT: Array[float] = [0.0, 0.5, 1.0, 1.6]
 
 static var music_volume: float = 1.0
@@ -23,7 +26,9 @@ static var screen_shake: bool = true
 static var font_large: bool = false
 static var hint_level: int = 2 ## 0 Yok (yalnız hedef) · 1 Yön · 2 Açık (hepsi)
 static var button_scale_idx: int = 2 ## BUTTON_SCALE_PCT indeksi (varsayılan %100)
-static var touch_onboarding_done: bool = false ## dokunmatik ilk açılış ipucu gösterildi
+static var touch_layout: int = TouchLayout.FLOATING
+static var touch_up_to_jump: bool = false
+static var touch_layout_chosen: bool = false
 static var back_hint_count: int = 0 ## "geri" ipucu kaç kez gösterildi (2'den sonra susar)
 static var haptics_level: int = 2 ## 0 Kapalı · 1 Hafif · 2 Normal · 3 Güçlü
 static var fast_travel_hint_shown: bool = false ## hızlı seyahat ipucu bir kez gösterildi
@@ -43,13 +48,20 @@ static func reset_defaults() -> void:
 	font_large = false
 	hint_level = 2
 	button_scale_idx = 2
-	touch_onboarding_done = false
+	touch_layout = TouchLayout.FLOATING
+	touch_up_to_jump = false
+	touch_layout_chosen = false
 	back_hint_count = 0
 	haptics_level = 2
 	fast_travel_hint_shown = false
 
 
-static func load_settings(path: String = PATH) -> void:
+static func storage_path() -> String:
+	return "user://qa/settings.cfg" if OS.get_environment("TORIMON_TEST") == "1" else PATH
+
+
+static func load_settings(path: String = "") -> void:
+	path = storage_path() if path.is_empty() else path
 	reset_defaults()
 	_loaded = true
 	var cfg := ConfigFile.new()
@@ -62,7 +74,10 @@ static func load_settings(path: String = PATH) -> void:
 	font_large = bool(cfg.get_value(SECTION, "font_large", false))
 	hint_level = clampi(int(cfg.get_value(SECTION, "hint_level", 2)), 0, 2)
 	button_scale_idx = clampi(int(cfg.get_value(SECTION, "button_scale_idx", 2)), 0, BUTTON_SCALE_PCT.size() - 1)
-	touch_onboarding_done = bool(cfg.get_value(SECTION, "touch_onboarding_done", false))
+	var legacy_layout := TouchLayout.FLOATING if bool(cfg.get_value("input", "floating_joystick", true)) else TouchLayout.FIXED
+	touch_layout = clampi(int(cfg.get_value("input", "touch_layout", legacy_layout)), 0, TOUCH_LAYOUT_NAMES.size() - 1)
+	touch_up_to_jump = bool(cfg.get_value("input", "touch_up_to_jump", false))
+	touch_layout_chosen = bool(cfg.get_value("input", "touch_layout_chosen", false))
 	back_hint_count = clampi(int(cfg.get_value(SECTION, "back_hint_count", 0)), 0, 99)
 	fast_travel_hint_shown = bool(cfg.get_value(SECTION, "fast_travel_hint_shown", false))
 	if cfg.has_section_key(SECTION, "haptics_level"):
@@ -72,7 +87,8 @@ static func load_settings(path: String = PATH) -> void:
 
 
 ## Yalnızca bu sınıfın anahtarlarını yazar; dosyadaki diğer anahtarlar korunur.
-static func save_settings(path: String = PATH) -> void:
+static func save_settings(path: String = "") -> void:
+	path = storage_path() if path.is_empty() else path
 	var cfg := ConfigFile.new()
 	cfg.load(path)
 	cfg.set_value("audio", "music_volume", music_volume)
@@ -82,7 +98,9 @@ static func save_settings(path: String = PATH) -> void:
 	cfg.set_value(SECTION, "font_large", font_large)
 	cfg.set_value(SECTION, "hint_level", hint_level)
 	cfg.set_value(SECTION, "button_scale_idx", button_scale_idx)
-	cfg.set_value(SECTION, "touch_onboarding_done", touch_onboarding_done)
+	cfg.set_value("input", "touch_layout", touch_layout)
+	cfg.set_value("input", "touch_up_to_jump", touch_up_to_jump)
+	cfg.set_value("input", "touch_layout_chosen", touch_layout_chosen)
 	cfg.set_value(SECTION, "back_hint_count", back_hint_count)
 	cfg.set_value(SECTION, "haptics_level", haptics_level)
 	cfg.set_value(SECTION, "fast_travel_hint_shown", fast_travel_hint_shown)

@@ -13,8 +13,7 @@ var attack_held: bool = false
 var dash_held: bool = false
 var interact_held: bool = false
 var jump_held: bool = false
-## HUD dinamik joystick tercihi (ayar menüsünden değiştirilebilir).
-var floating_joystick: bool = true
+var _jump_sources: Dictionary = {}
 ## Mobil haptik titreşim tercihi (ayar menüsünden değiştirilebilir).
 ## Türetilmiş: asıl değer GameSettings.haptics_level (0 Kapalı · 1 Hafif · 2 Normal · 3 Güçlü).
 var haptics_enabled: bool:
@@ -110,18 +109,23 @@ func clear_held_inputs() -> void:
 	attack_held = false
 	dash_held = false
 	interact_held = false
-	jump_held = false
-
-
-func press_jump() -> void:
-	if UiGate.blocks_movement():
-		return
-	jump_held = true
-	jump_pressed.emit()
-
-
-func release_jump() -> void:
+	_jump_sources.clear()
 	if jump_held:
+		jump_held = false
+		jump_released.emit()
+
+
+func press_jump(source: StringName = &"keyboard") -> void:
+	if UiGate.blocks_movement() or _jump_sources.has(source):
+		return
+	_jump_sources[source] = true
+	if not jump_held:
+		jump_held = true
+		jump_pressed.emit()
+
+
+func release_jump(source: StringName = &"keyboard") -> void:
+	if _jump_sources.erase(source) and _jump_sources.is_empty():
 		jump_held = false
 		jump_released.emit()
 
@@ -209,11 +213,14 @@ func _on_go_back() -> void:
 	if page_puzzle and page_puzzle.visible and page_puzzle.has_method("close_puzzle"):
 		page_puzzle.close_puzzle()
 		return
-	var journal := get_tree().get_first_node_in_group("journal_ui")
-	if journal and journal.visible and journal.has_method("close_journal"):
-		journal.close_journal()
-		return
 	var menu := get_tree().get_first_node_in_group("session_menu")
+	var journal := get_tree().get_first_node_in_group("journal_ui")
+	if journal and journal.visible:
+		if menu and (menu.is_overlay_open() or menu.is_menu_open()):
+			menu.handle_back()
+		else:
+			journal.close_journal()
+		return
 	if menu == null or not menu.has_method("handle_back"):
 		return
 	# v1.4.1: oyun sırasında Android kenar-kaydırma "geri" jesti (sol joystick ekran kenarında)
@@ -258,7 +265,7 @@ func _show_back_hint() -> void:
 		layer.layer = 90
 		add_child(layer)
 		_back_hint = Label.new()
-		_back_hint.text = "Menü için bir kez daha geri"
+		_back_hint.text = "Kitabı açmak için tekrar geri"
 		_back_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		_back_hint.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM)
 		_back_hint.position.y -= 48

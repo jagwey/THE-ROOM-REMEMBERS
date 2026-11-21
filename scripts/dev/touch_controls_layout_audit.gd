@@ -39,11 +39,15 @@ func _run() -> void:
 	await process_frame
 	await process_frame
 	var saved_idx: int = GameSettings.button_scale_idx
-	for idx in GameSettings.BUTTON_SCALE_PCT.size():
-		GameSettings.button_scale_idx = idx
-		for sz in SIZES:
-			await _audit_one(sz, "%dx%d btn%d%%" % [sz.x, sz.y, GameSettings.BUTTON_SCALE_PCT[idx]])
+	var saved_layout: int = GameSettings.touch_layout
+	for layout in GameSettings.TOUCH_LAYOUT_NAMES.size():
+		GameSettings.touch_layout = layout
+		for idx in GameSettings.BUTTON_SCALE_PCT.size():
+			GameSettings.button_scale_idx = idx
+			for sz in SIZES:
+				await _audit_one(sz, "%dx%d btn%d%% %s" % [sz.x, sz.y, GameSettings.BUTTON_SCALE_PCT[idx], GameSettings.TOUCH_LAYOUT_NAMES[layout]])
 	GameSettings.button_scale_idx = saved_idx
+	GameSettings.touch_layout = saved_layout
 	print("TC DONE failures=", failures, " checks=", _checks)
 	quit(1 if failures > 0 else 0)
 
@@ -77,7 +81,12 @@ func _audit_one(sz: Vector2i, tag: String) -> void:
 		if (pair[1] as Control).is_visible_in_tree():
 			items[pair[0]] = (pair[1] as Control).get_global_rect()
 	check(items.size() == 5, tag + " all 5 buttons visible")
-	items["Joystick"] = (hud.joystick_base as Control).get_global_rect()
+	if GameSettings.touch_layout == GameSettings.TouchLayout.ARROWS:
+		check(not hud.joystick_base.is_visible_in_tree() and hud._arrows[0].is_visible_in_tree() and hud._arrows[1].is_visible_in_tree(), tag + " both arrows visible")
+		items["Left"] = hud._arrows[0].get_global_rect()
+		items["Right"] = hud._arrows[1].get_global_rect()
+	else:
+		items["Joystick"] = (hud.joystick_base as Control).get_global_rect()
 	var texts := {"Hearts": hud.hearts_row.get_global_rect(), "Journal": (hud.btn_journal as Control).get_global_rect()}
 	## Ruh sayacı (Parçalanmış Ruhlar) ruhlu odada görünür: kontrollere binmemeli.
 	hud._soul_label.text = "Ruhlar 1/3 (9/9)"

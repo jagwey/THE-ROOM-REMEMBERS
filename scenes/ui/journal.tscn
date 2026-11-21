@@ -46,30 +46,41 @@ texture_filter = 0
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
-offset_top = 4.0
-offset_bottom = 28.0
+offset_top = 2.0
+offset_bottom = 30.0
 grow_horizontal = 2
 theme_override_constants/separation = 4
+alignment = 1
 
 [node name="Gunluk" type="Button" parent="BookRoot/Tabs"]
-custom_minimum_size = Vector2(84, 24)
+custom_minimum_size = Vector2(72, 28)
 layout_mode = 2
 text = "Günlük"
 
 [node name="Notlar" type="Button" parent="BookRoot/Tabs"]
-custom_minimum_size = Vector2(84, 24)
+custom_minimum_size = Vector2(72, 28)
 layout_mode = 2
 text = "Notlar"
 
 [node name="Izler" type="Button" parent="BookRoot/Tabs"]
-custom_minimum_size = Vector2(84, 24)
+custom_minimum_size = Vector2(72, 28)
 layout_mode = 2
 text = "İzler"
 
 [node name="Harita" type="Button" parent="BookRoot/Tabs"]
-custom_minimum_size = Vector2(168, 24)
+custom_minimum_size = Vector2(120, 28)
 layout_mode = 2
 text = "Harita & Mühürler"
+
+[node name="Menu" type="Button" parent="BookRoot/Tabs"]
+custom_minimum_size = Vector2(62, 28)
+layout_mode = 2
+text = "Menü"
+
+[node name="Close" type="Button" parent="BookRoot/Tabs"]
+custom_minimum_size = Vector2(62, 28)
+layout_mode = 2
+text = "Kapat"
 
 [node name="LeftPage" type="Control" parent="BookRoot"]
 clip_contents = true
@@ -166,14 +177,3 @@ anchor_right = 0.86
 anchor_bottom = 0.855
 mouse_filter = 2
 script = ExtResource("2")
-
-[node name="Close" type="Button" parent="BookRoot"]
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -88.0
-offset_top = -26.0
-offset_bottom = -2.0
-grow_horizontal = 0
-text = "Kapat"

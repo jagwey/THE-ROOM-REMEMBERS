@@ -3,7 +3,7 @@ extends TextureButton
 ## Mobil HUD düğmesi: basış geri bildirimi (scale + glow) ve prosedürel cooldown halkası.
 ## Dokunuşları HUD denetleyicisi (çoklu dokunuş) yönetir; bu düğme fare/GUI girişini yutmaz.
 
-## "jump" ise ikonun üstüne yukarı ok çizilir (hazır ikon yok).
+## Prosedürel yön simgesi: jump, left veya right.
 @export var glyph: StringName = &""
 ## true: ikon dokusu yerine prosedürel gotik halka (koyu disk + lila/altın çift halka) çizilir; Attack/Dash/Interact ile aynı dil.
 @export var gothic_ring: bool = false
@@ -76,6 +76,10 @@ func _draw() -> void:
 		var col := Palette.IVORY
 		draw_polyline(PackedVector2Array([c + Vector2(-w, w * 0.45), c + Vector2(0, -w * 0.45), c + Vector2(w, w * 0.45)]), col, 4.0)
 		draw_polyline(PackedVector2Array([c + Vector2(-w, w * 1.15), c + Vector2(0, w * 0.25), c + Vector2(w, w * 1.15)]), Color(col, 0.55), 4.0)
+	if glyph in [&"left", &"right"]:
+		var d := -1.0 if glyph == &"left" else 1.0
+		var w := r * 0.38
+		draw_polyline(PackedVector2Array([c + Vector2(-d * w, -w), c + Vector2(d * w, 0), c + Vector2(-d * w, w)]), Palette.IVORY, 4.0)
 	if cooldown > 0.001:
 		var start := -PI * 0.5
 		var end := start + TAU * cooldown

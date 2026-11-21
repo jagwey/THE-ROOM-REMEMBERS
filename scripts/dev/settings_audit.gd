@@ -26,7 +26,7 @@ func _run() -> void:
 		return
 	var gs := GameSettings
 	## Test ortamında kalmış ayar dosyasını sil (yalnız qa kopyası user://).
-	DirAccess.remove_absolute(ProjectSettings.globalize_path(GameSettings.PATH))
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(GameSettings.storage_path()))
 	gs.load_settings()
 	## --- varsayılanlar eski davranışla aynı ---
 	gs.reset_defaults()
@@ -41,7 +41,13 @@ func _run() -> void:
 	var pre := ConfigFile.new()
 	pre.set_value("audio", "volume", 0.5)
 	pre.set_value("input", "haptics", false)
+	pre.set_value("input", "floating_joystick", false)
 	pre.save(TMP)
+	gs.load_settings(TMP)
+	check(gs.touch_layout == gs.TouchLayout.FIXED and not gs.touch_layout_chosen, "legacy fixed joystick kept as first-picker choice")
+	gs.touch_layout = gs.TouchLayout.ARROWS
+	gs.touch_layout_chosen = true
+	gs.touch_up_to_jump = true
 	gs.music_volume = 0.3
 	gs.sfx_volume = 0.6
 	gs.text_speed = 2
@@ -54,6 +60,7 @@ func _run() -> void:
 	gs.load_settings(TMP)
 	check(is_equal_approx(gs.music_volume, 0.3) and is_equal_approx(gs.sfx_volume, 0.6), "volumes persist")
 	check(gs.text_speed == 2 and not gs.screen_shake and gs.font_large and gs.hint_level == 0, "text/shake/font/hint persist")
+	check(gs.touch_layout == gs.TouchLayout.ARROWS and gs.touch_layout_chosen and gs.touch_up_to_jump, "touch layout, first-picker flag and jump preference persist")
 	var chk := ConfigFile.new()
 	chk.load(TMP)
 	check(is_equal_approx(float(chk.get_value("audio", "volume", 0.0)), 0.5) and chk.get_value("input", "haptics", true) == false, "save keeps existing keys (master volume, haptics)")
@@ -171,7 +178,7 @@ func _run() -> void:
 		menu._show_pause_page(true)
 		await process_frame
 		var vp := root.get_visible_rect().size
-		var fr: Rect2 = menu._panel.frame.get_global_rect()
+		var fr: Rect2 = menu._book_menu.get_global_rect()
 		check(fr.size.y <= vp.y and fr.position.y >= -0.5, "settings panel fits viewport height (%s in %s)" % [fr.size, vp])
 		check(menu._settings_scroll.is_visible_in_tree() and menu._vol_button.is_visible_in_tree(), "settings scroll + existing buttons visible")
 		menu.close_menu()

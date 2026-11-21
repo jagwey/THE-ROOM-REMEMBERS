@@ -69,7 +69,7 @@ func _round(continued: bool) -> void:
 			ia.action = &"interact"
 			ia.pressed = false
 			Input.parse_input_event(ia)
-		if menu._panel.visible:
+		if menu.is_menu_open():
 			panel_seen += 1
 		if menu.is_title_open() or ts.visible:
 			title_seen += 1
@@ -98,12 +98,12 @@ func _round(continued: bool) -> void:
 	check(panel_seen == 0, "[%s] pause/session panel never visible in play (%d frames)" % [tag, panel_seen])
 	check(title_seen == 0, "[%s] title never reappeared (%d frames)" % [tag, title_seen])
 	check(gate.current_layer() == gate.Layer.NONE, "[%s] UiGate NONE after 10s (is %d)" % [tag, gate.current_layer()])
-	check(menu._menu_button.visible, "[%s] Menü button visible after start" % tag)
-	var mrect: Rect2 = menu._menu_button.get_global_rect()
-	var vp: Vector2 = menu._menu_button.get_viewport_rect().size
-	check(mrect.size.x < 140.0 and mrect.size.y < 60.0, "[%s] Menü button small (%s)" % [tag, mrect.size])
-	check(not mrect.has_point(vp * 0.5), "[%s] Menü button does not cover screen center" % tag)
-	check(mrect.position.x > vp.x * 0.5 and mrect.position.y < vp.y * 0.25, "[%s] Menü button in top-right (%s)" % [tag, mrect.position])
+	var book_button: Control = get_first_node_in_group("hud").btn_journal
+	check(book_button.is_visible_in_tree(), "[%s] Book button visible after start" % tag)
+	var bounds := book_button.get_global_rect()
+	var viewport_size := book_button.get_viewport_rect().size
+	check(not bounds.has_point(viewport_size * 0.5), "[%s] Book button does not cover screen center" % tag)
+	check(bounds.position.x > viewport_size.x * 0.5 and bounds.position.y < viewport_size.y * 0.25, "[%s] Book button in top-right (%s)" % [tag, bounds.position])
 	check(get_first_node_in_group("player") != null, "[%s] player present" % tag)
 	if not continued:
 		var gsn := root.get_node("GameState")

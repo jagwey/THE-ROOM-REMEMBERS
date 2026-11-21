@@ -43,9 +43,10 @@ func _run() -> void:
 	gs.player_progress_knowledge["journal_unlocked"] = true
 	hud = (load("res://scenes/ui/hud.tscn") as PackedScene).instantiate()
 	root.add_child(hud)
-	var sm_node: CanvasLayer = (load("res://scripts/ui/session_menu.gd") as GDScript).new()
-	sm_node.name = "SessionMenu"
-	root.add_child(sm_node)
+	var journal := (load("res://scenes/ui/journal.tscn") as PackedScene).instantiate()
+	root.add_child(journal)
+	var menu: CanvasLayer = (load("res://scripts/ui/session_menu.gd") as GDScript).new()
+	root.add_child(menu)
 	await process_frame
 	await process_frame
 	GameSettings.text_speed = 2
@@ -127,20 +128,25 @@ func _audit_one(sz: Vector2i, tag: String) -> void:
 	check(obj.size.y >= float(obj.get_line_count() * obj.get_line_height()), "%s objective fits its box" % tag)
 	check(obj.get_global_rect().end.x <= (hud.btn_journal as Control).get_global_rect().position.x + 0.5 \
 		or obj.get_global_rect().end.y <= (hud.btn_journal as Control).get_global_rect().position.y, "%s objective clear of journal btn" % tag)
-	# Menü düğmesi (SessionMenu): güvenli alan içinde, >= 44 px, Günlük düğmesine binmez
-	var smenu := root.find_child("SessionMenu", true, false)
-	if smenu != null:
-		smenu._menu_safe_area.offset_left = hud.safe_area.offset_left
-		smenu._menu_safe_area.offset_right = hud.safe_area.offset_right
-		await _settle()
-		var mb: Button = smenu._menu_button
-		var mr := mb.get_global_rect()
-		check(vp.grow(0.5).encloses(mr), "%s menu button outside screen %s" % [tag, mr])
-		check(safe.grow(0.5).encloses(mr), "%s menu button outside safe area %s vs %s" % [tag, mr, safe])
-		check(minf(mr.size.x, mr.size.y) * sc >= MIN_TAP_PX, "%s menu button tap %.0fpx" % [tag, minf(mr.size.x, mr.size.y) * sc])
-		check(not mr.intersects((hud.btn_journal as Control).get_global_rect()), tag + " menu button overlaps journal")
-		for bn in buttons:
-			check(not mr.intersects(buttons[bn] as Rect2), "%s menu button overlaps %s" % [tag, bn])
+	# Kitap açılınca Menü sekmesi ve kontroller kitapta kalır.
+	var journal := get_first_node_in_group("journal_ui")
+	var menu := get_first_node_in_group("session_menu")
+	journal.open_journal()
+	await _settle()
+	check(not hud.btn_journal.is_visible_in_tree(), tag + " book hides HUD")
+	var book_bounds: Rect2 = journal.get_node("BookRoot").get_global_rect()
+	var mb: Button = journal.tab_menu
+	check(mb.is_visible_in_tree() and book_bounds.encloses(mb.get_global_rect()), tag + " menu tab inside book")
+	check(minf(mb.size.x, mb.size.y) * sc >= MIN_TAP_PX, tag + " menu tab touch size")
+	mb.pressed.emit()
+	await _settle()
+	check(menu.is_menu_open(), tag + " Menu tab shows pause page")
+	menu._settings_button.pressed.emit()
+	await _settle()
+	for item in [menu._joy_button, menu._jump_axis_button, menu._vol_button, menu._music_button]:
+		check(item.is_visible_in_tree() and book_bounds.encloses(item.get_global_rect()), tag + " setting inside book: " + item.text)
+	menu.close_menu()
+	await _settle()
 	await _door_label_check(tag, vp)
 	# Diyalog: tek satır + seçimler
 	await _dialogue_state(tag, sc, safe, vp)
@@ -302,19 +308,19 @@ func _ux_checks() -> void:
 	GameSettings.hint_level = saved_hint
 	var tmp := "user://qa_settings_roundtrip.cfg"
 	var s_idx: int = GameSettings.button_scale_idx
-	var s_on: bool = GameSettings.touch_onboarding_done
+	var s_on: bool = GameSettings.touch_layout_chosen
 	var s_bh: int = GameSettings.back_hint_count
 	GameSettings.button_scale_idx = 4
-	GameSettings.touch_onboarding_done = true
+	GameSettings.touch_layout_chosen = true
 	GameSettings.back_hint_count = 2
 	GameSettings.save_settings(tmp)
 	GameSettings.reset_defaults()
 	GameSettings.load_settings(tmp)
 	check(GameSettings.button_scale_idx == 4 and is_equal_approx(GameSettings.button_scale(), 1.2), "settings: button scale persists")
-	check(GameSettings.touch_onboarding_done and GameSettings.back_hint_count == 2, "settings: onboarding/back-hint flags persist")
+	check(GameSettings.touch_layout_chosen and GameSettings.back_hint_count == 2, "settings: control selection/back-hint flags persist")
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(tmp))
 	GameSettings.button_scale_idx = s_idx
-	GameSettings.touch_onboarding_done = s_on
+	GameSettings.touch_layout_chosen = s_on
 	GameSettings.back_hint_count = s_bh
 	print("ML UX DONE failures=", failures)
 	print("ML DONE failures=", failures, " checks=", _checks)

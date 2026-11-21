@@ -213,7 +213,7 @@ func _check_map(map: Control, tag: String) -> void:
 
 func _check_tabs(tag: String) -> void:
 	var book: Control = journal.get_node("BookRoot")
-	var tabs: Array = [journal.tab_gunluk, journal.tab_notlar, journal.tab_izler, journal.tab_harita]
+	var tabs: Array = journal.get_node("BookRoot/Tabs").get_children().filter(func(tab: Control): return tab.is_visible_in_tree())
 	var brect := Rect2(Vector2.ZERO, book.size).grow(0.5)
 	for i in tabs.size():
 		var b: Button = tabs[i]
