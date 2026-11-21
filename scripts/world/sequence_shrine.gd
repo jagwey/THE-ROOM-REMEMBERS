@@ -207,8 +207,9 @@ func _spawn_bridge() -> void:
 	dress.name = "ShelfBridgeDress"
 	dress.set_script(DRESS)
 	dress.z_index = 1
-	host.add_child(dress)
 	var rw := 1280.0
 	if "room_width" in host:
 		rw = float(host.get("room_width"))
-	dress.call("configure", bridge.x, bridge.y, bridge.z, rw, PackedVector2Array())
+	## _ready sırasında ebeveyn meşgul olabilir: ekleme + yapılandırma sıraya alınır.
+	host.add_child.call_deferred(dress)
+	dress.call_deferred("configure", bridge.x, bridge.y, bridge.z, rw, PackedVector2Array())

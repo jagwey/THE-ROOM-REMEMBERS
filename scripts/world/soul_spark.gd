@@ -100,8 +100,37 @@ func claim() -> void:
 	var am := get_node_or_null("/root/AudioManager")
 	if am:
 		am.play_sfx(&"seal_open")
-	DialogueManager.whisper("Noroi", "Bir ruh serbest kaldı. +%10 Berraklık")
+	## Modal diyalog yerine savaşı kesmeyen, yükselip sönen dünya yazısı.
+	_float_label("Ruh serbest · +%10 Berraklık")
 	queue_free()
+
+
+func _float_label(text: String) -> void:
+	var host := get_parent()
+	if host == null:
+		return
+	var lbl := Label.new()
+	lbl.name = "SoulFreedLabel"
+	lbl.text = text
+	lbl.add_to_group("soul_float_label")
+	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl.add_theme_font_size_override("font_size", 18)
+	lbl.add_theme_color_override("font_color", Color(0.85, 0.95, 1.0))
+	lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.9))
+	lbl.add_theme_constant_override("outline_size", 5)
+	lbl.size = Vector2(260, 28)
+	var at := global_position
+	if host is Node2D:
+		at = (host as Node2D).to_local(at)
+	lbl.position = at - Vector2(130, 70)
+	lbl.z_index = 50
+	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	host.add_child(lbl)
+	var tw := lbl.create_tween()
+	tw.set_parallel(true)
+	tw.tween_property(lbl, "position:y", lbl.position.y - 40.0, 1.6)
+	tw.tween_property(lbl, "modulate:a", 0.0, 1.6).set_delay(0.5)
+	tw.chain().tween_callback(lbl.queue_free)
 
 
 func expire() -> void:

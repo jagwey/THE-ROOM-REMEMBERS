@@ -62,6 +62,22 @@ func _ready() -> void:
 	_base_color = cfg["color"]
 	_build_visuals()
 	_play("idle")
+	if not DeathManager.death_started.is_connected(_on_player_death):
+		DeathManager.death_started.connect(_on_player_death)
+
+
+## Oyuncu ölünce yarım kalan saldırı/telegraph sıfırlanır; yeniden doğuşta anında vurmaz.
+func _on_player_death(_reason: StringName) -> void:
+	if _dead:
+		return
+	_state = S.IDLE
+	_state_t = 0.0
+	_cd = float(cfg["cd"])
+	_hurt_timer = 0.0
+	velocity = Vector2.ZERO
+	_telegraph_fx(0.0)
+	if kind == "warden":
+		_flash_shield(true)
 
 
 func _build_visuals() -> void:
