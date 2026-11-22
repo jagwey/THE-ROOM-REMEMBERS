@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3]
+[gd_scene load_steps=26 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
 [ext_resource type="Script" path="res://scripts/world/gate_blocker.gd" id="gate"]
@@ -18,9 +18,13 @@
 [ext_resource type="Texture2D" path="res://assets/trr_refresh/decay/greenhouse_portcullis.png" id="iron_gate"]
 [ext_resource type="Texture2D" path="res://assets/props/weight_stone.png" id="stone_tex"]
 [ext_resource type="Script" path="res://scripts/world/echo_trial.gd" id="trial"]
+[ext_resource type="Texture2D" path="res://assets/trr_refresh/decay/rootworks_gate_lintel.png" id="lintel_tex"]
 
 [sub_resource type="RectangleShape2D" id="GateShape"]
-size = Vector2(32, 88)
+size = Vector2(32, 110)
+
+[sub_resource type="RectangleShape2D" id="LintelShape"]
+size = Vector2(44, 600)
 
 [sub_resource type="RectangleShape2D" id="Interact"]
 size = Vector2(48, 96)
@@ -155,6 +159,7 @@ level_y = PackedFloat32Array(332, 288, 210, 130)
 start_level = 1
 puzzle_key = &"rootworks"
 reset_until_solved = &"decay_rootworks_water"
+settle_after_solved = true
 
 [node name="Raft" type="AnimatableBody2D" parent="Interactive/RootWater"]
 collision_layer = 1
@@ -259,6 +264,7 @@ ignore_world_flag = false
 latch_on_live = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/RootGate"]
+position = Vector2(0, -23)
 shape = SubResource("GateShape")
 
 [node name="Sprite2D" type="Sprite2D" parent="Interactive/RootGate"]
@@ -266,6 +272,22 @@ texture_filter = 1
 position = Vector2(0, -25)
 scale = Vector2(1, 1)
 texture = ExtResource("iron_gate")
+
+[node name="RootGateLintel" type="StaticBody2D" parent="Interactive"]
+position = Vector2(960, 0)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/RootGateLintel"]
+position = Vector2(0, -102)
+shape = SubResource("LintelShape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/RootGateLintel"]
+z_index = 1
+texture_filter = 1
+texture = ExtResource("lintel_tex")
+centered = false
+offset = Vector2(-24, -6)
 
 [node name="RootShrine" type="Node2D" parent="Interactive"]
 script = ExtResource("shrine")
@@ -305,7 +327,7 @@ sprite_scale = 0.4
 tint = Color(0.9, 0.4, 0.45, 1)
 
 [node name="EchoTrial" type="Area2D" parent="Interactive"]
-position = Vector2(905, 268)
+position = Vector2(1236, 268)
 script = ExtResource("trial")
 trial_room = &"decay_rootworks"
 shrine_path = NodePath("../RootShrine")

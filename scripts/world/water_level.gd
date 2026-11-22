@@ -10,6 +10,9 @@ signal level_changed(level: int)
 ## Doluysa: bu bulmaca çözülene dek odaya girişte ve yeniden doğuşta seviye start_level'a döner
 ## (vanalar sal üstünde; yüksek seviyede yere basan oyuncu vanaya yetişemez).
 @export var reset_until_solved: StringName = &""
+## true ise reset_until_solved çözüldükten sonra sal start_level'a (zemin köprüsü) iner ve orada kalır:
+## oyuncu kapıdan geçtikten sonra boşluğu geri yürüyerek aşabilir (dönüş yolu kilitlenmez).
+@export var settle_after_solved: bool = false
 
 var level: int = 1
 var drain_open: bool = false
@@ -39,6 +42,16 @@ func _ready() -> void:
 		## Kayıttan doğrudan bu odaya devam (apply_initial_room room_changed yaymaz): oda görünür olunca da sıfırla.
 		visibility_changed.connect(_reset_if_needed)
 		_reset_if_needed()
+		if settle_after_solved:
+			PuzzleManager.puzzle_solved.connect(_on_puzzle_solved)
+
+
+func _on_puzzle_solved(id: StringName) -> void:
+	if id != reset_until_solved or level == start_level:
+		return
+	await get_tree().create_timer(1.0).timeout
+	if is_inside_tree() and level != start_level:
+		_set_level(start_level)
 
 
 func _on_room_changed(_from: StringName, _to: StringName) -> void:
@@ -46,7 +59,9 @@ func _on_room_changed(_from: StringName, _to: StringName) -> void:
 
 
 func _reset_if_needed() -> void:
-	if reset_until_solved == &"" or PuzzleManager.is_solved(reset_until_solved):
+	if reset_until_solved == &"":
+		return
+	if PuzzleManager.is_solved(reset_until_solved) and not settle_after_solved:
 		return
 	if not is_visible_in_tree():
 		return

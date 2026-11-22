@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS"><img src="https://img.shields.io/badge/Kaynak-v1.20.3-8B0000?style=for-the-badge&logo=godotengine&logoColor=white" alt="Kaynak v1.20.3" /></a>
+  <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS"><img src="https://img.shields.io/badge/Kaynak-v1.20.4-8B0000?style=for-the-badge&logo=godotengine&logoColor=white" alt="Kaynak v1.20.4" /></a>
   <a href="https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases"><img src="https://img.shields.io/badge/Resmi_İndirme-GitHub_Releases-5c1d3d?style=for-the-badge&logo=github" alt="All Releases" /></a>
   <a href="https://godotengine.org/"><img src="https://img.shields.io/badge/Godot_Engine-4.7.2-478CBF?style=for-the-badge&logo=godotengine&logoColor=white" alt="Godot 4.7.2" /></a>
   <img src="https://img.shields.io/badge/Dünya-6_Bölge_·_47_Oda_·_Bölüm_I-2b1838?style=for-the-badge" alt="World Scope" />
@@ -226,6 +226,15 @@ Oda numaraları `RoomManager.ROOM_ORDER` sırasını izler. İlk 40 oda ana omur
 
 ### Katakomb çiçeği ve Sarnıç (Faz 0)
 Kemik Mahzeni girişinde (x≈150) tükenmez bir çiçek kaynağı durur. Çiçek elde ölürsen ceset çiçeği taşır ve fener gibi yanar; karanlık yol aydınlanır. Çiçek hayat başınadır, ölümde cesede geçer ve elden silinir. Sarnıç yan kapısı artık yetenek istemez.
+
+### v1.20.4 (2026-11-22, `versionCode 65`) — Sıralı oda numaraları, Kök İşliği kapısı, sahte kolonlar
+
+- **Oda numaraları oynanış sırasına göre:** `RoomManager.PROGRESS_ORDER` (47 oda) eklendi; yan odalar bağlı oldukları merkezin hemen ardından numaralanır (`SIDE_ROOM_HUB`). Eski "ODA 42 → ODA 50" atlamaları yok; Kök İşliği artık **ODA 15**, Kütüphane Salonu ODA 16, Çekirdek ODA 46. `ROOM_ORDER` (kapı grafiği/denetimler) değişmedi.
+- **Kayıt göçü:** `save_manager.gd` göçleri `RoomManager.progress_depth()` kullanır; derin bir yan odada kayıtlı oyuncu artık yanlışlıkla "geç bölüm" sayılmaz.
+- **Kök İşliği (ODA 15):** kök kapısı tavana kadar kapalı (110 px kapı + kalıcı taş lento `RootGateLintel`); su seviyesi ne olursa olsun duvardan atlanıp geçilemez. Bulmaca çözülünce sal 1 sn sonra zemine iner (`water_level.gd` `settle_after_solved`), geri dönüş yolu açık kalır. Yankı Sınavı x=1236'ya taşındı.
+- **Sahte kapı/kolonlar:** altı bölgenin `mid.png` paralaks katmanındaki yere basan nesneler (kolon, kristal, kemer, kitaplık, ayna, tank) silindi; kamerayla kayıp "geçilmeyen kapı" gibi görünmüyorlar.
+- **Çatlak Duvar (ODA 13):** kısa sütun yerine tavana kadar çatlak taş duvar (`assets/trr_refresh/decay/cracked_wall.png`), çarpışma 40×320.
+- **Denetim:** `room_graph_audit` sıralı numara/yan oda kurallarını doğrular.
 
 ### v1.20.3 (2026-11-22, `versionCode 64`) — Görsel tutarlılık ve geçiş denetimi
 
@@ -477,10 +486,10 @@ Depodaki tüm derlenmiş Android (`arm64-v8a`) APK paketleri düzenli olarak **[
 
 | Sürüm | Durum | APK Dosyası / İndirme | Öne Çıkan Yenilikler ve Kapsam |
 | :--- | :---: | :--- | :--- |
-| **[v1.20.3](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.20.3)** | Son yayın | [📥 `TheRoomRemembers-1.20.3-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.20.3/TheRoomRemembers-1.20.3-android-arm64.apk) | Görsel tutarlılık (katman, kapı tonu, ölçek, piksel hizası, yazı boyu), sera kökü geçişi, bulmaca-açık geçiş denetimi (`versionCode 64`). |
+| **[v1.20.4](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.20.4)** | Son yayın | [📥 `TheRoomRemembers-1.20.4-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.20.4/TheRoomRemembers-1.20.4-android-arm64.apk) | Oda numaraları oynanış sırasında, Kök İşliği kapısı aşılamaz + sal köprü olur, sahte paralaks kolonları silindi, tavana kadar Çatlak Duvar (`versionCode 65`). |
+| **[v1.20.3](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.20.3)** | Önceki | [📥 `TheRoomRemembers-1.20.3-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.20.3/TheRoomRemembers-1.20.3-android-arm64.apk) | Görsel tutarlılık (katman, kapı tonu, ölçek, piksel hizası, yazı boyu), sera kökü geçişi, bulmaca-açık geçiş denetimi (`versionCode 64`). |
 | **[v1.20.2](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.20.2)** | Önceki | [📥 `TheRoomRemembers-1.20.2-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.20.2/TheRoomRemembers-1.20.2-android-arm64.apk) | Kitap menüsü, hareket düzeni seçimi ve oda çizimleri (`versionCode 63`). |
 | **[v1.20.1](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.20.1)** | Önceki | [📥 `TheRoomRemembers-1.20.1-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.20.1/TheRoomRemembers-1.20.1-android-arm64.apk) | Ruh toplama savaşı kesmez, ölümde düşman saldırısı sıfırlanır, uçtan uca savaş testi (`versionCode 62`). |
-| **[v1.20.0](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/tag/v1.20.0)** | Önceki | [📥 `TheRoomRemembers-1.20.0-android-arm64.apk`](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases/download/v1.20.0/TheRoomRemembers-1.20.0-android-arm64.apk) | Parçalanmış Ruhlar: saldıran ruh düşmanları (kalp eksiltir), 9 ruh toplama, Shilda final hükmü (`versionCode 61`). |
 
 ---
 
@@ -507,7 +516,7 @@ Android’de ilk oyuna başlarken hareket düzeni seçilir. Oyun bu tercihi kayd
 1. **[Releases](https://github.com/jagwey/THE-ROOM-REMEMBERS-release/releases)** sayfasından son sürüm `.apk` dosyasını indirin.
 2. Veya USB hata ayıklaması açık cihaza `adb` ile yükleyin:
    ```powershell
-   adb install -r TheRoomRemembers-1.20.3-android-arm64.apk
+   adb install -r TheRoomRemembers-1.20.4-android-arm64.apk
    adb shell am start -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -p com.torimon.theroomremembers
    ```
 

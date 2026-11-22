@@ -23,18 +23,19 @@ func _ready() -> void:
 	if _shape == null:
 		_shape = CollisionShape2D.new()
 		var rect := RectangleShape2D.new()
-		rect.size = Vector2(36, 140)
+		rect.size = Vector2(40, 320)
 		_shape.shape = rect
-		_shape.position = Vector2(0, -70)
+		_shape.position = Vector2(0, -160)
 		add_child(_shape)
 	_sprite = get_node_or_null("Sprite2D") as Sprite2D
 	if _sprite == null:
 		_sprite = Sprite2D.new()
 		add_child(_sprite)
-	_sprite.texture = load("res://assets/layers/column.png")
+	_sprite.texture = load("res://assets/trr_refresh/decay/cracked_wall.png")
 	_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	_sprite.centered = true
-	_sprite.position = Vector2(0, -70)
+	_sprite.centered = false
+	_sprite.offset = Vector2(-24, -320)
+	_sprite.position = Vector2.ZERO
 	_apply_state(false)
 
 
@@ -89,13 +90,13 @@ func _apply_state(animate: bool) -> void:
 		if animate:
 			var tw := create_tween()
 			tw.tween_property(_sprite, "modulate:a", 0.0, 0.5)
-			tw.parallel().tween_property(_sprite, "position:y", -40.0, 0.5)
+			tw.parallel().tween_property(_sprite, "position:y", 30.0, 0.5)
 		else:
 			_sprite.visible = false
 		return
 	_sprite.modulate = Color(0.85, 0.78, 0.82, 1.0).lerp(Color(0.55, 0.42, 0.45, 1.0), float(h) / float(max_hits))
 	if h > 0:
-		_sprite.rotation = 0.03
+		_sprite.rotation = 0.008
 	if animate:
 		var tw2 := create_tween()
 		tw2.tween_property(_sprite, "position:x", 4.0, 0.05)

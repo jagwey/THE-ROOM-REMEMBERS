@@ -24,6 +24,25 @@ const ROOM_ORDER: PackedStringArray = [
 	"core_last_record",
 	"awakening_s_room",
 ]
+## Oyuncuya gösterilen oda numarası (ODA 01..47) gerçek oyun sırasını izler: yan odalar bağlı oldukları
+## odanın hemen ardından gelir (Kök Damarları = Solmuş Bahçe'den sonra). ROOM_ORDER kayıt/denetim için sabit kalır.
+const PROGRESS_ORDER: PackedStringArray = [
+	"awakening", "awakening_balcony", "awakening_crypt", "awakening_passage", "awakening_seal", "awakening_vigil", "awakening_bellroom",
+	"decay_vines", "decay_catacombs", "decay_weight", "decay_cistern", "decay_greenhouse", "decay_shilda_wall", "decay_garden", "decay_rootworks",
+	"library_hall", "library_witness", "library_clockroom", "library_page", "library_upper_stacks", "library_archive_vault", "library_forbidden_wing", "library_reading_cell",
+	"experiment_cells", "experiment_intake", "experiment_circuit", "experiment_twin_lab", "experiment_authority", "experiment_quarantine", "experiment_core_conduit", "experiment_observation",
+	"mirrors_reverse", "mirrors_dual", "mirrors_gallery", "mirrors_unbroken", "mirrors_labyrinth", "mirrors_inverse_hall", "mirrors_shrine", "mirrors_1927",
+	"core_threshold", "core_ascent", "core_seal_chamber", "core_memory_vault", "core_last_record", "core_bloom_garden", "core",
+	"awakening_s_room",
+]
+## Ana yolun dışındaki (çıkmaz) yan odalar → bağlı oldukları ana yol odası. İlerleme derinliği hesabında
+## yan oda, merkez odasıyla aynı derinlikte sayılır (yan odada kayıt, ilerideki kapıları çözülmüş saymaz).
+const SIDE_ROOM_HUB := {
+	"awakening_crypt": "awakening_balcony", "awakening_bellroom": "awakening_vigil", "awakening_s_room": "awakening",
+	"decay_catacombs": "decay_vines", "decay_cistern": "decay_weight", "decay_rootworks": "decay_garden",
+	"library_archive_vault": "library_upper_stacks", "experiment_twin_lab": "experiment_circuit",
+	"mirrors_inverse_hall": "mirrors_labyrinth", "core_last_record": "core_memory_vault",
+}
 const ROOM_TITLES_TR := {
 	"awakening": "Uyanış", "awakening_balcony": "Gözlem Balkonu", "awakening_crypt": "İlk Bedenler Mahzeni",
 	"awakening_passage": "Kırık Geçit", "awakening_seal": "Mühürlü Eşik", "awakening_vigil": "Nöbet Odası",
@@ -159,9 +178,20 @@ func get_active_room_bounds() -> Rect2:
 	return b
 
 
-## "ODA 01 · Uyanış" — sıra ROOM_ORDER'dan; bilinmeyen oda "ODA ?? · <id>".
+## Oyun sırasındaki konum (0 tabanlı, PROGRESS_ORDER); bilinmeyen oda -1.
+func progress_index(room_id: Variant) -> int:
+	return PROGRESS_ORDER.find(String(room_id))
+
+
+## Ana yol ilerleme derinliği: yan oda merkez odasının derinliğini alır; bilinmeyen oda -1.
+func progress_depth(room_id: Variant) -> int:
+	var rid := String(room_id)
+	return progress_index(String(SIDE_ROOM_HUB.get(rid, rid)))
+
+
+## "ODA 01 · Uyanış" — sıra PROGRESS_ORDER'dan; bilinmeyen oda "ODA ?? · <id>".
 func get_room_number_and_title(room_id: StringName) -> String:
-	var idx := ROOM_ORDER.find(String(room_id))
+	var idx := progress_index(room_id)
 	var num := "??" if idx < 0 else "%02d" % (idx + 1)
 	var title := String(ROOM_TITLES_TR.get(String(room_id), String(room_id).replace("_", " ").capitalize()))
 	return "ODA %s · %s" % [num, title]

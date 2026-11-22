@@ -65,7 +65,7 @@ func _process(_delta: float) -> void:
 
 
 func _build_parallax() -> void:
-	var layers := [["ParallaxFar", "far", 0.15], ["ParallaxMid", "mid", 0.45], ["ParallaxFront", "front", 0.85]]
+	var layers := [["ParallaxFar", "far", 0.15], ["ParallaxMid", "mid", 0.45], ["ParallaxFront", "front", 1.0]]
 	for l in layers:
 		if get_node_or_null(String(l[0])):
 			continue

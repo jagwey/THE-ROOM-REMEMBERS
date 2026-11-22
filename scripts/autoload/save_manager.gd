@@ -373,9 +373,8 @@ func _migrate_soul_slash_for_late_rooms() -> void:
 		return
 	var life := GameState.character_current_life_knowledge
 	var room_id := str(life.get("room", life.get("checkpoint_room", "")))
-	var order: PackedStringArray = RoomManager.ROOM_ORDER
-	var idx := order.find(room_id)
-	if idx > order.find("library_forbidden_wing"):
+	var idx := RoomManager.progress_depth(room_id)
+	if idx > RoomManager.progress_depth("library_forbidden_wing"):
 		GameState.player_progress_knowledge["ability_soul_slash"] = true
 
 
@@ -387,8 +386,8 @@ func _migrate_shelf_order_for_late_rooms() -> void:
 		return
 	var life := GameState.character_current_life_knowledge
 	var room_id := str(life.get("room", life.get("checkpoint_room", "")))
-	var idx := RoomManager.ROOM_ORDER.find(room_id)
-	if idx > RoomManager.ROOM_ORDER.find("library_upper_stacks"):
+	var idx := RoomManager.progress_depth(room_id)
+	if idx > RoomManager.progress_depth("library_upper_stacks"):
 		(puzzles as Dictionary)["library_shelf_order"] = true
 
 
@@ -417,24 +416,24 @@ func _migrate_side_room_puzzles_for_late_rooms() -> void:
 		return
 	var life := GameState.character_current_life_knowledge
 	var room_id := str(life.get("room", life.get("checkpoint_room", "")))
-	var here := RoomManager.ROOM_ORDER.find(room_id)
+	var here := RoomManager.progress_depth(room_id)
 	if here < 0:
 		return
 	for entry in _LATE_ROOM_SOLVED:
-		if here > RoomManager.ROOM_ORDER.find(String(entry[0])):
+		if here > RoomManager.progress_depth(String(entry[0])):
 			for id in entry[1]:
 				(puzzles as Dictionary)[String(id)] = true
 
 
-## Faz 4 göçü: Gölge Atılması artık Yansıma Tapınağı'nda (oda 33) verilir. Kayıt bu odadan sonraysa ve
+## Faz 4 göçü: Gölge Atılması artık Yansıma Tapınağı'nda (ODA 38) verilir. Kayıt bu odadan sonraysa ve
 ## yetenek yoksa ver (yoksa core_ascent perdesi kilitli kalırdı). Idempotent.
 func _migrate_shadow_dash_for_late_rooms() -> void:
 	if bool(GameState.player_progress_knowledge.get("ability_shadow_dash", false)):
 		return
 	var life := GameState.character_current_life_knowledge
 	var room_id := str(life.get("room", life.get("checkpoint_room", "")))
-	var here := RoomManager.ROOM_ORDER.find(room_id)
-	if here > RoomManager.ROOM_ORDER.find("mirrors_shrine"):
+	var here := RoomManager.progress_depth(room_id)
+	if here > RoomManager.progress_depth("mirrors_shrine"):
 		GameState.player_progress_knowledge["ability_shadow_dash"] = true
 
 
@@ -446,14 +445,14 @@ func _migrate_trust_flags_v118() -> void:
 		return
 	var life := GameState.character_current_life_knowledge
 	var room_id := str(life.get("room", life.get("checkpoint_room", "")))
-	var here := RoomManager.ROOM_ORDER.find(room_id)
+	var here := RoomManager.progress_depth(room_id)
 	prog["migrated_v118"] = true
 	if here < 0:
 		return
-	if here < RoomManager.ROOM_ORDER.find("core_bloom_garden") and bool(prog.get("trusted_keeper", false)):
+	if here < RoomManager.progress_depth("core_bloom_garden") and bool(prog.get("trusted_keeper", false)):
 		prog["trusted_keeper"] = false
 		GameState.get_shilda_trust_state()["reconciled"] = true
-	if here < RoomManager.ROOM_ORDER.find("core_memory_vault"):
+	if here < RoomManager.progress_depth("core_memory_vault"):
 		prog["truth_seen"] = false
 
 

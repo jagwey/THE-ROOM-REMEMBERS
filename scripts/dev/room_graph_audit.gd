@@ -49,6 +49,31 @@ func _run() -> void:
 	gate.set_story(false)
 	check(rm._rooms.size() == 47, "47 oda kayıtlı", rm._rooms.size())
 	check(rm.ROOM_ORDER.size() == 47 and rm.ROOM_TITLES_TR.size() == 47, "ROOM_ORDER ve başlıklar 47")
+	## v1.20.4: görünen numara oyun sırasını izler; yan odalar merkezlerinin hemen ardından.
+	var po_set := {}
+	for r in rm.PROGRESS_ORDER:
+		po_set[r] = true
+	var same_set: bool = po_set.size() == 47 and rm.PROGRESS_ORDER.size() == 47
+	for r in rm.ROOM_ORDER:
+		if not po_set.has(r):
+			same_set = false
+	check(same_set, "PROGRESS_ORDER = ROOM_ORDER kümesi (47, tekrarsız)")
+	var side_ok := true
+	for side in rm.SIDE_ROOM_HUB.keys():
+		var hub := String(rm.SIDE_ROOM_HUB[side])
+		var si: int = rm.progress_index(side)
+		var hi: int = rm.progress_index(hub)
+		if side == "awakening_s_room":
+			side_ok = side_ok and si == 46
+		elif si < 0 or hi < 0 or si <= hi or si - hi > 2:
+			side_ok = false
+			print("  side order bad: ", side, " ", si, " hub ", hub, " ", hi)
+		if rm.progress_depth(side) != hi:
+			side_ok = false
+	check(side_ok, "yan odalar merkez odadan hemen sonra numaralı, derinlik = merkez")
+	check(rm.get_room_number_and_title(&"decay_rootworks").begins_with("ODA 15 ·"), "Kök Damarları ODA 15", rm.get_room_number_and_title(&"decay_rootworks"))
+	check(rm.get_room_number_and_title(&"library_hall").begins_with("ODA 16 ·"), "Hafıza Kütüphanesi ODA 16", rm.get_room_number_and_title(&"library_hall"))
+	check(rm.get_room_number_and_title(&"core").begins_with("ODA 46 ·"), "Çekirdek ODA 46", rm.get_room_number_and_title(&"core"))
 	var bad_doors: Array = []
 	var close_pairs: Array = []
 	var ability_doors: Array = []
