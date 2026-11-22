@@ -1,4 +1,4 @@
-param(
+﻿param(
     [Parameter(Mandatory = $true)][string]$ProjectPath,
     [string]$GodotPath = 'Godot_v4.7.2-stable_win64_console.exe',
     [string]$OutputPath = (Join-Path $PSScriptRoot ('results-' + (Get-Date -Format 'yyyyMMdd-HHmmss'))),
@@ -28,8 +28,18 @@ foreach ($folder in @('assets', 'scenes', 'scripts', 'themes', 'data', 'android'
     Copy-Item -LiteralPath (Join-Path $source $folder) -Destination $work -Recurse
 }
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'audit.gd') -Destination $work
-# e2e_runner export/belge kontrolleri icin kok dosyalar
-foreach ($f in @('export_presets.cfg','PROJECT.md','TEST_INFRA.md','TEST_READY.md')) { if (Test-Path -LiteralPath (Join-Path $source $f)) { Copy-Item -LiteralPath (Join-Path $source $f) -Destination $work } }
+# e2e_runner export/belge kontrolleri icin kok ve taşınan belgeler
+if (Test-Path -LiteralPath (Join-Path $source 'export_presets.cfg')) {
+    Copy-Item -LiteralPath (Join-Path $source 'export_presets.cfg') -Destination $work
+}
+foreach ($rel in @('docs\reference\PROJECT.md','docs\testing\TEST_INFRA.md','docs\testing\TEST_READY.md')) {
+    $srcFile = Join-Path $source $rel
+    if (Test-Path -LiteralPath $srcFile) {
+        $dstFile = Join-Path $work $rel
+        $null = New-Item -ItemType Directory -Path (Split-Path -Parent $dstFile) -Force
+        Copy-Item -LiteralPath $srcFile -Destination $dstFile
+    }
+}
 $originalConfig = [IO.File]::ReadAllText((Join-Path $source 'project.godot'))
 $isolatedConfig = [regex]::Replace($originalConfig, 'config/name="[^"]*"', ('config/name="TorimonAudit_' + $auditId + '"'))
 [IO.File]::WriteAllText((Join-Path $work 'project.godot'), $isolatedConfig, [Text.UTF8Encoding]::new($false))

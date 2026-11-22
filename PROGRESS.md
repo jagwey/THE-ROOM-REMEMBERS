@@ -1,8 +1,45 @@
 # PROGRESS
 Dal: main · Sürüm: v1.20.5 (versionCode 66)
 
+## Proje Dizin Mimarisi (Güncel)
+
+Kök dizin hem yerelde hem GitHub'da sade tutulur; kök yalnızca 6 temel dosya ve 10 ana klasörden oluşur:
+
+```text
+THE-ROOM-REMEMBERS/
+├── project.godot, export_presets.cfg   # Godot 4.7.2 proje ve Android/Windows export ayarları
+├── README.md                           # Oyuncu & GitHub vitrini (spoiler'sız, GIF ve ekran görüntüleri)
+├── CLAUDE.md                           # Yapay zekâ / geliştirici kısa başlangıç rehberi ve sürüm kuralları
+├── PROGRESS.md                         # Proje mimarisi ve sürüm/görev geçmişi (bu dosya)
+├── .gitignore                          # Derleme/temp çıktıları ve gizli dosya kuralları
+│
+├── assets/                             # Görseller, arka planlar (far/far_alt/mid/front), sesler, fontlar, ikonlar
+├── scenes/                             # Oyun sahneleri: main/, player/, keeper/, props/, rooms/, ui/, world/, dev/ (preview.tscn)
+├── scripts/                            # GDScript kodu: autoload/, player/, keeper/, world/, story/, ui/, camera/, dev/
+├── data/
+│   ├── dialogue/                       # Oda bazlı Türkçe diyalog JSON'ları (APK içine dahil edilir)
+│   └── meta/                           # Varlık üst verileri: animations.json, manifest.*, palette.* (.gdignore ile APK dışı)
+├── themes/                             # Godot UI temaları
+├── addons/                             # Özel geliştirme eklentileri (ör. trr_shilda_white)
+├── android/                            # Özelleştirilmiş Android Gradle şablonu ve manifest
+├── media/                              # README vitrin GIF/SVG/ekran görüntüleri (.gdignore ile APK dışı)
+├── docs/                               # Tüm Markdown belgeleri, planlar ve test raporları (APK dışı)
+│   ├── reference/                      # PROJECT.md, ASSET_INVENTORY.md, PLAY_TR.md
+│   ├── testing/                        # TEST_INFRA.md, TEST_READY.md
+│   ├── qa/release-readiness/           # Sürüm hazırlık matrisleri ve hata kayıtları (00–09)
+│   ├── gelistirme/                     # Run-Audit.ps1, audit.gd ve geliştirme yönergeleri
+│   ├── play/                           # Google Play mağaza taslakları, kontrol listesi, ekran görüntüleri
+│   ├── specs/                          # Varlık teknik şartnameleri
+│   ├── superpowers/                    # SDD tasarım spec'leri ve faz planları
+│   └── archive/                        # Eski oturum devir belgeleri (CURSOR_HANDOVER_v1.7.0.md)
+└── .cursor/rules/                      # Cursor ajan kuralları (agent-rules.mdc)
+```
+
+- **Yeni dosya yerleşim kuralı:** Kök dizine asla yeni `.md`, `.json`, `.gd` veya `.tscn` dosyası bırakılmaz. Belgeler `docs/{reference,testing,qa,gelistirme,play,specs,archive}/` altına, veri/meta dosyaları `data/{dialogue,meta}/` altına, geliştirici sahne/araçları `scenes/dev/` ve `scripts/dev/` altına konur.
+
 ## v1.20.5 kapsamlı hata ayıklama, mimari iyileştirme ve görsel/bulmaca çeşitliliği turu (2026-11-22)
 
+- **Kök dizin sadeleştirme ve klasör mimarisi:** Kökte dağınık duran Markdown belgeleri (`PROJECT.md`, `ASSET_INVENTORY.md`, `PLAY_TR.md`, `TEST_INFRA.md`, `TEST_READY.md`, `CURSOR_HANDOVER_v1.7.0.md`), `qa/release-readiness/` klasörü, varlık üst verileri (`animations.json`, `manifest.*`, `palette.*` → `data/meta/` + `.gdignore`), önizleme sahnesi (`preview.tscn` → `scenes/dev/`, `preview.gd` → `scripts/dev/`) düzenli alt klasörlere taşındı; eski `.cursorrules` kuralları `.cursor/rules/agent-rules.mdc` ile birleştirildi; `Run-Audit.ps1`, `e2e_runner.gd` ve `export_presets.cfg` referansları güncellendi.
 - **GitHub sunumu & `README.md` yenilemesi:** Spoiler ve iç geliştirici listeleri temizlendi; oyunun piksel fontuyla animasyonlu `hero-banner.svg`, `divider.svg`, 3 adet gerçek oyun içi oynanış GIF'i (`showcase-hero.gif`, `gameplay-world.gif`, `gameplay-action.gif`) ve 8 güncel `v1.20.5` ekran görüntüsü `media/readme/` altına eklendi (`media/.gdignore` ile Godot import/APK paketinden hariç tutuldu).
 
 - **Ana yol (ODA 01..37) ve yan oda (`01A`..`35A`) numaralandırması (Öneri #1):**

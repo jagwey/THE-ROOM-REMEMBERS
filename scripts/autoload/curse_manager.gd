@@ -146,7 +146,7 @@ func _begin_possession() -> void:
 	curse_possession_finished.emit()
 
 
-## Contract entrypoint (Interface Contract 1 / PROJECT.md)
+## Contract entrypoint (Interface Contract 1 / docs/reference/PROJECT.md)
 func fail_curse_possession() -> void:
 	if DeathManager.is_dying:
 		return

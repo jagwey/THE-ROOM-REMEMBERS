@@ -53,4 +53,4 @@ Kategori: Oyun > Macera (veya Bulmaca). Etiketler: pixel art, gizem, platform, h
 ## Notlar
 - "Güncelle" düğmesi ve GitHub bağlantısı Play sürümünde kapalı olmalı (`play_store` özel özelliği; bkz. `PLAY_BUILD_CHECKLIST.md`). Açıklamada GitHub APK'sından söz etme.
 - "Hesap yok, reklam yok, internet gerekmez" ifadeleri yalnız Play sürümünde internet izni kapalıyken doğrudur. Önce izni kapat, sonra doğrula.
-- Oyun süresini sağlam ölçümden önce açıklamada belirtme (QA: tahmini oynanış süresi hedefin altında, bkz. `qa/release-readiness/03_GAMEPLAY_PUZZLES.md`).
+- Oyun süresini sağlam ölçümden önce açıklamada belirtme (QA: tahmini oynanış süresi hedefin altında, bkz. `docs/qa/release-readiness/03_GAMEPLAY_PUZZLES.md`).

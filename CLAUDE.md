@@ -4,9 +4,10 @@ Yan görünüşlü bellek/lanet oyunu. Kapalı kaynak, private repo. Paket: com.
 ## Mimari
 - Ana sahne: `scenes/main/main.tscn`, giriş `scripts/main.gd`
 - `scripts/autoload/` global yöneticiler (game_state, death/corpse/curse/echo/ending/puzzle/dialogue/mobile_input, palette)
-- `scripts/{player,keeper,world,story,ui,camera}/`; araçlar `scripts/dev/` (audit/capture)
-- Veri: `manifest.*`, `palette.json`, `animations.json`; varlıklar `assets/`
-- Geliştirme notları/promptlar: `docs/gelistirme/`
+- `scripts/{player,keeper,world,story,ui,camera}/`; araçlar `scripts/dev/` (audit/capture/preview)
+- Sahneler: `scenes/{main,player,keeper,props,rooms,ui,world,dev}/` (`preview.tscn` → `scenes/dev/preview.tscn`)
+- Veri & varlıklar: `data/dialogue/` (oda diyalog JSON'ları), `data/meta/` (`manifest.*`, `palette.*`, `animations.json`), `assets/`
+- Belgeler (`docs/`): `reference/` (`PROJECT.md`, `ASSET_INVENTORY.md`, `PLAY_TR.md`), `testing/` (`TEST_INFRA.md`, `TEST_READY.md`), `qa/release-readiness/`, `gelistirme/`, `play/`, `specs/`, `superpowers/`, `archive/`
 
 ## Komutlar
 - Çalıştır: Godot 4.7.2 ile bu klasörü aç, F5
@@ -17,7 +18,8 @@ Yan görünüşlü bellek/lanet oyunu. Kapalı kaynak, private repo. Paket: com.
 - Sadece göreve ilgili dosyaları oku; log/zip/png dump okuma
 - Yayın/commit yalnız kullanıcı isteyince
 - Sır/anahtar/parola hiçbir dosyaya yazma
-- **GÖREV SONU DOKÜMANTASYON KURALI (ZORUNLU):** Her ajan / alt ajan bir işi, revizyonu veya görevi bitirdiğinde; yapılan tüm değişiklikleri, yeni mekanikleri, mimariyi ve sürüm bilgisini MUTLAKA `README.md` ve `PROGRESS.md` dosyalarına yansıtacaktır. Dokümantasyon asla bayat bırakılamaz.
+- **KÖK DİZİN TEMİZLİĞİ:** Kök dizine asla yeni `.md`, `.json`, `.gd` veya `.tscn` dosyası bırakma; tam klasör yapısı ve yerleşim kuralları için `PROGRESS.md` (`## Proje Dizin Mimarisi`) bölümüne uy.
+- **GÖREV SONU DOKÜMANTASYON KURALI (ZORUNLU):** Her ajan / alt ajan bir işi, revizyonu veya görevi bitirdiğinde; yapılan tüm değişiklikleri, yeni mekanikleri, mimariyi ve sürüm bilgisini `PROGRESS.md` dosyasına yansıtacaktır; `README.md` ise spoiler vermeden oyuncu/vitrin özeti, GIF/ekran görüntüleri ve sürüm bağlantısı açısından güncel tutulur. Dokümantasyon asla bayat bırakılamaz.
 
 ## Release (ÖNEMLİ)
 - Kaynak repo `jagwey/THE-ROOM-REMEMBERS` **private**. Oyuncuların gördüğü APK'lar **public** repo'ya gider: https://github.com/jagwey/THE-ROOM-REMEMBERS-release

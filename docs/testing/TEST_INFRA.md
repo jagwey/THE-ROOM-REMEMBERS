@@ -11,8 +11,8 @@ All tests in this suite operate strictly as **opaque-box tests**. Rather than in
 
 Every single test assertion is authoritatively derived from:
 - `ORIGINAL_REQUEST.md` (R1 P0/P1/P2 fixes, R2 combat/feel mechanics, R3 audits, R4 release).
-- `PROJECT.md § Feature Inventory` (Features 1 through 33).
-- `PROJECT.md § Interface Contracts` (Player ↔ WeightStone, Player/SoulSlash ↔ Memory Shades, Corpse ↔ Platforming, EchoAltar ↔ EchoTwin, MobileInputManager ↔ Haptics, RoomManager ↔ Region Title Cards & Cracked Mirrors).
+- `docs/reference/PROJECT.md § Feature Inventory` (Features 1 through 33).
+- `docs/reference/PROJECT.md § Interface Contracts` (Player ↔ WeightStone, Player/SoulSlash ↔ Memory Shades, Corpse ↔ Platforming, EchoAltar ↔ EchoTwin, MobileInputManager ↔ Haptics, RoomManager ↔ Region Title Cards & Cracked Mirrors).
 
 ### 1.2 Progressive Testability & Fault Isolation
 Tests are architected with progressive testability:
@@ -77,7 +77,7 @@ Results are printed to stdout in human-readable format and serialized to `res://
 ## 3. 4-Tier Test Methodology
 
 ### 3.1 Tier 1: Feature Coverage (Sanity & Interface Contracts)
-Covers all 33 features from `PROJECT.md § Feature Inventory` individually with contract verification.
+Covers all 33 features from `docs/reference/PROJECT.md § Feature Inventory` individually with contract verification.
 
 ### 3.2 Tier 2: Boundary & Corner Conditions
 Stresses edge behaviors, input rates, extremes, and hardware variances:
@@ -155,4 +155,4 @@ End-to-end scenario validation:
 2. **Defect Escalation**:
    Any assertion failure pointing to implementation code must be documented as an escalated issue in `handoff.md` and communicated to the orchestrator. Test writers do not modify production scripts.
 3. **Publication**:
-   Once all test cases are implemented and verified against current milestones, publish `TEST_READY.md` summarizing test inventory, execution results, and outstanding implementation dependencies.
+   Once all test cases are implemented and verified against current milestones, publish `docs/testing/TEST_READY.md` summarizing test inventory, execution results, and outstanding implementation dependencies.

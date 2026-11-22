@@ -2,7 +2,7 @@ extends SceneTree
 ## ==============================================================================
 ## THE ROOM REMEMBERS v1.3.0 — Master E2E Opaque-Box Test Runner
 ##
-## Covers all 33 Features from PROJECT.md § Feature Inventory across 4 Tiers:
+## Covers all 33 Features from docs/reference/PROJECT.md § Feature Inventory across 4 Tiers:
 ## - Tier 1: Feature Coverage (Sanity & Interface Contracts for Features 1–33)
 ## - Tier 2: Boundary & Corner Conditions (Debounce, Rapid Saves, Extremes, Leaks)
 ## - Tier 3: Component Combinations & Integration (Corpse, Echo, Save/Load, Graph)
@@ -110,7 +110,7 @@ func _run_suite() -> void:
 
 
 # ==============================================================================
-# TIER 1: FEATURE COVERAGE (All 33 Features from PROJECT.md § Feature Inventory)
+# TIER 1: FEATURE COVERAGE (All 33 Features from docs/reference/PROJECT.md § Feature Inventory)
 # ==============================================================================
 func _run_tier_1_feature_coverage() -> void:
 	print("\n>>> STARTING TIER 1: FEATURE COVERAGE (Features 1–33)...")
@@ -406,7 +406,7 @@ func _run_tier_1_feature_coverage() -> void:
 	record_check(1, 32, "Versioning & export configuration", godot_v111 and preset_v111 and gradle_on and mono_icon and startup_ok and themed_ok and build_ver == "4.7.2.stable", "version %s code %d gradle mono=%s startup=%s themed=%s build=%s" % [app_ver, app_code, mono_icon, startup_ok, themed_ok, build_ver], false, "M5")
 
 	# F33: Git commit, tag, and GitHub Release (M5)
-	var git_clean: bool = FileAccess.file_exists("res://PROJECT.md") and FileAccess.file_exists("res://TEST_INFRA.md")
+	var git_clean: bool = FileAccess.file_exists("res://docs/reference/PROJECT.md") and FileAccess.file_exists("res://docs/testing/TEST_INFRA.md")
 	record_check(1, 33, "Git commit, tag, and GitHub Release", git_clean, "repo and documentation ready for release", false, "M5")
 
 

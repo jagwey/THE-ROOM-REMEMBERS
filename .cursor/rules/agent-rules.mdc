@@ -6,12 +6,22 @@ globs: *
 # THE ROOM REMEMBERS — AGENT RULES
 
 ## Mimari & Kod Standartları
-- Kod tanımlayıcıları İngilizce, oyun metinleri Türkçe (UTF-8).
-- Asla göreve ilgisiz kodu veya testleri bozma.
+- Kod tanımlayıcıları ve API'ler İngilizce (`snake_case` fonksiyonlar, `PascalCase` sınıflar, `SCREAMING_SNAKE_CASE` sabitler).
+- Oyun içi metinler, diyaloglar ve UI etiketleri mutlaka **Türkçe (UTF-8)** olmalıdır.
+- Sadece göreve doğrudan ilgili dosyaları oku ve düzenle; ilgisiz log, zip veya binary dosyaları dump etme.
+- Asla kullanıcı onayı olmadan rastgele kod silme; mevcut mimariyi ve testleri koru.
+
+## Kök Dizin & Dosya Yerleşimi (ZORUNLU)
+- Kök dizinde yalnızca temel proje dosyaları (`project.godot`, `export_presets.cfg`, `README.md`, `CLAUDE.md`, `PROGRESS.md`, `.gitignore`) bulunur; köke asla yeni `.md`, `.json`, `.gd` veya `.tscn` dosyası açma.
+- Tam klasör yerleşimi için `PROGRESS.md` (`## Proje Dizin Mimarisi`) bölümüne uy: belgeler `docs/{reference,testing,qa,gelistirme,play,specs,archive}/`, varlık üst verileri `data/meta/`, geliştirici sahne ve araçları `scenes/dev/` ve `scripts/dev/` altına konur.
 
 ## GÖREV SONU DOKÜMANTASYON KURALI (ZORUNLU)
-- **Her ajan / alt ajan bir işi, revizyonu veya görevi bitirdiğinde; yapılan tüm değişiklikleri, yeni mekanikleri, mimari detayları ve sürüm bilgisini MUTLAKA `README.md` ve `PROGRESS.md` dosyalarına yansıtacaktır.**
-- Dokümantasyon asla bayat bırakılamaz.
+- **Her ajan / alt ajan bir işi, revizyonu veya görevi bitirdiğinde; yapılan tüm değişiklikleri, yeni mekanikleri, mimari detayları ve sürüm bilgisini MUTLAKA `PROGRESS.md` dosyasına yansıtacaktır.**
+- `README.md` spoiler vermeden oyuncu/vitrin özeti, ekran görüntüleri ve sürüm bağlantısı açısından güncel tutulur.
+- Dokümantasyon asla bayat veya eksik bırakılamaz.
 
-## Release Kuralları
-- Dağıtım `jagwey/THE-ROOM-REMEMBERS-release` deposuna yapılır.
+## Yayın & Release Kuralları
+- Kaynak repo `jagwey/THE-ROOM-REMEMBERS` **private** depodur.
+- Dağıtım ve APK indirmeleri **public** repo olan `https://github.com/jagwey/THE-ROOM-REMEMBERS-release` üzerinden yapılır.
+- Her yeni sürümde `project.godot` (`config/version`) ve `export_presets.cfg` (`version/code`, `version/name`) artırılır.
+- APK derlemesi yapıldıktan sonra her iki depoya da GitHub Release açılır; en fazla son 4 sürüm tutulur.

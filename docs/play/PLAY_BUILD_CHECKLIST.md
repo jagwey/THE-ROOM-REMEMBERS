@@ -29,8 +29,8 @@ Gizli bilgi (keystore, parola) bu dosyaya veya depoya YAZILMAZ.
 ## Test (Play şartı + kalite)
 - [ ] Kişisel hesap ise: kapalı testte en az 12 test kullanıcısı, 14 gün kesintisiz (güncel kuralı Play Console'da doğrula) [?].
 - [ ] Gerçek cihaz testi: düşük RAM / orta seviye cihaz, dokunmatik kontroller, kaydet-çık-devam, arka plana alma.
-- [ ] İnsan oyun testi: `qa/release-readiness/05_PLAYTEST_PROTOCOL.md` protokolüne göre.
+- [ ] İnsan oyun testi: `docs/qa/release-readiness/05_PLAYTEST_PROTOCOL.md` protokolüne göre.
 - [ ] Pre-launch report (Play Console) çıktısını incele.
 
 ## Bilinen açık engeller
-Bkz. `qa/release-readiness/08_RELEASE_READINESS.md` (karar, kanıtlar ve açık P1/P2 listesi) ve `07_GOOGLE_PLAY_CHECKLIST.md`.
+Bkz. `docs/qa/release-readiness/08_RELEASE_READINESS.md` (karar, kanıtlar ve açık P1/P2 listesi) ve `07_GOOGLE_PLAY_CHECKLIST.md`.

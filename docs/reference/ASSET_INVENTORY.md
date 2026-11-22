@@ -57,7 +57,7 @@ Do **not** treat `bekci/project.godot` as the shipping game; it remains an asset
 
 ### Palette
 - void `#221B27`, deep_stone `#322A39`, stone `#493F51`, pale_lilac `#AB98A9`, ivory `#E1D3D1`, crimson `#7E2D3A`, dark_red `#521D29`
-- Files: `palette.json`, `palette.gpl`
+- Files: `data/meta/palette.json`, `data/meta/palette.gpl`
 
 ---
 

@@ -2,7 +2,7 @@
 
 **Date**: 2026-11-07  
 **Test Lead**: `test_writer_e2e_1`  
-**Test Infrastructure Document**: `TEST_INFRA.md`  
+**Test Infrastructure Document**: `docs/testing/TEST_INFRA.md`  
 **Master Test Runner**: `res://scripts/dev/e2e_runner.gd`  
 **Engine & Target**: Godot 4.7.2 Headless CLI  
 
