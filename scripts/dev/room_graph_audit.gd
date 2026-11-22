@@ -71,9 +71,43 @@ func _run() -> void:
 		if rm.progress_depth(side) != hi:
 			side_ok = false
 	check(side_ok, "yan odalar merkez odadan hemen sonra numaralı, derinlik = merkez")
-	check(rm.get_room_number_and_title(&"decay_rootworks").begins_with("ODA 15 ·"), "Kök Damarları ODA 15", rm.get_room_number_and_title(&"decay_rootworks"))
-	check(rm.get_room_number_and_title(&"library_hall").begins_with("ODA 16 ·"), "Hafıza Kütüphanesi ODA 16", rm.get_room_number_and_title(&"library_hall"))
-	check(rm.get_room_number_and_title(&"core").begins_with("ODA 46 ·"), "Çekirdek ODA 46", rm.get_room_number_and_title(&"core"))
+	## Ana yol odaları sürekli ODA 01..37, yan odalar merkez kodlu ODA <hub>A.. biçiminde.
+	var main_seq_ok := true
+	var main_n := 0
+	var side_codes_ok := true
+	var side_count := 0
+	for r in rm.PROGRESS_ORDER:
+		var code: String = rm.get_room_code(r)
+		if rm.is_side_room(r):
+			side_count += 1
+			var hub_code: String = rm.get_room_code(String(rm.SIDE_ROOM_HUB[r]))
+			if not code.begins_with(hub_code) or code.length() != hub_code.length() + 1:
+				side_codes_ok = false
+				print("  side code bad: ", r, " code=", code, " hub=", hub_code)
+		else:
+			main_n += 1
+			var expected := "%02d" % main_n
+			if code != expected:
+				main_seq_ok = false
+				print("  main code bad: ", r, " got=", code, " want=", expected)
+	check(main_seq_ok and main_n == 37, "ana yol sürekli 01..37 (%d oda)" % main_n)
+	check(side_codes_ok and side_count == 10, "10 yan oda merkez kodlu (01A, 02A, ...)")
+	check(rm.get_room_number_and_title(&"awakening_s_room").begins_with("ODA 01A ·"), "S.'nin Odası ODA 01A", rm.get_room_number_and_title(&"awakening_s_room"))
+	check(rm.get_room_number_and_title(&"awakening_crypt").begins_with("ODA 02A ·"), "İlk Bedenler Mahzeni ODA 02A", rm.get_room_number_and_title(&"awakening_crypt"))
+	check(rm.get_room_number_and_title(&"decay_rootworks").begins_with("ODA 10A ·"), "Kök Damarları ODA 10A", rm.get_room_number_and_title(&"decay_rootworks"))
+	check(rm.get_room_number_and_title(&"library_hall").begins_with("ODA 11 ·"), "Hafıza Kütüphanesi ODA 11", rm.get_room_number_and_title(&"library_hall"))
+	check(rm.get_room_number_and_title(&"core").begins_with("ODA 37 ·"), "Çekirdek ODA 37", rm.get_room_number_and_title(&"core"))
+	## Kanonik 6 region_id kontrolü: legacy &"archive" / &"lab" kalmamış olmalı.
+	const CANON_REGIONS := ["awakening", "decay", "library", "experiment", "mirrors", "core"]
+	var bad_regions: Array = []
+	for rid in rm._rooms.keys():
+		var room_node: Node = rm._rooms[rid].root
+		if "region_id" in room_node:
+			var reg := String(room_node.get("region_id"))
+			var expected_reg := String(rid).get_slice("_", 0)
+			if not CANON_REGIONS.has(reg) or reg != expected_reg:
+				bad_regions.append("%s: region_id=%s (want %s)" % [rid, reg, expected_reg])
+	check(bad_regions.is_empty(), "tüm odalar 6 kanonik region_id kullanır", bad_regions)
 	var bad_doors: Array = []
 	var close_pairs: Array = []
 	var ability_doors: Array = []

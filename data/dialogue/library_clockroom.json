@@ -3,7 +3,7 @@
   "sets": {
     "clock_1927": [
       {"s": "Noroi", "t": "Bu saat 1927'de durmuş. Akrep üçte kalmış."},
-      {"s": "Noroi", "t": "Cebimdeki saat altıyı gösteriyor, bugünün saati."},
+      {"s": "Noroi", "t": "Cebimdeki saat burada altıya kaymış; bugünün saati altı."},
       {"s": "@shilda", "t": "O gece bir ses kayboldu. Saatler onu bekliyor."},
       {"s": "Noroi", "t": "Neden bu kadar eminsin?"},
       {"s": "@shilda", "t": "O geceyi yaşayan bilir. Sana bu kadarını söyleyebilirim."},

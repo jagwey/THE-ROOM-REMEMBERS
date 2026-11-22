@@ -340,22 +340,22 @@ const HINTS: Dictionary = {
 	&"mirrors_dual_weight": {
 		"goal": "Dikenli plakaya sürekli bir beden basmalı.",
 		"orientation": "Dikene değ, bedenin plakanın üstünde kalsın.",
-		"explicit": "Orta saksının dikenine iki kez dokun; beden plakayı tutarken kapı açık kalır."
+		"explicit": "Dikene iki kez dokun; beden plakayı tutarken kapı açık kalır."
 	},
 	&"mirrors_gallery_plate_1": {
-		"goal": "Galerideki üç plakaya da beden bırakılmalı.",
-		"orientation": "Her plakanın yanında diken var. Üçüne de sırayla beden bırak.",
-		"explicit": "İlk dikene iki kez dokun; beden ilk plakada kalır."
+		"goal": "Galerideki ilk plaka bir ağırlık bekliyor.",
+		"orientation": "Taşı sola it; plaka ağırlığı duyunca kalıcı kilitlenir.",
+		"explicit": "Galerideki taşı soldaki ilk plakaya it."
 	},
 	&"mirrors_gallery_plate_2": {
-		"goal": "Galerinin ikinci plakası hâlâ boş.",
-		"orientation": "Plakalar bedeni tutar. İkincisi ortada.",
-		"explicit": "Ortadaki dikene iki kez dokun; beden plakada kalır."
+		"goal": "Ortadaki mor ruh mührü yolu ve taşı kesiyor.",
+		"orientation": "Ruh Kesimi mührü kırar ve galerinin öbür yarısını açar.",
+		"explicit": "Ortadaki mor mührü Ruh Kesimi ile kes."
 	},
 	&"mirrors_gallery_plate_3": {
-		"goal": "Son plaka da bir beden bekliyor.",
-		"orientation": "Üçüncü plaka en sağda. Bedeni orada bırak.",
-		"explicit": "Sağdaki dikene iki kez dokun; beden son plakada kalır."
+		"goal": "Son plaka galerinin sağ ucunda boş duruyor.",
+		"orientation": "Mühür kırılınca aynı taşı sağdaki son plakaya itebilirsin.",
+		"explicit": "Taşı kırılan mühürden geçirip sağdaki son plakaya it."
 	},
 	&"mirrors_1927_walk": {
 		"goal": "Gece kendiliğinden ilerliyor; gölgeyi izle.",
@@ -410,12 +410,12 @@ const HINTS: Dictionary = {
 	&"core_bloom_order": {
 		"goal": "Üç taş uyanmadan çiçek konuşmaz.",
 		"orientation": "Taşlardaki noktaları say: önce en çok, sonra en az, sonra kalan.",
-		"explicit": "Önce bedenini plakaya bırak. Sıra dört, bir, iki; yanlış taça dokunursan zincir başa sarar."
+		"explicit": "Perdeden gölgeyle geç; sıra dört, bir, iki, yanlışta başa sarar."
 	},
 	&"core_bloom_weight": {
-		"goal": "Taşlar uyanmadan önce plakada bir beden durmalı.",
-		"orientation": "Dikene dokun, bedenin plakanın üstünde kalsın.",
-		"explicit": "Dikene dokun; beden plakayı tutarken taşlara dokun."
+		"goal": "Taşlar uyanmadan önce kırmızı perde aşılmalı.",
+		"orientation": "Perde yürüyerek geçilmez; Gölge Atılması gerekir.",
+		"explicit": "Kırmızı perdeden Gölge Atılması ile geç, sonra taçlara dokun."
 	},
 	&"core_vault_order": {
 		"goal": "Hafıza kasası karanlık. Üç sütun bir tarih sırası istiyor.",
@@ -459,8 +459,8 @@ const HINTS: Dictionary = {
 	},
 	&"experiment_intake": {
 		"goal": "Terazinin iki kefesi de dolmalı.",
-		"orientation": "Sol kefe bedeni, sağ kefe taşı tartıyor.",
-		"explicit": "Sol kefede ölüp bedeni bırak, taşı sağ kefeye it."
+		"orientation": "Önce ruh mührünü kes; sonra iki taşı iki kefeye it.",
+		"explicit": "Mührü Ruh Kesimi'yle aç; sol ve sağ taşı iki kefeye it."
 	},
 	&"experiment_authority": {
 		"goal": "Mührün üç hanesi başka odalardaki kayıtlarda.",
@@ -684,8 +684,28 @@ const HINTS: Dictionary = {
 	},
 	&"experiment_observation": {
 		"goal": "Camın ardındaki yankı yürümeden not okunmaz.",
-		"orientation": "Projektör plakası yalnızca beden ağırlığını tanır.",
-		"explicit": "Plakadaki dikende öl, bedenin plakada kalsın, yankıyı izle."
+		"orientation": "Projektör iki anahtar ister: plakayı yankın tutsun, sen kolu çek.",
+		"explicit": "Sunağa dokun, plakada bekle; yankı plakadayken kolu çek, camı izle."
+	},
+	&"experiment_cell_a": {
+		"goal": "A hücresinin kapısı kapalı; içeride bir kayıt var.",
+		"orientation": "Kapının önündeki plaka yalnız beden ağırlığıyla açılır.",
+		"explicit": "İlk dikene iki kez dokun; bedenin plakada kalınca kapı açılır."
+	},
+	&"experiment_cell_b": {
+		"goal": "B hücresinin kapısı kapalı; ikinci kayıt içeride.",
+		"orientation": "Orta plaka da beden ağırlığı bekliyor.",
+		"explicit": "İkinci dikene iki kez dokun; kapı açılınca kaydı oku."
+	},
+	&"experiment_cell_c": {
+		"goal": "C hücresinin kapısı kapalı; son kayıt içeride.",
+		"orientation": "Son plaka için de bir beden bırakmalısın.",
+		"explicit": "Üçüncü dikene iki kez dokun; son kaydı okuyunca çıkış açılır."
+	},
+	&"experiment_cells_seen": {
+		"goal": "Üç hücrenin kayıtlarını incelemeden ilerleyemem.",
+		"orientation": "Her hücrenin kapısını plakadaki bedenle açıp kaydı oku.",
+		"explicit": "A, B ve C hücrelerindeki üç kaydı da oku; sağ kapı açılır."
 	}
 }
 
@@ -712,6 +732,7 @@ const ROOM_PUZZLES: Dictionary = {
 	"library_upper_stacks": [&"library_shelf_order"],
 	"library_forbidden_wing": [&"soul_seal_forbidden", &"soul_seal_forbidden_2"],
 	"library_reading_cell": [&"library_reading_cabin", &"library_reading_cell"],
+	"experiment_cells": [&"experiment_cell_a", &"experiment_cell_b", &"experiment_cell_c", &"experiment_cells_seen"],
 	"experiment_authority": [&"experiment_authority"],
 	"experiment_intake": [&"experiment_intake"],
 	"experiment_circuit": [&"experiment_circuit", &"memory_deney"],
@@ -725,7 +746,7 @@ const ROOM_PUZZLES: Dictionary = {
 	"mirrors_labyrinth": [&"mirrors_labyrinth_crossed"],
 	"mirrors_shrine": [&"mirrors_shrine_trial"],
 	"mirrors_1927": [&"mirrors_1927_walk"],
-	"core_bloom_garden": [&"core_bloom_order"],
+	"core_bloom_garden": [&"core_bloom_weight", &"core_bloom_order"],
 	"core_memory_vault": [&"core_vault_order"],
 	"core_threshold": [&"core_threshold_crossed"],
 	"core_ascent": [&"core_ascent"],

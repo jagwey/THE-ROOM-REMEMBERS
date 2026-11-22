@@ -42,10 +42,14 @@ func _ready() -> void:
 	monitoring = false
 	monitorable = true
 	var spr := get_node_or_null("Sprite2D") as Sprite2D
-	if spr:
-		spr.texture = load("res://assets/props/halo.png")
-		spr.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-		spr.modulate = Color(0.8, 0.7, 1.0, 1.0)
+	if spr == null:
+		spr = Sprite2D.new()
+		spr.name = "Sprite2D"
+		spr.position = Vector2(0, -24)
+		add_child(spr)
+	spr.texture = load("res://assets/props/halo.png")
+	spr.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	spr.modulate = Color(0.8, 0.7, 1.0, 1.0)
 	_label = Label.new()
 	_label.position = Vector2(-80, -78)
 	_label.size = Vector2(160, 24)

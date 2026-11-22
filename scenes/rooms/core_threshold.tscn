@@ -44,7 +44,7 @@ position = Vector2(120, 288)
 position = Vector2(880, 288)
 
 [node name="keeper_observe" type="Marker2D" parent="Spawns"]
-position = Vector2(590, 288)
+position = Vector2(240, 288)
 
 [node name="default" type="Marker2D" parent="Spawns"]
 position = Vector2(120, 288)

@@ -12,7 +12,7 @@ const GOLD := Color(0.54, 0.35, 0.08)
 ## Bölge kimliği (oda id önekı) -> görünen ad, sıra, bölge mührü bulmacası.
 const REGIONS: Array = [
 	{"id": "awakening", "seal": &"awakening_memory_code"},
-	{"id": "decay", "seal": &"decay_vine_shortcut"},
+	{"id": "decay", "seal": &"decay_vine_shortcut", "seal_alt": &"decay_vines"},
 	{"id": "library", "seal": &"library_page_order"},
 	{"id": "experiment", "seal": &"experiment_authority"},
 	{"id": "mirrors", "seal": &"mirrors_unbroken"},
@@ -107,18 +107,21 @@ func refresh() -> void:
 	queue_redraw()
 
 
-## main.gd ROOM_DEFS anahtarları + gelecek kimlikler; bölge = ilk "_" öncesi.
+## RoomManager.PROGRESS_ORDER sırası + yedek listeler; bölge = ilk "_" öncesi.
 func _collect_rooms() -> void:
 	_rooms_by_region.clear()
 	for r in REGIONS:
 		_rooms_by_region[r["id"]] = []
 	var ids: Array = []
+	for p in RoomManager.PROGRESS_ORDER:
+		ids.append(String(p))
 	var scr := load("res://scripts/main.gd") as GDScript
 	if scr:
 		var consts: Dictionary = scr.get_script_constant_map()
 		if consts.has("ROOM_DEFS"):
 			for k in (consts["ROOM_DEFS"] as Dictionary).keys():
-				ids.append(String(k))
+				if not ids.has(String(k)):
+					ids.append(String(k))
 	for f in RoomManager.ROOM_TITLES_TR.keys():
 		if not ids.has(String(f)):
 			ids.append(String(f))
@@ -181,6 +184,22 @@ func _diamond(c: Vector2, r: float, filled: bool, col: Color, tag: String = "") 
 	draw_polyline(pts, col, 1.5)
 	if tag != "":
 		_dbg("mark", tag, Rect2(c - Vector2(r, r), Vector2(r, r) * 2.0))
+
+
+## Yan oda düğümü: ana yol dairelerinden ayrışan çift çerçeveli/içi noktalı elmas.
+func _side_node_mark(c: Vector2, r_side: float, r_halo: float, is_visited: bool, dead: int) -> void:
+	if not is_visited:
+		_diamond(c, r_side, false, Color(INK, 0.35))
+		return
+	_diamond(c, r_halo, false, Color(INK, 0.55))
+	if dead > 0:
+		_diamond(c, r_side, true, Palette.CRIMSON)
+	else:
+		var pts := PackedVector2Array([c + Vector2(0, -r_side), c + Vector2(r_side, 0), c + Vector2(0, r_side), c + Vector2(-r_side, 0)])
+		draw_colored_polygon(pts, Palette.IVORY)
+		pts.append(pts[0])
+		draw_polyline(pts, INK, 1.5)
+		_diamond(c, maxf(1.8, r_side * 0.44), true, INK)
 
 
 ## Sığmayan metni sondan keser ve "…" ekler (taşma yerine).
@@ -249,6 +268,14 @@ func _header_plan(hs: int, lw: float, right_x: float, texts: Dictionary) -> Dict
 	var lx := right_x + 6.0
 	var avail := size.x - RIBBON_W - 4.0 - lx
 	p["avail"] = avail
+	var yan_size := mini(hs, 10)
+	var oda_w := _text_w("Oda", hs)
+	var yan_x := 16.0 + oda_w + 5.0
+	while yan_size > 8 and yan_x + 12.0 + _text_w("Yan", yan_size) > avail:
+		yan_size -= 1
+	p["yan_x"] = yan_x
+	p["yan_size"] = yan_size
+	p["yan_inline"] = yan_x + 12.0 + _text_w("Yan", yan_size) <= avail
 	var tip_size := mini(hs, 11)
 	var lines := _wrap_words("Odaya dokun: hızlı git", tip_size, avail)
 	while tip_size > 9 and lines.size() > 2:
@@ -310,14 +337,23 @@ func _draw_header(flags: Dictionary, ev_count: int, shortcuts: Array, page_w: fl
 		var cyy := lh * (float(i) + 0.5)
 		var label: String = ["Oda", "Ceset", "Mühür"][i]
 		if i == 0:
-			draw_circle(Vector2(lx + 7, cyy), 7.0, INK)
-			_dbg("mark", "hdr", Rect2(lx, cyy - 7.0, 14, 14))
+			draw_circle(Vector2(lx + 6, cyy), 6.0, INK)
+			_dbg("mark", "hdr", Rect2(lx, cyy - 6.0, 12, 12))
+			_text(Vector2(lx + 16, cyy - th * 0.5), label, hs, INK, false, "hdr")
+			if bool(p.get("yan_inline", false)):
+				var yx := lx + float(p["yan_x"])
+				var ys := int(p["yan_size"])
+				var yc := Vector2(yx + 5.0, cyy)
+				_side_node_mark(yc, 3.6, 5.0, true, 0)
+				_dbg("mark", "hdr", Rect2(yc - Vector2(5.0, 5.0), Vector2(10.0, 10.0)))
+				_text(Vector2(yx + 12.0, cyy - _text_h(ys) * 0.5), "Yan", ys, INK, false, "hdr")
 		elif i == 1:
-			draw_circle(Vector2(lx + 7, cyy), 7.0, Palette.CRIMSON)
-			_dbg("mark", "hdr", Rect2(lx, cyy - 7.0, 14, 14))
+			draw_circle(Vector2(lx + 6, cyy), 6.0, Palette.CRIMSON)
+			_dbg("mark", "hdr", Rect2(lx, cyy - 6.0, 12, 12))
+			_text(Vector2(lx + 16, cyy - th * 0.5), label, hs, INK, false, "hdr")
 		else:
-			_diamond(Vector2(lx + 7, cyy), 6.0, true, Palette.CRIMSON, "hdr")
-		_text(Vector2(lx + 20, cyy - th * 0.5), label, hs, INK, false, "hdr")
+			_diamond(Vector2(lx + 6, cyy), 5.5, true, Palette.CRIMSON, "hdr")
+			_text(Vector2(lx + 16, cyy - th * 0.5), label, hs, INK, false, "hdr")
 	var tip_size: int = int(p["tip_size"])
 	var ty: float = p["y_tip"]
 	for ln in p["tip_lines"]:
@@ -355,7 +391,8 @@ func _draw() -> void:
 			shortcuts.append(String(k))
 	for r in REGIONS:
 		var sid := String(r["seal"])
-		if sid.contains("shortcut") and PuzzleManager.is_solved(StringName(sid)) and not shortcuts.has(sid):
+		var seal_ok: bool = PuzzleManager.is_solved(StringName(sid)) or (r.has("seal_alt") and PuzzleManager.is_solved(StringName(r["seal_alt"])))
+		if sid.contains("shortcut") and seal_ok and not shortcuts.has(sid):
 			shortcuts.append(sid)
 
 	# --- Başlık: sol sayfa özet, sağ sayfa gösterge + ipucu (kurdele sağ sayfada, y < RIBBON_BOTTOM). ---
@@ -471,10 +508,10 @@ func _draw_region(reg: Dictionary, rect: Rect2, visited: Array, corpses_by_room:
 	var name_h := _text_h(name_size, any_seen)
 	_text(rect.position + Vector2(8, 2), rname, name_size, Color(INK, tone), any_seen, "card:" + String(reg["id"]))
 	# Bölge mührü (sağ üst köşe), adla aynı dikey ortada.
-	var solved := PuzzleManager.is_solved(reg["seal"])
+	var solved: bool = PuzzleManager.is_solved(reg["seal"]) or (reg.has("seal_alt") and PuzzleManager.is_solved(StringName(reg["seal_alt"])))
 	var seal_c := Vector2(rect.end.x - 12.0, rect.position.y + 2.0 + name_h * 0.5)
 	_diamond(seal_c, 4.5, solved, Color(Palette.CRIMSON, 1.0 if solved else 0.55), "card:" + String(reg["id"]))
-	# Oda düğümleri: zincir + daireler; boyut, kart genişliğine ve oda sayısına göre uyar.
+	# Oda düğümleri: ana yol (dolu daire + düz omurga) ve yan dallar (içi noktalı elmas + dal çizgisi).
 	var n := maxi(1, rooms.size())
 	var left := rect.position.x + 22.0
 	var span := maxf(1.0, rect.size.x - 44.0)
@@ -482,40 +519,93 @@ func _draw_region(reg: Dictionary, rect: Rect2, visited: Array, corpses_by_room:
 	var spacing := span / float(n - 1) if n > 1 else span
 	var r_dot := clampf(spacing * 0.5 - 2.5, 3.5, 7.0)
 	var r_halo := r_dot + 2.0
-	for j in range(n - 1):
-		var x1 := left + span * float(j) / float(n - 1)
-		var x2 := left + span * float(j + 1) / float(n - 1)
-		var lit := visited.has(rooms[j]) and visited.has(rooms[j + 1])
-		draw_line(Vector2(x1, cy), Vector2(x2, cy), Color(INK, 0.8 if lit else 0.25), 2.0)
+	var r_side := clampf(r_dot * 0.84, 3.2, 5.6)
+	var r_side_halo := r_side + 1.8
+	var pts: Array[Vector2] = []
+	var sides: Array[bool] = []
+	for j in n:
+		var x := left + (span * float(j) / float(n - 1) if n > 1 else span * 0.5)
+		var rid := String(rooms[j]) if j < rooms.size() else ""
+		var side := RoomManager.is_side_room(rid)
+		sides.append(side)
+		pts.append(Vector2(x, cy + (1.5 if side else 0.0)))
+	# Ana yol omurgası: ardışık ana yol odalarını bağlar; arada yan oda varsa üstten köprüler.
+	var prev_main := -1
+	var y_bridge := cy - minf(r_dot + 1.0, 6.5)
+	for j in n:
+		if sides[j]:
+			continue
+		if prev_main >= 0:
+			var lit := visited.has(rooms[prev_main]) and visited.has(rooms[j])
+			var lcol := Color(INK, 0.8 if lit else 0.25)
+			if j == prev_main + 1:
+				draw_line(pts[prev_main], pts[j], lcol, 2.0)
+			else:
+				var p1 := pts[prev_main]
+				var p2 := pts[j]
+				draw_polyline(PackedVector2Array([p1, Vector2(p1.x + 3.0, y_bridge), Vector2(p2.x - 3.0, y_bridge), p2]), lcol, 1.5)
+		prev_main = j
+	# Yan dal bağlantıları: merkez odadan hafifçe aşağı kırılan ince dal çizgisi.
+	for j in n:
+		if not sides[j]:
+			continue
+		var rid := String(rooms[j])
+		var hub := String(RoomManager.SIDE_ROOM_HUB.get(rid, ""))
+		var hub_idx := rooms.find(hub)
+		var lit := visited.has(rid) and (hub_idx < 0 or visited.has(hub))
+		var bcol := Color(INK, 0.65 if lit else 0.25)
+		if hub_idx >= 0 and absi(j - hub_idx) == 1:
+			var ph := pts[hub_idx]
+			var ps := pts[j]
+			var dir_x := signf(ps.x - ph.x)
+			draw_polyline(PackedVector2Array([ph, Vector2(ph.x + dir_x * 4.0, ps.y), ps]), bcol, 1.2)
+		else:
+			# Uzak/gizli yan dal (ör. S.'nin Odası): önceki yan odaya bağlanmaz, kısa bağımsız çentik alır.
+			var ps := pts[j]
+			var scol := Color(GOLD if visited.has(rid) else INK, 0.7 if visited.has(rid) else 0.25)
+			draw_line(Vector2(ps.x - 6.5, ps.y), Vector2(ps.x - 1.5, ps.y), scol, 1.2)
 	# Seçili odanın şeridi düğümlerin üstüne inmez; önce şerit, sonra düğümler.
 	if _pending != "" and rooms.has(_pending):
 		_draw_travel_prompt(rect)
 	var lab_size := 9 if r_dot >= 5.5 else 8
 	for j in n:
-		var x := left + (span * float(j) / float(n - 1) if n > 1 else span * 0.5)
+		var c := pts[j]
 		var rid := String(rooms[j]) if j < rooms.size() else ""
-		var c := Vector2(x, cy)
+		var side := sides[j]
 		var dead := int(corpses_by_room.get(rid, 0))
-		_dbg("node", String(reg["id"]), Rect2(c - Vector2(r_halo, r_halo), Vector2(r_halo, r_halo) * 2.0))
+		var nr := r_side if side else r_dot
+		var nh := r_side_halo if side else r_halo
+		_dbg("node", String(reg["id"]), Rect2(c - Vector2(nh, nh), Vector2(nh, nh) * 2.0))
 		if visited.has(rid):
 			_hits.append({"pos": c, "room": rid, "rect": rect})
-			if rid == _pending:
-				draw_arc(c, r_halo + 1.5, 0.0, TAU, 24, GOLD, 2.0)
-			if rid == String(RoomManager.get_active_room_id()):
-				draw_arc(c, r_halo + 1.5, 0.0, TAU, 24, Color(GOLD, 0.7), 1.5)
-			draw_circle(c, r_dot, Palette.CRIMSON if dead > 0 else INK)
-			draw_arc(c, r_halo, 0.0, TAU, 20, Color(INK, 0.55), 1.5)
+			if side:
+				if rid == _pending:
+					_diamond(c, nh + 1.5, false, GOLD)
+				if rid == String(RoomManager.get_active_room_id()):
+					_diamond(c, nh + 1.5, false, Color(GOLD, 0.7))
+				_side_node_mark(c, nr, nh, true, dead)
+			else:
+				if rid == _pending:
+					draw_arc(c, nh + 1.5, 0.0, TAU, 24, GOLD, 2.0)
+				if rid == String(RoomManager.get_active_room_id()):
+					draw_arc(c, nh + 1.5, 0.0, TAU, 24, Color(GOLD, 0.7), 1.5)
+				draw_circle(c, nr, Palette.CRIMSON if dead > 0 else INK)
+				draw_arc(c, nh, 0.0, TAU, 20, Color(INK, 0.55), 1.5)
 			if dead > 0:
-				# Çift haneli sayı daireye sığmazsa küçült; yine sığmazsa "+" yaz (taşma yok).
+				# Çift haneli sayı düğüme sığmazsa küçült; yine sığmazsa "+" yaz (taşma yok).
 				var label := str(dead)
 				var ls := lab_size
 				var tw := _text_w(label, ls, true)
-				while tw > r_dot * 2.0 + 1.0 and ls > 7:
+				var max_lab := nr * (1.7 if side else 2.0) + 1.0
+				while tw > max_lab and ls > 7:
 					ls -= 1
 					tw = _text_w(label, ls, true)
-				if tw > r_dot * 2.0 + 1.0:
+				if tw > max_lab:
 					label = "+"
 					tw = _text_w(label, ls, true)
-				_text(Vector2(x - tw * 0.5, cy - _text_h(ls, true) * 0.5), label, ls, Palette.IVORY, true, "node_label")
+				_text(Vector2(c.x - tw * 0.5, c.y - _text_h(ls, true) * 0.5), label, ls, Palette.IVORY, true, "node_label")
 		else:
-			draw_arc(c, r_dot, 0.0, TAU, 20, Color(INK, 0.3), 1.5)
+			if side:
+				_side_node_mark(c, nr, nh, false, 0)
+			else:
+				draw_arc(c, nr, 0.0, TAU, 20, Color(INK, 0.3), 1.5)

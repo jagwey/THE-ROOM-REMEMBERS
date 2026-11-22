@@ -1,12 +1,12 @@
 extends Area2D
-## Çatlak Ayna (Cracked Mirror) — Hızlı Seyahat (Fast-Travel Anchor — F28)
+## Çatlak Ayna (Cracked Mirror) — Birleşik Hızlı Seyahat Çapası (Fast-Travel Anchor — F28)
 ## Keşfedilen bölgesel aynalar world_memory_state["unlocked_mirrors"] içine kaydedilir.
-## Oyuncu etkileşime geçtiğinde açık aynalar arasında hızlı geçiş (RoomManager.enter_room) yapılmasını sağlar.
+## İlk etkileşimde ayna keşfedilir; sonraki etkileşimlerde birleşik Günlük -> Harita & Mühürler
+## sekmesini doğrudan açarak ziyaret edilmiş tüm odalara hızlı seyahat sağlar.
 
 @export var mirror_id: StringName = &""
 @export var display_name: String = ""
 
-var _panel: GothicModalPanel
 var _sprite: Sprite2D
 var _shimmer: Sprite2D
 
@@ -65,7 +65,7 @@ func _setup_visuals() -> void:
 		tw.tween_property(_shimmer, "modulate:a", 0.6, 1.2).set_trans(Tween.TRANS_SINE)
 
 
-func on_interact(by: Node) -> void:
+func on_interact(_by: Node) -> void:
 	if DialogueManager.is_open:
 		DialogueManager.advance()
 		return
@@ -76,7 +76,7 @@ func on_interact(by: Node) -> void:
 	var unlocked: Array = GameState.world_memory_state["unlocked_mirrors"]
 	var m_id := String(mirror_id)
 
-	# İlk keşif: aynayı aç ve fısılda
+	# İlk keşif: aynayı kaydet ve birleşik harita bağını fısılda.
 	if not unlocked.has(m_id):
 		unlocked.append(m_id)
 		GameState.world_memory_state["unlocked_mirrors"] = unlocked
@@ -84,66 +84,29 @@ func on_interact(by: Node) -> void:
 		var am := get_node_or_null("/root/AudioManager")
 		if am:
 			am.play_sfx(&"discovery")
-		DialogueManager.whisper("Noroi", "Ayna çatlağı derinleşti, yansıma diğer odalara bağlandı.")
+		MobileInputManager.vibrate(20)
+		DialogueManager.whisper("Noroi", "Çatlak yüzey titredi. Gördüğüm her odaya haritadan geçebilirim.")
 		return
 
-	# Diğer açık aynaları topla
-	var destinations: Array = []
-	for m in unlocked:
-		if String(m) != m_id:
-			destinations.append(String(m))
+	_open_unified_map()
 
-	if destinations.is_empty():
-		DialogueManager.whisper("Noroi", "Ayna çatlak ve sessiz, başka bir odadaki aynayı henüz uyandırmadım.")
+
+func _open_unified_map() -> void:
+	var journal := get_tree().get_first_node_in_group("journal_ui")
+	if journal == null:
+		DialogueManager.whisper("Noroi", "Çatlak yüzeyde yalnız kendi yansımam duruyor.")
 		return
 
-	_open_travel_modal(destinations)
-
-
-func _open_travel_modal(destinations: Array) -> void:
-	if _panel == null:
-		_panel = GothicModalPanel.new()
-		_panel.setup("Çatlak Ayna — Hızlı Seyahat", Vector2(360, 220))
-		add_child(_panel)
-		# UiGate kilidi görünürlüğe bağlı: düğme, Esc veya başka yoldan kapanınca bırakılır.
-		_panel.visibility_changed.connect(func(): UiGate.set_story(_panel.visible))
-
-	# Eski düğmeleri temizle
-	for child in _panel.body.get_children():
-		child.queue_free()
-
-	var desc := _panel.add_label("Hangi yansımanın içine adım atacaksın?", UiTheme.HINT)
-	desc.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-
-	for dest in destinations:
-		var dest_str := String(dest)
-		var dest_name: String = RoomManager.ROOM_TITLES_TR.get(dest_str, dest_str)
-		_panel.add_button(dest_name, func():
-			_panel.hide()
-			_travel_to(dest_str)
-		)
-
-	_panel.add_button("Vazgeç", func():
-		_panel.hide()
-	)
-
-	_panel.show()
-	MobileInputManager.clear_held_inputs()
-
-
-func _travel_to(target_room: String) -> void:
 	var am := get_node_or_null("/root/AudioManager")
 	if am:
-		am.play_sfx(&"echo_playback")
-	MobileInputManager.vibrate(25)
+		am.play_sfx(&"echo_playback", -6.0)
+	MobileInputManager.vibrate(15)
+	MobileInputManager.clear_held_inputs()
 
-	var cam := get_tree().get_first_node_in_group("follow_camera")
-	if cam and cam.has_method("add_trauma"):
-		cam.add_trauma(0.2)
-
-	# Oyuncuyu hedef odaya taşı
-	RoomManager.enter_room(StringName(target_room), &"from_mirror")
-	SaveManager.save_game()
+	if journal.has_method("open_journal"):
+		journal.open_journal()
+	if journal.visible and journal.has_method("_show_section"):
+		journal._show_section("harita")
 
 
 func _resolve_room_id() -> StringName:

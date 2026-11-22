@@ -389,16 +389,19 @@ func _rooms_28_31() -> void:
 	await process_frame
 	var ga := _room_root(&"mirrors_gallery")
 	var gplates := _plates_of(ga)
-	check(gplates.size() == 3, "r30_three_plates", gplates.size())
-	var gxs := [360.0, 640.0, 920.0]
-	for i in mini(3, gplates.size()):
-		var pl: Node = gplates[i]
-		check(absf(pl.position.x - gxs[i]) < 1.0 and bool(pl.latch_on_press) and not pl.accept_player and not pl.accept_stone and String(pl.puzzle_id) == "mirrors_gallery_plate_%d" % (i + 1), "r30_plate_%d_config" % (i + 1))
+	check(gplates.size() == 2, "r30_two_stone_plates", gplates.size())
+	if gplates.size() == 2:
+		check(absf(gplates[0].position.x - 360.0) < 1.0 and bool(gplates[0].latch_on_press) and not gplates[0].accept_player and bool(gplates[0].accept_stone) and String(gplates[0].puzzle_id) == "mirrors_gallery_plate_1", "r30_plate_1_stone_latch")
+		check(absf(gplates[1].position.x - 920.0) < 1.0 and bool(gplates[1].latch_on_press) and not gplates[1].accept_player and bool(gplates[1].accept_stone) and String(gplates[1].puzzle_id) == "mirrors_gallery_plate_3", "r30_plate_3_stone_latch")
 	var thorns := 0
 	for n in ga.find_children("*", "Area2D", true, false):
 		if "anchor_x" in n and "puzzle_hint" in n:
 			thorns += 1
-	check(thorns == 3, "r30_three_thorns", thorns)
+	check(thorns == 0, "r30_no_blood_thorns", thorns)
+	var gseal: Node = ga.find_child("GallerySeal", true, false)
+	var gstone: Node2D = ga.find_child("GalleryStone", true, false)
+	check(gseal != null and gseal.is_in_group("soul_seal") and absf(gseal.position.x - 640.0) < 1.0 and String(gseal.puzzle_id) == "mirrors_gallery_plate_2", "r30_mid_soul_seal_config")
+	check(gstone != null and float(gstone.min_x) <= 360.0 and float(gstone.max_x) >= 920.0, "r30_relay_stone_reaches_both_plates")
 	var ggate: Node2D = null
 	if _gates_of(ga).size() > 0:
 		ggate = _gates_of(ga)[0]
@@ -411,17 +414,27 @@ func _rooms_28_31() -> void:
 	player.global_position = Vector2(wall.global_position.x, 288)
 	await _beat_run(wall, player)
 	check(not pm.is_solved(&"mirrors_gallery"), "r30_wall_alone_does_not_solve")
-	for i in 3:
-		_clear_corpses()
-		_corpse_at(gxs[i], 288.0)
+	if gstone != null and gseal != null:
+		var ghome := gstone.global_position
+		gstone.global_position = Vector2(360.0, ghome.y)
 		for k in 8:
 			await physics_frame
-		check(pm.is_solved(StringName("mirrors_gallery_plate_%d" % (i + 1))), "r30_plate_%d_latches" % (i + 1))
-	_clear_corpses()
-	for k in 4:
-		await physics_frame
-	check(pm.is_solved(&"mirrors_gallery_plate_1") and pm.is_solved(&"mirrors_gallery_plate_3"), "r30_latch_survives_corpse_removal")
-	check(not pm.is_solved(&"mirrors_gallery"), "r30_plates_alone_do_not_solve_room")
+		check(pm.is_solved(&"mirrors_gallery_plate_1"), "r30_stone_latches_plate_1")
+		gstone.global_position = ghome
+		for k in 6:
+			await physics_frame
+		check(pm.is_solved(&"mirrors_gallery_plate_1"), "r30_plate_1_latch_survives_stone_move")
+		gseal.receive_soul_slash(player)
+		check(pm.is_solved(&"mirrors_gallery_plate_2"), "r30_soul_slash_solves_plate_2")
+		gstone.global_position = Vector2(920.0, ghome.y)
+		for k in 8:
+			await physics_frame
+		check(pm.is_solved(&"mirrors_gallery_plate_3"), "r30_stone_latches_plate_3")
+		gstone.global_position = ghome
+		for k in 4:
+			await physics_frame
+		check(pm.is_solved(&"mirrors_gallery_plate_1") and pm.is_solved(&"mirrors_gallery_plate_3"), "r30_latches_survive_stone_reset")
+	check(not pm.is_solved(&"mirrors_gallery"), "r30_locks_alone_do_not_solve_room")
 	await _cross(ggate)
 	check(pm.is_solved(&"mirrors_gallery"), "r30_gate_pass_solves")
 	rm.enter_room(&"mirrors_dual")
@@ -946,14 +959,14 @@ func _src_files(dir_path: String, ext: String, skip_dev: bool, out: Array) -> vo
 
 
 func _bloom_nodes(gr: Node) -> Dictionary:
-	var out := {"mem": null, "rec": null, "plate": null, "thorn": null, "shrine": null, "steps": {}}
+	var out := {"mem": null, "rec": null, "veil": null, "thorn": null, "shrine": null, "steps": {}}
 	for n in gr.find_children("*", "Node2D", true, false):
 		if "lore_id" in n and String(n.lore_id) == "bloom_memory":
 			out["mem"] = n
 		elif "lore_id" in n and String(n.lore_id) == "bloom_reconcile":
 			out["rec"] = n
-		elif "accept_stone" in n and String(n.puzzle_id) == "core_bloom_weight":
-			out["plate"] = n
+		elif n.is_in_group("dash_line") and String(n.puzzle_id) == "core_bloom_weight":
+			out["veil"] = n
 		elif n.is_in_group("blood_thorn"):
 			out["thorn"] = n
 		elif "order" in n and "puzzle_id" in n and String(n.puzzle_id) == "core_bloom_order":
@@ -1059,8 +1072,9 @@ func _rooms_38_39() -> void:
 	await process_frame
 	var gr := _room_root(&"core_bloom_garden")
 	var g := _bloom_nodes(gr)
-	var gok: bool = g["mem"] != null and g["rec"] != null and g["plate"] != null and g["thorn"] != null and g["shrine"] != null and (g["steps"] as Dictionary).size() == 3
+	var gok: bool = g["mem"] != null and g["rec"] != null and g["veil"] != null and g["shrine"] != null and (g["steps"] as Dictionary).size() == 3
 	check(gok, "r39_nodes_present")
+	check(g["thorn"] == null, "r39_no_blood_thorn")
 	if not gok:
 		return
 	check(absf(g["mem"].position.x - 200.0) < 1.0, "r39_memory_x200")
@@ -1069,15 +1083,13 @@ func _rooms_38_39() -> void:
 		var sn: Node = g["steps"][sk]
 		pips[sk] = [int(sn.pips), sn.position.x, sn.position.y]
 	check(pips == {"4": [4, 400.0, 246.0], "1": [1, 520.0, 246.0], "2": [2, 660.0, 246.0]}, "r39_crowns_unchanged", pips)
-	var gp: Node = g["plate"]
-	check(absf(gp.position.x - 260.0) < 1.0 and not bool(gp.accept_player) and not bool(gp.accept_stone), "r39_weight_plate_config")
-	var gt: Node = g["thorn"]
-	check(absf(gt.anchor_x - 260.0) < 1.0 and String(gt.puzzle_hint) == "core_bloom_weight", "r39_thorn_anchor_260")
+	var gv: Node = g["veil"]
+	check(absf(gv.position.x - 300.0) < 1.0 and String(gv.puzzle_id) == "core_bloom_weight", "r39_dash_veil_config")
 	var gs_: Node = g["shrine"]
-	check(Array(gs_.require_live) == ["core_bloom_weight"] and gs_.require_line == "Taşlar ağırlık bekliyor. Bedenim plakada kalmalı." and gs_.fail_line == "Taç soldu. Baştan say.", "r39_shrine_requires_weight")
+	check(Array(gs_.require_live) == ["core_bloom_weight"] and gs_.require_line == "Taşlar uyanmıyor. Önce kırmızı perdeden gölgeyle geçmeliyim." and gs_.fail_line == "Taç soldu. Baştan say.", "r39_shrine_requires_veil")
 	var grec: Node = g["rec"]
 	check(absf(grec.position.x - 790.0) < 1.0 and String(grec.requires_puzzle) == "core_bloom_order" and bool(grec.trust_gate) and String(grec.set_progress_key) == "trusted_keeper", "r39_reconcile_790_gated")
-	var gtexts: Array = [String(gs_.fail_line), String(gs_.require_line)]
+	var gtexts: Array = [String(gs_.fail_line), String(gs_.require_line), String(gv.refusal_line), String(gv.hint_line)]
 	gtexts.append_array(Array(grec.locked_lines))
 	gtexts.append_array(Array(grec.untrusted_lines))
 	if bo != null:
@@ -1090,35 +1102,19 @@ func _rooms_38_39() -> void:
 	var gdx: Array = []
 	for d in _doors_of(gr):
 		gdx.append(d.position.x)
-	check(_min_dx(gdx, [grec, g["mem"], gp, gt]) >= 96.0, "r39_door_clearance")
-	# cesetsiz: adim reddi
+	check(_min_dx(gdx, [grec, g["mem"], gv]) >= 96.0, "r39_door_clearance")
+	# perde asilmadan: adim reddi
 	g["steps"]["4"].on_interact(player)
-	check(gs_.get_progress() == 0 and not pm.is_solved(&"core_bloom_order"), "r39_step_refused_without_corpse")
+	check(gs_.get_progress() == 0 and not pm.is_solved(&"core_bloom_order"), "r39_step_refused_before_veil_dash")
 	g["steps"]["1"].on_interact(player)
 	g["steps"]["2"].on_interact(player)
-	check(not pm.is_solved(&"core_bloom_order"), "r39_no_solve_without_corpse")
+	check(not pm.is_solved(&"core_bloom_order"), "r39_no_solve_before_veil_dash")
 	dm.clear()
-	# gercek olum
-	var death := root.get_node("DeathManager")
-	player.global_position = Vector2(gt.position.x, 288)
-	gt._armed = true
-	await gt.on_interact(player)
-	var tw := 0.0
-	while death.is_dying and tw < 30.0:
-		await process_frame
-		tw += 0.016
-	for i in 6:
-		await physics_frame
+	# golge atilmasi ile perde asilir: olum/ceset yok
+	gv.receive_shadow_dash(player)
 	dm.clear()
-	var cs: Array = gs.world_memory_state["corpses"]
-	var cx := -1.0
-	if cs.size() > 0:
-		cx = float(((cs[0] as Dictionary).get("position", {}) as Dictionary).get("x", -1.0))
-	check(cs.size() == 1 and absf(cx - 260.0) < 3.0, "r39_thorn_death_one_corpse_on_plate", [cs.size(), cx])
-	check(pm.is_live(&"core_bloom_weight"), "r39_corpse_holds_plate")
-	gr = _room_root(&"core_bloom_garden")
-	g = _bloom_nodes(gr)
-	player = current_scene.get_node("Player")
+	check(pm.is_solved(&"core_bloom_weight") and bool(gv.is_open()), "r39_shadow_dash_opens_veil")
+	check((gs.world_memory_state["corpses"] as Array).is_empty(), "r39_veil_needs_zero_corpses")
 	g["steps"]["1"].on_interact(player)
 	g["steps"]["4"].on_interact(player)
 	g["steps"]["2"].on_interact(player)
@@ -1127,8 +1123,8 @@ func _rooms_38_39() -> void:
 	g["steps"]["4"].on_interact(player)
 	g["steps"]["1"].on_interact(player)
 	g["steps"]["2"].on_interact(player)
-	check(pm.is_solved(&"core_bloom_order"), "r39_corpse_then_4_1_2_solves")
-	check((gs.world_memory_state["corpses"] as Array).size() <= 1, "r39_needs_at_most_one_corpse")
+	check(pm.is_solved(&"core_bloom_order"), "r39_dash_then_4_1_2_solves")
+	check((gs.world_memory_state["corpses"] as Array).is_empty(), "r39_solved_with_zero_corpses")
 	check(_fwd_door_open(&"core_bloom_garden"), "r39_fwd_door_opens")
 	dm.clear()
 	# Uzlasma: guvensiz -> yazmaz

@@ -36,6 +36,9 @@ func _ready() -> void:
 
 
 func get_interact_label() -> String:
+	var shrine := get_parent()
+	if shrine and shrine.has_method("step_label"):
+		return String(shrine.call("step_label", step_id, label))
 	return label
 
 

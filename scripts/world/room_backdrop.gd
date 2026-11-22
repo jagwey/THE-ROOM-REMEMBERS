@@ -126,40 +126,32 @@ func _draw_balcony() -> void:
 	var stone := _tc(Color(0.22, 0.19, 0.26), 1.0)
 	var stone_hi := _tc(Color(0.4, 0.35, 0.46), 1.0)
 	var stone_dk := _tc(Color(0.07, 0.055, 0.09), 1.0)
+	var w := width
+	## Tam genişlikte koyu taş arka duvar — dışarıda yıldız, ay veya şehir yok (kanon: yalnız karanlık boşluk ve sis).
+	draw_rect(Rect2(0, 0, w, FLOOR_Y), _tc(Color(0.11, 0.09, 0.14), 1.0))
 	var spring := 168.0
-	var cxs := [width * 0.5 - 170.0, width * 0.5 + 170.0]
+	var cxs := [w * 0.5 - 320.0, w * 0.5, w * 0.5 + 320.0]
 	for cx in cxs:
-		## Taş çerçeve (dış kemer) → gece göğü (iç kemer).
-		var outer := arch_points(cx, spring, 150.0, 128.0, 22)
-		outer.append(Vector2(cx + 150.0, 262.0))
-		outer.append(Vector2(cx - 150.0, 262.0))
+		## Taş çerçeve (dış kemer) → dipsiz boşluk ve sis (iç kemer).
+		var outer := arch_points(cx, spring, 138.0, 126.0, 22)
+		outer.append(Vector2(cx + 138.0, 262.0))
+		outer.append(Vector2(cx - 138.0, 262.0))
 		draw_colored_polygon(outer, stone)
-		var inner := arch_points(cx, spring, 136.0, 118.0, 22)
-		var sky := PackedVector2Array(inner)
-		sky.append(Vector2(cx + 136.0, 262.0))
-		sky.append(Vector2(cx - 136.0, 262.0))
+		var inner := arch_points(cx, spring, 124.0, 116.0, 22)
+		var void_poly := PackedVector2Array(inner)
+		void_poly.append(Vector2(cx + 124.0, 262.0))
+		void_poly.append(Vector2(cx - 124.0, 262.0))
 		var cols := PackedColorArray()
-		for p in sky:
-			var k := clampf((p.y - 40.0) / 222.0, 0.0, 1.0)
-			cols.append(Color(0.04, 0.03, 0.1).lerp(Color(0.2, 0.12, 0.22), k * k))
-		draw_polygon(sky, cols)
-		## Yıldızlar + uzak tesis siluetleri.
-		for s in 18:
-			var sx: float = cx - 120.0 + _h(float(s), cx) * 240.0
-			var sy: float = 60.0 + _h(cx, float(s)) * 110.0
-			if Geometry2D.is_point_in_polygon(Vector2(sx, sy), sky):
-				draw_rect(Rect2(sx, sy, 1.0, 1.0), Color(0.9, 0.85, 1.0, 0.3 + 0.5 * _h(float(s), 5.0)))
-		var tx: float = cx - 130.0
-		var ti := 0
-		while tx < cx + 130.0:
-			var tw: float = 18.0 + _h(float(ti), cx) * 26.0
-			var th: float = 24.0 + _h(cx, float(ti)) * 46.0
-			draw_rect(Rect2(tx, 262.0 - th, tw, th), Color(0.035, 0.025, 0.06, 1.0))
-			if _h(float(ti), 2.0) > 0.45:
-				draw_rect(Rect2(tx + tw * 0.5 - 1.0, 262.0 - th + 6.0, 2.0, 3.0), Color(0.9, 0.5, 0.4, 0.55))
-			tx += tw + 2.0
-			ti += 1
-		## Gül pencere kemere ve söveye bağlı; boşta halka yok.
+		for p in void_poly:
+			var k := clampf((p.y - 42.0) / 220.0, 0.0, 1.0)
+			cols.append(Color(0.02, 0.015, 0.038).lerp(Color(0.12, 0.095, 0.16), k * k))
+		draw_polygon(void_poly, cols)
+		## Aşağıdan yükselen katmanlı boşluk sisi (dış dünya/şehir yok).
+		for mi in 5:
+			var my: float = 204.0 + float(mi) * 12.0
+			var ma: float = 0.045 + float(mi) * 0.028
+			draw_rect(Rect2(cx - 122.0, my, 244.0, 14.0), Color(0.28, 0.22, 0.34, ma))
+		## Gül pencere taş oyması kemere ve orta sütuna bağlı.
 		var rose := Vector2(cx, spring - 64.0)
 		var rose_r := 12.0
 		draw_arc(rose, rose_r, 0.0, TAU, 20, stone, 3.0)
@@ -169,12 +161,8 @@ func _draw_balcony() -> void:
 		var mull_top := rose.y + rose_r - 1.0
 		draw_rect(Rect2(cx - 2.0, mull_top, 4.0, 262.0 - mull_top), stone)
 		draw_polyline(inner, stone_hi, 1.0)
-		draw_polyline(arch_points(cx, spring, 150.0, 128.0, 22), stone_dk, 1.0)
-	## Ay + hale (sol kemerin sağ üstü).
-	draw_circle(Vector2(cxs[1] + 50.0, 96.0), 11.0, Color(0.85, 0.82, 0.95, 0.85))
-	draw_circle(Vector2(cxs[1] + 50.0, 96.0), 22.0, Color(0.7, 0.65, 0.9, 0.12))
+		draw_polyline(arch_points(cx, spring, 138.0, 126.0, 22), stone_dk, 1.0)
 	## Korkuluk: üst küpeşte, balusterler, alt kaide, pilastr.
-	var w := width
 	draw_rect(Rect2(0, 244.0, w, 6.0), stone_hi)
 	draw_rect(Rect2(0, 250.0, w, 2.0), stone_dk)
 	draw_rect(Rect2(0, 276.0, w, 12.0), stone)

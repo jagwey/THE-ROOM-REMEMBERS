@@ -15,8 +15,8 @@ const ROOM_DEFS := {
 		"spawns": {"default": Vector2(120, 280), "rebirth_bed": Vector2(120, 280), "from_passage": Vector2(1160, 288), "seal_awakening": Vector2(380, 288)}},
 	"awakening_passage": {"node": "AwakeningPassage", "bounds": Rect2(0, 0, 1500, 360), "checkpoint": Vector2(600, 288), "bg": "res://assets/backgrounds/decay",
 		"spawns": {"default": Vector2(80, 288), "from_awakening": Vector2(80, 288), "from_seal": Vector2(1410, 288)}},
-	"awakening_seal": {"node": "AwakeningSeal", "bounds": Rect2(0, 0, 960, 360), "checkpoint": Vector2(480, 288), "bg": "res://assets/backgrounds/decay",
-		"spawns": {"default": Vector2(480, 288), "from_passage": Vector2(80, 288), "from_decay": Vector2(880, 288)}},
+	"awakening_seal": {"node": "AwakeningSeal", "bounds": Rect2(0, 0, 960, 360), "checkpoint": Vector2(140, 288), "bg": "res://assets/backgrounds/decay",
+		"spawns": {"default": Vector2(140, 288), "from_passage": Vector2(80, 288), "from_decay": Vector2(880, 288)}},
 	"decay_vines": {"node": "DecayVines", "bounds": Rect2(0, 0, 1280, 360), "checkpoint": Vector2(120, 288), "bg": "res://assets/backgrounds/decay",
 		"spawns": {"default": Vector2(80, 288), "from_seal": Vector2(80, 288), "from_weight": Vector2(1200, 288)}},
 	"decay_weight": {"node": "DecayWeight", "bounds": Rect2(0, 0, 960, 360), "checkpoint": Vector2(120, 288), "bg": "res://assets/backgrounds/decay",
@@ -54,7 +54,7 @@ const ROOM_DEFS := {
 ## room_id -> [{x, to, req, msg}] — hedef odada "from_<room_id>" spawn'ı built_room tarafından üretilir.
 const SIDE_DOORS := {
 	"core_memory_vault": [{"x": 140.0, "to": "core_last_record", "title": "Son Kayıt", "label_dy": -36.0}],
-	"mirrors_labyrinth": [{"x": 600.0, "y": 202.0, "spawn_x": 650.0, "spawn_y": 222.0, "to": "mirrors_inverse_hall", "title": "Ters Salon"}],
+	"mirrors_labyrinth": [{"x": 600.0, "y": 250.0, "spawn_x": 640.0, "spawn_y": 250.0, "to": "mirrors_inverse_hall", "title": "Ters Salon"}],
 	"experiment_circuit": [{"x": 680.0, "to": "experiment_twin_lab", "title": "İkiz Laboratuvarı"}],
 	"library_upper_stacks": [{"x": 680.0, "to": "library_archive_vault", "title": "Kayıt Mahzeni"}],
 	"decay_garden": [{"x": 460.0, "to": "decay_rootworks", "title": "Kök Damarları"}],

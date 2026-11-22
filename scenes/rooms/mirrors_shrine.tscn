@@ -97,7 +97,7 @@ script = ExtResource("reach")
 puzzle_id = &"mirrors_shrine_trial"
 
 [node name="ShrineBowl" type="Area2D" parent="Interactive"]
-position = Vector2(700, 288)
+position = Vector2(470, 288)
 script = ExtResource("lore_story")
 lore_id = &"shrine_bowl"
 texture_path = "res://assets/props/candles.png"

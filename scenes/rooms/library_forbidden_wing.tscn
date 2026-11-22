@@ -31,7 +31,7 @@ position = Vector2(150, 288)
 [node name="Interactive" type="Node2D" parent="."]
 
 [node name="SoulSlash" type="Area2D" parent="Interactive"]
-position = Vector2(260.0, 288.0)
+position = Vector2(240.0, 288.0)
 script = ExtResource("ability")
 grant_key = "ability_soul_slash"
 title = "Ruh Kesimi"
@@ -40,7 +40,7 @@ lines = PackedStringArray("Noroi|Havada asılı bir kesik, kılıcımın izi ama
 tutorial = "Q (mobilde yıldız düğmesi): Ruh Kesimi. Mor mühürleri ve mühürlü sarmaşıkları açar."
 
 [node name="Shard1" type="Area2D" parent="Interactive"]
-position = Vector2(480.0, 288.0)
+position = Vector2(440.0, 288.0)
 script = ExtResource("ability")
 grant_key = ""
 grant_world_flag = &"seal_shard_1"
@@ -50,13 +50,13 @@ tint = Color(1, 0.75, 0.8, 1)
 lines = PackedStringArray("Noroi|Kırık bir mührün yarısı, kenarında bekçi damgası.", "Shilda|(uzaktan) Diğer yarısı aynaların ardında.")
 
 [node name="ProtocolSeal" type="StaticBody2D" parent="Interactive"]
-position = Vector2(600.0, 288.0)
+position = Vector2(520.0, 288.0)
 script = ExtResource("soul")
 puzzle_id = &"soul_seal_forbidden"
 back_side = 1
 
 [node name="ProtocolSeal2" type="StaticBody2D" parent="Interactive"]
-position = Vector2(780.0, 288.0)
+position = Vector2(680.0, 288.0)
 script = ExtResource("soul")
 puzzle_id = &"soul_seal_forbidden_2"
 back_side = 1
@@ -64,7 +64,7 @@ requires = &"soul_seal_forbidden"
 wrong_line = "Bu mühür, ilk mühür çözülmeden kıpırdamıyor."
 
 [node name="Protocol" type="Area2D" parent="Interactive"]
-position = Vector2(690.0, 288.0)
+position = Vector2(600.0, 288.0)
 script = ExtResource("lore")
 lore_id = &"forbidden_protocol"
 texture_path = "res://assets/layers/bookshelf.png"
@@ -77,10 +77,10 @@ set_progress_key = "truth_fragment_protocol"
 focus_zoom = true
 
 [node name="seal_library_forbidden_wing" type="Marker2D" parent="Spawns"]
-position = Vector2(370, 288)
+position = Vector2(340, 288)
 
 [node name="MemorySeal" type="Area2D" parent="Interactive"]
-position = Vector2(370, 288)
+position = Vector2(340, 288)
 script = ExtResource("memory_seal_pt")
 room_id = &"library_forbidden_wing"
 
@@ -95,7 +95,7 @@ dialogue_set = &"forbidden_shelf"
 repeat_line = "Noroi|Boş sırtlı ciltler. Kimin okuduğu yazılı, ne okuduğu değil."
 
 [node name="NookFrag" type="Area2D" parent="Interactive"]
-position = Vector2(770.0, 288.0)
+position = Vector2(755.0, 288.0)
 script = ExtResource("nook_rec")
 lore_id = &"nook_forbidden_a"
 role = "fragment"
@@ -109,13 +109,13 @@ evidence_body = "Yasak raftaki ayraçta “S., bunu kimse görmesin” yazıyor;
 evidence_section = "izler"
 
 [node name="NookLine" type="Area2D" parent="Interactive"]
-position = Vector2(570.0, 288.0)
+position = Vector2(785.0, 288.0)
 script = ExtResource("nook_gate")
 puzzle_id = &"nook_forbidden_gate"
 refusal_line = "Rafın önündeki kırmızı çizgi geri itiyor; Gölge Atılması için Ayna Tapınağı'na gitmeliyim."
 
 [node name="NookRecord" type="Area2D" parent="Interactive"]
-position = Vector2(810.0, 288.0)
+position = Vector2(815.0, 288.0)
 script = ExtResource("nook_rec")
 lore_id = &"nook_forbidden_b"
 role = "record"

@@ -52,7 +52,7 @@ evidence_section = "izler"
 focus_zoom = true
 
 [node name="Photo" type="Area2D" parent="Interactive"]
-position = Vector2(500, 288.0)
+position = Vector2(445.0, 288.0)
 script = ExtResource("lore")
 lore_id = &"balcony_photo"
 texture_path = "res://assets/props/photograph.png"
@@ -62,7 +62,7 @@ evidence_body = "Fotoğrafta yanımdaki kişinin yüzü silinmiş. Arkasındaki 
 evidence_section = "notlar"
 
 [node name="BalconyTelescope" type="Area2D" parent="Interactive"]
-position = Vector2(400, 268)
+position = Vector2(390, 268)
 script = ExtResource("echo")
 echo_id = &"balcony_telescope"
 
@@ -132,7 +132,7 @@ body_line = "Dönüşte de bir basamak gerek. Bedenim sütunun dibinde kalır."
 shape = SubResource("PlateShape")
 
 [node name="BalconyRail" type="Area2D" parent="Interactive"]
-position = Vector2(700, 288)
+position = Vector2(770, 288)
 script = ExtResource("lore")
 lore_id = &"balcony_rail"
 texture_path = "res://assets/props/photograph.png"
@@ -142,7 +142,7 @@ dialogue_set = &"balcony_rail"
 repeat_line = "Noroi|Soğuk korkuluk. Aşağıda yalnız sis var."
 
 [node name="NookFrag" type="Area2D" parent="Interactive"]
-position = Vector2(246.0, 288.0)
+position = Vector2(200.0, 288.0)
 script = ExtResource("nook_rec")
 lore_id = &"nook_balcony_a"
 role = "fragment"
@@ -156,13 +156,13 @@ evidence_body = "Kaşkolun cebinde 1927 nöbetini S.'ye veren bir kâğıt var; 
 evidence_section = "izler"
 
 [node name="NookLine" type="Area2D" parent="Interactive"]
-position = Vector2(761.0, 288.0)
+position = Vector2(495.0, 288.0)
 script = ExtResource("nook_gate")
 puzzle_id = &"nook_balcony_gate"
 refusal_line = "Balkonda kırmızı bir çizgi var; Gölge Atılması için Ayna Tapınağı'na gitmeliyim."
 
 [node name="NookRecord" type="Area2D" parent="Interactive"]
-position = Vector2(551.0, 288.0)
+position = Vector2(545.0, 288.0)
 script = ExtResource("nook_rec")
 lore_id = &"nook_balcony_b"
 role = "record"

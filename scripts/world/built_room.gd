@@ -66,8 +66,10 @@ func _process(_delta: float) -> void:
 
 func _build_parallax() -> void:
 	var layers := [["ParallaxFar", "far", 0.15], ["ParallaxMid", "mid", 0.45], ["ParallaxFront", "front", 1.0]]
+	var child_idx := 0
 	for l in layers:
 		if get_node_or_null(String(l[0])):
+			child_idx += 1
 			continue
 		var px := Parallax2D.new()
 		px.name = String(l[0])
@@ -80,7 +82,8 @@ func _build_parallax() -> void:
 		spr.centered = false
 		px.add_child(spr)
 		add_child(px)
-		move_child(px, 0)
+		move_child(px, child_idx)
+		child_idx += 1
 
 
 func _floor_segments() -> Array:
@@ -112,10 +115,13 @@ func _build_floor() -> void:
 		var body := StaticBody2D.new()
 		body.name = "Floor%d" % i
 		body.collision_layer = 1
-		body.position = Vector2(seg.x + w * 0.5, 312)
+		var pad_left := 20.0 if seg.x <= 0.5 else 0.0
+		var pad_right := 20.0 if seg.y >= room_width - 0.5 else 0.0
+		var col_w := w + pad_left + pad_right
+		body.position = Vector2(seg.x - pad_left + col_w * 0.5, 360)
 		var cs := CollisionShape2D.new()
 		var rect := RectangleShape2D.new()
-		rect.size = Vector2(w + (40.0 if i == 0 else 0.0), 48)
+		rect.size = Vector2(col_w, 144)
 		cs.shape = rect
 		body.add_child(cs)
 		add_child(body)
@@ -125,17 +131,17 @@ func _build_floor() -> void:
 		found.color = Color(0.08, 0.06, 0.1, 1)
 		terrain.add_child(found)
 		i += 1
-	## Boşluklar: dibe düşen ölür.
+	## Boşluklar: dibe düşen ölür (geniş/derin tuzak kutusu — hızlı düşüşte boşluğa kaçış olmasın).
 	for g in floor_gaps:
 		var pit := Area2D.new()
 		pit.name = "Pit%d" % int(g.x)
 		pit.add_to_group("pit")
 		pit.collision_layer = 0
 		pit.collision_mask = 2
-		pit.position = Vector2((g.x + g.y) * 0.5, 352)
+		pit.position = Vector2((g.x + g.y) * 0.5, 420)
 		var cs2 := CollisionShape2D.new()
 		var r2 := RectangleShape2D.new()
-		r2.size = Vector2(g.y - g.x, 24)
+		r2.size = Vector2((g.y - g.x) + 28.0, 160)
 		cs2.shape = r2
 		pit.add_child(cs2)
 		pit.body_entered.connect(func(b): if b.is_in_group("player") and not DeathManager.is_dying: DeathManager.request_death(&"hazard"))
@@ -303,11 +309,12 @@ func _build_spawns_and_doors() -> void:
 		interactive.add_child(door)
 		if bool(d.get("mark", false)):
 			DOOR_SCRIPT.add_door_mark(door)
-		## Bu kapıdan gelene spawn: kapının biraz içi.
+		## Bu kapıdan gelene spawn: kapının biraz içi (yüksek raftaki kapılar yüksekliğini korur).
 		var sname := "from_%s" % target
 		if spawns.get_node_or_null(sname) == null:
 			var m := Marker2D.new()
 			m.name = sname
 			var inward := 48.0 if x < room_width * 0.5 else -48.0
-			m.position = Vector2(clampf(x + inward, 48.0, room_width - 48.0), 288.0)
+			var spawn_y := y if y < 250.0 else 288.0
+			m.position = Vector2(clampf(x + inward, 48.0, room_width - 48.0), spawn_y)
 			spawns.add_child(m)

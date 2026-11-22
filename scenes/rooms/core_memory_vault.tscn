@@ -84,7 +84,7 @@ set_progress_key = "truth_seen"
 focus_zoom = true
 
 [node name="VaultDust" type="Area2D" parent="Interactive"]
-position = Vector2(480, 288)
+position = Vector2(710, 288)
 script = ExtResource("lore")
 lore_id = &"vault_dust"
 texture_path = "res://assets/props/ledger.png"

@@ -1,16 +1,14 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/nook_record.gd" id="nook_rec"]
 [ext_resource type="Script" path="res://scripts/world/dash_line.gd" id="nook_gate"]
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
 [ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore_story"]
-[ext_resource type="Script" path="res://scripts/world/pressure_plate.gd" id="plate"]
-[ext_resource type="Script" path="res://scripts/world/blood_thorn.gd" id="thorn"]
+[ext_resource type="Script" path="res://scripts/world/echo_altar.gd" id="altar"]
 [ext_resource type="Script" path="res://scripts/world/observation_echo.gd" id="echo"]
-[ext_resource type="Texture2D" path="res://assets/props/pressure_plate.png" id="plate_art"]
 
-[sub_resource type="RectangleShape2D" id="PlateShape"]
-size = Vector2(40, 16)
+[sub_resource type="RectangleShape2D" id="AltarHit"]
+size = Vector2(44, 56)
 
 [node name="ExperimentObservation" type="Node2D"]
 script = ExtResource("room")
@@ -29,33 +27,29 @@ z_index = -1
 color = Color(0.6, 0.8, 1.0, 0.1)
 polygon = PackedVector2Array(380, 170, 800, 170, 800, 276, 380, 276)
 
-[node name="ProjectorPlate" type="Area2D" parent="Interactive"]
-position = Vector2(260, 300)
-script = ExtResource("plate")
+[node name="ProjectorAltar" type="Area2D" parent="Interactive"]
+position = Vector2(160, 268)
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+monitorable = true
+script = ExtResource("altar")
 puzzle_id = &"experiment_observation_projector"
-accept_stone = false
+intro_speaker = "Shilda"
+intro_text = "Sunağa dokun, plakada bekle; yankın plakayı tutarken kolu çek."
+solved_text = "Projektör yandı; camın ardındaki yankı yürüdü."
+switch_kinds = PackedStringArray("plate", "lever")
+switch_positions = PackedVector2Array(75, 32, 150, 0)
+lever_hold_seconds = 7.0
+plate_hold_seconds = 2.0
+live_only = true
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ProjectorPlate"]
-shape = SubResource("PlateShape")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ProjectorAltar"]
+shape = SubResource("AltarHit")
 
-[node name="Sprite2D" type="Sprite2D" parent="Interactive/ProjectorPlate"]
+[node name="Sprite2D" type="Sprite2D" parent="Interactive/ProjectorAltar"]
 texture_filter = 0
-position = Vector2(0, 4)
-texture = ExtResource("plate_art")
 centered = true
-modulate = Color(0.7, 0.85, 1, 1)
-
-[node name="ProjectorThorn" type="Area2D" parent="Interactive"]
-position = Vector2(260, 290)
-script = ExtResource("thorn")
-anchor_x = 260.0
-puzzle_hint = &"experiment_observation_projector"
-body_line = "Dokunursam ölürüm. Bedenim projektörü yakar."
-solved_line = "Projektör yandı. Camın ardında biri yürüyor."
-solve_on_death = PackedStringArray("experiment_observation_projector")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/ProjectorThorn"]
-shape = SubResource("PlateShape")
 
 [node name="Echo" type="Node2D" parent="Interactive"]
 script = ExtResource("echo")

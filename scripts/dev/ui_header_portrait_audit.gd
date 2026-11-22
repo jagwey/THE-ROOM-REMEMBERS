@@ -26,12 +26,13 @@ func _run() -> void:
 		return
 	var rm := root.get_node("RoomManager")
 	var gs := root.get_node("GameState")
-	# Oda numaraları/başlıkları
+	# Oda numaraları/başlıkları (ana yol 01..37 + yan dallar 01A/02A)
 	check(rm.get_room_number_and_title(&"awakening") == "ODA 01 · Uyanış", "awakening title")
+	check(rm.get_room_number_and_title(&"awakening_s_room") == "ODA 01A · S.'nin Odası", "s_room title")
 	check(rm.get_room_number_and_title(&"awakening_balcony") == "ODA 02 · Gözlem Balkonu", "balcony title")
-	check(rm.get_room_number_and_title(&"awakening_crypt") == "ODA 03 · İlk Bedenler Mahzeni", "crypt title")
-	check(rm.get_room_number_and_title(&"awakening_passage") == "ODA 04 · Kırık Geçit", "passage title")
-	check(rm.get_room_number_and_title(&"awakening_seal") == "ODA 05 · Mühürlü Eşik", "seal title")
+	check(rm.get_room_number_and_title(&"awakening_crypt") == "ODA 02A · İlk Bedenler Mahzeni", "crypt title")
+	check(rm.get_room_number_and_title(&"awakening_passage") == "ODA 03 · Kırık Geçit", "passage title")
+	check(rm.get_room_number_and_title(&"awakening_seal") == "ODA 04 · Mühürlü Eşik", "seal title")
 	var missing: PackedStringArray = []
 	var seen := {}
 	var defs: Dictionary = load("res://scripts/main.gd").get_script_constant_map()["ROOM_DEFS"]

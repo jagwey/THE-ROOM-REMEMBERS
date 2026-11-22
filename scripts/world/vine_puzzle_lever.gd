@@ -11,6 +11,14 @@ func _ready() -> void:
 	collision_mask = 0
 	monitoring = false
 	monitorable = true
+	if get_node_or_null("Sprite2D") == null:
+		var spr := Sprite2D.new()
+		spr.name = "Sprite2D"
+		spr.texture = load("res://assets/props/seal.png")
+		spr.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		spr.scale = Vector2(0.45, 0.45)
+		spr.modulate = Color(0.55, 0.78, 0.48, 0.9)
+		add_child(spr)
 
 
 func on_interact(_by: Node) -> void:

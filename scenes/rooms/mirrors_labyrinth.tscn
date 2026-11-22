@@ -32,7 +32,7 @@ floor_gaps = PackedVector2Array(300.0, 1080.0)
 [node name="Interactive" type="Node2D" parent="."]
 
 [node name="Hint" type="Area2D" parent="Interactive"]
-position = Vector2(140.0, 288.0)
+position = Vector2(195.0, 288.0)
 script = ExtResource("lore")
 lore_id = &"labyrinth_hint"
 texture_path = "res://assets/layers/mirror.png"
@@ -73,6 +73,7 @@ anchor_x = 990.0
 anchor_y = 288.0
 hold_corpse = true
 hold_id = &"mirrors_labyrinth_bridge"
+bridge_plank_width = 80.0
 puzzle_hint = &"mirrors_labyrinth_crossed"
 body_line = "Boşluk geniş. Bedenim kristalde kalırsa köprü olur."
 solved_line = "Kristal sustu, köprü kuruldu."

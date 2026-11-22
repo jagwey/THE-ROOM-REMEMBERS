@@ -43,7 +43,7 @@ script = ExtResource("lore")
 lore_id = &"s_wall_nooks_1"
 texture_path = "res://assets/props/photograph.png"
 sprite_scale = 0.5
-lines = PackedStringArray("Noroi|Duvara geri dönüş köşelerinden topladığım kayıtlar yazılmış.", "Kayıt|Balkon: “Anne, buradan gökyüzü görünüyor.” İmza: S.", "Kayıt|Kripta: “1927 kışı, sayım bitmedi. S. hâlâ sayıyor.”", "Kayıt|Yeraltı mezarı: “Pazartesi, 1927. S. ilk çiçeği buldu.”", "Kayıt|Sarnıç: “Pompa kapatıldı, 1927. S. uyanınca su çekilsin.”")
+lines = PackedStringArray("Noroi|Duvara geri dönüş köşelerinden topladığım kayıtlar yazılmış.", "Kayıt|Balkon: “Anne, buradan gökyüzü görünüyor.” İmza: S.", "Kayıt|İlk Bedenler Mahzeni: “1927 kışı, sayım bitmedi. S. hâlâ sayıyor.”", "Kayıt|Kemik Mahzeni: “Pazartesi, 1927. S. ilk çiçeği buldu.”", "Kayıt|Sarnıç: “Pompa kapatıldı, 1927. S. uyanınca su çekilsin.”")
 
 [node name="SThorn" type="Area2D" parent="Interactive"]
 position = Vector2(180, 290)

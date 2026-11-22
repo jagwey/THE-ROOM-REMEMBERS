@@ -24,8 +24,9 @@ const ROOM_ORDER: PackedStringArray = [
 	"core_last_record",
 	"awakening_s_room",
 ]
-## Oyuncuya gösterilen oda numarası (ODA 01..47) gerçek oyun sırasını izler: yan odalar bağlı oldukları
-## odanın hemen ardından gelir (Kök Damarları = Solmuş Bahçe'den sonra). ROOM_ORDER kayıt/denetim için sabit kalır.
+## Oyun sırası (PROGRESS_ORDER): yan odalar bağlı oldukları odanın hemen ardından gelir (Kök Damarları = Solmuş
+## Bahçe'den sonra). Ana yol odaları sürekli ODA 01..37, yan odalar merkez kodlu ODA 02A / 01A biçimindedir.
+## ROOM_ORDER ve PROGRESS_ORDER kayıt/denetim uyumluluğu için sabit kalır.
 const PROGRESS_ORDER: PackedStringArray = [
 	"awakening", "awakening_balcony", "awakening_crypt", "awakening_passage", "awakening_seal", "awakening_vigil", "awakening_bellroom",
 	"decay_vines", "decay_catacombs", "decay_weight", "decay_cistern", "decay_greenhouse", "decay_shilda_wall", "decay_garden", "decay_rootworks",
@@ -189,12 +190,49 @@ func progress_depth(room_id: Variant) -> int:
 	return progress_index(String(SIDE_ROOM_HUB.get(rid, rid)))
 
 
-## "ODA 01 · Uyanış" — sıra PROGRESS_ORDER'dan; bilinmeyen oda "ODA ?? · <id>".
+## Yan oda mı? (SIDE_ROOM_HUB'da kayıtlı çıkmaz yan dallar).
+func is_side_room(room_id: Variant) -> bool:
+	return SIDE_ROOM_HUB.has(String(room_id))
+
+
+## Ana yol oda numarası (1..37, SIDE_ROOM_HUB dışındakiler); yan oda veya bilinmeyen için 0.
+func main_path_number(room_id: Variant) -> int:
+	var rid := String(room_id)
+	if SIDE_ROOM_HUB.has(rid):
+		return 0
+	var n := 0
+	for p in PROGRESS_ORDER:
+		if not SIDE_ROOM_HUB.has(p):
+			n += 1
+			if p == rid:
+				return n
+	return 0
+
+
+## Oyuncuya gösterilen oda kodu: ana yol "01".."37", yan oda "<merkez>A"/"B" (ör. "02A", "01A"), bilinmeyen "??".
+func get_room_code(room_id: Variant) -> String:
+	var rid := String(room_id)
+	if SIDE_ROOM_HUB.has(rid):
+		var hub := String(SIDE_ROOM_HUB[rid])
+		var hub_num := main_path_number(hub)
+		if hub_num <= 0:
+			return "??"
+		var branch_idx := 0
+		for p in PROGRESS_ORDER:
+			if p == rid:
+				break
+			if String(SIDE_ROOM_HUB.get(p, "")) == hub:
+				branch_idx += 1
+		return "%02d%s" % [hub_num, char(65 + branch_idx)]
+	var num := main_path_number(rid)
+	return "??" if num <= 0 else "%02d" % num
+
+
+## "ODA 01 · Uyanış" (ana yol 01..37) veya "ODA 02A · İlk Bedenler Mahzeni" (yan dal); bilinmeyen "ODA ?? · <id>".
 func get_room_number_and_title(room_id: StringName) -> String:
-	var idx := progress_index(room_id)
-	var num := "??" if idx < 0 else "%02d" % (idx + 1)
+	var code := get_room_code(room_id)
 	var title := String(ROOM_TITLES_TR.get(String(room_id), String(room_id).replace("_", " ").capitalize()))
-	return "ODA %s · %s" % [num, title]
+	return "ODA %s · %s" % [code, title]
 
 
 ## Sol joystick arkasında doğmayı önler (yalnız sol sınıra yakın doğuşlar sağa kayar).
@@ -567,14 +605,15 @@ func _set_room_physics(node: Node, active: bool) -> void:
 		elif object.has_meta("room_physics_suspended"):
 			var saved_layer: int = int(object.get_meta("room_saved_layer"))
 			var saved_mask: int = int(object.get_meta("room_saved_mask"))
-			# Açılmış engellerin katman 1 olarak yeniden canlanmasını engelle
+			# Açılmış katı engellerin (PhysicsBody2D) katman 1 olarak yeniden canlanmasını engelle;
+			# etkileşimli Area2D düğümleri (sunak/mühür vb.) etkileşim katmanını korur.
 			if object.has_method("_is_open") and bool(object.call("_is_open")):
 				saved_layer = 0
 			elif object.has_method("is_broken") and bool(object.call("is_broken")):
 				saved_layer = 0
-			elif "puzzle_id" in object and PuzzleManager.is_solved(object.get("puzzle_id")):
+			elif object is PhysicsBody2D and "puzzle_id" in object and PuzzleManager.is_solved(object.get("puzzle_id")):
 				saved_layer = 0
-			elif "open_flag" in object and object.get("open_flag") != &"" and bool(GameState.get_world_flag(object.get("open_flag"), false)):
+			elif object is PhysicsBody2D and "open_flag" in object and object.get("open_flag") != &"" and bool(GameState.get_world_flag(object.get("open_flag"), false)):
 				saved_layer = 0
 			object.collision_layer = saved_layer
 			object.collision_mask = saved_mask
@@ -614,10 +653,10 @@ func _setup_m3_mechanics(room_id: StringName, root: Node2D, spawns: Dictionary) 
 
 	# 1. Cracked Mirror setup (F28)
 	const MIRROR_POSITIONS := {
-		"awakening_balcony": Vector2(190, 288),
-		"decay_garden": Vector2(465, 288),
-		"library_hall": Vector2(190, 288),
-		"experiment_cells": Vector2(820, 288),
+		"awakening_balcony": Vector2(140, 288),
+		"decay_garden": Vector2(362, 288),
+		"library_hall": Vector2(255, 288),
+		"experiment_cells": Vector2(598, 288),
 		"mirrors_reverse": Vector2(280, 288),
 	}
 	if MIRROR_POSITIONS.has(rid):
@@ -632,9 +671,9 @@ func _setup_m3_mechanics(room_id: StringName, root: Node2D, spawns: Dictionary) 
 
 	# 2. Walking Shades setup (F22)
 	const WALKING_SHADES := {
-		"decay_garden": [Vector2(420, 288)],
+		"decay_garden": [Vector2(515, 288)],
 		"decay_catacombs": [Vector2(260, 288), Vector2(690, 288)],
-		"experiment_cells": [Vector2(405, 288)],
+		"experiment_cells": [Vector2(422, 288)],
 	}
 	if WALKING_SHADES.has(rid):
 		var walk_scene := load("res://scenes/world/memory_shade_walking.tscn") as PackedScene
@@ -646,9 +685,9 @@ func _setup_m3_mechanics(room_id: StringName, root: Node2D, spawns: Dictionary) 
 
 	# 3. Shielded Shades setup (F23)
 	const SHIELDED_SHADES := {
-		"experiment_cells": [Vector2(790, 288)],
-		"experiment_circuit": [Vector2(480, 288)],
-		"mirrors_reverse": [Vector2(480, 288)],
+		"experiment_cells": [Vector2(788, 288)],
+		"experiment_circuit": [Vector2(610, 288)],
+		"mirrors_reverse": [Vector2(670, 288)],
 	}
 	if SHIELDED_SHADES.has(rid):
 		var shield_scene := load("res://scenes/world/memory_shade_shielded.tscn") as PackedScene

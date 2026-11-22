@@ -22,7 +22,35 @@ const BackdropScript := preload("res://scripts/world/room_backdrop.gd")
 ## Resmin arka duvarı y=228..253'te bitiyor. Oyuncuya doğru yaklaşan iki ayrı zemin düzlemi.
 const MID_BASE := 270.0
 const FRONT_BASE := 284.0
-const FRONT_BOTTOM_ROW := {"awakening": 265.0, "core": 274.0, "decay": 265.0, "experiment": 288.0, "library": 288.0, "mirrors": 288.0}
+const FRONT_BOTTOM_ROW := {"awakening": 265.0, "core": 274.0, "decay": 265.0, "experiment": 295.0, "library": 295.0, "mirrors": 295.0}
+## Uyanış yatağı/kapsülü resmi yalnız yataklı odalara (awakening, awakening_crypt) aittir;
+## diğer Uyanış odaları soğuk taş tonlu gotik kemer duvarını kullanır.
+const AWAKENING_CORRIDOR_ROOMS := [&"awakening_vigil", &"awakening_bellroom", &"awakening_s_room"]
+## Komşu odaların aynı duvar kağıdını tekrarlamaması için bölgesel ikincil arka plan eşlemesi.
+## RoomArchitecture kullanan özel odalar ile awakening_balcony aşağıda önceden döner ve değişmez.
+const ALT_FAR_ROOMS := {
+	&"awakening_seal": "res://assets/backgrounds/decay/far_alt.png",
+	&"awakening_bellroom": "res://assets/backgrounds/decay/far_alt.png",
+	&"awakening_s_room": "res://assets/backgrounds/decay/far_alt.png",
+	&"decay_catacombs": "res://assets/backgrounds/decay/far_alt.png",
+	&"decay_shilda_wall": "res://assets/backgrounds/decay/far_alt.png",
+	&"library_witness": "res://assets/backgrounds/library/far_alt.png",
+	&"library_upper_stacks": "res://assets/backgrounds/library/far_alt.png",
+	&"library_archive_vault": "res://assets/backgrounds/library/far_alt.png",
+	&"library_reading_cell": "res://assets/backgrounds/library/far_alt.png",
+	&"experiment_cells": "res://assets/backgrounds/experiment/far_alt.png",
+	&"experiment_twin_lab": "res://assets/backgrounds/experiment/far_alt.png",
+	&"experiment_quarantine": "res://assets/backgrounds/experiment/far_alt.png",
+	&"experiment_observation": "res://assets/backgrounds/experiment/far_alt.png",
+	&"mirrors_dual": "res://assets/backgrounds/mirrors/far_alt.png",
+	&"mirrors_unbroken": "res://assets/backgrounds/mirrors/far_alt.png",
+	&"mirrors_inverse_hall": "res://assets/backgrounds/mirrors/far_alt.png",
+	&"mirrors_shrine": "res://assets/backgrounds/mirrors/far_alt.png",
+	&"mirrors_1927": "res://assets/backgrounds/mirrors/far_alt.png",
+	&"core_seal_chamber": "res://assets/backgrounds/core/far_alt.png",
+	&"core_memory_vault": "res://assets/backgrounds/core/far_alt.png",
+	&"core_last_record": "res://assets/backgrounds/core/far_alt.png",
+}
 
 
 func _align_backdrop() -> void:
@@ -39,6 +67,30 @@ func _align_backdrop() -> void:
 	var far := get_node_or_null("ParallaxFar") as Parallax2D
 	var mid := get_node_or_null("ParallaxMid") as Parallax2D
 	var front := get_node_or_null("ParallaxFront") as Parallax2D
+	# Balkon: kendi kemerli boşluk manzarası var; tekrar eden yatak duvarı ve korkuluk önü enkaz gizlenir.
+	if room_id == &"awakening_balcony":
+		for layer in [far, mid, front]:
+			if layer:
+				layer.hide()
+		var balcony_back := Node2D.new()
+		balcony_back.set_script(BackdropScript)
+		balcony_back.name = "BackdropFill"
+		balcony_back.z_index = -6
+		add_child(balcony_back)
+		_refresh_backdrop_width(balcony_back)
+		call_deferred("_refresh_backdrop_width", balcony_back)
+		return
+	# İkincil bölgesel duvarlar + yataksız Uyanış koridorları (Nöbet, Çanlar, S.'nin Odası).
+	if far:
+		var far_override := String(ALT_FAR_ROOMS.get(room_id, ""))
+		if far_override == "" and AWAKENING_CORRIDOR_ROOMS.has(room_id):
+			far_override = "res://assets/backgrounds/decay/far.png"
+		if far_override != "":
+			var far_tex := load(far_override) as Texture2D
+			if far_tex:
+				for child in far.get_children():
+					if child is Sprite2D:
+						(child as Sprite2D).texture = far_tex
 	# Bölgeler arasında kullanılan resim, odanın adından farklı olabilir (örneğin Uyanış Geçidi).
 	var region := ""
 	if front and front.get_child_count() > 0:
@@ -70,7 +122,7 @@ func _place_plane(plane: Parallax2D, depth: int, offset_y: float) -> void:
 			(child as Sprite2D).position.y += offset_y
 
 
-## Bazı bölge PNG'leri bağımsız parçaları yan yana taşır. Yalnız mekâna oturan parçayı göster.
+## Bazı bölge PNG'leri tavan/pencere öğelerini taşır; gerçek piksel konumlarına göre hizala.
 func _curate_middle_plane(plane: Parallax2D) -> void:
 	if plane == null:
 		return
@@ -79,21 +131,29 @@ func _curate_middle_plane(plane: Parallax2D) -> void:
 		if sprite == null or sprite.texture == null:
 			continue
 		match sprite.texture.resource_path:
+			"res://assets/backgrounds/awakening/mid.png":
+				# Gotik tavan kemer kaburgaları, zincirler ve üst boşluk sisi; tavana sabitle.
+				sprite.position.y = 0.0
+				sprite.modulate.a = 0.78
 			"res://assets/backgrounds/decay/mid.png":
-				# Saksıların ve gerçek çıkışın önüne sahte bir kapı gelmesin. Sarmaşık tavandan sarkar.
+				# Sarmaşık tavandan sarkar (piksel alanı x=486..593, y=113..235).
 				sprite.region_enabled = true
 				sprite.region_rect = Rect2(480, 113, 128, 128)
 				sprite.position.x += 480
 				sprite.position.y = -2
-			"res://assets/backgrounds/library/mid.png", "res://assets/backgrounds/mirrors/mid.png":
-				# Raf ve boy aynası kaidelerine basar. Sağ yarıdaki bağımsız ışık ve cam parçaları oda resminde zaten var.
-				sprite.region_enabled = true
-				sprite.region_rect = Rect2(0, 0, 320, 360)
+			"res://assets/backgrounds/library/mid.png":
+				# Penceresiz raf koridorlarında (far_alt) pencere huzmesi gizlenir; gül pencereli odalarda soğuk gece sisi olur.
+				if ALT_FAR_ROOMS.has(room_id):
+					sprite.visible = false
+				else:
+					sprite.modulate = Color(0.46, 0.44, 0.72, 0.22)
+			"res://assets/backgrounds/mirrors/mid.png":
+				# Havada asılı cam kırıkları sağ yarıda (x=493..587, y=113..235).
+				sprite.modulate.a = 0.72
 			"res://assets/backgrounds/experiment/mid.png":
-				# Sağdaki deney tankı yerde durur; soldaki zincirin bu duvarda bir askı noktası yok.
-				sprite.region_enabled = true
-				sprite.region_rect = Rect2(320, 0, 320, 360)
-				sprite.position.x += 320
+				# Tavandan sarkan zincirler sol yarıda (x=30..146, y=51..233); tavana sabitle.
+				sprite.position.y = -50.0
+				sprite.modulate.a = 0.75
 
 
 func _backdrop_width() -> float:

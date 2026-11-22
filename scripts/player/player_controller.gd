@@ -332,6 +332,9 @@ func _physics_process(delta: float) -> void:
 	_update_anim()
 	attack_area.position = Vector2(28.0 * _facing, -20.0)
 	interact_area.position.x = 20.0 * _facing
+	## Boşluğa düşme emniyeti: çukur Area2D'si kaçırılsa bile sonsuz düşüş/softlock olmaz.
+	if global_position.y > 420.0 and not DeathManager.is_dying:
+		DeathManager.request_death(&"hazard")
 
 
 # --- Zıplama -----------------------------------------------------------------

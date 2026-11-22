@@ -25,7 +25,7 @@ size = Vector2(40, 48)
 [node name="ExperimentAuthority" type="Node2D"]
 script = ExtResource("4")
 room_id = &"experiment_authority"
-region_id = &"lab"
+region_id = &"experiment"
 bounds = Rect2(0, 0, 960, 360)
 checkpoint = Vector2(200, 288)
 checkpoint_room = &"experiment_authority"

@@ -73,6 +73,45 @@ func _run() -> void:
 		check(journal.map_view._hits.size() >= 1, "map has tappable rooms (%d)" % journal.map_view._hits.size())
 		journal.close_journal()
 
+	## Birleşik hızlı seyahat: Çatlak Ayna ilk etkileşimde keşfedilir, ikincide Günlük -> Harita sekmesini açar (rakip modal yok).
+	rm.enter_room(&"awakening_balcony", &"default")
+	await create_timer(0.2).timeout
+	dm.clear()
+	gate.set_story(false)
+	var mirror: Node = null
+	var bal_root: Node = rm._rooms[&"awakening_balcony"].root
+	for m in get_nodes_in_group("cracked_mirror"):
+		if bal_root.is_ancestor_of(m):
+			mirror = m
+			break
+	check(mirror != null, "cracked_mirror present in awakening_balcony")
+	if mirror and journal:
+		state.world_memory_state["unlocked_mirrors"] = []
+		mirror.on_interact(player)
+		await process_frame
+		var unlocked: Array = state.world_memory_state.get("unlocked_mirrors", [])
+		check(unlocked.has("awakening_balcony"), "mirror discovery recorded in unlocked_mirrors")
+		check(dm.is_open, "mirror discovery shows reflection whisper")
+		dm.clear()
+		gate.set_story(false)
+		mirror.on_interact(player)
+		await process_frame
+		await process_frame
+		var has_competing_modal := false
+		for ch in mirror.get_children():
+			var sc: Script = ch.get_script()
+			if ch is CanvasLayer or (sc != null and String(sc.resource_path).ends_with("gothic_modal_panel.gd")):
+				has_competing_modal = true
+		check(not has_competing_modal, "mirror has no competing modal panel")
+		check(journal.visible and journal._section == "harita" and journal.map_view.visible, "mirror opens unified Journal Harita tab")
+		check(gate.current_layer() == gate.Layer.JOURNAL, "mirror sets UiGate to JOURNAL")
+		journal.close_journal()
+		check(gate.current_layer() == gate.Layer.NONE, "closing mirror-opened journal restores UiGate NONE")
+	rm.enter_room(&"awakening", &"default")
+	await create_timer(0.15).timeout
+	dm.clear()
+	gate.set_story(false)
+
 	## Bugfix 2: hızlı seyahat kararırken ölüm başlarsa oda değişmez, kilitler bırakılır.
 	var dmgr := root.get_node("DeathManager")
 	var room_before: StringName = rm.get_active_room_id()

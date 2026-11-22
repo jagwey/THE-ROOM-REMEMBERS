@@ -39,7 +39,7 @@ size = Vector2(32, 36)
 size = Vector2(40, 40)
 
 [sub_resource type="RectangleShape2D" id="GateShape"]
-size = Vector2(28, 84)
+size = Vector2(28, 120)
 
 [node name="DecayGarden" type="Node2D"]
 script = ExtResource("6")
@@ -53,7 +53,7 @@ atmosphere_bg = "res://assets/backgrounds/decay"
 [node name="Spawns" type="Node2D" parent="."]
 
 [node name="keeper_observe" type="Marker2D" parent="Spawns"]
-position = Vector2(580, 288)
+position = Vector2(615, 288)
 
 [node name="default" type="Marker2D" parent="Spawns"]
 position = Vector2(130, 288)
@@ -142,7 +142,7 @@ target_spawn_id = &"from_decay_garden"
 shape = SubResource("TransitionHit")
 
 [node name="FlowerInspect" type="Area2D" parent="Interactive"]
-position = Vector2(350, 276)
+position = Vector2(320, 276)
 collision_layer = 8
 collision_mask = 0
 monitoring = false
@@ -153,7 +153,7 @@ script = ExtResource("8")
 shape = SubResource("FlowerHit")
 
 [node name="ShildaGarden" type="Area2D" parent="Interactive"]
-position = Vector2(600, 268)
+position = Vector2(615, 268)
 collision_layer = 8
 collision_mask = 0
 monitoring = false
@@ -178,7 +178,7 @@ scale = Vector2(0.32, 0.32)
 texture = ExtResource("flower_tex")
 
 [node name="BloomThorn" type="Area2D" parent="Interactive"]
-position = Vector2(570, 290)
+position = Vector2(560, 290)
 script = ExtResource("thorn")
 anchor_x = 625.0
 puzzle_hint = &"decay_garden_bloom"
@@ -237,7 +237,7 @@ symbol_text = "7"
 reveal_radius = 220.0
 
 [node name="ArchiveDoor" type="StaticBody2D" parent="Interactive"]
-position = Vector2(820, 268)
+position = Vector2(820, 248)
 collision_layer = 1
 collision_mask = 0
 script = ExtResource("11")
@@ -252,7 +252,7 @@ shape = SubResource("GateShape")
 
 [node name="Sprite2D" type="Sprite2D" parent="Interactive/ArchiveDoor"]
 texture_filter = 0
-position = Vector2(0, -28)
+position = Vector2(0, -8)
 texture = ExtResource("4")
 centered = true
 modulate = Color(0.48, 0.42, 0.46, 1)
@@ -462,7 +462,7 @@ script = ExtResource("memory_seal_pt")
 room_id = &"decay_garden"
 
 [node name="GardenBench" type="Area2D" parent="Interactive"]
-position = Vector2(290, 288)
+position = Vector2(280, 288)
 script = ExtResource("lore_story")
 lore_id = &"garden_bench"
 texture_path = "res://assets/props/photograph.png"

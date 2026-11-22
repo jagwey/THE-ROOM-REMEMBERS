@@ -32,6 +32,11 @@ var feedback_count: int = 0
 func _ready() -> void:
 	collision_layer = 1
 	collision_mask = 0
+	if sprite and sprite.texture == null:
+		sprite.texture = load("res://assets/props/door_closed.png")
+		sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		sprite.position = Vector2(0, -28)
+		sprite.modulate = Color(0.48, 0.42, 0.46, 1)
 	GameState.world_flag_changed.connect(_on_flag)
 	PuzzleManager.puzzle_solved.connect(_on_puzzle)
 	PuzzleManager.live_changed.connect(_on_live)

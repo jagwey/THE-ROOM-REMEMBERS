@@ -2,12 +2,12 @@
   "room": "decay_shilda_wall",
   "sets": {
     "wall_marks": [
-      {"s": "Noroi", "t": "Duvarda parmak izleri var. Hepsi aynı yüksekliğe uzanmış."},
-      {"s": "@shilda", "t": "Beni gözlüyorsun. Bu bakışa alışık değilim."},
-      {"s": "Noroi", "t": "Gözlemiyorum. Buradasın, seni görüyorum ve bu bana yetiyor."},
-      {"s": "@shilda", "t": "Yetmez. Ama başlangıç için fena değil."},
-      {"s": "Noroi", "t": "Sana güvenmeye başlıyorum. Bunu bil."},
-      {"s": "@shilda", "t": "Keşke bilmeseydim. Güven taşıması en zor şey."}
+      {"s": "Noroi", "t": "Duvarda tırnak izleri var. Hepsi aynı yüksekliğe uzanmış."},
+      {"s": "@shilda", "t": "Beni gözlüyorsun. Bu duvarı aşmak kolay olmayacak."},
+      {"s": "Noroi", "t": "Kaçmıyorum. Arkasında ne saklıyorsan görmek istiyorum."},
+      {"s": "@shilda", "t": "Öyleyse darbeme dayan. Taş kırılmadan geçemezsin."},
+      {"s": "Noroi", "t": "Beni korkutmaya çalışıyorsun, ama hâlâ konuşuyorsun."},
+      {"s": "@shilda", "t": "Söz bitti. Hazırlan."}
     ]
   }
 }

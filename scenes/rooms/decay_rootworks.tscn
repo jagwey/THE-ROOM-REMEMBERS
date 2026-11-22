@@ -53,7 +53,7 @@ floor_gaps = PackedVector2Array(620, 780)
 [node name="Spawns" type="Node2D" parent="."]
 
 [node name="keeper_observe" type="Marker2D" parent="Spawns"]
-position = Vector2(640, 288)
+position = Vector2(470, 288)
 
 [node name="RoomArchitecture" type="Sprite2D" parent="."]
 z_index = -2

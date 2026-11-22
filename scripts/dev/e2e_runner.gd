@@ -360,12 +360,12 @@ func _run_tier_1_feature_coverage() -> void:
 	var has_regions_visited: bool = rm_code.contains("regions_visited")
 	record_check(1, 27, "Gothic Region Title Cards", has_region_title_call and has_regions_visited, "region title HUD hook and regions_visited memory verified", false, "M3")
 
-	# F28: Cracked Mirror fast travel (M3)
+	# F28: Cracked Mirror fast travel (M3 — unified with Journal Map)
 	var mirror_script_exists: bool = ResourceLoader.exists("res://scripts/world/cracked_mirror.gd") or ResourceLoader.exists("res://scenes/world/cracked_mirror.tscn")
 	if mirror_script_exists:
 		var mirror_code: String = _read_file_text("res://scripts/world/cracked_mirror.gd")
-		var mirror_travel_ok: bool = mirror_code.contains("unlocked_mirrors") and mirror_code.contains("enter_room")
-		record_check(1, 28, "Cracked Mirror fast travel", mirror_travel_ok, "fast travel anchor logic verified", false, "M3")
+		var mirror_travel_ok: bool = mirror_code.contains("unlocked_mirrors") and mirror_code.contains("journal_ui") and mirror_code.contains("harita") and not mirror_code.contains("GothicModalPanel")
+		record_check(1, 28, "Cracked Mirror fast travel", mirror_travel_ok, "unified Journal Map fast-travel anchor verified", false, "M3")
 	else:
 		record_check(1, 28, "Cracked Mirror fast travel", false, "cracked_mirror.gd not found", true, "M3")
 

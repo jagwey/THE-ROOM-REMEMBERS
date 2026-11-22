@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=15 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
 [ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore_story"]
@@ -6,8 +6,10 @@
 
 [ext_resource type="Script" path="res://scripts/world/pressure_plate.gd" id="plate"]
 [ext_resource type="Script" path="res://scripts/world/gate_blocker.gd" id="gate"]
-[ext_resource type="Script" path="res://scripts/world/blood_thorn.gd" id="thorn"]
+[ext_resource type="Script" path="res://scripts/world/soul_seal.gd" id="soul"]
+[ext_resource type="Script" path="res://scripts/world/weight_stone.gd" id="stone"]
 [ext_resource type="Texture2D" path="res://assets/props/door_closed.png" id="gate_tex"]
+[ext_resource type="Texture2D" path="res://assets/props/weight_stone.png" id="stone_art"]
 [ext_resource type="Script" path="res://scripts/world/room_touch.gd" id="touch"]
 [ext_resource type="Script" path="res://scripts/world/room_polish.gd" id="polish"]
 
@@ -17,6 +19,9 @@ size = Vector2(44, 18)
 [sub_resource type="RectangleShape2D" id="GateShape"]
 size = Vector2(32, 88)
 
+[sub_resource type="RectangleShape2D" id="StoneBox"]
+size = Vector2(22, 22)
+
 [node name="MirrorsGallery" type="Node2D"]
 script = ExtResource("room")
 room_id = &"mirrors_gallery"
@@ -25,7 +30,7 @@ room_width = 1280.0
 bg_region = "mirrors"
 checkpoint = Vector2(120, 288)
 default_spawn = Vector2(120, 288)
-doors = [{"x": 40.0, "to": "mirrors_dual", "spawn": "from_mirrors_gallery"}, {"x": 1240.0, "to": "mirrors_unbroken", "spawn": "from_mirrors_gallery", "req": "mirrors_gallery", "msg": "Üç plakayı üç bedenle basmalıyım."}]
+doors = [{"x": 40.0, "to": "mirrors_dual", "spawn": "from_mirrors_gallery"}, {"x": 1240.0, "to": "mirrors_unbroken", "spawn": "from_mirrors_gallery", "req": "mirrors_gallery", "msg": "İki plakayı ve ruh mührünü açmalıyım."}]
 
 [node name="Spawns" type="Node2D" parent="."]
 
@@ -52,7 +57,7 @@ collision_mask = 1
 script = ExtResource("plate")
 puzzle_id = &"mirrors_gallery_plate_1"
 accept_player = false
-accept_stone = false
+accept_stone = true
 latch_on_press = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/Plate1"]
@@ -62,44 +67,12 @@ shape = SubResource("PlateShape")
 texture_filter = 0
 centered = true
 
-[node name="Thorn1" type="Area2D" parent="Interactive"]
-position = Vector2(415, 290)
-script = ExtResource("thorn")
-anchor_x = 360.0
-puzzle_hint = &"mirrors_gallery_plate_1"
-body_line = "Dokunursam ölürüm, beden plakanın üstünde kalmalı."
-solved_line = "Plaka bastırıldı, beden onu tutuyor."
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/Thorn1"]
-shape = SubResource("PlateShape")
-
-[node name="Plate2" type="Area2D" parent="Interactive"]
+[node name="GallerySeal" type="StaticBody2D" parent="Interactive"]
 position = Vector2(640, 288)
-collision_layer = 0
-collision_mask = 1
-script = ExtResource("plate")
+script = ExtResource("soul")
 puzzle_id = &"mirrors_gallery_plate_2"
-accept_player = false
-accept_stone = false
-latch_on_press = true
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/Plate2"]
-shape = SubResource("PlateShape")
-
-[node name="Sprite2D" type="Sprite2D" parent="Interactive/Plate2"]
-texture_filter = 0
-centered = true
-
-[node name="Thorn2" type="Area2D" parent="Interactive"]
-position = Vector2(695, 290)
-script = ExtResource("thorn")
-anchor_x = 640.0
-puzzle_hint = &"mirrors_gallery_plate_2"
-body_line = "Dokunursam ölürüm. Plakaya bir beden gerek."
-solved_line = "Bir plaka daha bastırıldı, beden onu tutuyor."
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/Thorn2"]
-shape = SubResource("PlateShape")
+back_side = 1
+refusal_line = "Galerinin ortası mühürlü; Ruh Kesimi Yasak Kanat'ta."
 
 [node name="Plate3" type="Area2D" parent="Interactive"]
 position = Vector2(920, 288)
@@ -108,7 +81,7 @@ collision_mask = 1
 script = ExtResource("plate")
 puzzle_id = &"mirrors_gallery_plate_3"
 accept_player = false
-accept_stone = false
+accept_stone = true
 latch_on_press = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/Plate3"]
@@ -118,16 +91,26 @@ shape = SubResource("PlateShape")
 texture_filter = 0
 centered = true
 
-[node name="Thorn3" type="Area2D" parent="Interactive"]
-position = Vector2(975, 290)
-script = ExtResource("thorn")
-anchor_x = 920.0
-puzzle_hint = &"mirrors_gallery_plate_3"
-body_line = "Dokunursam ölürüm. Bu yükü bedenim taşımalı."
-solved_line = "Plaka bastırıldı; beden yükü aldı."
+[node name="GalleryStone" type="CharacterBody2D" parent="."]
+position = Vector2(460, 288)
+collision_layer = 9
+collision_mask = 1
+floor_stop_on_slope = true
+script = ExtResource("stone")
+min_x = 352.0
+max_x = 928.0
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/Thorn3"]
-shape = SubResource("PlateShape")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="GalleryStone"]
+position = Vector2(0, -18)
+shape = SubResource("StoneBox")
+
+[node name="Sprite2D" type="Sprite2D" parent="GalleryStone"]
+texture_filter = 0
+texture = ExtResource("stone_art")
+centered = true
+position = Vector2(0, -18)
+scale = Vector2(0.375, 0.375)
+modulate = Color(0.88, 0.85, 0.96, 1)
 
 [node name="PathGate" type="StaticBody2D" parent="Interactive"]
 position = Vector2(1120, 268)

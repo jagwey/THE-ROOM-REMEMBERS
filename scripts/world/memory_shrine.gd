@@ -115,6 +115,19 @@ func read_count() -> int:
 	return _read.size()
 
 
+## Okunan parça tarih/kısa etiketini gösterir; okunmamış parça "oku" olarak ayrılır.
+func step_label(step_id: String, fallback: String) -> String:
+	if not _read.has(step_id):
+		return "%s · oku" % fallback
+	var d: Dictionary = DATA.get(memory_id, {})
+	var frags: Dictionary = d.get("frags", {})
+	var txt := String(frags.get(step_id, ""))
+	var dot := txt.find(".")
+	if dot > 0 and dot <= 24:
+		return "Anı · %s" % txt.substr(0, dot)
+	return "%s · okundu" % fallback
+
+
 func press(step_id: String, source: Node = null) -> void:
 	var d: Dictionary = DATA.get(memory_id, {})
 	var frags: Dictionary = d.get("frags", {})

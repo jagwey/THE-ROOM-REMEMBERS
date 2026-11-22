@@ -660,7 +660,7 @@ func _rooms_21_24() -> void:
 		check(String(body) != "" and lo.find("sağdaki") == -1 and lo.find("hatıra") == -1 and lo.find("bellek") == -1, "r21_cells_text_clean")
 	check(sb.find("İleride bir devre yankını bekliyor.") != -1, "r21_cells_forward_hint_line")
 	# ---- 22 intake ----
-	_unsolve(["experiment_intake", "experiment_intake_corpse", "experiment_intake_stone"])
+	_unsolve(["experiment_intake", "experiment_intake_corpse", "experiment_intake_stone", "experiment_intake_seal"])
 	rm.enter_room(&"experiment_intake", &"default")
 	await create_timer(0.4).timeout
 	var intake: Node = _room_root(&"experiment_intake")
@@ -672,7 +672,7 @@ func _rooms_21_24() -> void:
 		check(ig.legacy_puzzle == &"experiment_intake" and "experiment_intake" in Array(ig.also_solve), "r22_gate_legacy_and_also_solve")
 		check(not bool(ig._is_open()), "r22_gate_closed_fresh")
 		pm.set_live(&"experiment_intake_corpse", true)
-		check(not bool(ig._is_open()), "r22_corpse_alone_keeps_closed")
+		check(not bool(ig._is_open()), "r22_left_pan_alone_keeps_closed")
 		pm.set_live(&"experiment_intake_stone", true)
 		check(bool(ig._is_open()), "r22_both_live_opens")
 		pm.set_live(&"experiment_intake_corpse", false)
@@ -688,24 +688,38 @@ func _rooms_21_24() -> void:
 			cp = p
 		if p.puzzle_id == &"experiment_intake_stone":
 			sp = p
-	check(cp != null and not bool(cp.accept_stone), "r22_left_pan_corpse_only")
+	check(cp != null and bool(cp.accept_stone), "r22_left_pan_takes_stone")
 	check(sp != null and bool(sp.accept_stone), "r22_right_pan_takes_stone")
 	var fdoor: Node = null
 	for d in _doors_of(intake):
 		if d.target_room_id == &"experiment_circuit":
 			fdoor = d
-	var stone: Node = intake.find_child("ScaleStone", true, false)
+	var stone: Node2D = intake.find_child("ScaleStone", true, false)
+	var cstone: Node2D = intake.find_child("CounterStone", true, false)
+	var sseal: Node = intake.find_child("ScaleSeal", true, false)
 	check(stone != null and fdoor != null and float(stone.max_x) <= fdoor.position.x - 48.0, "r22_stone_max_x_below_door")
-	check(stone != null and sp != null and float(stone.max_x) >= sp.position.x, "r22_stone_can_reach_plate")
+	check(stone != null and cp != null and float(stone.max_x) >= cp.position.x, "r22_left_stone_can_reach_left_pan")
+	check(cstone != null and sp != null and float(cstone.min_x) <= sp.position.x and float(cstone.max_x) <= fdoor.position.x - 48.0, "r22_right_stone_reaches_right_pan")
+	check(sseal != null and sseal.is_in_group("soul_seal") and sseal.puzzle_id == &"experiment_intake_seal", "r22_scale_soul_seal_present")
 	var ithorns: Array = _thorns_of(intake)
-	var tok2 := false
-	for t in ithorns:
-		if cp != null and t.puzzle_hint == &"experiment_intake_corpse" and absf(float(t.anchor_x) - cp.position.x) < 1.0:
-			tok2 = true
-	check(tok2, "r22_thorn_over_left_pan")
-	var iprops: Array = igates + iplates + ithorns
-	if stone != null:
-		iprops.append(stone)
+	check(ithorns.is_empty(), "r22_no_blood_thorn", ithorns.size())
+	if sseal != null and stone != null and cstone != null and cp != null and sp != null and ig != null:
+		sseal.receive_soul_slash(null)
+		check(pm.is_solved(&"experiment_intake_seal"), "r22_soul_slash_opens_scale_seal")
+		var sh1 := stone.global_position
+		var sh2 := cstone.global_position
+		stone.global_position = Vector2(cp.global_position.x, sh1.y)
+		cstone.global_position = Vector2(sp.global_position.x, sh2.y)
+		await create_timer(0.4).timeout
+		check(pm.is_live(&"experiment_intake_corpse") and pm.is_live(&"experiment_intake_stone") and bool(ig._is_open()), "r22_twin_stones_open_scale_gate")
+		stone.global_position = sh1
+		cstone.global_position = sh2
+		await create_timer(0.3).timeout
+		_unsolve(["experiment_intake_seal"])
+	var iprops: Array = igates + iplates
+	for extra_p in [stone, cstone, sseal]:
+		if extra_p != null:
+			iprops.append(extra_p)
 	var idoors: Array = []
 	for d in _doors_of(intake):
 		idoors.append(d.position.x)
@@ -919,19 +933,17 @@ func _rooms_25_27() -> void:
 	check(csrc.find("LEVER_HOLD_SECONDS") == -1, "r26_no_lever_hold_constant")
 	_unsolve(["experiment_conduit", "experiment_vein_1", "experiment_vein_2", "experiment_vein_3"])
 	# ---- 27 observation ----
-	_unsolve(["experiment_observation"])
+	_unsolve(["experiment_observation", "experiment_observation_projector"])
 	_clear_corpses()
 	rm.enter_room(&"experiment_observation", &"default")
 	await create_timer(0.4).timeout
 	var ob: Node = _room_root(&"experiment_observation")
-	var oplates: Array = _plates_of(ob)
-	check(oplates.size() == 1 and String(oplates[0].puzzle_id) == "experiment_observation_projector" and not bool(oplates[0].accept_stone), "r27_corpse_only_projector_plate")
 	var othorns: Array = _thorns_of(ob)
-	var thorn_ok := false
-	for t in othorns:
-		if oplates.size() == 1 and t.puzzle_hint == &"experiment_observation_projector" and absf(float(t.anchor_x) - oplates[0].position.x) < 1.0:
-			thorn_ok = true
-	check(thorn_ok, "r27_thorn_above_plate")
+	check(othorns.is_empty(), "r27_no_blood_thorn", othorns.size())
+	var oaltar: Node = ob.find_child("ProjectorAltar", true, false)
+	check(oaltar != null and oaltar.is_in_group("echo_altar") and String(oaltar.puzzle_id) == "experiment_observation_projector" and bool(oaltar.live_only), "r27_projector_echo_altar")
+	var osws: Array = oaltar._switches if oaltar != null else []
+	check(osws.size() == 2 and String(osws[0].kind) == "plate" and String(osws[1].kind) == "lever" and float(oaltar.lever_hold_seconds) >= 6.0, "r27_altar_plate_and_lever", osws.size())
 	var ofwd: Node = null
 	var odoors: Array = []
 	for d in _doors_of(ob):
@@ -939,37 +951,53 @@ func _rooms_25_27() -> void:
 		if d.target_room_id == &"mirrors_reverse":
 			ofwd = d
 	check(ofwd != null and ofwd.required_puzzle == &"experiment_observation" and String(ofwd.required_ability) == "", "r27_forward_door_no_ability")
-	check(_min_dx(odoors, oplates + othorns) >= 96.0, "r27_door_clearance_96")
+	var oprops: Array = osws.duplicate()
+	if oaltar != null:
+		oprops.append(oaltar)
+	check(_min_dx(odoors, oprops) >= 96.0, "r27_door_clearance_96")
 	var opath := FileAccess.get_file_as_string("res://scenes/rooms/experiment_observation.tscn")
 	check(opath.find("ability_shadow_dash") == -1 and opath.find("need_dash") == -1, "r27_no_shadow_dash")
-	await create_timer(0.5).timeout
-	check(_live_shades(ob) == 0, "r27_no_echo_when_plate_empty")
-	var plate: Node = oplates[0] if oplates.size() == 1 else null
-	if plate != null:
-		_corpse_at(plate.position.x, plate.position.y - 8.0)
-		await create_timer(0.6).timeout
-		check(pm.is_live(&"experiment_observation_projector"), "r27_corpse_lights_plate")
-		check(_live_shades(ob) == 1, "r27_echo_walks_when_plate_full", _live_shades(ob))
-		_clear_corpses()
-		await create_timer(0.6).timeout
-		check(not pm.is_live(&"experiment_observation_projector") and _live_shades(ob) == 0, "r27_echo_stops_when_corpse_removed")
-		check(not pm.is_solved(&"experiment_observation"), "r27_not_solved_while_stopped")
-		_corpse_at(plate.position.x, plate.position.y - 8.0)
-		await create_timer(0.6).timeout
-		check(_live_shades(ob) == 1, "r27_echo_restarts_when_plate_refilled")
+	await create_timer(0.4).timeout
+	check(_live_shades(ob) == 0, "r27_no_echo_when_switches_off")
+	if oaltar != null and osws.size() == 2:
 		var player: Node2D = current_scene.get_node("Player")
+		var sw_plate: Node2D = osws[0]
+		var sw_lever: Node2D = osws[1]
+		player.global_position = Vector2(100.0, 288.0)
+		sw_plate.call("_set_active", true)
+		await process_frame
+		check(not pm.is_live(&"experiment_observation_projector") and _live_shades(ob) == 0, "r27_plate_alone_does_not_light_projector")
+		sw_plate.call("_set_active", false)
+		player.global_position = Vector2(sw_plate.global_position.x, 288.0)
+		await create_timer(0.15).timeout
+		sw_lever.call("pull_by_echo")
+		await create_timer(0.25).timeout
+		check(pm.is_live(&"experiment_observation_projector"), "r27_plate_plus_lever_lights_projector")
+		check(_live_shades(ob) == 1, "r27_echo_walks_when_projector_live", _live_shades(ob))
+		player.global_position = Vector2(100.0, 288.0)
+		await create_timer(2.3).timeout
+		check(not pm.is_live(&"experiment_observation_projector") and _live_shades(ob) == 0, "r27_echo_stops_when_switch_drops")
+		check(not pm.is_solved(&"experiment_observation"), "r27_not_solved_while_stopped")
+		player.global_position = Vector2(sw_plate.global_position.x, 288.0)
+		await create_timer(0.15).timeout
+		sw_lever.call("pull_by_echo")
+		await create_timer(0.25).timeout
+		check(_live_shades(ob) == 1, "r27_echo_restarts_when_projector_relit")
 		var seen_lines: Array = []
 		var on_line := func(sp: String, t: String): seen_lines.append(t)
 		dm.line_shown.connect(on_line)
 		var g := 0
 		while g < 900 and not pm.is_solved(&"experiment_observation"):
 			g += 1
-			for x in ob.find_children("*", "Node2D", true, false):
-				if "shade_id" in x and not bool(x.fake) and not x.is_queued_for_deletion():
-					player.global_position = Vector2(x.global_position.x, 288.0)
+			if g % 180 == 0:
+				sw_lever.call("pull_by_echo")
 			if dm.is_open:
 				dm.advance()
 			await process_frame
+		dm.line_shown.disconnect(on_line)
+		sw_lever.call("_set_active", false)
+		player.global_position = Vector2(100.0, 288.0)
+		sw_plate.call("_set_active", false)
 		check(pm.is_solved(&"experiment_observation"), "r27_echo_end_solves_observation")
 		var joined := " ".join(seen_lines).replace("\n", " ")
 		check(joined.find("camın ardında çalışırdım") != -1, "r27_notes_played_with_shilda_line", joined.substr(0, 200))
@@ -1169,7 +1197,7 @@ const SL_LEGACY_V116: PackedStringArray = [
 const SL_NEW_IDS: PackedStringArray = [
 	"library_hall_shelves", "library_witness_corpse", "library_witness_echo", "library_clock_dials", "library_shelf_order",
 	"library_reading_cabin", "library_reading_cell", "experiment_cell_a", "experiment_cell_b", "experiment_cell_c",
-	"experiment_intake_corpse", "experiment_intake_stone", "experiment_quarantine_done",
+	"experiment_intake_corpse", "experiment_intake_stone", "experiment_intake_seal", "experiment_quarantine_done",
 	"experiment_vein_1", "experiment_vein_2", "experiment_vein_3", "experiment_conduit", "experiment_observation",
 	"experiment_observation_projector",
 ]
