@@ -1,7 +1,6 @@
-[gd_scene load_steps=15 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/nook_record.gd" id="nook_rec"]
-[ext_resource type="Script" path="res://scripts/world/soul_seal.gd" id="nook_gate"]
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
 [ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore"]
 [ext_resource type="Script" path="res://scripts/world/code_seal_base.gd" id="seal"]
@@ -213,17 +212,10 @@ ability = "soul"
 nook_id = "catacombs"
 texture_path = "res://assets/props/photograph.png"
 sprite_scale = 0.55
-lines = PackedStringArray("Noroi|Kemik rafında kurdeleyle bağlı bir not: “S. için, anahtar duvarda.”", "Noroi|Kurdele yosunlu. Duvardaki damar bunu işaret ediyor olmalı.")
+lines = PackedStringArray("Noroi|Kemik rafında kurdeleyle bağlı bir not: “S. için, anahtar duvarda.”", "Noroi|Kurdele yosunlu. Duvardaki oyuk bunu işaret ediyor olmalı.")
 evidence_title = "Kurdeleli Not"
-evidence_body = "Kemik rafında kurdeleli bir not Araştırma Yardımcısı S.'ye yazılmış; anahtar duvardaki damarda."
+evidence_body = "Kemik rafında kurdeleli bir not Araştırma Yardımcısı S.'ye yazılmış; anahtar duvardaki oyukta."
 evidence_section = "izler"
-
-[node name="NookVein" type="StaticBody2D" parent="Interactive"]
-position = Vector2(650.0, 288.0)
-script = ExtResource("nook_gate")
-puzzle_id = &"nook_catacombs_gate"
-blocking = false
-refusal_line = "Kemiklerin ardında mühürlü bir damar var; Ruh Kesimi'ni Yasak Kanat'ta bulmalıyım."
 
 [node name="NookRecord" type="Area2D" parent="Interactive"]
 position = Vector2(1050.0, 288.0)
@@ -232,12 +224,11 @@ lore_id = &"nook_catacombs_b"
 role = "record"
 ability = "soul"
 nook_id = "catacombs"
-gate_puzzle = &"nook_catacombs_gate"
 frag_id = "nook_catacombs_a"
 need_line = "Burası notun işaret ettiği yer; ama önce kemik rafındaki notu okumalıyım."
 texture_path = "res://assets/props/ledger.png"
 sprite_scale = 0.7
-lines = PackedStringArray("Noroi|Damarın ardında bir kurşun kalem ve kapak: “Pazartesi, 1927.”", "Noroi|Küçük bir çiçek çizilmiş. Altında: “S. ilk çiçeği buldu.”", "Shilda|Çiçek, elim kıpırdadı. Bunu nereden biliyorum?")
+lines = PackedStringArray("Noroi|Duvar oyuğunda bir kurşun kalem ve kapak: “Pazartesi, 1927.”", "Noroi|Küçük bir çiçek çizilmiş. Altında: “S. ilk çiçeği buldu.”", "Shilda|Çiçek, elim kıpırdadı. Bunu nereden biliyorum?")
 evidence_title = "Kurşun Kalem"
 evidence_body = "Pazartesi, 1927 tarihli kapakta çizilmiş bir çiçek var. Not, Araştırma Yardımcısı S.'nin ilk çiçeği bulduğunu söylüyor."
 evidence_section = "izler"

@@ -76,7 +76,7 @@ func receive_sword_hit(_from: Node, _dir: float, _combo: int) -> void:
 		return
 	if not _sword_hint_done:
 		_sword_hint_done = true
-		DialogueManager.whisper("Noroi", "Kılıcım taşı çizmiyor bile. Bunu yıkabilecek tek güç Gölge Atılması.")
+		DialogueManager.whisper("Noroi", "Kılıç taşı çizmiyor. Bunu Shilda'nın hücumu yıkar; son anda kenara atılmalıyım.")
 
 
 func _apply_state(animate: bool) -> void:

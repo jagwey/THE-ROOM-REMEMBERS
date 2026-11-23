@@ -131,6 +131,8 @@ func pick_up(by: Node2D) -> void:
 		return
 	_carrier = by
 	_last_safe = global_position
+	_ground = null
+	_fall_v = 0.0
 	collision_layer = 0
 	z_index = 3
 	by.set_carrying(self)
@@ -167,6 +169,9 @@ func _release(at: Vector2) -> void:
 	var by := _carrier
 	_carrier = null
 	global_position = at
+	_fall_v = 0.0
+	_airborne = false
+	_ground = null
 	rotation = 0.0
 	if sprite:
 		sprite.flip_h = false
@@ -195,8 +200,9 @@ func _floor_y_at(x: float, ref_y: float) -> Variant:
 	return (hit["position"] as Vector2).y
 
 
-func _physics_process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	if _carrier == null:
+		_apply_gravity(delta)
 		_poll_step()
 		return
 	_stepped = false
@@ -215,6 +221,149 @@ func _physics_process(_delta: float) -> void:
 		if fy != null:
 			_last_safe = Vector2(_carrier.global_position.x, float(fy))
 			_store_position(_last_safe)
+
+
+## --- Yer çekimi + hareketli zemin ---
+## Yerdeki beden düşer, bir yüzeye (zemin, platform, sal, taş) oturur; zemin hareket ederse onunla gider.
+## Köprü bedeni (diken tutuyor) sabittir. Düşüp kaybolursa son oturduğu yere döner.
+const GRAVITY := 980.0
+const MAX_FALL_SPEED := 560.0
+const PROBE_UP := 20.0
+const FOOT_OFFSETS := [-10.0, 0.0, 10.0]
+var _fall_v: float = 0.0
+var _airborne: bool = false
+var _ground: Node2D = null
+var _ground_prev: Vector2 = Vector2.ZERO
+var _rest_pos: Vector2 = Vector2.ZERO
+var _has_rest: bool = false
+var _fall_from: Vector2 = Vector2.ZERO
+var _exclude: Array[RID] = []
+var _exclude_age: int = 999
+
+
+func _apply_gravity(delta: float) -> void:
+	if _pushing or not is_inside_tree() or _is_bridge_held():
+		_ground = null
+		_fall_v = 0.0
+		return
+	## 1) Taşıyan zemin hareket ettiyse (sal, taş) onunla birlikte kay.
+	if _ground != null:
+		if is_instance_valid(_ground) and _ground.is_inside_tree():
+			var d := _ground.global_position - _ground_prev
+			if d.length_squared() > 0.0001:
+				global_position += d
+			_ground_prev = _ground.global_position
+		else:
+			_ground = null
+	## 2) Ayak altını yokla.
+	var step := maxf(_fall_v * delta, 0.0) + 2.0
+	var hit := _probe_ground(global_position, step)
+	if not hit.is_empty():
+		var gy: float = hit["y"]
+		var moved := absf(gy - global_position.y) > 0.25
+		global_position.y = gy
+		_fall_v = 0.0
+		var col: Node2D = hit["collider"] as Node2D
+		if col != _ground:
+			_ground = col
+			_ground_prev = col.global_position if col else Vector2.ZERO
+		if _airborne:
+			_airborne = false
+			_spawn_dust(1.0)
+			_persist_position()
+		elif moved:
+			_store_position(global_position)
+		_rest_pos = global_position
+		_has_rest = true
+		return
+	## 3) Boşlukta: düş.
+	if not _airborne:
+		_airborne = true
+		_fall_from = global_position
+	_ground = null
+	_fall_v = minf(_fall_v + GRAVITY * delta, MAX_FALL_SPEED)
+	global_position.y += _fall_v * delta
+	var bounds := RoomManager.get_room_bounds(StringName(String(_data.get("room", ""))))
+	var floor_limit := (bounds.end.y + 48.0) if bounds.size.y > 0.0 else (_fall_from.y + 900.0)
+	if global_position.y > floor_limit:
+		_recover_from_fall(bounds)
+
+
+## Düşüp oda dışına çıkan beden: son oturduğu yere ya da en yakın sağlam zemine döner.
+func _recover_from_fall(bounds: Rect2) -> void:
+	_fall_v = 0.0
+	_airborne = false
+	var target := _rest_pos if _has_rest else Vector2.ZERO
+	if not _has_rest:
+		var top := (bounds.position.y if bounds.size.y > 0.0 else _fall_from.y - 200.0)
+		for i in 24:
+			var off := floorf((i + 1) / 2.0) * 24.0 * (1.0 if i % 2 == 0 else -1.0)
+			var x := _fall_from.x + off
+			var y = _surface_between(x, maxf(top, _fall_from.y - 80.0), _fall_from.y + 120.0)
+			if y != null:
+				target = Vector2(x, float(y))
+				break
+	if target == Vector2.ZERO:
+		target = _fall_from
+	global_position = target
+	_persist_position()
+
+
+func _is_bridge_held() -> bool:
+	if not is_anchored or _anchor_plate == &"":
+		return false
+	for t in get_tree().get_nodes_in_group("blood_thorn"):
+		if bool(t.get("hold_corpse")) and StringName(String(t.get("hold_id"))) == _anchor_plate:
+			return true
+	return false
+
+
+func _ground_exclude() -> Array[RID]:
+	_exclude_age += 1
+	if _exclude_age < 30 and not _exclude.is_empty():
+		return _exclude
+	_exclude_age = 0
+	_exclude = [get_rid()]
+	for c in get_tree().get_nodes_in_group("corpse"):
+		if c is CollisionObject2D and c != self:
+			_exclude.append((c as CollisionObject2D).get_rid())
+	for p in get_tree().get_nodes_in_group("player"):
+		if p is CollisionObject2D:
+			_exclude.append((p as CollisionObject2D).get_rid())
+	return _exclude
+
+
+## Ayaklar (sol/orta/sağ) altındaki en yüksek yüzey; [y, collider] ya da boş.
+func _probe_ground(at: Vector2, down: float) -> Dictionary:
+	var space := get_world_2d().direct_space_state
+	if space == null:
+		return {}
+	var best: Dictionary = {}
+	for ox: float in FOOT_OFFSETS:
+		var q := PhysicsRayQueryParameters2D.create(Vector2(at.x + ox, at.y - PROBE_UP), Vector2(at.x + ox, at.y + down), 1)
+		q.exclude = _ground_exclude()
+		var hit: Dictionary = space.intersect_ray(q)
+		if hit.is_empty():
+			continue
+		var col: Object = hit.get("collider")
+		if col is CharacterBody2D:
+			continue
+		var y: float = (hit["position"] as Vector2).y
+		if best.is_empty() or y < float(best["y"]):
+			best = {"y": y, "collider": col}
+	return best
+
+
+func _surface_between(x: float, y0: float, y1: float) -> Variant:
+	var space := get_world_2d().direct_space_state
+	if space == null:
+		return null
+	var q := PhysicsRayQueryParameters2D.create(Vector2(x, y0), Vector2(x, y1), 1)
+	q.exclude = _ground_exclude()
+	var hit: Dictionary = space.intersect_ray(q)
+	if hit.is_empty() or hit.get("collider") is CharacterBody2D:
+		return null
+	return (hit["position"] as Vector2).y
 
 
 ## Ölüm/oda değişimi: beden son sağlam noktaya düşer (boşlukta kaybolmaz).

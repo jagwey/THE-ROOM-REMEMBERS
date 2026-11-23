@@ -1,7 +1,6 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/nook_record.gd" id="nook_rec"]
-[ext_resource type="Script" path="res://scripts/world/soul_seal.gd" id="nook_gate"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/library/far.png" id="1"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/library/mid.png" id="2"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/library/front.png" id="3"]
@@ -416,13 +415,6 @@ evidence_title = "Ödünç Kartı"
 evidence_body = "Ödünç kartında Araştırma Yardımcısı S. üç kitap almış; iade tarihi 1927'de kalmış."
 evidence_section = "izler"
 
-[node name="NookVein" type="StaticBody2D" parent="Interactive"]
-position = Vector2(721.0, 288.0)
-script = ExtResource("nook_gate")
-puzzle_id = &"nook_hall_gate"
-blocking = false
-refusal_line = "Raftaki mor damar bir kapak gibi kapalı; Ruh Kesimi için Yasak Kanat'a gitmeliyim."
-
 [node name="NookRecord" type="Area2D" parent="Interactive"]
 position = Vector2(140.0, 288.0)
 script = ExtResource("nook_rec")
@@ -430,7 +422,6 @@ lore_id = &"nook_hall_b"
 role = "record"
 ability = "soul"
 nook_id = "hall"
-gate_puzzle = &"nook_hall_gate"
 frag_id = "nook_hall_a"
 need_line = "Eksik kitabın izi burada; önce fişlikteki ödünç kartını okumalıyım."
 texture_path = "res://assets/props/ledger.png"

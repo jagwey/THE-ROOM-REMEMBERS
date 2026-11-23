@@ -46,6 +46,8 @@ var _label: Label
 var _label_local := Vector2(-60, -36)
 var _tick: float = 0.0
 var _is_target: bool = false
+var _in_range: bool = false
+var _near: float = 0.0
 var _subtle_prop: bool = false
 var _emph: float = 0.0
 var _emph_sprite: CanvasItem = null
@@ -130,6 +132,8 @@ static func label_for(n: Node) -> String:
 
 
 func _ready() -> void:
+	## HUD dokunuş isabet testi tüm parlayan nesneleri bu gruptan bulur.
+	add_to_group(&"interact_glow")
 	texture = load("res://assets/props/halo.png")
 	texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 	var mat := CanvasItemMaterial.new()
@@ -268,9 +272,13 @@ func _process(delta: float) -> void:
 	if _tick <= 0.0:
 		_tick = 0.1
 		_is_target = false
+		_in_range = false
 		var player := get_tree().get_first_node_in_group("player")
 		if player and player.has_method("get_interaction_target") and not UiGate.blocks_movement():
 			_is_target = player.get_interaction_target() == p
+			## v1.20.6: dokunarak etkileşim — menzildeki her nesne hafifçe daha parlak (dokunulabilir).
+			if not _is_target and player.has_method("is_in_interact_range"):
+				_in_range = player.is_in_interact_range(p)
 		## Sırttaki beden: alt HUD "E · Bırak" yeter, bedenin üstünde ikinci etiket olmasın.
 		if p.has_method("is_carried") and bool(p.call("is_carried")):
 			_is_target = false
@@ -288,7 +296,8 @@ func _process(delta: float) -> void:
 	var a := (0.26 + 0.18 * pulse) * (0.35 if spent else 1.0)
 	if _subtle_prop:
 		a *= 0.22
-	a += _boost * 0.4
+	_near = move_toward(_near, 1.0 if _in_range else 0.0, delta * 4.0)
+	a += _boost * 0.4 + _near * 0.16
 	self_modulate = Color(_color, clampf(a, 0.0, 0.9))
 	scale = _base_scale * (1.0 + 0.06 * pulse + 0.18 * _boost)
 	if _label:

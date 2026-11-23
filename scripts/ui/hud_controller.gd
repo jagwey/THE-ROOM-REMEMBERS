@@ -44,6 +44,30 @@ var _joy_accept: float = JOY_ACCEPT
 var _btn_home: Dictionary = {}
 ## Etkileş şu an Zıpla yuvasında mı (diyalog/Zıpla gizli).
 var _interact_in_corner: bool = false
+## v1.20.6 tek eylem düğmesi (btn_interact): dokun = kılıç, basılı tut (SOUL_HOLD_MS) + bırak = Ruh Kesimi.
+## Beden sırttayken düğme "Bırak" olur. Etkileşim düğmesi yok: nesneye dokunulur. Attack/Dash/Skill düğmeleri gizli.
+var _action_drop: bool = false
+var _sword_press_ms: int = -1
+var _sword_charged: bool = false
+const SOUL_HOLD_MS := 350
+const SOUL_CHARGE_TINT := Color(1.35, 1.1, 1.65)
+## Dünyaya dokunuş = etkileşim: parmak indeksi -> [hedef, başlangıç konumu, ms]. Bırakışta çözülür.
+var _world_taps: Dictionary = {}
+const TAP_SLOP := 14.0
+const TAP_MAX_MS := 500
+## Dokunma payı: görüntü yüksekliğinin oranı (~4.5 mm her yöne; toplam >= ~9 mm hedef).
+const TAP_PAD_FRAC := 0.045
+const FAR_HINT_TEXT := "Yaklaşmalıyım"
+var _far_hint_until: int = 0
+## Son basış kılıç olarak mı başladı (bırakırken doğru giriş bırakılsın).
+var _action_pressed_attack: bool = false
+var _attack_cooldown: float = 0.0
+var _interact_tex: Texture2D
+var _attack_tex: Texture2D
+## Sağ yarıda yatay kaydırma = Atıl. Parmak indeksi -> [başlangıç konumu, ms, tetiklendi].
+var _swipes: Dictionary = {}
+const SWIPE_MIN := 42.0
+const SWIPE_WINDOW_MS := 350
 ## Yüzen mod: sol-alt çeyrekte (x < %50, y > %50) herhangi bir dokunuş joystick'i oraya taşır.
 var _joy_home := Vector4.ZERO
 ## Çoklu dokunuş: parmak indeksi -> HudTouchButton.
@@ -71,6 +95,15 @@ var _soul_label: Label
 var _chooser: VBoxContainer
 var _chooser_targets: Array = []
 const CHOOSER_MAX := 3
+## Dokunmatik: alt ortadaki hedef adı dokunulabilir çip (el simgesi + çerçeve); dokununca hedef kullanılır.
+var _hint_chip: PanelContainer
+var _hint_chip_label: Label
+var _hint_chip_target: Node2D = null
+var _hint_chip_text: String = ""
+var _hint_chip_tween: Tween
+## Arkasında etkileşim nesnesi / Noroi kalan düğme saydamlaşır (çalışmaya devam eder).
+const OCCLUDED_ALPHA := 0.32
+const FADE_SPEED := 8.0
 var _hint_tick: float = 0.0
 ## Masaüstünde sanal joystick/düğmeler gizli; ilk gerçek dokunuşta açılır.
 var _touch_seen: bool = false
@@ -154,7 +187,9 @@ func _setup_textures() -> void:
 	joystick_thumb.texture = load("res://assets/hud/joystick_thumb.png")
 	btn_attack.texture_normal = load("res://assets/hud/attack.png")
 	btn_dash.texture_normal = load("res://assets/hud/dash.png")
-	btn_interact.texture_normal = load("res://assets/hud/interact.png")
+	_interact_tex = load("res://assets/hud/interact.png")
+	_attack_tex = btn_attack.texture_normal
+	btn_interact.texture_normal = _attack_tex
 	# Skill/Jump: Attack/Dash/Interact ile aynı gotik halka (prosedürel); ikon halkanın içinde.
 	btn_skill.texture_normal = null
 	btn_skill.ring_icon = load("res://assets/props/slash.png")
@@ -553,11 +588,13 @@ func _update_control_visibility() -> void:
 	joystick_thumb.visible = not use_arrows
 	for arrow in _arrows:
 		arrow.visible = use_arrows
-	btn_attack.visible = touch and not blocked
-	btn_dash.visible = touch and not blocked
+	## v1.20.6: yalnız Kılıç (basılı: Ruh Kesimi) + Zıpla. Atıl = sağ yarıda kaydırma, etkileşim = nesneye dokunma,
+	## diyalog = herhangi bir yere dokunma. Ayrı Saldırı/Atıl/Yetenek/El düğmesi yok.
+	btn_attack.visible = false
+	btn_dash.visible = false
+	btn_skill.visible = false
 	btn_jump.visible = touch and not blocked
-	btn_skill.visible = touch and not blocked and GameState.has_any_ability()
-	btn_interact.visible = touch and not UiGate.blocks_dialogue_advance() and UiGate.current_layer() != UiGate.Layer.DEATH
+	btn_interact.visible = touch and not blocked
 	## Diyalogda Zıpla gizli: Etkileş başparmağın en rahat yerine (Zıpla yuvası, sağ-alt köşe) geçer.
 	var corner := btn_interact.visible and not btn_jump.visible
 	if corner != _interact_in_corner:
@@ -565,7 +602,7 @@ func _update_control_visibility() -> void:
 		apply_button_scale()
 	var layer := UiGate.current_layer()
 	btn_journal.visible = layer == UiGate.Layer.NONE or layer == UiGate.Layer.JOURNAL
-	buttons_root.modulate.a = 1.0 if btn_interact.visible or btn_attack.visible else 0.0
+	buttons_root.modulate.a = 1.0 if btn_interact.visible or btn_jump.visible else 0.0
 	## Göz açma sinematiği: kalp/hedef/düğme hiçbiri görünmez.
 	## Günlük (kitap) açıkken de HUD gizli; günlük kendi kapat düğmesini taşır.
 	var vis_layer := UiGate.current_layer()
@@ -602,9 +639,19 @@ func _press_button(btn: HudTouchButton, index: int) -> void:
 				return
 			MobileInputManager.press_dash()
 		&"interact":
-			if UiGate.blocks_dialogue_advance() or UiGate.current_layer() == UiGate.Layer.JOURNAL or UiGate.current_layer() == UiGate.Layer.ENDING:
-				return
-			MobileInputManager.press_interact()
+			if _action_drop:
+				if UiGate.blocks_dialogue_advance() or UiGate.current_layer() == UiGate.Layer.JOURNAL or UiGate.current_layer() == UiGate.Layer.ENDING:
+					return
+				_action_pressed_attack = false
+				MobileInputManager.press_interact()
+			else:
+				if UiGate.blocks_combat():
+					return
+				## Basışta hemen vuruş (gecikmesiz); basılı kalırsa Ruh Kesimi dolar, bırakınca çıkar.
+				_action_pressed_attack = true
+				_sword_press_ms = Time.get_ticks_msec()
+				_set_sword_charged(false)
+				MobileInputManager.press_attack()
 		&"jump":
 			if UiGate.blocks_movement():
 				return
@@ -619,35 +666,214 @@ func _press_button(btn: HudTouchButton, index: int) -> void:
 	btn.set_held(true)
 
 
-func _release_button(btn: HudTouchButton) -> void:
+## fire=false: iptal/arayüz yenileme bırakışı (dolmuş Ruh Kesimi ateşlenmez).
+func _release_button(btn: HudTouchButton, fire: bool = true) -> void:
 	btn.set_held(false)
 	if btn == btn_attack:
 		MobileInputManager.release_attack()
 	elif btn == btn_dash:
 		MobileInputManager.release_dash()
 	elif btn == btn_interact:
-		MobileInputManager.release_interact()
+		if _action_pressed_attack:
+			MobileInputManager.release_attack()
+			if fire and _sword_charged and _has_soul_slash():
+				MobileInputManager.press_skill()
+		else:
+			MobileInputManager.release_interact()
+		_action_pressed_attack = false
+		_sword_press_ms = -1
+		_set_sword_charged(false)
 	elif btn == btn_jump:
 		MobileInputManager.release_jump(&"hud_jump")
 
 
 ## Dokunuş bitti/iptal: o parmağın tuttuğu düğme ve joystick bırakılır (gate'ten bağımsız).
-func _release_touch_index(index: int) -> void:
+func _release_touch_index(index: int, fire: bool = true) -> void:
 	if _btn_touch.has(index):
 		var btn: HudTouchButton = _btn_touch[index]
 		_btn_touch.erase(index)
 		if is_instance_valid(btn):
-			_release_button(btn)
+			_release_button(btn, fire)
 	if index == _joy_touch_index:
 		_release_joystick()
+	var swiped := false
+	if _swipes.has(index):
+		swiped = _swipes[index][2]
+		_swipes.erase(index)
+		if swiped:
+			MobileInputManager.release_dash()
+	if _world_taps.has(index):
+		var tap: Array = _world_taps[index]
+		_world_taps.erase(index)
+		if fire and not swiped and Time.get_ticks_msec() - int(tap[2]) <= TAP_MAX_MS:
+			_resolve_world_tap(tap[0])
 
 
 func _release_all_buttons() -> void:
 	for idx in _btn_touch.keys():
 		var btn: HudTouchButton = _btn_touch[idx]
 		if is_instance_valid(btn):
-			_release_button(btn)
+			_release_button(btn, false)
 	_btn_touch.clear()
+	for idx in _swipes.keys():
+		if _swipes[idx][2]:
+			MobileInputManager.release_dash()
+	_swipes.clear()
+	_world_taps.clear()
+
+
+## Beden sırttayken eylem düğmesi "Bırak" (el dokusu); aksi halde kılıç (+ kılıç bekleme halkası).
+func _set_action_drop(v: bool) -> void:
+	if v == _action_drop:
+		return
+	_action_drop = v
+	btn_interact.texture_normal = _interact_tex if v else _attack_tex
+	btn_interact.cooldown = 0.0 if v else _attack_cooldown
+
+
+func _has_soul_slash() -> bool:
+	return bool(GameState.player_progress_knowledge.get("ability_soul_slash", false))
+
+
+func _set_sword_charged(v: bool) -> void:
+	if v and not _sword_charged:
+		MobileInputManager.haptic(&"ui")
+	_sword_charged = v
+	if not v:
+		btn_interact.modulate = Color(Color.WHITE, btn_interact.modulate.a)
+
+
+## Kılıç basılı tutuluyor: Ruh Kesimi dolumu (düğme morumsu parlar; dolunca tam parlak + titreşim).
+func _tick_sword_charge() -> void:
+	if _sword_press_ms < 0 or not _action_pressed_attack or not _has_soul_slash():
+		return
+	var k := clampf(float(Time.get_ticks_msec() - _sword_press_ms) / float(SOUL_HOLD_MS), 0.0, 1.0)
+	if k >= 1.0 and not _sword_charged:
+		_set_sword_charged(true)
+	var tint: Color = SOUL_CHARGE_TINT if _sword_charged else Color.WHITE.lerp(SOUL_CHARGE_TINT, k * 0.55)
+	btn_interact.modulate = Color(tint, btn_interact.modulate.a)
+
+
+## Ekran noktasının altındaki etkileşim nesnesi (menzildeki adaylar + parlayan tüm nesneler).
+## Hedefin görsel dikdörtgeni ~9 mm'lik dokunma payıyla büyütülür; en yakın kazanır, eşitlikte menzildeki.
+func _world_tap_target(screen_pos: Vector2) -> Node2D:
+	if UiGate.current_layer() != UiGate.Layer.NONE or DialogueManager.is_open or UiGate.blocks_movement():
+		return null
+	var player := get_tree().get_first_node_in_group("player")
+	if player == null or not player.has_method("get_interaction_candidates"):
+		return null
+	var ct := get_viewport().get_canvas_transform()
+	var zoom := maxf(absf(ct.get_scale().x), 0.01)
+	var world: Vector2 = ct.affine_inverse() * screen_pos
+	var pad := get_viewport().get_visible_rect().size.y * TAP_PAD_FRAC / zoom
+	var pool: Array = []
+	if player.has_method("is_carrying") and player.is_carrying():
+		pool.append(player.get_interaction_target())
+	else:
+		pool.append_array(player.get_interaction_candidates())
+		for g in get_tree().get_nodes_in_group(&"interact_glow"):
+			var p := g.get_parent()
+			if p is Node2D and not pool.has(p):
+				pool.append(p)
+	var best: Node2D = null
+	var best_d := INF
+	var best_c := INF
+	for n in pool:
+		if not (n is Node2D) or not is_instance_valid(n) or not n.is_visible_in_tree() or not n.can_process():
+			continue
+		var r := _tap_rect(n)
+		var d := _rect_distance(r, world)
+		if d > pad:
+			continue
+		## Üst üste binen nesneler (ikisi de 0 uzaklık): merkezi dokunuşa en yakın olan kazanır.
+		var c := r.get_center().distance_to(world)
+		if d < best_d - 0.5 or (absf(d - best_d) <= 0.5 and c < best_c):
+			best_d = d
+			best_c = c
+			best = n
+	return best
+
+
+static func _rect_distance(r: Rect2, p: Vector2) -> float:
+	var cp := Vector2(clampf(p.x, r.position.x, r.end.x), clampf(p.y, r.position.y, r.end.y))
+	return cp.distance_to(p)
+
+
+## Nesnenin dünya-uzayı görsel dikdörtgeni: ilk görünür AnimatedSprite2D / dokulu Sprite2D (hale hariç).
+static func _tap_rect(n: Node2D) -> Rect2:
+	for c in n.get_children():
+		if c is AnimatedSprite2D and (c as AnimatedSprite2D).visible and (c as AnimatedSprite2D).sprite_frames:
+			var a := c as AnimatedSprite2D
+			var tex: Texture2D = a.sprite_frames.get_frame_texture(a.animation, a.frame)
+			if tex != null:
+				var sz := tex.get_size()
+				var pos := (-sz * 0.5 if a.centered else Vector2.ZERO) + a.offset
+				return _with_name_label(n, a.get_global_transform() * Rect2(pos, sz))
+	for c in n.get_children():
+		if c is Sprite2D and (c as Sprite2D).visible and (c as Sprite2D).texture and c.name != InteractGlowLib.NODE_NAME:
+			var s := c as Sprite2D
+			return _with_name_label(n, s.get_global_transform() * s.get_rect())
+	return _with_name_label(n, Rect2(n.global_position + Vector2(-12.0, -28.0), Vector2(24.0, 28.0)))
+
+
+## Nesne hedefken üstünde yüzen isim etiketi de dokunma alanına katılır (nesne düğme arkasındaysa ismine dokunulur).
+static func _with_name_label(n: Node2D, r: Rect2) -> Rect2:
+	var lbl := n.get_node_or_null(NodePath(InteractGlowLib.LABEL_NAME)) as Control
+	if lbl != null and lbl.visible and lbl.modulate.a > 0.1 and lbl.size.x > 0.0:
+		return r.merge(lbl.get_global_rect())
+	return r
+
+
+## Dokunulan nesne menzildeyse kullanılır (oyuncu ona döner); değilse "Yaklaşmalıyım" (otomatik yürüme yok).
+func _resolve_world_tap(t) -> void:
+	if not (t is Node2D) or not is_instance_valid(t):
+		return
+	if UiGate.current_layer() != UiGate.Layer.NONE or DialogueManager.is_open:
+		return
+	var player := get_tree().get_first_node_in_group("player")
+	if player == null or not player.has_method("interact_with"):
+		return
+	var carrying: bool = player.has_method("is_carrying") and player.is_carrying()
+	if carrying:
+		if t == player.get_interaction_target():
+			player.interact_with(t)
+			_hint_tick = 0.0
+		return
+	if player.get_interaction_candidates().has(t):
+		var dx: float = (t as Node2D).global_position.x - player.global_position.x
+		if player.has_method("face_direction") and absf(dx) > 4.0 and not bool(player.get("_input_locked")):
+			player.face_direction(signf(dx))
+		player.interact_with(t)
+	else:
+		_far_hint_until = Time.get_ticks_msec() + 1400
+	_hint_tick = 0.0
+
+
+func _in_swipe_zone(screen_pos: Vector2) -> bool:
+	var bounds := safe_area.get_global_rect()
+	return bounds.has_point(screen_pos) and screen_pos.x > bounds.get_center().x
+
+
+## Sağ yarıda hızlı yatay kaydırma = Atıl (kaydırma yönüne). Pencere aşılırsa başlangıç kayar.
+func _update_swipe(event: InputEventScreenDrag) -> void:
+	var s: Array = _swipes[event.index]
+	if s[2]:
+		return
+	var now := Time.get_ticks_msec()
+	if now - int(s[1]) > SWIPE_WINDOW_MS:
+		_swipes[event.index] = [event.position, now, false]
+		return
+	var d: Vector2 = event.position - (s[0] as Vector2)
+	if absf(d.x) < SWIPE_MIN * GameSettings.button_scale() or absf(d.x) < absf(d.y) * 1.3:
+		return
+	if UiGate.blocks_combat() or DialogueManager.is_open:
+		return
+	s[2] = true
+	_world_taps.erase(event.index)
+	var pl := get_tree().get_first_node_in_group("player")
+	if pl and pl.has_method("face_direction") and absf(MobileInputManager.get_move_axis().x) < 0.1:
+		pl.face_direction(signf(d.x))
+	MobileInputManager.press_dash()
 
 
 func _button_at(pos: Vector2) -> HudTouchButton:
@@ -667,9 +893,14 @@ func _button_at(pos: Vector2) -> HudTouchButton:
 ## HUD dışından (oynanış) çağrılır: 1.0 = bekleme başladı, 0.0 = hazır.
 ## Adlar: attack, dash, interact, jump, skill
 func set_button_cooldown(button_name: StringName, ratio: float) -> void:
-	var b: HudTouchButton = _buttons_by_name.get(StringName(String(button_name).to_lower()))
+	var key := StringName(String(button_name).to_lower())
+	var b: HudTouchButton = _buttons_by_name.get(key)
 	if b:
 		b.cooldown = ratio
+	if key == &"attack":
+		_attack_cooldown = ratio
+		if not _action_drop:
+			btn_interact.cooldown = ratio
 
 
 func _input(event: InputEvent) -> void:
@@ -682,7 +913,7 @@ func _input(event: InputEvent) -> void:
 		_update_control_visibility()
 	# Bırakmalar her koşulda işlenir (kapı değişse bile takılı giriş kalmasın).
 	if event is InputEventScreenTouch and (not event.pressed or event.canceled):
-		_release_touch_index((event as InputEventScreenTouch).index)
+		_release_touch_index((event as InputEventScreenTouch).index, not (event as InputEventScreenTouch).canceled)
 	elif event is InputEventMouseButton and (event as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT and not (event as InputEventMouseButton).pressed:
 		_release_touch_index(0)
 	if _seal_waiting:
@@ -733,11 +964,10 @@ func _input(event: InputEvent) -> void:
 	if DialogueManager.is_open and event is InputEventScreenTouch:
 		var st := event as InputEventScreenTouch
 		if st.pressed and not _is_in_joystick_zone(st.position) and _button_at(st.position) == null:
-			# Panel dokunuşu -> devam (joystick bölgesi hariç)
-			if _is_in_dialogue_zone(st.position):
-				DialogueManager.advance()
-				get_viewport().set_input_as_handled()
-				return
+			# v1.20.6: ekranın herhangi bir yerine dokunuş -> devam (joystick/düğme hariç)
+			DialogueManager.advance()
+			get_viewport().set_input_as_handled()
+			return
 	if event is InputEventScreenTouch:
 		_handle_touch(event)
 	elif event is InputEventScreenDrag:
@@ -745,10 +975,9 @@ func _input(event: InputEvent) -> void:
 	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		var mb := event as InputEventMouseButton
 		if DialogueManager.is_open and mb.pressed and not _is_in_joystick_zone(mb.position) and _button_at(mb.position) == null:
-			if _is_in_dialogue_zone(mb.position):
-				DialogueManager.advance()
-				get_viewport().set_input_as_handled()
-				return
+			DialogueManager.advance()
+			get_viewport().set_input_as_handled()
+			return
 		var fake := InputEventScreenTouch.new()
 		fake.pressed = mb.pressed
 		fake.position = mb.position
@@ -841,8 +1070,18 @@ func _handle_touch(event: InputEventScreenTouch) -> void:
 	if btn != null:
 		_press_button(btn, event.index)
 		return
-	if _chooser_hit(event.position):
+	if _chooser_hit(event.position) or _hint_chip_hit(event.position):
 		get_viewport().set_input_as_handled()
+		return
+	## Nesneye dokunuş: bırakışta (kaydırma/sürükleme olmadıysa) etkileşim. Sabit joystick/ok tuşu üstü hariç.
+	var on_fixed_stick := GameSettings.touch_layout != GameSettings.TouchLayout.FLOATING and _is_in_joystick_zone(event.position)
+	if not on_fixed_stick:
+		var tap_target := _world_tap_target(event.position)
+		if tap_target != null:
+			_world_taps[event.index] = [tap_target, event.position, Time.get_ticks_msec()]
+	if not _is_in_joystick_zone(event.position) and _in_swipe_zone(event.position) \
+			and not UiGate.blocks_combat() and not DialogueManager.is_open:
+		_swipes[event.index] = [event.position, Time.get_ticks_msec(), false]
 		return
 	if UiGate.blocks_movement() or _joy_active or not _is_in_joystick_zone(event.position):
 		return
@@ -859,6 +1098,12 @@ func _handle_touch(event: InputEventScreenTouch) -> void:
 
 
 func _handle_drag(event: InputEventScreenDrag) -> void:
+	## Parmak kaydıysa dokunuş değil: nesne etkileşimi iptal.
+	if _world_taps.has(event.index) and (event.position - (_world_taps[event.index][1] as Vector2)).length() > TAP_SLOP * GameSettings.button_scale():
+		_world_taps.erase(event.index)
+	if _swipes.has(event.index):
+		_update_swipe(event)
+		return
 	if not _joy_active or event.index != _joy_touch_index:
 		return
 	if UiGate.blocks_movement():
@@ -1156,6 +1401,7 @@ func _setup_guidance() -> void:
 	_context_hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	UiTheme.apply_outlined(_context_hint, UiTheme.BODY, true)
 	safe_area.add_child(_context_hint)
+	_setup_hint_chip()
 	_chooser = VBoxContainer.new()
 	_chooser.name = "InteractChooser"
 	_chooser.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
@@ -1198,8 +1444,11 @@ func _process(delta: float) -> void:
 	var playable := UiGate.current_layer() == UiGate.Layer.NONE
 	_objective.visible = playable
 	_context_hint.visible = playable
+	_tick_sword_charge()
+	_tick_control_fade(delta)
 	if not playable:
 		_hide_chooser()
+		_set_hint_chip(null)
 	if _helper_label != null:
 		_helper_label.visible = _helper_label.visible and playable
 	hint_label.visible = playable and not (_touch_seen or MobileInputManager.is_touch_ui())
@@ -1228,13 +1477,23 @@ func _process(delta: float) -> void:
 		target = player.get_interaction_target()
 		if target and player.has_method("get_interaction_candidates"):
 			cands = player.get_interaction_candidates()
+	var chip_target: Node2D = null
 	if cands.size() >= 2 and cands.has(target):
 		_refresh_chooser(cands, target, touch_hint)
 	else:
 		_hide_chooser()
 		if target:
-			_context_hint.text = ("El · " if touch_hint else "E · ") + _target_label(target)
-	btn_interact.modulate = Color(1.3, 1.12, 1.12) if target else Color.WHITE
+			## Dokunmatikte hedef adı dokunulabilir çipte (el simgesi); klavyede "E · ad" yazısı.
+			if touch_hint:
+				chip_target = target
+			else:
+				_context_hint.text = "E · " + _target_label(target)
+	## Beden sırttayken kılıç düğmesi "Bırak" olur.
+	_set_action_drop(player != null and player.has_method("is_carrying") and player.is_carrying())
+	if Time.get_ticks_msec() < _far_hint_until:
+		_context_hint.text = FAR_HINT_TEXT
+		chip_target = null
+	_set_hint_chip(chip_target)
 
 
 func _target_label(target: Node2D) -> String:
@@ -1244,7 +1503,7 @@ func _target_label(target: Node2D) -> String:
 	return target_name
 
 
-## Seçici satırlarını yeniden kur: seçili satır parlak ve "El ·" önekli, diğerleri soluk.
+## Seçici satırlarını yeniden kur: seçili satır parlak ve "Dokun ·" önekli, diğerleri soluk.
 func _refresh_chooser(cands: Array, selected: Node2D, touch_hint: bool) -> void:
 	var list: Array = cands.slice(0, CHOOSER_MAX)
 	if not list.has(selected):
@@ -1260,7 +1519,7 @@ func _refresh_chooser(cands: Array, selected: Node2D, touch_hint: bool) -> void:
 		row.visible = true
 		var on: bool = list[i] == selected
 		var lbl := row.get_child(0) as Label
-		var key := ("El · " if touch_hint else "E · ") if on else ""
+		var key := ("Dokun · " if touch_hint else "E · ") if on else ""
 		lbl.text = ("▸ " if on else "   ") + key + _target_label(list[i])
 		lbl.add_theme_color_override("font_color", Color(1.0, 0.93, 0.78) if on else Color(0.78, 0.74, 0.8))
 		var sb := row.get_theme_stylebox("panel") as StyleBoxFlat
@@ -1309,6 +1568,126 @@ func _chooser_hit(pos: Vector2) -> bool:
 				_hint_tick = 0.0
 			return true
 	return false
+
+
+## Alt orta hedef çipi: koyu zemin + altın çerçeve + el simgesi = "buna dokunabilirsin".
+func _setup_hint_chip() -> void:
+	_hint_chip = PanelContainer.new()
+	_hint_chip.name = "TargetChip"
+	_hint_chip.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
+	_hint_chip.offset_left = 0.0
+	_hint_chip.offset_right = 0.0
+	_hint_chip.offset_top = -18.0
+	_hint_chip.offset_bottom = -18.0
+	_hint_chip.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	_hint_chip.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	_hint_chip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0.12, 0.05, 0.08, 0.82)
+	sb.border_color = Color(0.95, 0.75, 0.4, 0.95)
+	sb.set_border_width_all(2)
+	sb.set_corner_radius_all(10)
+	sb.content_margin_left = 8.0
+	sb.content_margin_right = 12.0
+	sb.content_margin_top = 6.0
+	sb.content_margin_bottom = 6.0
+	_hint_chip.add_theme_stylebox_override("panel", sb)
+	var row := HBoxContainer.new()
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.add_theme_constant_override("separation", 6)
+	_hint_chip.add_child(row)
+	var icon := TextureRect.new()
+	icon.name = "Hand"
+	icon.texture = _interact_tex
+	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon.custom_minimum_size = Vector2(26, 26)
+	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.add_child(icon)
+	_hint_chip_label = Label.new()
+	_hint_chip_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_hint_chip_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	UiTheme.apply_outlined(_hint_chip_label, UiTheme.BODY, false, Color(1.0, 0.93, 0.78))
+	row.add_child(_hint_chip_label)
+	_hint_chip.visible = false
+	safe_area.add_child(_hint_chip)
+
+
+## Çipi hedefe göre göster/gizle; yeni hedef gelince iki kez parlayıp "dokun" der.
+func _set_hint_chip(t: Node2D) -> void:
+	if _hint_chip == null:
+		return
+	_hint_chip_target = t
+	if t == null:
+		_hint_chip.visible = false
+		_hint_chip_text = ""
+		return
+	var txt := _target_label(t)
+	if txt != _hint_chip_text or not _hint_chip.visible:
+		_hint_chip_label.text = txt
+		_hint_chip_text = txt
+		_hint_chip.visible = true
+		if _hint_chip_tween != null and _hint_chip_tween.is_valid():
+			_hint_chip_tween.kill()
+		_hint_chip.modulate = Color.WHITE
+		_hint_chip_tween = create_tween()
+		for i in 2:
+			_hint_chip_tween.tween_property(_hint_chip, "modulate", Color(1.7, 1.45, 1.1, 1.0), 0.16)
+			_hint_chip_tween.tween_property(_hint_chip, "modulate", Color.WHITE, 0.24)
+
+
+## Çipin dokunma alanı: görselden biraz büyük (>= ~9 mm yükseklik).
+const CHIP_HIT_PAD := 6.0
+
+
+func hint_chip_hit_rect() -> Rect2:
+	return _hint_chip.get_global_rect().grow(CHIP_HIT_PAD)
+
+
+## Çipe dokunuş: hedefi kullan (menzil dışıysa "Yaklaşmalıyım"). Dokunuş joystick'e gitmez.
+func _hint_chip_hit(pos: Vector2) -> bool:
+	if _hint_chip == null or not _hint_chip.is_visible_in_tree() or UiGate.current_layer() != UiGate.Layer.NONE or DialogueManager.is_open:
+		return false
+	if not hint_chip_hit_rect().has_point(pos):
+		return false
+	if is_instance_valid(_hint_chip_target):
+		_resolve_world_tap(_hint_chip_target)
+	return true
+
+
+## Dokunmatik kontrollerin (Kılıç, Zıpla, joystick, oklar) arkasında etkileşim nesnesi veya Noroi varsa
+## kontrol saydamlaşır; basılıyken tam görünür. Saydamken de dokunuşları alır.
+func _tick_control_fade(delta: float) -> void:
+	var ctrls: Array[Control] = []
+	for c in [btn_interact, btn_jump, joystick_root]:
+		if c != null and c.is_visible_in_tree():
+			ctrls.append(c)
+	for a in _arrows:
+		if a.is_visible_in_tree():
+			ctrls.append(a)
+	if ctrls.is_empty():
+		return
+	var ct := get_viewport().get_canvas_transform()
+	var blockers: Array[Rect2] = []
+	var player := get_tree().get_first_node_in_group("player") as Node2D
+	if player != null and player.is_visible_in_tree():
+		blockers.append(ct * _tap_rect(player))
+	for g in get_tree().get_nodes_in_group(&"interact_glow"):
+		var p := g.get_parent()
+		if p is Node2D and (p as Node2D).is_visible_in_tree() and p.can_process():
+			blockers.append(ct * _tap_rect(p))
+	var held: Array = _btn_touch.values()
+	var k := clampf(delta * FADE_SPEED, 0.0, 1.0)
+	for c in ctrls:
+		var rect_src: Control = joystick_base if c == joystick_root else c
+		var r := rect_src.get_global_transform_with_canvas() * Rect2(Vector2.ZERO, rect_src.size)
+		var hidden := false
+		if not held.has(c) and not (c == joystick_root and _joy_active):
+			for b in blockers:
+				if r.intersects(b):
+					hidden = true
+					break
+		c.modulate.a = lerpf(c.modulate.a, OCCLUDED_ALPHA if hidden else 1.0, k)
 
 
 func _friendly_target(node_name: String) -> String:

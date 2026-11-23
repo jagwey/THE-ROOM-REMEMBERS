@@ -29,10 +29,8 @@ static func spawn_at(parent: Node, at: Vector2) -> Area2D:
 		halo.scale = Vector2(0.35, 0.35)
 		halo.modulate = Color(0.4, 0.8, 1.0, 0.5)
 		spark.add_child(halo)
-	parent.add_child(spark)
-	var tw := spark.create_tween().set_loops()
-	tw.tween_property(mote, "scale", Vector2(1.2, 1.2), 0.5).set_trans(Tween.TRANS_SINE)
-	tw.tween_property(mote, "scale", Vector2(0.9, 0.9), 0.5).set_trans(Tween.TRANS_SINE)
+	## Ruh Kesimi / alan sinyali içinden çağrılabilir: fizik sorgusu sırasında Area2D eklemek hata verir.
+	parent.add_child.call_deferred(spark)
 	return spark
 
 
@@ -49,6 +47,11 @@ func _ready() -> void:
 		add_child(cs)
 	if not body_entered.is_connected(_on_body_entered):
 		body_entered.connect(_on_body_entered)
+	var mote := get_child(0) as Sprite2D
+	if mote:
+		var tw := create_tween().set_loops()
+		tw.tween_property(mote, "scale", Vector2(1.2, 1.2), 0.5).set_trans(Tween.TRANS_SINE)
+		tw.tween_property(mote, "scale", Vector2(0.9, 0.9), 0.5).set_trans(Tween.TRANS_SINE)
 
 
 func _physics_process(delta: float) -> void:

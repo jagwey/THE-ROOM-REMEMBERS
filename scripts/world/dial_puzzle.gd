@@ -6,7 +6,7 @@ extends Node2D
 @export var targets: PackedInt32Array = PackedInt32Array([3, 9, 6])
 @export var labels: PackedStringArray = PackedStringArray()
 @export var spacing: float = 200.0
-@export var also_solve: PackedStringArray = []
+@export var also_solve: PackedStringArray = PackedStringArray()
 @export var solved_line: String = "Kadranlar yerine oturdu."
 
 var _values: PackedInt32Array = PackedInt32Array()

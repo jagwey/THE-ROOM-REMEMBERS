@@ -2,7 +2,7 @@ extends SceneTree
 ## Dokunmatik kontrol yerleşimi: 2712x1220 / 2400x1080 / 1280x720 / 1024x768, tüm buton boyutları (%80-%120).
 ## Düğmeler + joystick güvenli alan içinde, birbirine ve hedef/kalp/ipucu/günlük metinlerine binmez,
 ## dokunma boyutu >= ~9 mm eşdeğeri (telefon yüksekliği ~70 mm, tablet 4:3 ~120 mm varsayımı).
-## Diyalogda yalnız Etkileş kalır ve sağ-alt köşeye (Zıpla yuvası) geçer.
+## v1.20.6: yalnız Kılıç (basılı = Ruh Kesimi) + Zıpla; diyalogda düğme yok, dokunuş ilerletir.
 ## Çalıştır: TORIMON_TEST=1 godot --headless --path . -s res://scripts/dev/touch_controls_layout_audit.gd
 const SIZES: Array[Vector2i] = [Vector2i(2712, 1220), Vector2i(2400, 1080), Vector2i(1280, 720), Vector2i(1024, 768)]
 const MIN_MM := 9.0
@@ -71,7 +71,7 @@ func _audit_one(sz: Vector2i, tag: String) -> void:
 	hud.apply_button_scale()
 	hud.refresh_touch_controls()
 	root.get_node("GameState").room_changed.emit(&"awakening")
-	hud._context_hint.text = "El · Geçidi kullan"
+	hud._context_hint.text = "Geçidi kullan"
 	await _settle()
 	var safe: Rect2 = hud.safe_area.get_global_rect()
 	var phys_h_mm := 120.0 if float(sz.x) / float(sz.y) < 1.5 else 70.0
@@ -80,7 +80,8 @@ func _audit_one(sz: Vector2i, tag: String) -> void:
 	for pair in [["Attack", hud.btn_attack], ["Dash", hud.btn_dash], ["Jump", hud.btn_jump], ["Skill", hud.btn_skill], ["Interact", hud.btn_interact]]:
 		if (pair[1] as Control).is_visible_in_tree():
 			items[pair[0]] = (pair[1] as Control).get_global_rect()
-	check(items.size() == 5, tag + " all 5 buttons visible")
+	## El/Kılıç tek düğme (Interact), Atıl kaydırma: Attack/Dash düğmesi görünmez.
+	check(items.size() == 2 and items.has("Jump") and items.has("Interact"), tag + " only Jump+Sword visible (got %s)" % [items.keys()])
 	if GameSettings.touch_layout == GameSettings.TouchLayout.ARROWS:
 		check(not hud.joystick_base.is_visible_in_tree() and hud._arrows[0].is_visible_in_tree() and hud._arrows[1].is_visible_in_tree(), tag + " both arrows visible")
 		items["Left"] = hud._arrows[0].get_global_rect()
@@ -99,6 +100,18 @@ func _audit_one(sz: Vector2i, tag: String) -> void:
 		var w := minf(f.get_string_size(hud._context_hint.text, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x + 8.0, hud._context_hint.size.x)
 		var r: Rect2 = hud._context_hint.get_global_rect()
 		texts["ContextHint"] = Rect2(r.get_center().x - w * 0.5, r.position.y, w, r.size.y)
+	## Dokunulabilir hedef çipi (el simgesi + çerçeve): en uzun ad ile, düğmelere binmemeli, >= 9 mm.
+	var stub := Node2D.new()
+	stub.name = "KeeperStub"
+	root.add_child(stub)
+	hud._hint_tick = 999.0
+	hud._set_hint_chip(stub)
+	await _settle()
+	check(hud._hint_chip.is_visible_in_tree(), tag + " target chip visible")
+	var chip: Rect2 = hud.hint_chip_hit_rect()
+	texts["TargetChip"] = chip
+	check(safe.grow(0.5).encloses(hud._hint_chip.get_global_rect()), "%s TargetChip outside safe area %s" % [tag, chip])
+	check(minf(chip.size.x, chip.size.y) * sc >= min_px, "%s TargetChip tap %.0fpx < %.0fpx (9mm)" % [tag, minf(chip.size.x, chip.size.y) * sc, min_px])
 	var names := items.keys()
 	for i in names.size():
 		var r: Rect2 = items[names[i]]
@@ -108,18 +121,16 @@ func _audit_one(sz: Vector2i, tag: String) -> void:
 			check(not r.intersects(items[names[j]]), "%s %s overlaps %s" % [tag, names[i], names[j]])
 		for tn in texts:
 			check(not r.intersects(texts[tn]), "%s %s overlaps %s" % [tag, names[i], tn])
+	hud._set_hint_chip(null)
+	stub.free()
+	hud._hint_tick = 0.0
 	# Diyalog: yalnız Etkileş, köşede (Zıpla yuvası), panele binmez
 	var DM := root.get_node("DialogueManager")
 	DM.ask("S.", "Kısa satır.", PackedStringArray(["Evet", "Hayır"]))
 	await _settle()
 	await _settle()
-	check(hud.btn_interact.is_visible_in_tree() and not hud.btn_jump.is_visible_in_tree(), tag + " dialogue: only Interact visible")
-	var ir: Rect2 = hud.btn_interact.get_global_rect()
-	var panel: Rect2 = hud.dialogue_panel.get_global_rect()
-	check(safe.grow(0.5).encloses(ir), tag + " dialogue: Interact inside safe area")
-	check(not ir.intersects(panel), tag + " dialogue: Interact overlaps panel")
-	check(minf(ir.size.x, ir.size.y) * sc >= min_px, tag + " dialogue: Interact tap size")
-	check(ir.end.x >= safe.end.x - 24.0 and ir.end.y >= safe.end.y - 24.0, "%s dialogue: Interact not in bottom-right corner %s" % [tag, ir])
+	## v1.20.6: diyalogda düğme yok; ekrana dokunmak ilerletir.
+	check(not hud.btn_interact.is_visible_in_tree() and not hud.btn_jump.is_visible_in_tree(), tag + " dialogue: no action buttons")
 	DM.clear()
 	await _settle()
 	print("TC ", tag)

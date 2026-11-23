@@ -568,9 +568,9 @@ const HINTS: Dictionary = {
 		"explicit": "Sunakta kaydı başlat; ters yönde sağa yürü, ortadaki platforma çık, sonra in."
 	},
 	&"mirrors_inverse_hall_cross": {
-		"goal": "Kırmızı çizginin ötesinde bir plaka var.",
-		"orientation": "Gölge Atılması kırmızı çizgiden geçer; Ayna Tapınağı'nda öğrenilir.",
-		"explicit": "Çizgiye Gölge Atılması ile dal ve ötedeki plakaya bas."
+		"goal": "Salonun sonunda bir taş plaka var.",
+		"orientation": "Salonun en sağına yürü; plaka ayak bekler.",
+		"explicit": "Salonun en sağındaki taş plakaya bas."
 	},
 	&"mirrors_inverse_hall": {
 		"goal": "Aynalar notlardaki sırayla yanar.",
@@ -674,8 +674,8 @@ const HINTS: Dictionary = {
 	},
 	&"trial_mirrors_inverse_hall": {
 		"goal": "İkinci adımdan sonra ayna seni sunağa geri çağırıyor.",
-		"orientation": "Gölge, Yansıma; sonra çizgiden atılıp sunağa dön, en son Ana Ayna.",
-		"explicit": "Gölge, Yansıma aynalarına bas; Gölge Atılması ile geri dön, sunağa dokun, sonra Ana Ayna."
+		"orientation": "Gölge, Yansıma; sonra sunağa yürüyüp dön, en son Ana Ayna.",
+		"explicit": "Gölge, Yansıma aynalarına bas; sunağa geri yürü ve dokun, sonra Ana Ayna."
 	},
 	&"trial_core_last_record": {
 		"goal": "Veda sayfasından önce mühür bir kez daha kesilmeli.",

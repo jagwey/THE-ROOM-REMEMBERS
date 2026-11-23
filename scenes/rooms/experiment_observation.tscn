@@ -1,7 +1,6 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/nook_record.gd" id="nook_rec"]
-[ext_resource type="Script" path="res://scripts/world/dash_line.gd" id="nook_gate"]
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
 [ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore_story"]
 [ext_resource type="Script" path="res://scripts/world/echo_altar.gd" id="altar"]
@@ -83,16 +82,10 @@ ability = "dash"
 nook_id = "observation"
 texture_path = "res://assets/props/photograph.png"
 sprite_scale = 0.5
-lines = PackedStringArray("Noroi|Cam kenarında bir gözlem fişi: “Not tutan: Araştırma Yardımcısı S.”", "Noroi|Fişin yarısı kopmuş. Kırmızı çizgi yolu kesiyor.")
+lines = PackedStringArray("Noroi|Cam kenarında bir gözlem fişi: “Not tutan: Araştırma Yardımcısı S.”", "Noroi|Fişin yarısı kopmuş. Öteki yarısı camın ötesinde olmalı.")
 evidence_title = "Gözlem Fişi"
-evidence_body = "Gözlem fişini Araştırma Yardımcısı S. tutmuş; yarısı kopuk, kalanı kırmızı çizginin ardında."
+evidence_body = "Gözlem fişini Araştırma Yardımcısı S. tutmuş; yarısı kopuk, kalanı camın ötesinde."
 evidence_section = "izler"
-
-[node name="NookLine" type="Area2D" parent="Interactive"]
-position = Vector2(620.0, 288.0)
-script = ExtResource("nook_gate")
-puzzle_id = &"nook_observation_gate"
-refusal_line = "Camın önünde kırmızı bir çizgi var; Gölge Atılması için Ayna Tapınağı'na gitmeliyim."
 
 [node name="NookRecord" type="Area2D" parent="Interactive"]
 position = Vector2(680.0, 288.0)
@@ -101,7 +94,6 @@ lore_id = &"nook_observation_b"
 role = "record"
 ability = "dash"
 nook_id = "observation"
-gate_puzzle = &"nook_observation_gate"
 frag_id = "nook_observation_a"
 need_line = "Fişin öbür yarısı burada; ama önce cam kenarındaki gözlem fişini bulmalıyım."
 texture_path = "res://assets/props/ledger.png"

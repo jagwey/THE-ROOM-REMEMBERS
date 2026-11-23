@@ -1,7 +1,6 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/nook_record.gd" id="nook_rec"]
-[ext_resource type="Script" path="res://scripts/world/dash_line.gd" id="nook_gate"]
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
 [ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore"]
 [ext_resource type="Script" path="res://scripts/world/echo_point.gd" id="echo"]
@@ -150,16 +149,10 @@ ability = "dash"
 nook_id = "balcony"
 texture_path = "res://assets/props/photograph.png"
 sprite_scale = 0.55
-lines = PackedStringArray("Noroi|Korkuluktaki eski kaşkolda kâğıt: “1927, nöbet S.'de.”", "Noroi|Kâğıt ortadan kesilmiş. Öteki yarısı kırmızı çizginin ardında.")
+lines = PackedStringArray("Noroi|Korkuluktaki eski kaşkolda kâğıt: “1927, nöbet S.'de.”", "Noroi|Kâğıt ortadan kesilmiş. Öteki yarısı balkonun ucunda olmalı.")
 evidence_title = "Kaşkol Notu"
-evidence_body = "Kaşkolun cebinde 1927 nöbetini S.'ye veren bir kâğıt var; yarısı çizginin ardında."
+evidence_body = "Kaşkolun cebinde 1927 nöbetini S.'ye veren bir kâğıt var; yarısı balkonun ucunda."
 evidence_section = "izler"
-
-[node name="NookLine" type="Area2D" parent="Interactive"]
-position = Vector2(495.0, 288.0)
-script = ExtResource("nook_gate")
-puzzle_id = &"nook_balcony_gate"
-refusal_line = "Balkonda kırmızı bir çizgi var; Gölge Atılması için Ayna Tapınağı'na gitmeliyim."
 
 [node name="NookRecord" type="Area2D" parent="Interactive"]
 position = Vector2(545.0, 288.0)
@@ -168,7 +161,6 @@ lore_id = &"nook_balcony_b"
 role = "record"
 ability = "dash"
 nook_id = "balcony"
-gate_puzzle = &"nook_balcony_gate"
 frag_id = "nook_balcony_a"
 need_line = "Mektup yarım; önce korkuluktaki kaşkolun cebine bakmalıyım."
 texture_path = "res://assets/props/ledger.png"

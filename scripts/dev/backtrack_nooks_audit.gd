@@ -1,6 +1,7 @@
 extends SceneTree
-## Geri dönüş köşeleri: 8 kayıt (4 Ruh Kesimi, 4 Gölge Atılması). Yetenek yokken kapalı, varken açık,
-## kayıt alınır, bayrak kayıt/yüklemede kalır, sayaç 8/8, ana yol kapanmaz.
+## Geri dönüş köşeleri: 8 kayıt. Yalnız yetenek alındıktan SONRA gelen odada (Deney Hücreleri, Ruh Kesimi)
+## kapı var: yetenek yokken kapalı, varken açık. Yetenekten önceki 7 odada kapı/çizgi/damar YOK (v1.20.6):
+## kayıt yalnız parçaya bağlı, yeteneksiz alınır. Bayrak kayıt/yüklemede kalır, sayaç 8/8, ana yol kapanmaz.
 ## Çalıştır: TORIMON_TEST=1 godot --headless --path . -s res://scripts/dev/backtrack_nooks_audit.gd
 var failures := 0
 
@@ -8,14 +9,14 @@ var failures := 0
 const NEAR_MIN := {"awakening_crypt": 40.0, "library_hall": 44.0, "experiment_cells": 54.0, "awakening_balcony": 49.0}
 
 const NOOKS := [
-	{"room": "awakening_crypt", "k": "crypt", "ab": "soul"},
-	{"room": "decay_catacombs", "k": "catacombs", "ab": "soul"},
-	{"room": "library_hall", "k": "hall", "ab": "soul"},
-	{"room": "experiment_cells", "k": "cells", "ab": "soul"},
-	{"room": "decay_cistern", "k": "cistern", "ab": "dash"},
-	{"room": "experiment_observation", "k": "observation", "ab": "dash"},
-	{"room": "awakening_balcony", "k": "balcony", "ab": "dash"},
-	{"room": "library_forbidden_wing", "k": "forbidden", "ab": "dash"},
+	{"room": "awakening_crypt", "k": "crypt", "ab": "soul", "gated": false},
+	{"room": "decay_catacombs", "k": "catacombs", "ab": "soul", "gated": false},
+	{"room": "library_hall", "k": "hall", "ab": "soul", "gated": false},
+	{"room": "experiment_cells", "k": "cells", "ab": "soul", "gated": true},
+	{"room": "decay_cistern", "k": "cistern", "ab": "dash", "gated": false},
+	{"room": "experiment_observation", "k": "observation", "ab": "dash", "gated": false},
+	{"room": "awakening_balcony", "k": "balcony", "ab": "dash", "gated": false},
+	{"room": "library_forbidden_wing", "k": "forbidden", "ab": "dash", "gated": false},
 ]
 
 
@@ -63,6 +64,7 @@ func _run() -> void:
 		var rid := String(spec["room"])
 		var k := String(spec["k"])
 		var soul: bool = spec["ab"] == "soul"
+		var gated: bool = spec["gated"]
 		var akey := "ability_soul_slash" if soul else "ability_shadow_dash"
 		check(rm.has_room(StringName(rid)), "%s: room loads" % rid)
 		rm.enter_room(StringName(rid), &"default")
@@ -73,6 +75,29 @@ func _run() -> void:
 		var frag: Node = rroot.find_child("NookFrag", true, false)
 		var rec: Node = rroot.find_child("NookRecord", true, false)
 		var g: Node = rroot.find_child("NookVein" if soul else "NookLine", true, false)
+		if not gated:
+			check(frag != null and rec != null and g == null, "%s: fragment + record present, no ability gate" % rid)
+			if frag == null or rec == null:
+				continue
+			check(String(rec.gate_puzzle) == "", "%s: record has no gate puzzle" % rid)
+			state.player_progress_knowledge.erase("ability_soul_slash")
+			state.player_progress_knowledge.erase("ability_shadow_dash")
+			rec.on_interact(null)
+			await create_timer(1.5).timeout
+			dm.clear()
+			gate.set_story(false)
+			check(not NR.has_nook(k), "%s: record needs the fragment first" % k)
+			frag.on_interact(null)
+			await create_timer(2.5).timeout
+			dm.clear()
+			gate.set_story(false)
+			rec.on_interact(null)
+			await create_timer(3.5).timeout
+			dm.clear()
+			gate.set_story(false)
+			var seen0: Array = state.player_progress_knowledge.get("lore_seen", [])
+			check(NR.has_nook(k) and seen0.has("nook_%s_b" % k), "%s: record taken without any ability" % k)
+			continue
 		check(frag != null and rec != null and g != null, "%s: fragment, gate, record present" % rid)
 		if frag == null or rec == null or g == null:
 			continue
@@ -154,7 +179,8 @@ func _run() -> void:
 	await create_timer(0.3).timeout
 	for spec in NOOKS:
 		check(NR.has_nook(String(spec["k"])), "%s: flag persists across save/load" % spec["k"])
-		check(pm.is_solved(StringName("nook_%s_gate" % spec["k"])), "%s: gate stays open after load" % spec["k"])
+		if spec["gated"]:
+			check(pm.is_solved(StringName("nook_%s_gate" % spec["k"])), "%s: gate stays open after load" % spec["k"])
 	check(NR.count() == 8, "counter 8/8 after load")
 
 	print("NOOK failures=%d" % failures)

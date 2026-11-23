@@ -139,7 +139,7 @@ func _test_concurrency_race_damage_first() -> void:
 	check(not curse.possessing, "1.1: Curse possession never started post-death")
 	check(int(state.player_progress_knowledge.get("deaths", 0)) == deaths_before + 1, "1.1: Deaths incremented by exactly 1")
 	check((state.world_memory_state["corpses"] as Array).size() == corpses_before + 1, "1.1: Exactly 1 corpse placed by death")
-	check(is_equal_approx(curse.curse, 50.0), "1.1: Curse floored to 50 after death", str(curse.curse))
+	check(is_equal_approx(curse.curse, 0.0), "1.1: Curse reset to 0 after death (v1.19.5)", str(curse.curse))
 	check(gate.current_layer() == gate.Layer.NONE, "1.1: UiGate returned to NONE")
 
 
@@ -249,7 +249,7 @@ func _test_add_curse_blocked_during_death() -> void:
 	check(blocked_in_all_phases, "2.1: add_curse(50.0) and set_curse(80.0) blocked across all death phases")
 	var touched: Array = state.world_memory_state.get("forbidden_touched", [])
 	check(not touched.has(String(test_reason)), "2.1: forbidden_touched did NOT record curse reason during death")
-	check(is_equal_approx(curse.curse, 50.0), "2.1: curse floored to 50 post-rebirth", str(curse.curse))
+	check(is_equal_approx(curse.curse, 0.0), "2.1: curse reset to 0 post-rebirth (v1.19.5)", str(curse.curse))
 
 
 ## Test 2.2: fail_curse_possession() called while DeathManager.is_dying
@@ -280,7 +280,7 @@ func _test_fail_curse_possession_during_death() -> void:
 	check(not death.is_dying, "2.2: Death finished")
 	check(not curse.possessing, "2.2: Curse possession never started")
 	# If curse was set to 99 during death and not reset at rebirth, check if post-rebirth curse is safe (<= 30.0)
-	check(is_equal_approx(curse.curse, 50.0), "2.2: Post-rebirth curse is the death floor 50, not 99", str(curse.curse))
+	check(is_equal_approx(curse.curse, 0.0), "2.2: Post-rebirth curse is 0 (v1.19.5 reset), not 99", str(curse.curse))
 
 
 ## Test Suite 3: 100% Curse Possession Reload & Integrity

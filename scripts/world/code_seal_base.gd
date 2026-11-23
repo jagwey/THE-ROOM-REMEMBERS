@@ -12,7 +12,7 @@ extends Area2D
 ## true ise yanlış kod girişi lanete +1 ekler.
 @export var penalize_wrong: bool = false
 ## Doluysa: listedeki her ID canlı veya çözülmüş olmadan tuş takımı açılmaz; require_line söylenir.
-@export var require_live: PackedStringArray = []
+@export var require_live: PackedStringArray = PackedStringArray()
 @export var require_line: String = ""
 
 var _busy: bool = false

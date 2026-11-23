@@ -46,7 +46,7 @@ const _BY_ROOM: Dictionary = {
 	"decay_rootworks": "Beden, taş ve salla üç plakayı tut; defterdeki sırayı izle.",
 	"library_archive_vault": "Kasayı beden, yankı ve kadranla aç; rafları tarih sırasıyla aç.",
 	"experiment_twin_lab": "Tartıyı yükle, mührü Ruh Kesimi'yle kır; föydeki sırayı izle.",
-	"mirrors_inverse_hall": "Yolu yankına yürüt, çizgiyi geç; aynaları notlardaki sırayla yak.",
+	"mirrors_inverse_hall": "Salonun sonundaki plakaya bas; aynaları notlardaki sırayla yak.",
 	"core_last_record": "Kasayı beden, yankı, kesim ve atılışla aç; sayfaları sırayla çevir.",
 	"awakening_s_room": "Dört kilidi aç; duvardaki yıllara bakıp beş sayfayı sırayla çevir.",
 	"core_ascent": "Mührü kes, perdeyi at; yankını plakaya koy, kapıdan geç.",

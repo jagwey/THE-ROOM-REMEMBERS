@@ -141,7 +141,9 @@ func _run() -> void:
 					close_pairs.append("%s %s↔%s %.0f" % [rid, points[i].name, points[j].name, dist])
 	check(bad_doors.is_empty(), "her kapının hedef odası ve spawn'ı var", bad_doors)
 	check(close_pairs.is_empty(), "kapı/etkileşim 96 px'ten yakın değil", close_pairs)
-	check(ability_doors.is_empty(), "ana yolda Gölge Atılması kapısı yok (oda 14-27)", ability_doors.size())
+	## Yan odaya (S.'nin Odası) giden yetenek kapısı serbest; ana yol odasına giden yasak.
+	var main_ability_doors: Array = ability_doors.filter(func(d): return not rm.SIDE_ROOM_HUB.has(String(d.get("target_room_id"))))
+	check(main_ability_doors.is_empty(), "ana yolda Gölge Atılması kapısı yok (oda 14-27)", main_ability_doors.size())
 	var player: Node2D = current_scene.get_node("Player")
 	for rid in rm._rooms.keys():
 		rm.enter_room(rid, &"default")
@@ -156,13 +158,13 @@ func _run() -> void:
 	gs.player_progress_knowledge["ability_shadow_dash"] = false
 	var locked_count := 0
 	for door in ability_doors:
-		if door.is_locked():
+		if door._ability_blocked():
 			locked_count += 1
 	check(locked_count == ability_doors.size(), "yetenek yokken atılma kapıları kilitli", locked_count)
 	gs.player_progress_knowledge["ability_shadow_dash"] = true
 	var open_count := 0
 	for door in ability_doors:
-		if not door.is_locked():
+		if not door._ability_blocked():
 			open_count += 1
 	check(open_count == ability_doors.size(), "yetenek varken atılma kapıları açık", open_count)
 	var walked := true

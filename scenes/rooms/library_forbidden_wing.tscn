@@ -1,7 +1,6 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/nook_record.gd" id="nook_rec"]
-[ext_resource type="Script" path="res://scripts/world/dash_line.gd" id="nook_gate"]
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
 [ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore"]
 [ext_resource type="Script" path="res://scripts/world/ability_pickup.gd" id="ability"]
@@ -37,7 +36,7 @@ grant_key = "ability_soul_slash"
 title = "Ruh Kesimi"
 texture_path = "res://assets/props/slash.png"
 lines = PackedStringArray("Noroi|Havada asılı bir kesik, kılıcımın izi ama ışıktan.", "Noroi|Dokununca içimde bir şey uyanıyor.")
-tutorial = "Q (mobilde yıldız düğmesi): Ruh Kesimi. Mor mühürleri ve mühürlü sarmaşıkları açar."
+tutorial = "%SKILL%: Ruh Kesimi. Mor mühürleri ve sarmaşıkları açar."
 
 [node name="Shard1" type="Area2D" parent="Interactive"]
 position = Vector2(440.0, 288.0)
@@ -103,16 +102,10 @@ ability = "dash"
 nook_id = "forbidden"
 texture_path = "res://assets/props/photograph.png"
 sprite_scale = 0.55
-lines = PackedStringArray("Noroi|Yasak rafta bir kitap ayracı: “S., bunu kimse görmesin.”", "Noroi|Ucunda kırmızı bir çizgi çizili; ötesinde başka bir iz var.")
+lines = PackedStringArray("Noroi|Yasak rafta bir kitap ayracı: “S., bunu kimse görmesin.”", "Noroi|Ucunda bir ok çizili; rafın ötesinde başka bir iz var.")
 evidence_title = "Kitap Ayracı"
-evidence_body = "Yasak raftaki ayraçta “S., bunu kimse görmesin” yazıyor; ucunda kırmızı çizgi çizili."
+evidence_body = "Yasak raftaki ayraçta “S., bunu kimse görmesin” yazıyor; ucunda rafın ötesini gösteren bir ok çizili."
 evidence_section = "izler"
-
-[node name="NookLine" type="Area2D" parent="Interactive"]
-position = Vector2(785.0, 288.0)
-script = ExtResource("nook_gate")
-puzzle_id = &"nook_forbidden_gate"
-refusal_line = "Rafın önündeki kırmızı çizgi geri itiyor; Gölge Atılması için Ayna Tapınağı'na gitmeliyim."
 
 [node name="NookRecord" type="Area2D" parent="Interactive"]
 position = Vector2(815.0, 288.0)
@@ -121,9 +114,8 @@ lore_id = &"nook_forbidden_b"
 role = "record"
 ability = "dash"
 nook_id = "forbidden"
-gate_puzzle = &"nook_forbidden_gate"
 frag_id = "nook_forbidden_a"
-need_line = "Çizginin ardındaki iz ayraca bağlı; önce yasak raftaki ayracı bulmalıyım."
+need_line = "Bu iz ayraca bağlı; önce yasak raftaki ayracı bulmalıyım."
 texture_path = "res://assets/props/ledger.png"
 sprite_scale = 0.7
 lines = PackedStringArray("Noroi|Çizginin ardında gizli bir defter: “Yasak kitapları okudum, hepsini.”", "Noroi|Not: “Bir gün biri okuyacak. O gün yalnız kalmam. S., 1927.”", "Shilda|Biri okuyacak diye yazmış. Ben okudum; yeter mi bilmem.")

@@ -59,7 +59,7 @@ const SIDE_DOORS := {
 	"library_upper_stacks": [{"x": 680.0, "to": "library_archive_vault", "title": "Kayıt Mahzeni"}],
 	"decay_garden": [{"x": 460.0, "to": "decay_rootworks", "title": "Kök Damarları"}],
 	"awakening_vigil": [{"x": 700.0, "to": "awakening_bellroom", "title": "Sessiz Çanlar"}],
-	"awakening": [{"x": 672.0, "to": "awakening_balcony"}, {"x": 980.0, "to": "awakening_s_room", "title": "S.'nin Odası", "nooks": 8}],
+	"awakening": [{"x": 672.0, "to": "awakening_balcony"}, {"x": 980.0, "to": "awakening_s_room", "title": "S.'nin Odası", "nooks": 8, "ability": "ability_shadow_dash"}],
 	"decay_vines": [{"x": 896.0, "to": "decay_catacombs"}],
 	"decay_weight": [{"x": 720.0, "to": "decay_cistern"}],
 }

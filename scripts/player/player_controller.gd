@@ -782,7 +782,20 @@ func get_interaction_candidates() -> Array[Node2D]:
 	return candidates
 
 
-## Seçici: hedefi işaretle (El düğmesi artık bunu kullanır). null = otomatik seçime dön.
+## Nesne etkileşim menzilinde mi (parıltı "yakın" vurgusu için). Aday listesi kare başına bir kez hesaplanır.
+var _range_cache: Array[Node2D] = []
+var _range_frame: int = -1
+
+
+func is_in_interact_range(n: Node) -> bool:
+	var f := Engine.get_process_frames()
+	if f != _range_frame:
+		_range_frame = f
+		_range_cache = get_interaction_candidates()
+	return _range_cache.has(n)
+
+
+## Seçici: hedefi işaretle (nesneye dokunuş / seçici bunu kullanır). null = otomatik seçime dön.
 func choose_interaction(target: Node2D) -> void:
 	_chosen_target = target
 

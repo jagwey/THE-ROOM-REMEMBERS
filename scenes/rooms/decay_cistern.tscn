@@ -1,7 +1,6 @@
-[gd_scene load_steps=18 format=3]
+[gd_scene load_steps=17 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/nook_record.gd" id="nook_rec"]
-[ext_resource type="Script" path="res://scripts/world/dash_line.gd" id="nook_gate"]
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
 [ext_resource type="Script" path="res://scripts/world/water_level.gd" id="water"]
 [ext_resource type="Script" path="res://scripts/world/valve.gd" id="valve"]
@@ -201,16 +200,10 @@ ability = "dash"
 nook_id = "cistern"
 texture_path = "res://assets/props/photograph.png"
 sprite_scale = 0.55
-lines = PackedStringArray("Noroi|Sarnıç kenarında ıslak bir defter: “Su seviyesi, yazan S.”", "Noroi|Sayfalar bir kırmızı çizgide bitiyor. Çizgiyi geçmek gerek.")
+lines = PackedStringArray("Noroi|Sarnıç kenarında ıslak bir defter: “Su seviyesi, yazan S.”", "Noroi|Sayfalar yarıda kesiliyor. Devamı sarnıcın öbür ucunda olmalı.")
 evidence_title = "Islak Defter"
-evidence_body = "Islak defterde su seviyesi yazılmış, S. imzalı; sayfalar kırmızı bir çizgide bitiyor."
+evidence_body = "Islak defterde su seviyesi yazılmış, S. imzalı; sayfalar yarıda kesiliyor."
 evidence_section = "izler"
-
-[node name="NookLine" type="Area2D" parent="Interactive"]
-position = Vector2(960.0, 288.0)
-script = ExtResource("nook_gate")
-puzzle_id = &"nook_cistern_gate"
-refusal_line = "Sarnıçta kırmızı bir çizgi uzanıyor; Gölge Atılması için Ayna Tapınağı'na gitmeliyim."
 
 [node name="NookRecord" type="Area2D" parent="Interactive"]
 position = Vector2(1030.0, 288.0)
@@ -219,9 +212,8 @@ lore_id = &"nook_cistern_b"
 role = "record"
 ability = "dash"
 nook_id = "cistern"
-gate_puzzle = &"nook_cistern_gate"
 frag_id = "nook_cistern_a"
-need_line = "Çizginin ardı hazır; ama önce sarnıç kenarındaki ıslak defteri okumalıyım."
+need_line = "Devamı burada; ama önce sarnıç kenarındaki ıslak defteri okumalıyım."
 texture_path = "res://assets/props/ledger.png"
 sprite_scale = 0.7
 lines = PackedStringArray("Noroi|Çizginin ardında suya düşmemiş bir kâğıt: “Pompa kapatıldı, 1927.”", "Noroi|Altında bir dilek: “S. uyanınca su çekilsin.”", "Shilda|Su çekilsin… Çocukken de böyle şeyler dilerdim galiba.")

@@ -167,11 +167,13 @@ Android'de ilk açılışta **Sabit Joystick**, **Yüzen Joystick** veya **Yön 
 | :--- | :--- | :--- |
 | **Hareket** | `A / D` veya `← / →` | Joystick veya Yön Tuşları |
 | **Zıpla** | `W`, `Space` veya `↑` | **Zıpla** butonu *(isteğe bağlı joystick yukarı)* |
-| **Kılıç Kombosu** | `Z` veya `J` | **Kılıç** butonu |
-| **Atılma (Dash)** | `X` veya `K` | **Atıl** butonu |
-| **Etkileş / Konuş** | `E` veya `F` | **El** butonu |
-| **Özel Yetenek** | `Q` veya `C` | **Yetenek** butonu |
+| **Kılıç Kombosu** | `Z` veya `J` | **Kılıç** butonuna dokun |
+| **Atılma (Dash)** | `X` veya `K` | Ekranda hızlıca **kaydır** |
+| **Etkileş / Konuş** | `E` veya `F` | Nesneye / kişiye **dokun** ya da alttaki **el simgeli hedef çipine** dokun |
+| **Özel Yetenek** | `Q` veya `C` | **Kılıç** butonunu **basılı tut** |
 | **Günlük, Harita & Menü** | `I`, `Tab` veya `Esc` | Sağ Üst **Kitap** ikonu / Geri tuşu |
+
+> Bir nesne veya Noroi dokunmatik tuşların arkasında kalırsa tuşlar otomatik olarak saydamlaşır; uzaktaki bir nesneye dokunursan *"Yaklaşmalıyım"* uyarısı çıkar.
 
 ---
 

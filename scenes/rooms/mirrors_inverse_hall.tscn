@@ -1,8 +1,7 @@
-[gd_scene load_steps=15 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
 [ext_resource type="Script" path="res://scripts/world/echo_altar.gd" id="altar"]
-[ext_resource type="Script" path="res://scripts/world/curse_barrier.gd" id="curse"]
 [ext_resource type="Script" path="res://scripts/world/gate_blocker.gd" id="gate"]
 [ext_resource type="Script" path="res://scripts/world/control_invert.gd" id="invert"]
 [ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore"]
@@ -90,15 +89,10 @@ script = ExtResource("lore")
 lore_id = &"inverse_2"
 texture_path = "res://assets/props/photograph.png"
 sprite_scale = 0.5
-lines = PackedStringArray("Noroi|İkinci satır: “Gölge en son kırılır. Ondan önce yansıma gelir.”", "Noroi|Yanında: “Kırmızı çizgiyi yalnız atılan gölge geçer.”")
+lines = PackedStringArray("Noroi|İkinci satır: “Gölge en son kırılır. Ondan önce yansıma gelir.”", "Noroi|Yanında: “Yansımanın yolu salonun sonundaki taşta biter.”")
 evidence_title = "Ters Salon Notu, İkinci Satır"
-evidence_body = "Gölge en son kırılır. Kırmızı çizgiyi yalnız Gölge Atılması geçer."
+evidence_body = "Gölge en son kırılır; ondan önce yansıma gelir. Yansımanın yolu salonun sonundaki taşta biter."
 evidence_section = "izler"
-
-[node name="InverseStripe" type="StaticBody2D" parent="Interactive"]
-position = Vector2(810, 288)
-script = ExtResource("curse")
-refusal_line = "Kırmızı çizgi beni itiyor; Gölge Atılması için Ayna Tapınağı'na gitmeliyim."
 
 [node name="InverseStand" type="Area2D" parent="Interactive"]
 position = Vector2(880, 278)
@@ -155,7 +149,7 @@ evidence_id = "ev_inverse_reflection"
 evidence_title = "Yansımanın Kaydı"
 evidence_body = "Aynada gördüğün sen değilsin; odanın hatırladığı biri. Ters dönen yalnız yön, kayıt değil."
 require_live = PackedStringArray("mirrors_inverse_hall_mimic", "mirrors_inverse_hall_cross")
-require_line = "Aynalar hâlâ yankının izini ve çizginin ötesini bekliyor."
+require_line = "Aynalar hâlâ yankının izini ve salonun sonundaki taşı bekliyor."
 
 [node name="Step_golge" type="Area2D" parent="Interactive/InverseShrine"]
 position = Vector2(1050, 288)

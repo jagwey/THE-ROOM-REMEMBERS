@@ -8,6 +8,7 @@ const ACCEPT_PLAYER_WHITELIST := {
 	"awakening_crypt:BedPlate": "Faz 2: yalnız-ceset plaka (accept_stone=false, accept_player=false); latch_on_press ile anı kalıcı açılır",
 	"mirrors_gallery:Plate1": "Tek taş rölesi (accept_player=false, accept_stone=true); latch_on_press ile ilk kilit basık kalır",
 	"mirrors_gallery:Plate3": "Tek taş rölesi (accept_player=false, accept_stone=true); latch_on_press ile son kilit basık kalır",
+	"decay_rootworks:RootStonePlate": "Yalnız-taş plaka (accept_player=false); latch_on_press: taş bir kez oturunca ölüm/oda yüklemesi taşı geri koysa da kalıcı",
 }
 const CLEARANCE := 48.0
 

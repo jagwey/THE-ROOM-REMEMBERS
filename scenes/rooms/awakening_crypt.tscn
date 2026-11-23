@@ -1,7 +1,6 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/nook_record.gd" id="nook_rec"]
-[ext_resource type="Script" path="res://scripts/world/soul_seal.gd" id="nook_gate"]
 [ext_resource type="Script" path="res://scripts/world/built_room.gd" id="room"]
 [ext_resource type="Script" path="res://scripts/world/lore_point.gd" id="lore"]
 [ext_resource type="Script" path="res://scripts/world/echo_point.gd" id="echo"]
@@ -166,17 +165,10 @@ ability = "soul"
 nook_id = "crypt"
 texture_path = "res://assets/props/photograph.png"
 sprite_scale = 0.55
-lines = PackedStringArray("Noroi|Yatağın altında yarım bir sayfa: “Araştırma Yardımcısı S., ikinci vardiya.”", "Noroi|Alt yarısı yırtık. Devamı duvardaki mor damarın ardında olmalı.")
+lines = PackedStringArray("Noroi|Yatağın altında yarım bir sayfa: “Araştırma Yardımcısı S., ikinci vardiya.”", "Noroi|Alt yarısı yırtık. Devamı duvar dibinde olmalı.")
 evidence_title = "Yırtık Sayfa"
-evidence_body = "Yatak altında yırtık bir vardiya sayfası. Araştırma Yardımcısı S. imzalı; devamı duvardaki damarın ardında."
+evidence_body = "Yatak altında yırtık bir vardiya sayfası. Araştırma Yardımcısı S. imzalı; devamı duvar dibinde."
 evidence_section = "izler"
-
-[node name="NookVein" type="StaticBody2D" parent="Interactive"]
-position = Vector2(740.0, 288.0)
-script = ExtResource("nook_gate")
-puzzle_id = &"nook_crypt_gate"
-blocking = false
-refusal_line = "Duvardaki mor damar kıpırdamıyor; Ruh Kesimi için Yasak Kanat'a gitmeliyim."
 
 [node name="NookRecord" type="Area2D" parent="Interactive"]
 position = Vector2(655.0, 288.0)
@@ -185,12 +177,11 @@ lore_id = &"nook_crypt_b"
 role = "record"
 ability = "soul"
 nook_id = "crypt"
-gate_puzzle = &"nook_crypt_gate"
 frag_id = "nook_crypt_a"
-need_line = "Damar açık ama kâğıt yarım; önce yatağın altındaki sayfayı bulmalıyım."
+need_line = "Kâğıt yarım; önce yatağın altındaki sayfayı bulmalıyım."
 texture_path = "res://assets/props/ledger.png"
 sprite_scale = 0.7
-lines = PackedStringArray("Noroi|Damarın ardında kâğıdın öbür yarısı: “1927 kışı, sayım bitmedi.”", "Noroi|Altında kısa bir not: “S. hâlâ sayıyor. Ben de.”", "Shilda|Kış mı, hatırlamıyorum. Yine de sayfa bana soğuk geliyor.")
+lines = PackedStringArray("Noroi|Duvar dibinde kâğıdın öbür yarısı: “1927 kışı, sayım bitmedi.”", "Noroi|Altında kısa bir not: “S. hâlâ sayıyor. Ben de.”", "Shilda|Kış mı, hatırlamıyorum. Yine de sayfa bana soğuk geliyor.")
 evidence_title = "Vardiya Devamı"
 evidence_body = "1927 kışında vardiya sayımı bitmemiş. Not, Araştırma Yardımcısı S.'nin sayımı sürdürdüğünü söylüyor."
 evidence_section = "izler"

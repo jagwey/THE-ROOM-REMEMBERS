@@ -111,6 +111,9 @@ func is_pressed() -> bool:
 
 func _set_pressed(value: bool) -> void:
 	if _pressed == value:
+		## Yükleme reset_live_for_load() canlı durumu silebilir; plaka hâlâ basılıysa yeniden yaz.
+		if value and puzzle_id != &"" and not PuzzleManager.is_live(puzzle_id):
+			PuzzleManager.set_live(puzzle_id, true)
 		return
 	_pressed = value
 	modulate = Color(1.2, 0.7, 0.75, 1.0) if _pressed else Color.WHITE

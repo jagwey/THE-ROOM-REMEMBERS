@@ -291,7 +291,7 @@ func _refresh_door_state() -> void:
 	_glow.visible = not locked
 	var hint := "Mühürlü"
 	if not locked:
-		hint = "El · Geç" if MobileInputManager.is_touch_ui() else "[E] Geç"
+		hint = "Dokun · Geç" if MobileInputManager.is_touch_ui() else "[E] Geç"
 	var caption := "%s\n%s" % [get_display_name(), hint]
 	if _label.text != caption:
 		_label.text = caption
@@ -334,15 +334,16 @@ func on_interact(by: Node) -> void:
 		_locked_tries += 1
 		var msg: String = locked_message if idx == 0 else String(LOCKED_VARIANTS[idx - 1])
 		## Yetenek kilidi sabit cümle kullanır; mühür kapılarındaki LOCKED_VARIANTS döngüsü aynı kalır.
-		if _ability_blocked():
-			msg = "Bu geçidi Gölge Atılması'yla geç."
-		elif _nooks_missing():
+		## Önce kayıt eksiği (oyuncunun şimdi yapabileceği), sonra yetenek ("nerede öğrenilir").
+		if _nooks_missing():
 			msg = "Kayıtlar %d/%d. Geri dönüş köşelerinde eksik kayıtlar var." % [NookCount.count(), required_nooks]
+		elif _ability_blocked():
+			msg = "Kapının ardında kırmızı bir perde var; Gölge Atılması'nı Ayna Tapınağı'nda öğrenince dönmeliyim."
 		## Ruh mührü: yetenek yoksa "nerede bulunur", varsa "nasıl açılır" söylenir (genel varyantlar yanıltmasın).
 		elif String(required_puzzle).begins_with("soul_seal"):
 			var has_slash := bool(GameState.player_progress_knowledge.get("ability_soul_slash", false))
 			if has_slash:
-				msg = "Mor mühür. Q ile (mobilde yıldız düğmesi) Ruh Kesimi'ni kullan."
+				msg = "Mor mühür. Ruh Kesimi'ni kullan (%s)." % MobileInputManager.control_name(&"skill")
 			elif idx % 2 == 0:
 				msg = "Mor mühür kılıçla açılmıyor. Ruhumla kesmeyi henüz bilmiyorum."
 			else:

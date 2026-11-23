@@ -203,10 +203,10 @@ script = ExtResource("2")
 
 [node name="Skill" type="TextureButton" parent="SafeArea/Buttons"]
 layout_mode = 0
-offset_left = 124
-offset_top = 10
-offset_right = 182
-offset_bottom = 68
+offset_left = 118
+offset_top = 64
+offset_right = 176
+offset_bottom = 122
 mouse_filter = 2
 ignore_texture_size = true
 stretch_mode = 5
@@ -229,10 +229,10 @@ glyph = &"jump"
 gothic_ring = true
 [node name="Interact" type="TextureButton" parent="SafeArea/Buttons"]
 layout_mode = 0
-offset_left = 108
-offset_top = 144
-offset_right = 172
-offset_bottom = 208
+offset_left = 104
+offset_top = 134
+offset_right = 176
+offset_bottom = 206
 mouse_filter = 2
 ignore_texture_size = true
 stretch_mode = 5

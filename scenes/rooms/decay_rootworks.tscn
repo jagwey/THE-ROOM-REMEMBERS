@@ -113,7 +113,7 @@ collision_mask = 1
 floor_stop_on_slope = true
 script = ExtResource("stone")
 min_x = 340.0
-max_x = 580.0
+max_x = 560.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="RootStone"]
 position = Vector2(0, -18)
@@ -133,6 +133,7 @@ collision_layer = 0
 collision_mask = 1
 puzzle_id = &"decay_rootworks_stone"
 accept_player = false
+latch_on_press = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactive/RootStonePlate"]
 shape = SubResource("PlateShape")

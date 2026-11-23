@@ -299,9 +299,10 @@ func _run_tier_1_feature_coverage() -> void:
 	record_check(1, 20, "Android system back navigation", back_nav_ok, "modal panel system back key handled", false, "M2")
 
 	# F21: Mobile interaction hints & skill icon (M2)
-	var hint_el: bool = hud_code.contains("El ·") or hud_code.contains("El:")
+	## v1.20.6: dokunmatikte metin ipucu yerine el simgeli dokunulabilir hedef çipi (TargetChip).
+	var hint_el: bool = hud_code.contains("TargetChip") and hud_code.contains("_hint_chip_hit")
 	var skill_icon_slash: bool = hud_code.contains("slash.png") or FileAccess.file_exists("res://assets/props/slash.png")
-	record_check(1, 21, "Mobile interaction hints & skill icon", hint_el and skill_icon_slash, "hint 'El ·'=%s skill icon slash.png=%s" % [hint_el, skill_icon_slash], false, "M2")
+	record_check(1, 21, "Mobile interaction hints & skill icon", hint_el and skill_icon_slash, "target chip=%s skill icon slash.png=%s" % [hint_el, skill_icon_slash], false, "M2")
 
 	# F22: Walking Memory Shade (M3)
 	var shade_walk_exists: bool = ResourceLoader.exists("res://scripts/world/memory_shade_walking.gd") or ResourceLoader.exists("res://scenes/world/memory_shade_walking.tscn")

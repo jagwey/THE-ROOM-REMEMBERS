@@ -5,13 +5,13 @@ extends StaticBody2D
 ## Hangi bulmaca çözülünce açılır (boşsa sadece bayrak).
 @export var puzzle_listen: StringName = &"awakening_weight"
 ## Boş değilse puzzle_listen yerine kullanılır: listedeki HER id çözülmüş/canlı olunca açılır.
-@export var puzzle_listen_all: PackedStringArray = []
+@export var puzzle_listen_all: PackedStringArray = PackedStringArray()
 ## Eski kayıt: bu id çözülmüşse yeni çoklu şart aranmadan açık.
 @export var legacy_puzzle: StringName = &""
 ## true ise yalnızca puzzle ile açılır (bayrak/legacy tek başına yetmez).
 @export var ignore_world_flag: bool = false
 ## Geçişte listedeki id'lerle birlikte kalıcı çözülecek ek (eski) bulmaca id'leri.
-@export var also_solve: PackedStringArray = []
+@export var also_solve: PackedStringArray = PackedStringArray()
 ## true ise canlı şart sağlandığı anda (geçiş beklenmeden) bulmaca kalıcı çözülür.
 ## Ceset sonradan alınsa da kapı ve oda çıkışı açık kalır.
 @export var latch_on_live: bool = false

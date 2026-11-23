@@ -193,7 +193,11 @@ func on_interact(by: Node) -> void:
 		_hold_new_corpse(before)
 
 
+## Geçiş bulmacası (puzzle_hint) çözüldüyse köprü kalıcıdır: ceset sınırı başka odadaki köprü
+## bedenini kırpsa bile karşı yakadan dönüş yolu kapanmaz (ör. Ayna Labirenti, tapınak tarafı).
 func _bridge_exists() -> bool:
+	if hold_corpse and bridge_plank_width > 0.0 and puzzle_hint != &"" and PuzzleManager.is_solved(puzzle_hint):
+		return true
 	var corpses: Array = GameState.world_memory_state.get("corpses", [])
 	var room := String(GameState.character_current_life_knowledge.get("room", ""))
 	for c in corpses:

@@ -69,15 +69,15 @@ func control_name(action: StringName) -> String:
 	var touch := is_touch_ui()
 	match action:
 		&"interact":
-			return "El" if touch else "E"
+			return "Dokun" if touch else "E"
 		&"attack":
 			return "Kılıç" if touch else "Z"
 		&"dash":
-			return "Atıl" if touch else "X"
+			return "Sağda yana kaydır" if touch else "X"
 		&"jump":
 			return "Zıpla" if touch else "W/Space"
 		&"skill":
-			return "Yetenek" if touch else "Q"
+			return "Kılıcı basılı tutup bırak" if touch else "Q"
 		&"journal":
 			return "Günlük" if touch else "I"
 	return String(action)

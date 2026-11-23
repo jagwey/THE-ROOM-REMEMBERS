@@ -140,6 +140,10 @@ func _run() -> void:
 		for i in range(8):
 			full[all_ids[i]] = true
 		state.player_progress_knowledge["nooks"] = full
-		check(NK.count() == 8 and not side.is_locked(), "S-room door open at 8/8 (count %d)" % NK.count())
+		## v1.20.6: odada perde var; kapı 8/8 + Gölge Atılması ister.
+		state.player_progress_knowledge.erase("ability_shadow_dash")
+		check(NK.count() == 8 and side.is_locked(), "S-room door still locked at 8/8 without dash (count %d)" % NK.count())
+		state.player_progress_knowledge["ability_shadow_dash"] = true
+		check(NK.count() == 8 and not side.is_locked(), "S-room door open at 8/8 + dash (count %d)" % NK.count())
 	print("MF done failures=", failures)
 	quit(1 if failures > 0 else 0)

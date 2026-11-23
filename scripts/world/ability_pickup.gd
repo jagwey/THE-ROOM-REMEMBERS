@@ -60,6 +60,7 @@ func on_interact(_by: Node) -> void:
 	DialogueManager.say("", "%s kazanıldı." % title)
 	if tutorial != "":
 		var tip := tutorial.replace("%DASH%", MobileInputManager.control_name(&"dash"))
+		tip = tip.replace("%SKILL%", MobileInputManager.control_name(&"skill"))
 		tip = tip.replace("X / Dash", MobileInputManager.control_name(&"dash"))
 		tip = tip.replace("X / Atıl", MobileInputManager.control_name(&"dash"))
 		DialogueManager.say("", tip)
