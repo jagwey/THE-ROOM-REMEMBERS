@@ -33,10 +33,14 @@ func _reset(at: Vector2) -> void:
 
 
 ## Zıplama yap, `hold` sn basılı tut, inene dek en yüksek noktayı ve fazları kaydet.
-func _jump_peak(hold: float) -> Dictionary:
+func _jump_peak(hold: float, moving: bool = false) -> Dictionary:
 	var y0 := player.global_position.y
 	var min_y := y0
 	var phases: Array[StringName] = []
+	var clips: Array[StringName] = []
+	var animated := player.get_node("AnimatedSprite2D") as AnimatedSprite2D
+	if moving:
+		mim.set_move_vector(Vector2.RIGHT)
 	mim.press_jump()
 	var t := 0.0
 	var released := false
@@ -46,6 +50,10 @@ func _jump_peak(hold: float) -> Dictionary:
 		if not released and t >= hold:
 			mim.release_jump()
 			released = true
+		if moving and t >= 0.15:
+			mim.set_move_vector(Vector2.ZERO)
+		if clips.is_empty() or clips[-1] != animated.animation:
+			clips.append(animated.animation)
 		min_y = minf(min_y, player.global_position.y)
 		if phases.is_empty() or phases[-1] != player.air_phase:
 			phases.append(player.air_phase)
@@ -53,7 +61,7 @@ func _jump_peak(hold: float) -> Dictionary:
 			break
 	if not released:
 		mim.release_jump()
-	return {"height": y0 - min_y, "phases": phases, "time": t}
+	return {"height": y0 - min_y, "phases": phases, "clips": clips, "time": t}
 
 
 func _run() -> void:
@@ -82,7 +90,12 @@ func _run() -> void:
 	var floor_y := player.global_position.y
 
 	## 1) Değişken yükseklik + fazlar.
-	var full: Dictionary = await _jump_peak(0.6)
+	var full: Dictionary = await _jump_peak(0.6, true)
+	var clips: Array = full.clips
+	var rise := clips.find(&"jump")
+	var fall := clips.find(&"fall", rise + 1)
+	var land := clips.find(&"land", fall + 1)
+	check(rise >= 0 and fall > rise and land > fall and not clips.has(&"run"), "moving jump, fall and landing sprites %s" % str(clips))
 	await _reset(start)
 	var tap: Dictionary = await _jump_peak(0.05)
 	check(full.height > 40.0, "full jump height %.0f px" % full.height)

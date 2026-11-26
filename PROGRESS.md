@@ -1,6 +1,9 @@
 # PROGRESS
 Dal: main · Sürüm: v1.20.6 (versionCode 67)
 
+## Noroi hareket paketi · v1.20.6 sonrası
+Noroi'nin mevcut tasarımı ve düzeltilen yüz tonu temel alınarak dokuz hareket için 37 ayrı şeffaf 96×96 kare hazırlandı. Oyuncu, yankılar ve gölgeler aynı `assets/characters/noroi.tres` kaynağından `noroi_motion` karelerini yükler. Yön tuşu basılıyken sıçrama ve düşüş artık koşunun önüne geçer. İniş için ayrı bir toparlanma pozu, koşuda 0/4 temas kareleri ve hasarda geri çekilme vardır. Zıplama, kapı, ruh savaşı ve ölüm döngüsü Godot 4.7.2 ile kontrol edildi.
+
 ## Proje Dizin Mimarisi (Güncel)
 
 Kök dizin hem yerelde hem GitHub'da sade tutulur; kök yalnızca 6 temel dosya ve 10 ana klasörden oluşur:

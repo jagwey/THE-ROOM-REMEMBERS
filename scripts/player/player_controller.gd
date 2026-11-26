@@ -56,7 +56,7 @@ var _combo_timer: float = 0.0
 var _hit_this_swing: Array = []
 var _trail_timer: float = 0.0
 var _curse_jitter: float = 0.0
-## Prosedürel squash/stretch — az kareli sprite'a canlılık katar.
+## Uyanış sırasındaki kısa esneme.
 var _squash: Vector2 = Vector2.ONE
 ## Kapıya yürüme gibi senaryolu hareketlerde (girdi kilitliyken) koşu animasyonu oynasın (ayak kaymasın).
 var scripted_walk: bool = false
@@ -316,7 +316,6 @@ func _physics_process(delta: float) -> void:
 		_safe_floor_pos = global_position
 	if was_air and is_on_floor() and fall_speed > 90.0:
 		var k := clampf(fall_speed / 520.0, 0.0, 1.0)
-		_squash = Vector2(1.0 + 0.22 * k, 1.0 - 0.2 * k)
 		if fall_speed > 240.0:
 			_camera_trauma(0.18)
 		if fall_speed > 140.0:
@@ -356,7 +355,6 @@ func _do_jump() -> void:
 	_jump_buffer = 0.0
 	_coyote = 0.0
 	velocity.y = JUMP_VELOCITY
-	_squash = Vector2(0.84, 1.18)
 	air_phase = &"jump_start"
 	_phase_timer = 0.08
 	if _state == &"attack":
@@ -602,8 +600,8 @@ func _push_hud_cooldowns() -> void:
 		hud.set_button_cooldown(&"skill", _skill_cd / SKILL_COOLDOWN)
 
 
-## Koşu döngüsünde ayak yere değme kareleri (0 ve 2: bacaklar açık) → adım sesi görüntüyle senkron.
-const RUN_CONTACT_FRAMES := [0, 2]
+## Koşu döngüsünde ayak yere değme kareleri (0 ve 4: bacaklar açık) → adım sesi görüntüyle senkron.
+const RUN_CONTACT_FRAMES := [0, 4]
 
 
 func _on_sprite_frame() -> void:
@@ -614,39 +612,22 @@ func _on_sprite_frame() -> void:
 
 
 func _update_anim() -> void:
-	var want: StringName = &"idle"
-	match _state:
-		&"run", &"dash", &"attack":
-			want = _state
-	if want == &"idle" and not is_on_floor() and absf(velocity.y) > 1.0 and sprite.sprite_frames and sprite.sprite_frames.has_animation("dash"):
-		## Havadayken yükselirken jump, düşerken fall (yoksa dash karesi). Donmuşken (hikâye) idle kalsın.
-		want = &"dash"
-		if sprite.sprite_frames.has_animation("jump") and sprite.sprite_frames.has_animation("fall"):
+	var want := _state
+	if want == &"idle" or want == &"run":
+		if not UiGate.blocks_movement() and not is_on_floor():
 			want = &"jump" if velocity.y < 0.0 else &"fall"
-	if sprite.animation != String(want) or not sprite.is_playing():
-		sprite.play(String(want))
-	if _state == &"run":
+		elif air_phase == &"landing" and not scripted_walk and not UiGate.blocks_movement():
+			want = &"land"
+	if sprite.animation != want:
+		sprite.play(want)
+	if want == &"run":
 		sprite.speed_scale = clampf(absf(velocity.x) / SPEED, 0.5, 1.2)
-	elif _state == &"attack":
-		sprite.speed_scale = 1.0 + 0.2 * float(_combo)
+	elif want == &"attack":
+		sprite.speed_scale = 0.8 if _combo == 2 else 1.0
 	else:
 		sprite.speed_scale = 1.0
-	_apply_squash()
-
-
-func _apply_squash() -> void:
-	var dt := get_physics_process_delta_time()
-	_squash = _squash.lerp(Vector2.ONE, clampf(dt * 11.0, 0.0, 1.0))
-	var s := _squash
-	if not is_on_floor() and _state != &"dash":
-		## Havada dikey hıza göre hafif uzama; tepe noktasında yuvarlak.
-		var st := clampf(absf(velocity.y) / 520.0, 0.0, 1.0) * 0.08
-		s *= Vector2(1.0 - st, 1.0 + st)
-	elif _state == &"run":
-		## Koşu sekmesi: adım ritminde küçük dikey nefes.
-		var t := float(Time.get_ticks_msec()) * 0.001
-		s *= Vector2(1.0, 1.0 + 0.035 * sin(t * 22.0))
-	sprite.scale = s
+	_squash = _squash.lerp(Vector2.ONE, clampf(get_physics_process_delta_time() * 11.0, 0.0, 1.0))
+	sprite.scale = _squash
 
 
 func _on_attack() -> void:
@@ -663,8 +644,9 @@ func _on_attack() -> void:
 	_hit_this_swing.clear()
 	attack_area.monitoring = true
 	velocity.x = _facing * (40.0 + 25.0 * float(_combo))
+	sprite.speed_scale = 0.8 if _combo == 2 else 1.0
 	sprite.play("attack")
-	sprite.frame = 0
+	sprite.set_frame_and_progress(0, 0.0)
 	_play_sfx(&"sword_swing")
 	## v1.19.5: savaş laneti besler.
 	CurseManager.add_curse(CURSE_PER_SWING)
@@ -686,6 +668,8 @@ func _on_dash() -> void:
 	_dash_dir = _facing if absf(MobileInputManager.get_move_axis().x) < 0.1 else signf(MobileInputManager.get_move_axis().x)
 	if _dash_dir == 0.0:
 		_dash_dir = _facing
+	face_direction(_dash_dir)
+	sprite.speed_scale = 1.0
 	sprite.play("dash")
 
 
@@ -843,6 +827,9 @@ func receive_hazard_hit(from_x: float) -> bool:
 	_stagger_timer = 0.25
 	GameState.damage(1)
 	if not DeathManager.is_dying:
+		sprite.speed_scale = 1.0
+		sprite.play("hurt")
+		sprite.set_frame_and_progress(0, 0.0)
 		var tw := create_tween()
 		tw.tween_property(sprite, "modulate:a", 0.35, 0.1)
 		tw.tween_property(sprite, "modulate:a", 1.0, 0.15)
@@ -863,6 +850,7 @@ func play_death() -> void:
 	velocity = Vector2.ZERO
 	_input_locked = true
 	if sprite.sprite_frames and sprite.sprite_frames.has_animation("death"):
+		sprite.speed_scale = 1.0
 		sprite.play("death")
 
 

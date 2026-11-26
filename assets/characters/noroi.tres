@@ -1,113 +1,50 @@
-[gd_resource type="SpriteFrames" load_steps=22 format=3]
+[gd_resource type="SpriteFrames" load_steps=38 format=3]
 
-[ext_resource type="Texture2D" path="res://assets/characters/noroi_sheet.png" id="1"]
-
-[sub_resource type="AtlasTexture" id="Atlas_0"]
-atlas = ExtResource("1")
-region = Rect2(0, 0, 96, 96)
-filter_clip = true
-
-[sub_resource type="AtlasTexture" id="Atlas_1"]
-atlas = ExtResource("1")
-region = Rect2(96, 0, 96, 96)
-filter_clip = true
-
-[sub_resource type="AtlasTexture" id="Atlas_2"]
-atlas = ExtResource("1")
-region = Rect2(192, 0, 96, 96)
-filter_clip = true
-
-[sub_resource type="AtlasTexture" id="Atlas_3"]
-atlas = ExtResource("1")
-region = Rect2(288, 0, 96, 96)
-filter_clip = true
-
-[sub_resource type="AtlasTexture" id="Atlas_4"]
-atlas = ExtResource("1")
-region = Rect2(0, 96, 96, 96)
-filter_clip = true
-
-[sub_resource type="AtlasTexture" id="Atlas_5"]
-atlas = ExtResource("1")
-region = Rect2(96, 96, 96, 96)
-filter_clip = true
-
-[sub_resource type="AtlasTexture" id="Atlas_6"]
-atlas = ExtResource("1")
-region = Rect2(192, 96, 96, 96)
-filter_clip = true
-
-[sub_resource type="AtlasTexture" id="Atlas_7"]
-atlas = ExtResource("1")
-region = Rect2(288, 96, 96, 96)
-filter_clip = true
-
-[sub_resource type="AtlasTexture" id="Atlas_8"]
-atlas = ExtResource("1")
-region = Rect2(0, 192, 96, 96)
-filter_clip = true
-
-[sub_resource type="AtlasTexture" id="Atlas_9"]
-atlas = ExtResource("1")
-region = Rect2(96, 192, 96, 96)
-filter_clip = true
-
-[sub_resource type="AtlasTexture" id="Atlas_10"]
-atlas = ExtResource("1")
-region = Rect2(192, 192, 96, 96)
-filter_clip = true
-
-[sub_resource type="AtlasTexture" id="Atlas_11"]
-atlas = ExtResource("1")
-region = Rect2(288, 192, 96, 96)
-filter_clip = true
-
-[sub_resource type="AtlasTexture" id="Atlas_12"]
-atlas = ExtResource("1")
-region = Rect2(0, 288, 96, 96)
-filter_clip = true
-
-[sub_resource type="AtlasTexture" id="Atlas_13"]
-atlas = ExtResource("1")
-region = Rect2(96, 288, 96, 96)
-filter_clip = true
-
-[sub_resource type="AtlasTexture" id="Atlas_14"]
-atlas = ExtResource("1")
-region = Rect2(192, 288, 96, 96)
-filter_clip = true
-
-[sub_resource type="AtlasTexture" id="Atlas_15"]
-atlas = ExtResource("1")
-region = Rect2(288, 288, 96, 96)
-filter_clip = true
-
-[sub_resource type="AtlasTexture" id="Atlas_16"]
-atlas = ExtResource("1")
-region = Rect2(0, 384, 96, 96)
-filter_clip = true
-
-[sub_resource type="AtlasTexture" id="Atlas_17"]
-atlas = ExtResource("1")
-region = Rect2(96, 384, 96, 96)
-filter_clip = true
-
-[sub_resource type="AtlasTexture" id="Atlas_18"]
-atlas = ExtResource("1")
-region = Rect2(192, 384, 96, 96)
-filter_clip = true
-
-[sub_resource type="AtlasTexture" id="Atlas_19"]
-atlas = ExtResource("1")
-region = Rect2(288, 384, 96, 96)
-filter_clip = true
+[ext_resource type="Texture2D" path="res://assets/characters/noroi_motion/idle/00.png" id="idle_00"]
+[ext_resource type="Texture2D" path="res://assets/characters/noroi_motion/idle/01.png" id="idle_01"]
+[ext_resource type="Texture2D" path="res://assets/characters/noroi_motion/idle/02.png" id="idle_02"]
+[ext_resource type="Texture2D" path="res://assets/characters/noroi_motion/idle/03.png" id="idle_03"]
+[ext_resource type="Texture2D" path="res://assets/characters/noroi_motion/run/00.png" id="run_00"]
+[ext_resource type="Texture2D" path="res://assets/characters/noroi_motion/run/01.png" id="run_01"]
+[ext_resource type="Texture2D" path="res://assets/characters/noroi_motion/run/02.png" id="run_02"]
+[ext_resource type="Texture2D" path="res://assets/characters/noroi_motion/run/03.png" id="run_03"]
+[ext_resource type="Texture2D" path="res://assets/characters/noroi_motion/run/04.png" id="run_04"]
+[ext_resource type="Texture2D" path="res://assets/characters/noroi_motion/run/05.png" id="run_05"]
+[ext_resource type="Texture2D" path="res://assets/characters/noroi_motion/run/06.png" id="run_06"]
+[ext_resource type="Texture2D" path="res://assets/characters/noroi_motion/run/07.png" id="run_07"]
+[ext_resource type="Texture2D" path="res://assets/characters/noroi_motion/jump/00.png" id="jump_00"]
+[ext_resource type="Texture2D" path="res://assets/characters/noroi_motion/jump/01.png" id="jump_01"]
+[ext_resource type="Texture2D" path="res://assets/characters/noroi_motion/jump/02.png" id="jump_02"]
+[ext_resource type="Texture2D" path="res://assets/characters/noroi_motion/fall/00.png" id="fall_00"]
+[ext_resource type="Texture2D" path="res://assets/characters/noroi_motion/fall/01.png" id="fall_01"]
+[ext_resource type="Texture2D" path="res://assets/characters/noroi_motion/fall/02.png" id="fall_02"]
+[ext_resource type="Texture2D" path="res://assets/characters/noroi_motion/land/00.png" id="land_00"]
+[ext_resource type="Texture2D" path="res://assets/characters/noroi_motion/land/01.png" id="land_01"]
+[ext_resource type="Texture2D" path="res://assets/characters/noroi_motion/land/02.png" id="land_02"]
+[ext_resource type="Texture2D" path="res://assets/characters/noroi_motion/attack/00.png" id="attack_00"]
+[ext_resource type="Texture2D" path="res://assets/characters/noroi_motion/attack/01.png" id="attack_01"]
+[ext_resource type="Texture2D" path="res://assets/characters/noroi_motion/attack/02.png" id="attack_02"]
+[ext_resource type="Texture2D" path="res://assets/characters/noroi_motion/attack/03.png" id="attack_03"]
+[ext_resource type="Texture2D" path="res://assets/characters/noroi_motion/attack/04.png" id="attack_04"]
+[ext_resource type="Texture2D" path="res://assets/characters/noroi_motion/attack/05.png" id="attack_05"]
+[ext_resource type="Texture2D" path="res://assets/characters/noroi_motion/dash/00.png" id="dash_00"]
+[ext_resource type="Texture2D" path="res://assets/characters/noroi_motion/dash/01.png" id="dash_01"]
+[ext_resource type="Texture2D" path="res://assets/characters/noroi_motion/dash/02.png" id="dash_02"]
+[ext_resource type="Texture2D" path="res://assets/characters/noroi_motion/hurt/00.png" id="hurt_00"]
+[ext_resource type="Texture2D" path="res://assets/characters/noroi_motion/hurt/01.png" id="hurt_01"]
+[ext_resource type="Texture2D" path="res://assets/characters/noroi_motion/death/00.png" id="death_00"]
+[ext_resource type="Texture2D" path="res://assets/characters/noroi_motion/death/01.png" id="death_01"]
+[ext_resource type="Texture2D" path="res://assets/characters/noroi_motion/death/02.png" id="death_02"]
+[ext_resource type="Texture2D" path="res://assets/characters/noroi_motion/death/03.png" id="death_03"]
+[ext_resource type="Texture2D" path="res://assets/characters/noroi_motion/death/04.png" id="death_04"]
 
 [resource]
-animations = [{"frames": [{"duration": 1.0, "texture": SubResource("Atlas_0")}, {"duration": 1.0, "texture": SubResource("Atlas_1")}, {"duration": 1.0, "texture": SubResource("Atlas_2")}, {"duration": 1.0, "texture": SubResource("Atlas_3")}], "loop": true, "name": &"idle", "speed": 6.0},
-{"frames": [{"duration": 1.0, "texture": SubResource("Atlas_4")}, {"duration": 1.0, "texture": SubResource("Atlas_5")}, {"duration": 1.0, "texture": SubResource("Atlas_6")}, {"duration": 1.0, "texture": SubResource("Atlas_7")}], "loop": true, "name": &"run", "speed": 12.0},
-{"frames": [{"duration": 1.0, "texture": SubResource("Atlas_8")}, {"duration": 1.0, "texture": SubResource("Atlas_9")}, {"duration": 1.0, "texture": SubResource("Atlas_10")}, {"duration": 1.0, "texture": SubResource("Atlas_11")}], "loop": false, "name": &"attack", "speed": 12.0},
-{"frames": [{"duration": 1.0, "texture": SubResource("Atlas_12")}, {"duration": 1.0, "texture": SubResource("Atlas_13")}], "loop": false, "name": &"dash", "speed": 14.0},
-{"frames": [{"duration": 1.0, "texture": SubResource("Atlas_14")}], "loop": false, "name": &"hurt", "speed": 5.0},
-{"frames": [{"duration": 1.0, "texture": SubResource("Atlas_14")}, {"duration": 1.0, "texture": SubResource("Atlas_15")}], "loop": false, "name": &"death", "speed": 4.0},
-{"frames": [{"duration": 1.0, "texture": SubResource("Atlas_16")}, {"duration": 1.0, "texture": SubResource("Atlas_17")}], "loop": false, "name": &"jump", "speed": 6.0},
-{"frames": [{"duration": 1.0, "texture": SubResource("Atlas_18")}, {"duration": 1.0, "texture": SubResource("Atlas_19")}], "loop": true, "name": &"fall", "speed": 6.0}]
+animations = [{"frames": [{"duration": 1.0, "texture": ExtResource("idle_00")}, {"duration": 1.0, "texture": ExtResource("idle_01")}, {"duration": 1.0, "texture": ExtResource("idle_02")}, {"duration": 1.0, "texture": ExtResource("idle_03")}], "loop": true, "name": &"idle", "speed": 6.0},
+{"frames": [{"duration": 1.0, "texture": ExtResource("run_00")}, {"duration": 1.0, "texture": ExtResource("run_01")}, {"duration": 1.0, "texture": ExtResource("run_02")}, {"duration": 1.0, "texture": ExtResource("run_03")}, {"duration": 1.0, "texture": ExtResource("run_04")}, {"duration": 1.0, "texture": ExtResource("run_05")}, {"duration": 1.0, "texture": ExtResource("run_06")}, {"duration": 1.0, "texture": ExtResource("run_07")}], "loop": true, "name": &"run", "speed": 18.0},
+{"frames": [{"duration": 1.0, "texture": ExtResource("jump_00")}, {"duration": 1.0, "texture": ExtResource("jump_01")}, {"duration": 1.0, "texture": ExtResource("jump_02")}], "loop": false, "name": &"jump", "speed": 12.0},
+{"frames": [{"duration": 1.0, "texture": ExtResource("fall_00")}, {"duration": 1.0, "texture": ExtResource("fall_01")}, {"duration": 1.0, "texture": ExtResource("fall_02")}], "loop": false, "name": &"fall", "speed": 12.0},
+{"frames": [{"duration": 1.0, "texture": ExtResource("land_00")}, {"duration": 1.0, "texture": ExtResource("land_01")}, {"duration": 1.0, "texture": ExtResource("land_02")}], "loop": false, "name": &"land", "speed": 30.0},
+{"frames": [{"duration": 1.0, "texture": ExtResource("attack_00")}, {"duration": 1.0, "texture": ExtResource("attack_01")}, {"duration": 1.0, "texture": ExtResource("attack_02")}, {"duration": 1.0, "texture": ExtResource("attack_03")}, {"duration": 1.0, "texture": ExtResource("attack_04")}, {"duration": 1.0, "texture": ExtResource("attack_05")}], "loop": false, "name": &"attack", "speed": 24.0},
+{"frames": [{"duration": 1.0, "texture": ExtResource("dash_00")}, {"duration": 1.0, "texture": ExtResource("dash_01")}, {"duration": 1.0, "texture": ExtResource("dash_02")}], "loop": false, "name": &"dash", "speed": 18.0},
+{"frames": [{"duration": 1.0, "texture": ExtResource("hurt_00")}, {"duration": 1.0, "texture": ExtResource("hurt_01")}], "loop": false, "name": &"hurt", "speed": 9.0},
+{"frames": [{"duration": 1.0, "texture": ExtResource("death_00")}, {"duration": 1.0, "texture": ExtResource("death_01")}, {"duration": 1.0, "texture": ExtResource("death_02")}, {"duration": 1.0, "texture": ExtResource("death_03")}, {"duration": 1.0, "texture": ExtResource("death_04")}], "loop": false, "name": &"death", "speed": 11.0}]
